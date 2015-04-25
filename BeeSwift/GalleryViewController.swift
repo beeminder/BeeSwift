@@ -21,6 +21,9 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.backgroundColor = UIColor.whiteColor()
+        self.title = "Goals"
+        
         self.loadGoalsFromDatabase()
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.None
@@ -66,18 +69,33 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         var footerView = UIView()
-        
+        footerView.frame.size.height = 40
+        footerView.backgroundColor = UIColor.grayColor()
         return footerView
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         var cell:UITableViewCell = self.tableView.dequeueReusableCellWithIdentifier("Cell") as! UITableViewCell
         
+        cell.selectionStyle = UITableViewCellSelectionStyle.None
+        
         var goal:Goal = indexPath.section == 0 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
         
         cell.textLabel?.text = goal.title
         
         return cell
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        var goalViewController = GoalViewController()
+        if indexPath.section == 0 {
+            goalViewController.goal = self.frontburnerGoals[indexPath.row]
+        }
+        else {
+            goalViewController.goal = self.backburnerGoals[indexPath.row]
+        }
+
+        self.navigationController?.pushViewController(goalViewController, animated: true)
     }
 
 }
