@@ -34,4 +34,25 @@ extension Goal {
         goal.delta_text = json["delta_text"].string!
         NSManagedObjectContext.MR_defaultContext().save(nil)
     }
+    
+    var rateString :String {
+        return "\(self.rate)/\(self.humanizedRunits)"
+    }
+    
+    var humanizedRunits :String {
+        if self.runits == "d" {
+            return "day"
+        }
+        if self.runits == "m" {
+            return "month"
+        }
+        if self.runits == "h" {
+            return "hour"
+        }
+        if self.runits == "y" {
+            return "year"
+        }
+        
+        return "week"
+    }
 }

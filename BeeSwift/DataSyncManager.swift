@@ -33,12 +33,12 @@ class DataSyncManager {
         manager.responseSerializer = AFJSONResponseSerializer()
         
         manager.GET("https://www.beeminder.com/api/v1/users/me.json?auth_token=pHMqRztj3FbqiXZyr2rP&associations=true&datapoints_count=5&diff_since=0", parameters: nil, success: { (operation: AFHTTPRequestOperation!, responseObject: AnyObject!) -> Void in
-
                 self.handleResponse(JSON(responseObject))
                 if (success != nil) { success() }
-            
+                self.isFetching = false
             }) { (operation: AFHTTPRequestOperation!, responseObject: AnyObject!) -> Void in
                 if (error != nil) { error() }
+                self.isFetching = false                
         }
     }
     

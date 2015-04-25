@@ -58,7 +58,8 @@ class GoalTableViewCell: UITableViewCell {
         didSet {
             self.titleLabel.text = goal!.title
             self.thumbnailImageView.setImageWithURL(NSURL(string: goal!.thumb_url))
-            self.rateLabel.text = "\(goal!.rate)/\(goal!.runits)"
+            self.rateLabel.text = goal!.rateString
+            self.deltasLabel.text = goal!.delta_text
         }
     }
 }

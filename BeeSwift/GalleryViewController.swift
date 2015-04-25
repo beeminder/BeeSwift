@@ -33,6 +33,10 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.tableView.registerClass(GoalTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.view.addSubview(self.tableView)
         
+        var refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: "fetchData:", forControlEvents: UIControlEvents.ValueChanged)
+        self.tableView.addSubview(refreshControl)
+        
         self.tableView.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.view).offset(0)
             make.left.equalTo(self.view).offset(20)
@@ -40,14 +44,19 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
             make.right.equalTo(self.view).offset(0)
         }
         
+        self.fetchData(refreshControl)
+        
+        // Do any additional setup after loading the view, typically from a nib.
+    }
+    
+    func fetchData(refreshControl: UIRefreshControl) {
         DataSyncManager.sharedManager.fetchData({ () -> Void in
             self.loadGoalsFromDatabase()
             self.tableView.reloadData()
-        }, error: { () -> Void in
-            //bar
+            refreshControl.endRefreshing()
+            }, error: { () -> Void in
+                refreshControl.endRefreshing()
         })
-        
-        // Do any additional setup after loading the view, typically from a nib.
     }
 
     override func didReceiveMemoryWarning() {
