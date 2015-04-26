@@ -23,6 +23,8 @@ class GoalTableViewCell: UITableViewCell {
         self.contentView.addSubview(self.rateLabel)
         self.contentView.addSubview(self.thumbnailImageView)
         self.contentView.addSubview(self.deltasLabel)
+        self.contentView.addSubview(self.countdownView)
+        self.countdownView.addSubview(self.countdownLabel)
         
         self.titleLabel.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(0)
@@ -43,6 +45,19 @@ class GoalTableViewCell: UITableViewCell {
         self.deltasLabel.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(self.rateLabel)
         }
+        
+        self.countdownView.snp_makeConstraints { (make) -> Void in
+            make.right.equalTo(0)
+            make.top.equalTo(self.titleLabel.snp_top)
+            make.width.equalTo(self.contentView).multipliedBy(0.3)
+            make.bottom.equalTo(0)
+        }
+        
+        self.countdownView.addSubview(self.countdownLabel)
+        self.countdownLabel.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(0)
+            make.right.equalTo(0)
+        }
     }
 
     required init(coder aDecoder: NSCoder) {
@@ -57,9 +72,11 @@ class GoalTableViewCell: UITableViewCell {
     {
         didSet {
             self.titleLabel.text = goal!.title
-            self.thumbnailImageView.setImageWithURL(NSURL(string: goal!.thumb_url))
+            self.thumbnailImageView.setImageWithURL(NSURL(string: goal!.cacheBustingThumbUrl))
             self.rateLabel.text = goal!.rateString
             self.deltasLabel.text = goal!.delta_text
+            self.countdownLabel.text = goal!.briefLosedate
+            self.countdownView.backgroundColor = goal!.countdownColor
         }
     }
 }

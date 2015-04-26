@@ -43,12 +43,9 @@ class DataSyncManager {
     }
     
     func handleResponse(json: JSON) {
-        println(json["goals"])
-
         for (key: String, valueJSON: JSON) in json {
             if key == "goals" {
                 for (index: String, goalJSON: JSON) in valueJSON {
-                    println(goalJSON["slug"])
                     Goal.crupdateWithJSON(goalJSON)
                 }
             }
