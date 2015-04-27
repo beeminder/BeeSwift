@@ -34,6 +34,7 @@ extension Goal {
         goal.delta_text = json["delta_text"].string!
         goal.won = json["won"].number!
         goal.lane = json["lane"].number!
+        goal.yaw = json["yaw"].number!
         NSManagedObjectContext.MR_defaultContext().save(nil)
     }
     
@@ -54,7 +55,7 @@ extension Goal {
     var briefLosedate :String {
         var losedateDate = NSDate(timeIntervalSince1970: self.losedate.doubleValue)
         if losedateDate.timeIntervalSinceNow < 0 {
-            return "Lost!"
+            return self.won.boolValue ? "Success!" : "Lost!"
         }
         else if losedateDate.timeIntervalSinceNow < 24*60*60 {
             // add 1 second since a 3 am goal technically derails at 2:59:59
@@ -73,6 +74,9 @@ extension Goal {
             dateFormatter.dateFormat = "EEE"
             return dateFormatter.stringFromDate(losedateDate)
         }
+        else if losedateDate.timeIntervalSinceNow > 99*24*60*60 {
+            return "∞"
+        }
         return "\(Int(losedateDate.timeIntervalSinceNow/(24*60*60))) days"
     }
     
@@ -86,16 +90,55 @@ extension Goal {
                 return UIColor.redColor()
             }
         }
-        else if self.lane <= -2 {
+        else if self.relativeLane <= -2 {
             return UIColor.redColor()
         }
-        else if self.lane == -1 {
+        else if self.relativeLane == -1 {
             return UIColor.orangeColor()
         }
-        else if self.lane == 1 {
+        else if self.relativeLane == 1 {
             return UIColor.blueColor()
         }
         return UIColor.beeGreenColor()
+    }
+    
+    var relativeLane : NSNumber {
+        return NSNumber(int: self.lane.intValue * self.yaw.intValue)
+    }
+    
+    var attributedDeltaText :NSAttributedString {
+        if self.delta_text.componentsSeparatedByString("✔").count == 4 {
+            return NSAttributedString(string: "⭐️  ⭐️  ⭐️")
+        }
+        var spaceIndices :Array<Int> = [0]
+        
+        for i in 0...count(self.delta_text) - 1 {
+            if Array(self.delta_text)[i] == " " {
+                spaceIndices.append(i)
+            }
+        }
+        
+        spaceIndices.append(count(self.delta_text))
+
+        var attString :NSMutableAttributedString = NSMutableAttributedString(string: self.delta_text)
+        
+        for i in 0...count(spaceIndices) {
+            if i + 1 >= count(spaceIndices) {
+                continue
+            }
+            attString.addAttribute(NSForegroundColorAttributeName, value: self.deltaColors[i], range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
+        }
+        
+        attString.mutableString.replaceOccurrencesOfString("✔", withString: "", options: NSStringCompareOptions.LiteralSearch, range: NSRange(location: 0, length: count(attString.string)))
+
+        return attString
+    }
+    
+    var deltaColors :Array<UIColor> {
+        if self.yaw == 1 {
+            return [UIColor.orangeColor(), UIColor.blueColor(), UIColor.beeGreenColor()]
+        }
+        return [UIColor.beeGreenColor(), UIColor.blueColor(), UIColor.orangeColor()]
     }
     
     var humanizedRunits :String {

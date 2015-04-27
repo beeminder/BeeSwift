@@ -2,7 +2,7 @@
 //  Goal.swift
 //  BeeSwift
 //
-//  Created by Andy Brett on 4/25/15.
+//  Created by Andy Brett on 4/26/15.
 //  Copyright (c) 2015 APB. All rights reserved.
 //
 
@@ -15,6 +15,7 @@ class Goal: NSManagedObject {
     @NSManaged var burner: String
     @NSManaged var delta_text: String
     @NSManaged var graph_url: String
+    @NSManaged var lane: NSNumber
     @NSManaged var losedate: NSNumber
     @NSManaged var panic: NSNumber
     @NSManaged var rate: NSNumber
@@ -23,7 +24,7 @@ class Goal: NSManagedObject {
     @NSManaged var thumb_url: String
     @NSManaged var title: String
     @NSManaged var won: NSNumber
-    @NSManaged var lane: NSNumber
+    @NSManaged var yaw: NSNumber
     @NSManaged var datapoints: NSSet
 
 }

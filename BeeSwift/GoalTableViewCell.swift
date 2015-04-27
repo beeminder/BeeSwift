@@ -9,12 +9,12 @@
 import Foundation
 
 class GoalTableViewCell: UITableViewCell {
-    var titleLabel :UILabel = UILabel()
+    var titleLabel :BSLabel = BSLabel()
     var thumbnailImageView :UIImageView = UIImageView()
-    var rateLabel :UILabel = UILabel()
-    var deltasLabel :UILabel = UILabel()
+    var rateLabel :BSLabel = BSLabel()
+    var deltasLabel :BSLabel = BSLabel()
     var countdownView :UIView = UIView()
-    var countdownLabel :UILabel = UILabel()
+    var countdownLabel :BSLabel = BSLabel()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -26,6 +26,7 @@ class GoalTableViewCell: UITableViewCell {
         self.contentView.addSubview(self.countdownView)
         self.countdownView.addSubview(self.countdownLabel)
         
+        self.titleLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
         self.titleLabel.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.top.equalTo(10)
@@ -33,30 +34,38 @@ class GoalTableViewCell: UITableViewCell {
 
         self.thumbnailImageView.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(0)
-            make.top.equalTo(self.titleLabel.snp_bottom).offset(10)
+            make.top.equalTo(self.titleLabel.snp_bottom).offset(5)
+            make.height.equalTo(70)
+            make.width.equalTo(106)
         }
         
+        self.rateLabel.textAlignment = NSTextAlignment.Center
         self.rateLabel.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(self.thumbnailImageView.snp_right).offset(10)
+            make.left.equalTo(self.thumbnailImageView.snp_right).offset(5)
             make.top.equalTo(self.thumbnailImageView)
-            make.bottom.equalTo(self.deltasLabel.snp_top)
+            make.right.equalTo(self.countdownView.snp_left).offset(-5)
         }
 
+        self.deltasLabel.textAlignment = NSTextAlignment.Center
+        self.deltasLabel.font = UIFont(name: "Avenir-Black", size: 13)
         self.deltasLabel.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(self.rateLabel)
+            make.top.equalTo(self.rateLabel.snp_bottom).offset(10)
+            make.right.equalTo(self.rateLabel)
         }
         
         self.countdownView.snp_makeConstraints { (make) -> Void in
             make.right.equalTo(0)
-            make.top.equalTo(self.titleLabel.snp_top)
-            make.width.equalTo(self.contentView).multipliedBy(0.3)
-            make.bottom.equalTo(0)
+            make.top.equalTo(self.thumbnailImageView)
+            make.bottom.equalTo(self.thumbnailImageView)
+            make.width.equalTo(75)
         }
         
         self.countdownView.addSubview(self.countdownLabel)
+        self.countdownLabel.textColor = UIColor.whiteColor()
+        self.countdownLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
         self.countdownLabel.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(0)
-            make.right.equalTo(0)
+            make.center.equalTo(self.countdownView)
         }
     }
 
@@ -74,7 +83,7 @@ class GoalTableViewCell: UITableViewCell {
             self.titleLabel.text = goal!.title
             self.thumbnailImageView.setImageWithURL(NSURL(string: goal!.cacheBustingThumbUrl))
             self.rateLabel.text = goal!.rateString
-            self.deltasLabel.text = goal!.delta_text
+            self.deltasLabel.attributedText = goal!.attributedDeltaText
             self.countdownLabel.text = goal!.briefLosedate
             self.countdownView.backgroundColor = goal!.countdownColor
         }

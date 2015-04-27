@@ -14,6 +14,8 @@ import SnapKit
 class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     let tableView = UITableView()
+    let lastUpdatedView = UIView()
+    let lastUpdatedLabel = BSLabel()
     let cellReuseIdentifier = "Cell"
     
     var frontburnerGoals : [Goal] = []
@@ -27,6 +29,29 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         self.loadGoalsFromDatabase()
         
+        self.view.addSubview(self.lastUpdatedView)
+        self.lastUpdatedView.backgroundColor = UIColor(white: 0.8, alpha: 1.0)
+        self.lastUpdatedView.snp_makeConstraints { (make) -> Void in
+            var topLayoutGuide = self.topLayoutGuide as! UIView
+            make.top.equalTo(topLayoutGuide.snp_bottom)
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+        }
+        
+        self.lastUpdatedView.addSubview(self.lastUpdatedLabel)
+        self.lastUpdatedLabel.text = "Last updated:"
+        self.lastUpdatedLabel.font = UIFont(name: "Avenir", size: 14)
+        self.lastUpdatedLabel.textAlignment = NSTextAlignment.Center
+        self.lastUpdatedLabel.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(3)
+            make.bottom.equalTo(-3)
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+        }
+        
+        self.updateLastUpdatedLabel()
+        NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: "updateLastUpdatedLabel", userInfo: nil, repeats: true)
+        
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.None
         self.tableView.delegate = self
         self.tableView.dataSource = self
@@ -38,10 +63,10 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.tableView.addSubview(refreshControl)
         
         self.tableView.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(0)
-            make.left.equalTo(self.view).offset(20)
-            make.bottom.equalTo(self.view).offset(0)
-            make.right.equalTo(self.view).offset(0)
+            make.top.equalTo(self.lastUpdatedView.snp_bottom)
+            make.left.equalTo(8)
+            make.bottom.equalTo(0)
+            make.right.equalTo(0)
         }
         
         self.fetchData(refreshControl)
@@ -49,10 +74,41 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
         // Do any additional setup after loading the view, typically from a nib.
     }
     
+    override func viewDidAppear(animated: Bool) {
+        if CurrentUserManager.sharedManager.accessToken == nil {
+            self.presentViewController(SignInViewController(), animated: true, completion: nil)
+        }
+    }
+    
+    func updateLastUpdatedLabel() {
+        if let lastSynced = DataSyncManager.sharedManager.lastSynced {
+            if lastSynced.timeIntervalSinceNow < -3600 {
+                var lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: more than an hour ago")
+                lastText.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSRange(location: 0, length: count(lastText.string)))
+                self.lastUpdatedLabel.attributedText = lastText
+            }
+            else if lastSynced.timeIntervalSinceNow < -120 {
+                self.lastUpdatedLabel.text = "Last updated: \(-1*Int(lastSynced.timeIntervalSinceNow/60)) minutes ago"
+            }
+            else if lastSynced.timeIntervalSinceNow < -60 {
+                self.lastUpdatedLabel.text = "Last updated: 1 minute ago"
+            }
+            else {
+                self.lastUpdatedLabel.text = "Last updated: less than a minute ago"
+            }
+        }
+        else {
+            var lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: a long time ago...")
+            lastText.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSRange(location: 0, length: count(lastText.string)))
+            self.lastUpdatedLabel.attributedText = lastText
+        }
+    }
+    
     func fetchData(refreshControl: UIRefreshControl) {
         DataSyncManager.sharedManager.fetchData({ () -> Void in
             self.loadGoalsFromDatabase()
             self.tableView.reloadData()
+            self.updateLastUpdatedLabel()
             refreshControl.endRefreshing()
             }, error: { () -> Void in
                 refreshControl.endRefreshing()
@@ -99,7 +155,7 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 140
+        return 130
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
