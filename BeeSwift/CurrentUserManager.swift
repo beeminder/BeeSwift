@@ -35,9 +35,19 @@ class CurrentUserManager {
         let manager = AFHTTPRequestOperationManager()
         manager.responseSerializer = AFJSONResponseSerializer()
         
+        manager.POST("https://www.beeminder.com/api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": "foo"], success: { (operation: AFHTTPRequestOperation!, responseObject: AnyObject!) -> Void in
+            println(responseObject)
+            NSUserDefaults.standardUserDefaults().setObject(responseObject["access_token"], forKey: self.accessTokenKey)
+            NSUserDefaults.standardUserDefaults().synchronize()
+            success()
+            }) { (operation: AFHTTPRequestOperation!, responseError: NSError!) -> Void in
+                error(message: responseError.description)
+        }
     }
     
     func signOut() {
+        DataSyncManager.sharedManager.setLastSynced(nil)
+        LocalNotificationsManager.sharedManager.turnLocalNotificationsOff()
         NSUserDefaults.standardUserDefaults().removeObjectForKey(accessTokenKey)
         NSUserDefaults.standardUserDefaults().synchronize()
         for goal in Goal.MR_findAll() {

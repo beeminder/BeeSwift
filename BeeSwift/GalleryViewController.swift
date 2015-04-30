@@ -27,10 +27,13 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.view.backgroundColor = UIColor.whiteColor()
         self.title = "Goals"
         
+        var item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItemStyle.Plain, target: self, action: "settingsButtonPressed")
+        self.navigationItem.rightBarButtonItem = item
+        
         self.loadGoalsFromDatabase()
         
         self.view.addSubview(self.lastUpdatedView)
-        self.lastUpdatedView.backgroundColor = UIColor(white: 0.8, alpha: 1.0)
+        self.lastUpdatedView.backgroundColor = UIColor.beeGrayColor()
         self.lastUpdatedView.snp_makeConstraints { (make) -> Void in
             var topLayoutGuide = self.topLayoutGuide as! UIView
             make.top.equalTo(topLayoutGuide.snp_bottom)
@@ -78,6 +81,13 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
         if CurrentUserManager.sharedManager.accessToken == nil {
             self.presentViewController(SignInViewController(), animated: true, completion: nil)
         }
+        else {
+            self.fetchData(nil)
+        }
+    }
+    
+    func settingsButtonPressed() {
+        self.navigationController?.pushViewController(SettingsViewController(), animated: true)
     }
     
     func updateLastUpdatedLabel() {
@@ -104,14 +114,18 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func fetchData(refreshControl: UIRefreshControl) {
+    func fetchData(refreshControl: UIRefreshControl?) {
         DataSyncManager.sharedManager.fetchData({ () -> Void in
             self.loadGoalsFromDatabase()
             self.tableView.reloadData()
             self.updateLastUpdatedLabel()
-            refreshControl.endRefreshing()
+            if refreshControl != nil {
+                refreshControl!.endRefreshing()
+            }
             }, error: { () -> Void in
-                refreshControl.endRefreshing()
+                if refreshControl != nil {
+                    refreshControl!.endRefreshing()
+                }
         })
     }
 

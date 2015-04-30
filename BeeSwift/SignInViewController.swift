@@ -27,7 +27,8 @@ class SignInViewController : UIViewController {
         }
         
         self.view.addSubview(self.emailTextField)
-        self.emailTextField.layer.borderColor = UIColor(white: 0.7, alpha: 1.0).CGColor
+        self.emailTextField.layer.borderColor = UIColor.beeGrayColor().CGColor
+        self.emailTextField.tintColor = UIColor.beeGrayColor()
         self.emailTextField.layer.borderWidth = 1
         self.emailTextField.placeholder = "Email"
         self.emailTextField.textAlignment = NSTextAlignment.Center
@@ -41,7 +42,8 @@ class SignInViewController : UIViewController {
         }
         
         self.view.addSubview(self.passwordTextField)
-        self.passwordTextField.layer.borderColor = UIColor(white: 0.7, alpha: 1.0).CGColor
+        self.passwordTextField.layer.borderColor = UIColor.beeGrayColor().CGColor
+        self.passwordTextField.tintColor = UIColor.beeGrayColor()
         self.passwordTextField.layer.borderWidth = 1
         self.passwordTextField.placeholder = "Password"
         self.passwordTextField.textAlignment = NSTextAlignment.Center
@@ -57,7 +59,7 @@ class SignInViewController : UIViewController {
         var signInButton = UIButton()
         self.view.addSubview(signInButton)
         signInButton.setTitle("Sign In", forState: UIControlState.Normal)
-        signInButton.backgroundColor = UIColor(white: 0.8, alpha: 1.0)
+        signInButton.backgroundColor = UIColor.beeGrayColor()
         signInButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
         signInButton.titleLabel?.textColor = UIColor.whiteColor()
         signInButton.addTarget(self, action: "signInButtonPressed", forControlEvents: UIControlEvents.TouchUpInside)
@@ -71,7 +73,7 @@ class SignInViewController : UIViewController {
     
     func signInButtonPressed() {
         CurrentUserManager.sharedManager.signInWithEmail(self.emailTextField.text, password: self.passwordTextField.text, success: { () -> Void in
-            //foo
+            self.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
             }) { (message: String) -> Void in
             println(message)
         }
