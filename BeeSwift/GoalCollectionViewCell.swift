@@ -8,7 +8,7 @@
 
 import Foundation
 
-class GoalTableViewCell: UITableViewCell {
+class GoalCollectionViewCell: UICollectionViewCell {
     var titleLabel :BSLabel = BSLabel()
     var thumbnailImageView :UIImageView = UIImageView()
     var rateLabel :BSLabel = BSLabel()
@@ -16,8 +16,8 @@ class GoalTableViewCell: UITableViewCell {
     var countdownView :UIView = UIView()
     var countdownLabel :BSLabel = BSLabel()
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         
         self.contentView.addSubview(self.titleLabel)
         self.contentView.addSubview(self.rateLabel)
@@ -28,12 +28,12 @@ class GoalTableViewCell: UITableViewCell {
         
         self.titleLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
         self.titleLabel.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(0)
+            make.left.equalTo(8)
             make.top.equalTo(10)
         }
 
         self.thumbnailImageView.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(0)
+            make.left.equalTo(8)
             make.top.equalTo(self.titleLabel.snp_bottom).offset(5)
             make.height.equalTo(70)
             make.width.equalTo(106)

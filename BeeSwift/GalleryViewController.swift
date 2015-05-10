@@ -11,9 +11,9 @@ import AFNetworking
 import MagicalRecord
 import SnapKit
 
-class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    
-    let tableView = UITableView()
+class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
+    var collectionView :UICollectionView?
+    var collectionViewLayout :UICollectionViewLayout?
     let lastUpdatedView = UIView()
     let lastUpdatedLabel = BSLabel()
     let cellReuseIdentifier = "Cell"
@@ -23,6 +23,10 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.collectionViewLayout = UICollectionViewFlowLayout()
+        self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
+        self.collectionView?.backgroundColor = UIColor.whiteColor()
         
         self.view.backgroundColor = UIColor.whiteColor()
         self.title = "Goals"
@@ -55,26 +59,23 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.updateLastUpdatedLabel()
         NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: "updateLastUpdatedLabel", userInfo: nil, repeats: true)
         
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.None
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
-        self.tableView.registerClass(GoalTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-        self.view.addSubview(self.tableView)
+        self.collectionView!.delegate = self
+        self.collectionView!.dataSource = self
+        self.collectionView!.registerClass(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
+        self.view.addSubview(self.collectionView!)
         
         var refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "fetchData:", forControlEvents: UIControlEvents.ValueChanged)
-        self.tableView.addSubview(refreshControl)
+        self.collectionView!.addSubview(refreshControl)
         
-        self.tableView.snp_makeConstraints { (make) -> Void in
+        self.collectionView!.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.lastUpdatedView.snp_bottom)
-            make.left.equalTo(8)
+            make.left.equalTo(0)
             make.bottom.equalTo(0)
             make.right.equalTo(0)
         }
         
         self.fetchData(refreshControl)
-        
-        // Do any additional setup after loading the view, typically from a nib.
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -117,7 +118,7 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
     func fetchData(refreshControl: UIRefreshControl?) {
         DataSyncManager.sharedManager.fetchData({ () -> Void in
             self.loadGoalsFromDatabase()
-            self.tableView.reloadData()
+            self.collectionView!.reloadData()
             self.updateLastUpdatedLabel()
             if refreshControl != nil {
                 refreshControl!.endRefreshing()
@@ -141,25 +142,20 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.backburnerGoals = self.backburnerGoals.sorted { ($0.losedate < $1.losedate) }
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return section == 0 ? self.frontburnerGoals.count : self.backburnerGoals.count
     }
-
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return 2
     }
     
-    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        var footerView = UIView()
-        footerView.frame.size.height = 40
-        footerView.backgroundColor = UIColor.grayColor()
-        return footerView
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+        return CGSizeMake(320, 120)
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell:GoalTableViewCell = self.tableView.dequeueReusableCellWithIdentifier(self.cellReuseIdentifier) as! GoalTableViewCell
-        
-        cell.selectionStyle = UITableViewCellSelectionStyle.None
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        var cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCellWithReuseIdentifier(self.cellReuseIdentifier, forIndexPath: indexPath) as! GoalCollectionViewCell
         
         var goal:Goal = indexPath.section == 0 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
         
@@ -168,11 +164,7 @@ class GalleryViewController: UIViewController, UITableViewDelegate, UITableViewD
         return cell
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 130
-    }
-    
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         var goalViewController = GoalViewController()
         if indexPath.section == 0 {
             goalViewController.goal = self.frontburnerGoals[indexPath.row]

@@ -42,25 +42,42 @@ class LocalNotificationsManager {
         return Bool(true)
     }
     
-    func turnLocalNotificationsOff() {
+    func turnNotificationsOff() {
         NSUserDefaults.standardUserDefaults().removeObjectForKey(notificationsOnKey)
         NSUserDefaults.standardUserDefaults().synchronize()
         UIApplication.sharedApplication().cancelAllLocalNotifications()
     }
     
-    func turnLocalNotificationsOn() {
+    func turnNotificationsOn() {
         NSUserDefaults.standardUserDefaults().setBool(true, forKey: notificationsOnKey)
         NSUserDefaults.standardUserDefaults().synchronize()
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: UIUserNotificationType.Sound | UIUserNotificationType.Alert | UIUserNotificationType.Badge, categories: nil))
+        self.scheduleNotifications()
     }
     
     func setReminder(hour: NSNumber, minute: NSNumber) {
+        NSUserDefaults.standardUserDefaults().setObject(hour, forKey: hourKey)
+        NSUserDefaults.standardUserDefaults().setObject(minute, forKey: minuteKey)
+        NSUserDefaults.standardUserDefaults().synchronize()
+        self.scheduleNotifications()
+    }
+    
+    func scheduleNotifications() {
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         var notification = UILocalNotification()
         notification.alertBody = "Don't forget to enter your Beeminder data for today!"
-        notification.repeatInterval = NSCalendarUnit.DayCalendarUnit
+        notification.repeatInterval = .CalendarUnitDay
+        notification.soundName = UILocalNotificationDefaultSoundName
         
+        let calendar = NSCalendar(identifier: NSCalendarIdentifierGregorian)
+        let components = calendar?.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate())
+        components!.hour = self.reminderTimeHour().integerValue
+        components!.minute = self.reminderTimeMinute().integerValue
+        let date = calendar!.dateFromComponents(components!)
+        notification.fireDate = date
+        
+        UIApplication.sharedApplication().scheduleLocalNotification(notification)
     }
     
     func reminderTimeHour() -> NSNumber {

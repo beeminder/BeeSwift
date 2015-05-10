@@ -1,0 +1,6 @@
+framework module FBSDKLoginKit {
+  umbrella header "Pods-BeeSwift-FBSDKLoginKit-umbrella.h"
+
+  export *
+  module * { export * }
+}

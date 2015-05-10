@@ -8,6 +8,8 @@ target 'BeeSwift' do
 	pod "SnapKit"
 	pod "MagicalRecord"
 	pod "SwiftyJSON"
+	pod "FBSDKCoreKit"
+	pod "FBSDKLoginKit"
 end
 
 target 'BeeSwiftTests' do

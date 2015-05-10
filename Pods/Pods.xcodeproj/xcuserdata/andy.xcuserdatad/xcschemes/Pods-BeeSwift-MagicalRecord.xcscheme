@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "02D35B44958324EFD2D8F2F3"
+               BlueprintIdentifier = "9F5056C8EAAD1AB853AA3807"
                BuildableName = "MagicalRecord.framework"
                BlueprintName = "Pods-BeeSwift-MagicalRecord"
                ReferencedContainer = "container:Pods.xcodeproj">

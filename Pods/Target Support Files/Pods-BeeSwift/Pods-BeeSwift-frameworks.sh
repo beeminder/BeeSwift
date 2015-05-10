@@ -49,12 +49,18 @@ code_sign() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework 'AFNetworking.framework'
+  install_framework 'Bolts.framework'
+  install_framework 'FBSDKCoreKit.framework'
+  install_framework 'FBSDKLoginKit.framework'
   install_framework 'MagicalRecord.framework'
   install_framework 'SnapKit.framework'
   install_framework 'SwiftyJSON.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'AFNetworking.framework'
+  install_framework 'Bolts.framework'
+  install_framework 'FBSDKCoreKit.framework'
+  install_framework 'FBSDKLoginKit.framework'
   install_framework 'MagicalRecord.framework'
   install_framework 'SnapKit.framework'
   install_framework 'SwiftyJSON.framework'

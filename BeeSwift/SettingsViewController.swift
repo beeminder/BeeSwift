@@ -13,9 +13,10 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     private var dataEntryReminderLabel = BSLabel()
     private var dataEntryReminderSwitch = UISwitch()
     private var timePickerView = UIPickerView()
-    
+    private var timePickerContainerView = UIView()
     private var animatingTimePickerView = false
     private var timePickerViewVisible = false
+    private var emergencyRemindersSwitch = UISwitch()
 
     override func viewDidLoad() {
         self.title = "Settings"
@@ -23,6 +24,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         
         self.dataEntryReminderSwitch.addTarget(self, action: "dataEntryReminderSwitchChanged", forControlEvents: UIControlEvents.ValueChanged)
         self.view.addSubview(self.dataEntryReminderSwitch)
+        self.dataEntryReminderSwitch.on = LocalNotificationsManager.sharedManager.on()
         self.dataEntryReminderSwitch.snp_makeConstraints { (make) -> Void in
             let topLayoutGuide = self.topLayoutGuide as! UIView
             make.left.equalTo(20)
@@ -41,13 +43,33 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
             make.left.equalTo(self.dataEntryReminderSwitch.snp_right).offset(20)
         }
         
+        self.timePickerContainerView.clipsToBounds = true
+        self.view.addSubview(self.timePickerContainerView)
+        self.timePickerContainerView.alpha = 0
+        self.timePickerContainerView.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(self.dataEntryReminderLabel.snp_bottom)
+            make.width.equalTo(self.view)
+            make.height.equalTo(0)
+        }
+        
         self.timePickerView.delegate = self
         self.timePickerView.dataSource = self
-        self.view.addSubview(self.timePickerView)
+        self.timePickerContainerView.addSubview(self.timePickerView)
         self.timePickerView.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.dataEntryReminderLabel.snp_bottom).offset(20)
-            make.width.equalTo(self.view)
-            make.height.equalTo(100)
+            make.center.equalTo(self.timePickerContainerView)
+        }
+        
+        self.view.addSubview(self.emergencyRemindersSwitch)
+        self.emergencyRemindersSwitch.snp_makeConstraints { (make) -> Void in
+            make.centerX.equalTo(self.dataEntryReminderSwitch)
+            make.top.equalTo(self.timePickerContainerView.snp_bottom).offset(20)
+        }
+        
+        let emergencyRemindersLabel = BSLabel()
+        self.view.addSubview(emergencyRemindersLabel)
+        emergencyRemindersLabel.text = "Goal notifications"
+        emergencyRemindersLabel.snp_makeConstraints { (make) -> Void in
+            make.centerY.equalTo(self.emergencyRemindersSwitch)
         }
         
         var signOutButton = BSButton()
@@ -59,11 +81,57 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
             make.bottom.equalTo(-30)
             make.width.equalTo(self.view).multipliedBy(0.75)
             make.centerX.equalTo(self.view)
+            make.height.equalTo(44)
+        }
+        
+        self.setTimePickerViewValues()
+        self.updateDataEntryReminderLabel()
+    }
+    
+    func setTimePickerViewValues() {
+        if self.use24HourTime() {
+            self.timePickerView.selectRow(LocalNotificationsManager.sharedManager.reminderTimeHour().integerValue, inComponent: 0, animated: false)
+            self.timePickerView.selectRow(LocalNotificationsManager.sharedManager.reminderTimeMinute().integerValue, inComponent: 1, animated: false)
+        }
+        else {
+            let hour = LocalNotificationsManager.sharedManager.reminderTimeHour().integerValue
+            let minute = LocalNotificationsManager.sharedManager.reminderTimeMinute().integerValue
+            if hour > 12 {
+                self.timePickerView.selectRow(1, inComponent: 2, animated: false)
+                self.timePickerView.selectRow(hour - 12, inComponent: 0, animated: false)
+            }
+            else {
+                self.timePickerView.selectRow(hour, inComponent: 0, animated: false)
+            }
+            self.timePickerView.selectRow(minute, inComponent: 1, animated: false)
         }
     }
     
+    func pickerContainerViewHeight() -> CGFloat {
+        return UIPickerView().frame.size.height
+    }
+    
     func dataEntryReminderLabelTapped() {
-        self.toggleTimePickerView()
+        if self.timePickerViewVisible {
+            self.hideTimePickerView()
+        } else {
+            self.showTimePickerView()
+        }
+        self.updateDataEntryReminderLabel()
+    }
+    
+    func hideTimePickerView() {
+        if self.timePickerViewVisible {
+            self.toggleTimePickerView()
+        }
+    }
+    
+    func showTimePickerView() {
+        if !self.timePickerViewVisible {
+            self.dataEntryReminderSwitch.on = true
+            LocalNotificationsManager.sharedManager.turnNotificationsOn()
+            self.toggleTimePickerView()
+        }
     }
     
     func toggleTimePickerView() {
@@ -71,11 +139,13 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
             return
         }
         self.animatingTimePickerView = true
-
+        
         UIView.animateWithDuration(0.25, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: { () -> Void in
-            self.timePickerView.snp_updateConstraints({ (make) -> Void in
-                make.height.equalTo(self.timePickerViewVisible ? 0 : 100)
+            self.timePickerContainerView.alpha = self.timePickerViewVisible ? 0 : 1
+            self.timePickerContainerView.snp_updateConstraints({ (make) -> Void in
+                make.height.equalTo(self.timePickerViewVisible ? 0 : self.pickerContainerViewHeight())
             })
+            self.view.layoutIfNeeded()
         }) { (flag) -> Void in
             self.animatingTimePickerView = false
             self.timePickerViewVisible = !self.timePickerViewVisible
@@ -98,10 +168,12 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     
     func dataEntryReminderSwitchChanged() {
         if self.dataEntryReminderSwitch.on {
-            LocalNotificationsManager.sharedManager.turnLocalNotificationsOn()
+            self.showTimePickerView()
+            LocalNotificationsManager.sharedManager.turnNotificationsOn()
         }
         else {
-            LocalNotificationsManager.sharedManager.turnLocalNotificationsOff()
+            self.hideTimePickerView()
+            LocalNotificationsManager.sharedManager.turnNotificationsOff()
         }
         self.updateDataEntryReminderLabel()
     }
@@ -136,11 +208,11 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
             alignment = NSTextAlignment.Center
         }
         else {
-            if (self.use24HourTime() || row <= 12) {
-                text = "\(row)"
+            if (!self.use24HourTime() && row == 0) {
+                text = "12"
             }
             else {
-                text = "\(row - 12)"
+                text = "\(row)"
             }
             alignment = NSTextAlignment.Right
         }
@@ -150,21 +222,30 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         
         return view
     }
-
-//    func pickerView(pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
-//        if component == 0 {
-//            return self.view.snp_width*0.4
-//        }
-//        return 100
-//    }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if component == 0 {
-            return 24
+            return Bool(self.use24HourTime()) ? 24 : 12
         }
         else if component == 1 {
             return 60
         }
         return 2
+    }
+    
+    func reminderHourFromTimePicker() -> NSNumber {
+        if self.use24HourTime() || self.timePickerView.selectedRowInComponent(2) == 0 {
+            return self.timePickerView.selectedRowInComponent(0)
+        }
+        return self.timePickerView.selectedRowInComponent(0) + 12
+    }
+    
+    func reminderMinuteFromTimePicker() -> NSNumber {
+        return self.timePickerView.selectedRowInComponent(1)
+    }
+    
+    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        LocalNotificationsManager.sharedManager.setReminder(self.reminderHourFromTimePicker(), minute: self.reminderMinuteFromTimePicker())
+        self.updateDataEntryReminderLabel()
     }
 }

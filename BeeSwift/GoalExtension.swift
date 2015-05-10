@@ -35,7 +35,7 @@ extension Goal {
         goal.won = json["won"].number!
         goal.lane = json["lane"].number!
         goal.yaw = json["yaw"].number!
-        NSManagedObjectContext.MR_defaultContext().save(nil)
+        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion(nil)
     }
     
     var rateString :String {

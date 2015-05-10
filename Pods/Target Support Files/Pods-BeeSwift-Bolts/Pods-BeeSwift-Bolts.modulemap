@@ -1,0 +1,6 @@
+framework module Bolts {
+  umbrella header "Pods-BeeSwift-Bolts-umbrella.h"
+
+  export *
+  module * { export * }
+}

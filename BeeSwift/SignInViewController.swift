@@ -7,8 +7,10 @@
 //
 
 import Foundation
+import TwitterKit
+import FBSDKLoginKit
 
-class SignInViewController : UIViewController {
+class SignInViewController : UIViewController, FBSDKLoginButtonDelegate {
     
     var signInLabel :BSLabel = BSLabel()
     var emailTextField :UITextField = UITextField()
@@ -17,31 +19,38 @@ class SignInViewController : UIViewController {
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.whiteColor()
         
-        self.view.addSubview(self.signInLabel)
+        let scrollView = UIScrollView()
+        self.view.addSubview(scrollView)
+        scrollView.snp_makeConstraints { (make) -> Void in
+            make.edges.equalTo(self.view)
+        }
+        
+        scrollView.addSubview(self.signInLabel)
         self.signInLabel.text = "Sign in to Beeminder"
         self.signInLabel.textAlignment = NSTextAlignment.Center
         self.signInLabel.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(50)
-            make.left.equalTo(0)
-            make.right.equalTo(0)
+            make.centerX.equalTo(scrollView)
         }
         
-        self.view.addSubview(self.emailTextField)
+        scrollView.addSubview(self.emailTextField)
         self.emailTextField.layer.borderColor = UIColor.beeGrayColor().CGColor
         self.emailTextField.tintColor = UIColor.beeGrayColor()
         self.emailTextField.layer.borderWidth = 1
-        self.emailTextField.placeholder = "Email"
+        self.emailTextField.placeholder = "Email or username"
+        self.emailTextField.autocapitalizationType = .None
+        self.emailTextField.autocorrectionType = .No
         self.emailTextField.textAlignment = NSTextAlignment.Center
         self.emailTextField.font = UIFont(name: "Avenir", size: 20)
         self.emailTextField.keyboardType = UIKeyboardType.EmailAddress
         self.emailTextField.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.signInLabel.snp_bottom).offset(20)
             make.centerX.equalTo(0)
-            make.width.equalTo(self.view).multipliedBy(0.75)
+            make.width.equalTo(scrollView).multipliedBy(0.75)
             make.height.equalTo(44)
         }
         
-        self.view.addSubview(self.passwordTextField)
+        scrollView.addSubview(self.passwordTextField)
         self.passwordTextField.layer.borderColor = UIColor.beeGrayColor().CGColor
         self.passwordTextField.tintColor = UIColor.beeGrayColor()
         self.passwordTextField.layer.borderWidth = 1
@@ -51,13 +60,13 @@ class SignInViewController : UIViewController {
         self.passwordTextField.secureTextEntry = true
         self.passwordTextField.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.emailTextField.snp_bottom).offset(20)
-            make.centerX.equalTo(0)
-            make.width.equalTo(self.view).multipliedBy(0.75)
+            make.centerX.equalTo(self.emailTextField)
+            make.width.equalTo(self.emailTextField)
             make.height.equalTo(44)
         }
         
         var signInButton = UIButton()
-        self.view.addSubview(signInButton)
+        scrollView.addSubview(signInButton)
         signInButton.setTitle("Sign In", forState: UIControlState.Normal)
         signInButton.backgroundColor = UIColor.beeGrayColor()
         signInButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
@@ -69,6 +78,58 @@ class SignInViewController : UIViewController {
             make.top.equalTo(self.passwordTextField.snp_bottom).offset(20)
             make.height.equalTo(44)
         }
+        
+        let divider = UIView()
+        scrollView.addSubview(divider)
+        divider.backgroundColor = UIColor.beeGrayColor()
+        divider.snp_makeConstraints { (make) -> Void in
+            make.left.equalTo(signInButton)
+            make.right.equalTo(signInButton)
+            make.height.equalTo(1)
+            make.top.equalTo(signInButton.snp_bottom).offset(20)
+        }
+
+        let twitterLoginButton = TWTRLogInButton(logInCompletion: {
+            (session: TWTRSession!, error: NSError!) in
+            CurrentUserManager.sharedManager.loginWithTwitterSession(session, error: error)
+        })
+        scrollView.addSubview(twitterLoginButton)
+        twitterLoginButton.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(divider.snp_bottom).offset(20)
+            make.centerX.equalTo(signInButton)
+            make.width.equalTo(signInButton)
+            make.height.equalTo(signInButton)
+        }
+        
+        let facebookLoginButton : FBSDKLoginButton = FBSDKLoginButton()
+        scrollView.addSubview(facebookLoginButton)
+        facebookLoginButton.readPermissions = ["public_profile", "email", "user_friends"]
+        facebookLoginButton.delegate = self
+        facebookLoginButton.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(twitterLoginButton.snp_bottom).offset(20)
+            make.centerX.equalTo(signInButton)
+            make.width.equalTo(signInButton)
+            make.height.equalTo(signInButton)
+        }
+        
+        let googleSigninButton = GIDSignInButton()
+        scrollView.addSubview(googleSigninButton)
+        googleSigninButton.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(facebookLoginButton.snp_bottom).offset(20)
+            make.centerX.equalTo(signInButton)
+            make.width.equalTo(signInButton)
+            make.height.equalTo(signInButton)
+            make.bottom.equalTo(-20)
+        }
+    }
+    
+    func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
+        // show message if error
+        CurrentUserManager.sharedManager.loginButton(loginButton, didCompleteWithResult: result, error: error)
+    }
+    
+    func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
+        CurrentUserManager.sharedManager.loginButtonDidLogOut(loginButton)
     }
     
     func signInButtonPressed() {

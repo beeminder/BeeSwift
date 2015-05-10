@@ -9,8 +9,10 @@
 import Foundation
 import MagicalRecord
 import AFNetworking
+import FBSDKLoginKit
+import TwitterKit
 
-class CurrentUserManager {
+class CurrentUserManager : NSObject, FBSDKLoginButtonDelegate, GIDSignInDelegate {
     
     private let accessTokenKey = "accessToken"
 
@@ -47,13 +49,33 @@ class CurrentUserManager {
     
     func signOut() {
         DataSyncManager.sharedManager.setLastSynced(nil)
-        LocalNotificationsManager.sharedManager.turnLocalNotificationsOff()
+        LocalNotificationsManager.sharedManager.turnNotificationsOff()
         NSUserDefaults.standardUserDefaults().removeObjectForKey(accessTokenKey)
         NSUserDefaults.standardUserDefaults().synchronize()
         for goal in Goal.MR_findAll() {
             goal.MR_deleteEntity()
         }
         NSManagedObjectContext.MR_defaultContext().save(nil)
+    }
+    
+    func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
+        //facebook
+    }
+    
+    func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
+        //facebook
+    }
+    
+    func loginWithTwitterSession(session: TWTRSession!, error: NSError!) {
+        
+    }
+    
+    func signIn(signIn: GIDSignIn!, didDisconnectWithUser user: GIDGoogleUser!, withError error: NSError!) {
+        //foo
+    }
+    
+    func signIn(signIn: GIDSignIn!, didSignInForUser user: GIDGoogleUser!, withError error: NSError!) {
+        //foo
     }
 
 }
