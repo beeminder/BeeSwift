@@ -22,7 +22,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         self.title = "Settings"
         self.view.backgroundColor = UIColor.whiteColor()
         
-        self.dataEntryReminderSwitch.addTarget(self, action: "dataEntryReminderSwitchChanged", forControlEvents: UIControlEvents.ValueChanged)
+        self.dataEntryReminderSwitch.addTarget(self, action: "dataEntryReminderSwitchChanged", forControlEvents: .ValueChanged)
         self.view.addSubview(self.dataEntryReminderSwitch)
         self.dataEntryReminderSwitch.on = LocalNotificationsManager.sharedManager.on()
         self.dataEntryReminderSwitch.snp_makeConstraints { (make) -> Void in
@@ -60,6 +60,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         }
         
         self.view.addSubview(self.emergencyRemindersSwitch)
+        self.emergencyRemindersSwitch.addTarget(self, action: "emergencyRemindersSwitchChanged", forControlEvents: .ValueChanged)
         self.emergencyRemindersSwitch.snp_makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.dataEntryReminderSwitch)
             make.top.equalTo(self.timePickerContainerView.snp_bottom).offset(20)
@@ -176,6 +177,15 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
             LocalNotificationsManager.sharedManager.turnNotificationsOff()
         }
         self.updateDataEntryReminderLabel()
+    }
+    
+    func emergencyRemindersSwitchChanged() {
+        if self.emergencyRemindersSwitch.on {
+            RemoteNotificationsManager.sharedManager.turnNotificationsOn()
+        }
+        else {
+            RemoteNotificationsManager.sharedManager.turnNotificationsOff()
+        }
     }
     
     func use24HourTime() -> Bool {

@@ -15,6 +15,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     var deltasLabel :BSLabel = BSLabel()
     var countdownView :UIView = UIView()
     var countdownLabel :BSLabel = BSLabel()
+    let margin = 8
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -28,35 +29,13 @@ class GoalCollectionViewCell: UICollectionViewCell {
         
         self.titleLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
         self.titleLabel.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(8)
+            make.left.equalTo(self.margin)
             make.top.equalTo(10)
-        }
-
-        self.thumbnailImageView.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(8)
-            make.top.equalTo(self.titleLabel.snp_bottom).offset(5)
-            make.height.equalTo(70)
-            make.width.equalTo(106)
-        }
-        
-        self.rateLabel.textAlignment = NSTextAlignment.Center
-        self.rateLabel.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(self.thumbnailImageView.snp_right).offset(5)
-            make.top.equalTo(self.thumbnailImageView)
-            make.right.equalTo(self.countdownView.snp_left).offset(-5)
-        }
-
-        self.deltasLabel.textAlignment = NSTextAlignment.Center
-        self.deltasLabel.font = UIFont(name: "Avenir-Black", size: 13)
-        self.deltasLabel.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(self.rateLabel)
-            make.top.equalTo(self.rateLabel.snp_bottom).offset(10)
-            make.right.equalTo(self.rateLabel)
         }
         
         self.countdownView.snp_makeConstraints { (make) -> Void in
-            make.right.equalTo(0)
-            make.top.equalTo(self.thumbnailImageView)
+            make.left.equalTo(8)
+            make.top.equalTo(self.titleLabel.snp_bottom).offset(5)
             make.bottom.equalTo(self.thumbnailImageView)
             make.width.equalTo(75)
         }
@@ -66,6 +45,29 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.countdownLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
         self.countdownLabel.snp_makeConstraints { (make) -> Void in
             make.center.equalTo(self.countdownView)
+        }
+
+        self.thumbnailImageView.snp_makeConstraints { (make) -> Void in
+            make.centerX.equalTo(0)
+            make.top.equalTo(self.countdownView)
+            make.height.equalTo(70)
+            make.width.equalTo(106)
+        }
+        
+        self.rateLabel.textAlignment = NSTextAlignment.Center
+        self.rateLabel.snp_makeConstraints { (make) -> Void in
+            make.left.equalTo(self.thumbnailImageView.snp_right).offset(5)
+            make.bottom.equalTo(self.thumbnailImageView.snp_centerY)
+            make.right.equalTo(-self.margin)
+        }
+
+        self.deltasLabel.textAlignment = NSTextAlignment.Center
+        self.deltasLabel.font = UIFont(name: "Avenir-Black", size: 13)
+        self.deltasLabel.numberOfLines = 0
+        self.deltasLabel.snp_makeConstraints { (make) -> Void in
+            make.left.equalTo(self.rateLabel)
+            make.top.equalTo(self.thumbnailImageView.snp_centerY)
+            make.right.equalTo(self.rateLabel)
         }
     }
 
@@ -81,6 +83,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     {
         didSet {
             self.titleLabel.text = goal!.title
+            self.thumbnailImageView.image = nil
             self.thumbnailImageView.setImageWithURL(NSURL(string: goal!.cacheBustingThumbUrl))
             self.rateLabel.text = goal!.rateString
             self.deltasLabel.attributedText = goal!.attributedDeltaText

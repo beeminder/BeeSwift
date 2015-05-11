@@ -29,14 +29,12 @@ class RemoteNotificationsManager {
     }
     
     func handleDeviceToken(deviceToken: NSData) {
-        var deviceTokenString = deviceToken.description.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "<>"))
+        var deviceTokenString = NSString(data: deviceToken, encoding: NSUTF8StringEncoding)!.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "<>"))
         deviceTokenString = deviceTokenString.stringByReplacingOccurrencesOfString(" ", withString: "", options: nil, range: nil)
         
-        let manager = AFHTTPRequestOperationManager()
-        manager.responseSerializer = AFJSONResponseSerializer()
-        manager.POST("https://www.beeminder.com/api/v1/", parameters: ["device_token": "foo"], success: { (request, responseObject) -> Void in
+        BSHTTPSessionManager.sharedManager.signedPOST("/api/private/device_tokens", parameters: ["device_token" : deviceTokenString], success: { (dataTask, responseObject) -> Void in
             //foo
-        }) { (request, error) -> Void in
+        }) { (dataTask, error) -> Void in
             //bar
         }
     }
@@ -44,24 +42,5 @@ class RemoteNotificationsManager {
     func handleRegistrationFailure(error: NSError) {
         
     }
-    
-//    func hmacSha1SignatureForBaseString(baseString: NSString, andKey key: NSString) {
-//        cKey :const char = key.cStringUsingEncoding(NSASCIIStringEncoding)
-//        cData :const char = baseString.cStringUsingEncoding(NSASCIIStringEncoding)
-//        
-//        var foo :NSString
-//    }
-    
-//    + (NSString *)hmacSha1SignatureForBaseString:(NSString *)baseString andKey:(NSString *)key
-//    {
-//    const char *cKey  = [key cStringUsingEncoding:NSASCIIStringEncoding];
-//    const char *cData = [baseString cStringUsingEncoding:NSASCIIStringEncoding];
-//    unsigned char cHMAC[CC_SHA1_DIGEST_LENGTH];
-//    
-//    CCHmac(kCCHmacAlgSHA1, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
-//    
-//    NSData *HMAC = [[NSData alloc] initWithBytes:cHMAC length:sizeof(cHMAC)];
-//    return [NSString base64StringFromData:HMAC length:HMAC.length];
-//    }
 
 }
