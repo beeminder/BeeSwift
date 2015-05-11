@@ -69,8 +69,10 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         let emergencyRemindersLabel = BSLabel()
         self.view.addSubview(emergencyRemindersLabel)
         emergencyRemindersLabel.text = "Goal notifications"
+        emergencyRemindersLabel.font = self.dataEntryReminderLabel.font!
         emergencyRemindersLabel.snp_makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.emergencyRemindersSwitch)
+            make.left.equalTo(self.dataEntryReminderLabel)
         }
         
         var signOutButton = BSButton()
