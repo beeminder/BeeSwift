@@ -11,16 +11,20 @@ import AFNetworking
 import SwiftyJSON
 import MagicalRecord
 
-class DataSyncManager {
+class DataSyncManager :NSObject {
 
     var isFetching = false
     private let lastSyncedKey = "lastSynced"
 
-    class var sharedManager :DataSyncManager {
-        struct Manager {
-            static let sharedManager = DataSyncManager()
-        }
-        return Manager.sharedManager
+    static let sharedManager = DataSyncManager()
+
+    required override init() {
+        super.init()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleUserSignoutNotification", name: CurrentUserManager.signedOutNotificationName, object: nil)
+    }
+    
+    func handleUserSignoutNotification() {
+        self.setLastSynced(nil)
     }
     
     var lastSynced :NSDate? {
@@ -38,7 +42,7 @@ class DataSyncManager {
     }
     
     func fetchData(success: (()->Void)!, error: (()->Void)!) {
-        if self.isFetching || CurrentUserManager.sharedManager.accessToken == nil {
+        if self.isFetching || !CurrentUserManager.sharedManager.signedIn() {
             return
         }
         

@@ -28,13 +28,20 @@ extension Goal {
         goal.panic = json["panic"].number!
         goal.losedate = json["losedate"].number!
         goal.runits = json["runits"].string!
-        goal.rate = json["rate"].number!
+        if json["rate"].number != nil { goal.rate = json["rate"].number! }
         goal.graph_url = json["graph_url"].string!
         goal.thumb_url = json["thumb_url"].string!
         goal.delta_text = json["delta_text"].string!
         goal.won = json["won"].number!
         goal.lane = json["lane"].number!
         goal.yaw = json["yaw"].number!
+
+        var newDatapoints = json["datapoints"].array!
+        for datapointJSON in newDatapoints {
+            var datapoint = Datapoint.crupdateWithJSON(datapointJSON)
+            datapoint.goal = goal
+        }
+
         NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion(nil)
     }
     
@@ -67,7 +74,7 @@ extension Goal {
         else if losedateDate.timeIntervalSinceNow < 7*24*60*60 {
             let dateFormatter = NSDateFormatter()
             let calendar = NSCalendar.currentCalendar()
-            let hour = calendar.component(NSCalendarUnit.HourCalendarUnit, fromDate: losedateDate)
+            let hour = calendar.component(.CalendarUnitHour, fromDate: losedateDate)
             if hour < 6 {
                 losedateDate = losedateDate.dateByAddingTimeInterval(Double(-(hour + 1)*3600))
             }
@@ -156,5 +163,10 @@ extension Goal {
         }
         
         return "week"
+    }
+    
+    func orderedDatapoints() -> [Datapoint] {
+        var points : [Datapoint] = self.datapoints.allObjects as! [Datapoint]
+        return points.sorted({ $0.timestamp < $1.timestamp })
     }
 }

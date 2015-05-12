@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7549" systemVersion="14D105g" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Datapoint" representedClassName="Datapoint" syncable="YES">
+        <attribute name="canonical" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="comment" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="requestid" optional="YES" attributeType="String" syncable="YES"/>
@@ -26,7 +27,7 @@
         <relationship name="datapoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Datapoint" inverseName="goal" inverseEntity="Datapoint" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Datapoint" positionX="-54" positionY="9" width="128" height="150"/>
+        <element name="Datapoint" positionX="-54" positionY="9" width="128" height="165"/>
         <element name="Goal" positionX="-63" positionY="-18" width="128" height="255"/>
     </elements>
 </model>

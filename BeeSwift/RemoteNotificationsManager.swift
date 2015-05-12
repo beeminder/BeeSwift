@@ -9,23 +9,30 @@
 import Foundation
 import AFNetworking
 
-class RemoteNotificationsManager {
+class RemoteNotificationsManager :NSObject {
     
-    class var sharedManager :RemoteNotificationsManager {
-        struct Manager {
-            static let sharedManager = RemoteNotificationsManager()
+    static let sharedManager = RemoteNotificationsManager()
+    
+    private func remoteNotificationsOnKey() -> String {
+        if CurrentUserManager.sharedManager.signedIn() {
+            return "\(CurrentUserManager.sharedManager.username!)-remoteNotificationsOn"
         }
-        return Manager.sharedManager
+        return "remoteNotificationsOn"
+    }
+    
+    func on() -> Bool {
+        return NSUserDefaults.standardUserDefaults().objectForKey(self.remoteNotificationsOnKey()) != nil
     }
     
     func turnNotificationsOn() {
         UIApplication.sharedApplication().registerForRemoteNotifications()
-        
-        
+        NSUserDefaults.standardUserDefaults().setBool(true, forKey: self.remoteNotificationsOnKey())
+        NSUserDefaults.standardUserDefaults().synchronize()
     }
     
     func turnNotificationsOff() {
-        
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(self.remoteNotificationsOnKey())
+        NSUserDefaults.standardUserDefaults().synchronize()
     }
     
     func handleDeviceToken(deviceToken: NSData) {
@@ -40,7 +47,7 @@ class RemoteNotificationsManager {
     }
     
     func handleRegistrationFailure(error: NSError) {
-        
+        self.turnNotificationsOff()
     }
 
 }

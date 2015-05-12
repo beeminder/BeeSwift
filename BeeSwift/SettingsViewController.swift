@@ -61,6 +61,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         
         self.view.addSubview(self.emergencyRemindersSwitch)
         self.emergencyRemindersSwitch.addTarget(self, action: "emergencyRemindersSwitchChanged", forControlEvents: .ValueChanged)
+        self.emergencyRemindersSwitch.on = RemoteNotificationsManager.sharedManager.on()
         self.emergencyRemindersSwitch.snp_makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.dataEntryReminderSwitch)
             make.top.equalTo(self.timePickerContainerView.snp_bottom).offset(20)
@@ -68,7 +69,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         
         let emergencyRemindersLabel = BSLabel()
         self.view.addSubview(emergencyRemindersLabel)
-        emergencyRemindersLabel.text = "Goal notifications"
+        emergencyRemindersLabel.text = "Goal emergency notifications"
         emergencyRemindersLabel.font = self.dataEntryReminderLabel.font!
         emergencyRemindersLabel.snp_makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.emergencyRemindersSwitch)
@@ -204,7 +205,10 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         let label = BSLabel()
         view.addSubview(label)
         label.snp_makeConstraints { (make) -> Void in
-            make.edges.equalTo(view)
+            make.top.equalTo(0)
+            make.bottom.equalTo(0)
+            make.left.equalTo(10)
+            make.right.equalTo(-10)
         }
         label.font = UIFont(name: "Avenir", size: 17)
         
@@ -213,11 +217,15 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         
         if (component == 2) {
             text = row == 0 ? "AM" : "PM"
-            alignment = NSTextAlignment.Left
+            alignment = .Left
         }
         else if (component == 1) {
             text = row < 10 ? "0\(row)" : "\(row)"
-            alignment = NSTextAlignment.Center
+            if self.use24HourTime() {
+                alignment = .Left
+            } else {
+                alignment = .Center
+            }
         }
         else {
             if (!self.use24HourTime() && row == 0) {
@@ -226,7 +234,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
             else {
                 text = "\(row)"
             }
-            alignment = NSTextAlignment.Right
+            alignment = .Right
         }
         
         label.text = text

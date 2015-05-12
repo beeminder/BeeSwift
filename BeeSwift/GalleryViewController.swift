@@ -24,10 +24,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleSignIn", name: CurrentUserManager.signedInNotificationName, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleSignOut", name: CurrentUserManager.signedOutNotificationName, object: nil)
+        
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
         self.collectionView?.backgroundColor = UIColor.whiteColor()
-        
+        self.collectionView?.registerClass(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: "footer")
         self.view.backgroundColor = UIColor.whiteColor()
         self.title = "Goals"
         
@@ -79,7 +82,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(animated: Bool) {
-        if CurrentUserManager.sharedManager.accessToken == nil {
+        if !CurrentUserManager.sharedManager.signedIn() {
             self.presentViewController(SignInViewController(), animated: true, completion: nil)
         }
         else {
@@ -89,6 +92,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func settingsButtonPressed() {
         self.navigationController?.pushViewController(SettingsViewController(), animated: true)
+    }
+    
+    func handleSignIn() {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func handleSignOut() {
+        self.frontburnerGoals = []
+        self.backburnerGoals = []
+        self.collectionView?.reloadData()
     }
     
     func updateLastUpdatedLabel() {
@@ -162,6 +175,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         cell.goal = goal
         
         return cell
+    }
+    
+    func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+        if kind == UICollectionElementKindSectionFooter {
+            var footer = self.collectionView?.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionFooter, withReuseIdentifier: "footer", forIndexPath: indexPath) as! UICollectionReusableView
+            footer.backgroundColor = UIColor.beeGrayColor()
+            return footer
+        }
+        return UICollectionReusableView()
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        return CGSizeMake(320, section == 0 ? 5 : 0)
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {

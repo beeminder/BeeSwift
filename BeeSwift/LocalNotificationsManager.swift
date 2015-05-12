@@ -8,20 +8,48 @@
 
 import Foundation
 
-class LocalNotificationsManager {
-    
-    private var hourKey = "hour"
-    private var minuteKey = "minute"
-    private var notificationsOnKey = "notificationsOn"
+class LocalNotificationsManager :NSObject {
     
     private var defaultHour = 21
     private var defaultMinute = 0
     
-    class var sharedManager :LocalNotificationsManager {
-        struct Manager {
-            static let sharedManager = LocalNotificationsManager()
+    static let sharedManager = LocalNotificationsManager()
+    
+    required override init() {
+        super.init()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleUserSignoutNotification", name: CurrentUserManager.signedOutNotificationName, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleUserSigninNotification", name: CurrentUserManager.signedInNotificationName, object: nil)
+    }
+    
+    private func hourKey() -> String {
+        if CurrentUserManager.sharedManager.signedIn() {
+            return "\(CurrentUserManager.sharedManager.username!)-hour"
         }
-        return Manager.sharedManager
+        return "hour"
+    }
+    
+    private func minuteKey() -> String {
+        if CurrentUserManager.sharedManager.signedIn() {
+            return "\(CurrentUserManager.sharedManager.username!)-minute"
+        }
+        return "minute"
+    }
+    
+    private func notificationsOnKey() -> String {
+        if CurrentUserManager.sharedManager.signedIn() {
+            return "\(CurrentUserManager.sharedManager.username!)-notificationsOn"
+        }
+        return "notificationsOn"
+    }
+    
+    func handleUserSignoutNotification() {
+        self.turnNotificationsOff()
+    }
+    
+    func handleUserSigninNotification() {
+        if self.on() {
+            self.scheduleNotifications()
+        }
     }
     
     func humanizedReminderTime() -> String {
@@ -36,20 +64,17 @@ class LocalNotificationsManager {
     }
     
     func on() -> Bool {
-        if NSUserDefaults.standardUserDefaults().objectForKey(notificationsOnKey) == nil {
-            return Bool(false)
-        }
-        return Bool(true)
+        return NSUserDefaults.standardUserDefaults().objectForKey(self.notificationsOnKey()) != nil
     }
     
     func turnNotificationsOff() {
-        NSUserDefaults.standardUserDefaults().removeObjectForKey(notificationsOnKey)
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(self.notificationsOnKey())
         NSUserDefaults.standardUserDefaults().synchronize()
         UIApplication.sharedApplication().cancelAllLocalNotifications()
     }
     
     func turnNotificationsOn() {
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: notificationsOnKey)
+        NSUserDefaults.standardUserDefaults().setBool(true, forKey: self.notificationsOnKey())
         NSUserDefaults.standardUserDefaults().synchronize()
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: UIUserNotificationType.Sound | UIUserNotificationType.Alert | UIUserNotificationType.Badge, categories: nil))
@@ -57,8 +82,8 @@ class LocalNotificationsManager {
     }
     
     func setReminder(hour: NSNumber, minute: NSNumber) {
-        NSUserDefaults.standardUserDefaults().setObject(hour, forKey: hourKey)
-        NSUserDefaults.standardUserDefaults().setObject(minute, forKey: minuteKey)
+        NSUserDefaults.standardUserDefaults().setObject(hour, forKey: self.hourKey())
+        NSUserDefaults.standardUserDefaults().setObject(minute, forKey: self.minuteKey())
         NSUserDefaults.standardUserDefaults().synchronize()
         self.scheduleNotifications()
     }
@@ -81,7 +106,7 @@ class LocalNotificationsManager {
     }
     
     func reminderTimeHour() -> NSNumber {
-        let storedHour: AnyObject? = NSUserDefaults.standardUserDefaults().objectForKey(hourKey)
+        let storedHour: AnyObject? = NSUserDefaults.standardUserDefaults().objectForKey(self.hourKey())
         if storedHour != nil {
             return storedHour as! NSNumber
         }
@@ -89,7 +114,7 @@ class LocalNotificationsManager {
     }
     
     func reminderTimeMinute() -> NSNumber {
-        let storedMinute: AnyObject? = NSUserDefaults.standardUserDefaults().objectForKey(minuteKey)
+        let storedMinute: AnyObject? = NSUserDefaults.standardUserDefaults().objectForKey(self.minuteKey())
         if storedMinute != nil {
             return storedMinute as! NSNumber
         }

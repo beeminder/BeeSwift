@@ -10,13 +10,14 @@ import Foundation
 import TwitterKit
 import FBSDKLoginKit
 
-class SignInViewController : UIViewController, FBSDKLoginButtonDelegate {
+class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextFieldDelegate {
     
     var signInLabel :BSLabel = BSLabel()
     var emailTextField :UITextField = UITextField()
     var passwordTextField :UITextField = UITextField()
     
     override func viewDidLoad() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleFailedSignIn:", name: CurrentUserManager.failedSignInNotificationName, object: nil)
         self.view.backgroundColor = UIColor.whiteColor()
         
         let scrollView = UIScrollView()
@@ -43,6 +44,8 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate {
         self.emailTextField.textAlignment = NSTextAlignment.Center
         self.emailTextField.font = UIFont(name: "Avenir", size: 20)
         self.emailTextField.keyboardType = UIKeyboardType.EmailAddress
+        self.emailTextField.returnKeyType = .Next
+        self.emailTextField.delegate = self
         self.emailTextField.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.signInLabel.snp_bottom).offset(20)
             make.centerX.equalTo(0)
@@ -58,6 +61,8 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate {
         self.passwordTextField.textAlignment = NSTextAlignment.Center
         self.passwordTextField.font = UIFont(name: "Avenir", size: 20)
         self.passwordTextField.secureTextEntry = true
+        self.passwordTextField.returnKeyType = .Done
+        self.passwordTextField.delegate = self
         self.passwordTextField.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.emailTextField.snp_bottom).offset(20)
             make.centerX.equalTo(self.emailTextField)
@@ -91,7 +96,12 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate {
 
         let twitterLoginButton = TWTRLogInButton(logInCompletion: {
             (session: TWTRSession!, error: NSError!) in
-            CurrentUserManager.sharedManager.loginWithTwitterSession(session, error: error)
+            if error == nil {
+                CurrentUserManager.sharedManager.loginWithTwitterSession(session)
+            }
+            else {
+                // show error
+            }
         })
         scrollView.addSubview(twitterLoginButton)
         twitterLoginButton.snp_makeConstraints { (make) -> Void in
@@ -132,12 +142,23 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate {
         CurrentUserManager.sharedManager.loginButtonDidLogOut(loginButton)
     }
     
+    func handleFailedSignIn(notification : NSNotification) {
+//        notification.userInfo["error"]
+        UIAlertView(title: "Could not sign in", message: "Invalid credentials", delegate: self, cancelButtonTitle: "OK").show()
+    }
+    
     func signInButtonPressed() {
-        CurrentUserManager.sharedManager.signInWithEmail(self.emailTextField.text, password: self.passwordTextField.text, success: { () -> Void in
-            self.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
-            }) { (message: String) -> Void in
-            println(message)
+        CurrentUserManager.sharedManager.signInWithEmail(self.emailTextField.text, password: self.passwordTextField.text)
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        if textField.isEqual(self.emailTextField) {
+            self.passwordTextField.becomeFirstResponder()
         }
+        else if textField.isEqual(self.passwordTextField) {
+            self.signInButtonPressed()
+        }
+        return true
     }
     
 }
