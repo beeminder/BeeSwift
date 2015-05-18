@@ -12,6 +12,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <GoogleSignIn/GoogleSignIn.h>
+#import "TPKeyboardAvoiding/TPKeyboardAvoidingScrollView.h"
 
 #ifndef BeeSwift_BeeSwift_Bridge_h
 #define BeeSwift_BeeSwift_Bridge_h

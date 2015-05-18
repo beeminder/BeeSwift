@@ -35,6 +35,8 @@ extension Goal {
         goal.won = json["won"].number!
         goal.lane = json["lane"].number!
         goal.yaw = json["yaw"].number!
+        var autodata : String? = json["autodata"].string
+        if autodata != nil { goal.autodata = autodata! } else { goal.autodata = "" }
 
         var newDatapoints = json["datapoints"].array!
         for datapointJSON in newDatapoints {
@@ -57,6 +59,13 @@ extension Goal {
             return "\(self.thumb_url)?t=\(NSDate().timeIntervalSince1970)"
         }
         return "\(self.thumb_url)&t=\(NSDate().timeIntervalSince1970)"
+    }
+    
+    var cacheBustingGraphUrl :String {
+        if self.graph_url.rangeOfString("&") == nil {
+            return "\(self.graph_url)?t=\(NSDate().timeIntervalSince1970)"
+        }
+        return "\(self.graph_url)&t=\(NSDate().timeIntervalSince1970)"
     }
     
     var briefLosedate :String {
@@ -169,4 +178,14 @@ extension Goal {
         var points : [Datapoint] = self.datapoints.allObjects as! [Datapoint]
         return points.sorted({ $0.timestamp < $1.timestamp })
     }
+    
+    func lastFiveDatapoints() -> [Datapoint] {
+        var allDatapoints = self.orderedDatapoints()
+        if count(allDatapoints) < 6 {
+            return allDatapoints
+        }
+        
+        return Array(allDatapoints[count(allDatapoints) - 5...count(allDatapoints)])
+    }
+    
 }

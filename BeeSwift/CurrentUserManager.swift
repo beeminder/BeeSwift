@@ -62,6 +62,9 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     func signOut() {
         NSUserDefaults.standardUserDefaults().removeObjectForKey(accessTokenKey)
         NSUserDefaults.standardUserDefaults().synchronize()
+        for datapoint in Datapoint.MR_findAll() {
+            datapoint.MR_deleteEntity()
+        }
         for goal in Goal.MR_findAll() {
             goal.MR_deleteEntity()
         }

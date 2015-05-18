@@ -50,8 +50,8 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.thumbnailImageView.snp_makeConstraints { (make) -> Void in
             make.centerX.equalTo(0)
             make.top.equalTo(self.countdownView)
-            make.height.equalTo(70)
-            make.width.equalTo(106)
+            make.height.equalTo(Constants.thumbnailHeight)
+            make.width.equalTo(Constants.thumbnailWidth)
         }
         
         self.rateLabel.textAlignment = NSTextAlignment.Center

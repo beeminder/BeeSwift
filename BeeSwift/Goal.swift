@@ -2,7 +2,7 @@
 //  Goal.swift
 //  BeeSwift
 //
-//  Created by Andy Brett on 4/26/15.
+//  Created by Andy Brett on 5/16/15.
 //  Copyright (c) 2015 APB. All rights reserved.
 //
 
@@ -12,6 +12,7 @@ import CoreData
 @objc(Goal)
 class Goal: NSManagedObject {
 
+    @NSManaged var autodata: String
     @NSManaged var burner: String
     @NSManaged var delta_text: String
     @NSManaged var graph_url: String

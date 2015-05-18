@@ -10,7 +10,7 @@ import Foundation
 import TwitterKit
 import FBSDKLoginKit
 
-class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextFieldDelegate {
+class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextFieldDelegate, UIAlertViewDelegate {
     
     var signInLabel :BSLabel = BSLabel()
     var emailTextField :UITextField = UITextField()
@@ -72,7 +72,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
         
         var signInButton = UIButton()
         scrollView.addSubview(signInButton)
-        signInButton.setTitle("Sign In", forState: UIControlState.Normal)
+        signInButton.setTitle("Sign In", forState: .Normal)
         signInButton.backgroundColor = UIColor.beeGrayColor()
         signInButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
         signInButton.titleLabel?.textColor = UIColor.whiteColor()
@@ -121,6 +121,9 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
             make.width.equalTo(signInButton)
             make.height.equalTo(signInButton)
         }
+        if FBSDKAccessToken.currentAccessToken() != nil {
+            FBSDKAccessToken.setCurrentAccessToken(nil)
+        }
         
         let googleSigninButton = GIDSignInButton()
         scrollView.addSubview(googleSigninButton)
@@ -130,6 +133,40 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
             make.width.equalTo(signInButton)
             make.height.equalTo(signInButton)
             make.bottom.equalTo(-20)
+        }
+        
+        let signUpDivider = UIView()
+        scrollView.addSubview(signUpDivider)
+        signUpDivider.backgroundColor = UIColor.beeGrayColor()
+        signUpDivider.snp_makeConstraints { (make) -> Void in
+            make.left.equalTo(signInButton)
+            make.right.equalTo(signInButton)
+            make.height.equalTo(1)
+            make.top.equalTo(googleSigninButton.snp_bottom).offset(20)
+        }
+        
+        let signUpButton = BSButton()
+        scrollView.addSubview(signUpButton)
+        signUpButton.setTitle("Sign Up", forState: .Normal)
+        signUpButton.backgroundColor = UIColor.beeGrayColor()
+        signUpButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
+        signUpButton.titleLabel?.textColor = UIColor.whiteColor()
+        signUpButton.addTarget(self, action: "signUpButtonPressed", forControlEvents: UIControlEvents.TouchUpInside)
+        signUpButton.snp_makeConstraints { (make) -> Void in
+            make.left.equalTo(self.passwordTextField)
+            make.right.equalTo(self.passwordTextField)
+            make.top.equalTo(signUpDivider.snp_bottom).offset(20)
+            make.height.equalTo(44)
+        }
+    }
+    
+    func signUpButtonPressed() {
+        UIAlertView(title: "Open Safari?", message:"", delegate: self, cancelButtonTitle:"No", otherButtonTitles: "Yes").show()
+    }
+    
+    func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
+        if buttonIndex == 1 {
+            UIApplication.sharedApplication().openURL(NSURL(string: "https://www.beeminder.com")!)
         }
     }
     

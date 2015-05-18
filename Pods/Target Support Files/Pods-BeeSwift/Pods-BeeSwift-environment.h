@@ -114,3 +114,9 @@
 #define COCOAPODS_VERSION_MINOR_SwiftyJSON 2
 #define COCOAPODS_VERSION_PATCH_SwiftyJSON 0
 
+// TPKeyboardAvoiding
+#define COCOAPODS_POD_AVAILABLE_TPKeyboardAvoiding
+#define COCOAPODS_VERSION_MAJOR_TPKeyboardAvoiding 1
+#define COCOAPODS_VERSION_MINOR_TPKeyboardAvoiding 2
+#define COCOAPODS_VERSION_PATCH_TPKeyboardAvoiding 6
+

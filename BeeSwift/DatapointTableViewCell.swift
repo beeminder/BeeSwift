@@ -30,6 +30,7 @@ class DatapointTableViewCell : UITableViewCell {
     }
     
     func setup() {
+        self.datapointLabel.font = UIFont(name: "Avenir", size: 14)
         self.datapointLabel.lineBreakMode = .ByTruncatingTail
         self.contentView.addSubview(self.datapointLabel)
         self.selectionStyle = .None

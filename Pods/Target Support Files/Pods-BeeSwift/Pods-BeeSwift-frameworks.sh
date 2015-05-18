@@ -55,6 +55,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework 'MagicalRecord.framework'
   install_framework 'SnapKit.framework'
   install_framework 'SwiftyJSON.framework'
+  install_framework 'TPKeyboardAvoiding.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'AFNetworking.framework'
@@ -64,4 +65,5 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'MagicalRecord.framework'
   install_framework 'SnapKit.framework'
   install_framework 'SwiftyJSON.framework'
+  install_framework 'TPKeyboardAvoiding.framework'
 fi
