@@ -137,8 +137,15 @@ class GoalCollectionViewCell: UICollectionViewCell {
             goal?.addObserver(self, forKeyPath: "delta_text", options: .allZeros, context: nil)
             self.thumbnailImageView.image = nil
             self.setThumbnailImage()
-            self.countdownLabel.text = goal!.briefLosedate
-            self.countdownView.backgroundColor = goal!.countdownColor
+
+            if DataSyncManager.sharedManager.isFetching {
+                self.countdownLabel.text = ""
+                self.countdownView.backgroundColor = UIColor.beeGrayColor()
+            } else {
+                self.countdownLabel.text = goal!.briefLosedate
+                self.countdownView.backgroundColor = goal!.countdownColor
+            }
+
             self.titleLabel.text = goal!.title
             self.rateLabel.text = goal!.rateString
             self.deltasLabel.attributedText = goal!.attributedDeltaText
