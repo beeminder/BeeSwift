@@ -45,6 +45,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.backgroundColor = UIColor.whiteColor()
         self.title = self.goal.title
         
+        // have to set these before the datapoints since setting the most recent datapoint updates the text field,
+        // which in turn updates the stepper
+        self.valueStepper.minimumValue = -10000000
+        self.valueStepper.maximumValue = 1000000
+        self.dateStepper.minimumValue = -365
+        self.dateStepper.maximumValue = 365
+        
         self.datapoints = NSMutableArray(array: self.goal.lastFiveDatapoints())
         
         self.view.addSubview(self.scrollView)
@@ -112,7 +119,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.height.equalTo(self.goalImageScrollView.snp_width).multipliedBy(Float(Constants.graphHeight)/Float(Constants.graphWidth))
         }
         
-        self.goalImageView = UIImageView()
         self.goalImageScrollView.addSubview(self.goalImageView)
         let tapGR = UITapGestureRecognizer(target: self, action: "goalImageTapped")
         tapGR.numberOfTapsRequired = 2
@@ -216,8 +222,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         self.dateStepper.tintColor = UIColor.beeGrayColor()
-        self.dateStepper.minimumValue = -365
-        self.dateStepper.maximumValue = 365
         dataEntryView.addSubview(self.dateStepper)
         self.dateStepper.addTarget(self, action: "dateStepperValueChanged", forControlEvents: .ValueChanged)
         self.dateStepper.value = 0
@@ -243,8 +247,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.valueStepper.tintColor = UIColor.beeGrayColor()
         dataEntryView.addSubview(self.valueStepper)
-        self.valueStepper.minimumValue = -10000000
-        self.valueStepper.maximumValue = 1000000
         self.valueStepper.addTarget(self, action: "valueStepperValueChanged", forControlEvents: .ValueChanged)
         self.valueStepper.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.dateStepper)
