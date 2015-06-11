@@ -90,8 +90,10 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
         for goal in Goal.MR_findAll() {
             goal.MR_deleteEntity()
         }
-        NSManagedObjectContext.MR_defaultContext().save(nil)
-        NSNotificationCenter.defaultCenter().postNotificationName(CurrentUserManager.signedOutNotificationName, object: self)
+        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success: Bool, error: NSError!) -> Void in
+            NSNotificationCenter.defaultCenter().postNotificationName(CurrentUserManager.signedOutNotificationName, object: self)
+        }
+
     }
     
     func signInWithOAuthUserId(userId: String, provider: String) {
