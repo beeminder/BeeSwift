@@ -77,7 +77,7 @@ class LocalNotificationsManager :NSObject {
         NSUserDefaults.standardUserDefaults().setBool(true, forKey: self.notificationsOnKey())
         NSUserDefaults.standardUserDefaults().synchronize()
         UIApplication.sharedApplication().cancelAllLocalNotifications()
-        UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: UIUserNotificationType.Sound | UIUserNotificationType.Alert | UIUserNotificationType.Badge, categories: nil))
+        UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: .Sound | .Alert | .Badge, categories: nil))
         self.scheduleNotifications()
     }
     

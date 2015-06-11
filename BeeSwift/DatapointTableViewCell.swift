@@ -30,13 +30,13 @@ class DatapointTableViewCell : UITableViewCell {
     }
     
     func setup() {
-        self.datapointLabel.font = UIFont(name: "Avenir", size: 14)
+        self.datapointLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
         self.datapointLabel.lineBreakMode = .ByTruncatingTail
         self.contentView.addSubview(self.datapointLabel)
         self.selectionStyle = .None
         self.datapointLabel.snp_makeConstraints({ (make) -> Void in
-            make.left.equalTo(0)
-            make.right.equalTo(0)
+            make.left.equalTo(5)
+            make.right.equalTo(-5)
             make.centerY.equalTo(0)
         })
     }

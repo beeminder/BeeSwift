@@ -10,16 +10,19 @@ import Foundation
 import MagicalRecord
 import AFNetworking
 import FBSDKLoginKit
+import SwiftyJSON
 import TwitterKit
 
 class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate {
     
     static let sharedManager = CurrentUserManager()
     static let signedInNotificationName     = "com.beeminder.signedInNotification"
+    static let willSignOutNotificationName     = "com.beeminder.willSignOutNotification"
     static let failedSignInNotificationName = "com.beeminder.failedSignInNotification"
     static let signedOutNotificationName    = "com.beeminder.signedOutNotification"
     private let accessTokenKey = "access_token"
     private let usernameKey = "username"
+    private let deadbeatKey = "deadbeat"
     private let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
     
     var accessToken :String? {
@@ -34,6 +37,19 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
         return self.accessToken != nil && self.username != nil
     }
     
+    func isDeadbeat() -> Bool {
+        return NSUserDefaults.standardUserDefaults().objectForKey(deadbeatKey) != nil
+    }
+    
+    func setDeatbeat(deadbeat: Bool) {
+        if deadbeat {
+            NSUserDefaults.standardUserDefaults().setObject(true, forKey: deadbeatKey)
+        } else {
+            NSUserDefaults.standardUserDefaults().removeObjectForKey(deadbeatKey)
+        }
+        NSUserDefaults.standardUserDefaults().synchronize()
+    }
+    
     func setAccessToken(accessToken: String) {
         NSUserDefaults.standardUserDefaults().setObject(accessToken, forKey: accessTokenKey)
         NSUserDefaults.standardUserDefaults().synchronize()
@@ -41,15 +57,18 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     
     func signInWithEmail(email: String, password: String) {
         BSHTTPSessionManager.sharedManager.POST("/api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret], success: { (dataTask, responseObject) -> Void in
-            self.handleSuccessfulSignin(responseObject)
+            self.handleSuccessfulSignin(JSON(responseObject))
         }) { (dataTask, responseError) -> Void in
             self.handleFailedSignin(responseError)
             }
     }
     
-    func handleSuccessfulSignin(responseObject: AnyObject) {
-        NSUserDefaults.standardUserDefaults().setObject(responseObject[accessTokenKey] as! String, forKey: accessTokenKey)
-        NSUserDefaults.standardUserDefaults().setObject(responseObject[usernameKey] as! String, forKey: usernameKey)
+    func handleSuccessfulSignin(responseJSON: JSON) {
+        if responseJSON["deadbeat"].boolValue {
+            self.setDeatbeat(true)
+        }
+        NSUserDefaults.standardUserDefaults().setObject(responseJSON[accessTokenKey].string!, forKey: accessTokenKey)
+        NSUserDefaults.standardUserDefaults().setObject(responseJSON[usernameKey].string!, forKey: usernameKey)
         NSUserDefaults.standardUserDefaults().synchronize()
         NSNotificationCenter.defaultCenter().postNotificationName(CurrentUserManager.signedInNotificationName, object: self)
     }
@@ -60,7 +79,10 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     }
     
     func signOut() {
+        NSNotificationCenter.defaultCenter().postNotificationName(CurrentUserManager.willSignOutNotificationName, object: self)
         NSUserDefaults.standardUserDefaults().removeObjectForKey(accessTokenKey)
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(deadbeatKey)
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(usernameKey)
         NSUserDefaults.standardUserDefaults().synchronize()
         for datapoint in Datapoint.MR_findAll() {
             datapoint.MR_deleteEntity()
@@ -73,9 +95,9 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     }
     
     func signInWithOAuthUserId(userId: String, provider: String) {
-        BSHTTPSessionManager.sharedManager.signedPOST("/api/private/sign_in", parameters: ["oauth_user_id" : userId, "provider" : provider], success: { (dataTask, responseObject) -> Void in
-            self.handleSuccessfulSignin(responseObject)
-            }) { (dataTask, responseError) -> Void in
+        BSHTTPSessionManager.sharedManager.signedPOST("/api/private/sign_in", parameters: ["oauth_user_id": userId, "provider": provider], success: { (dataTask, responseObject) -> Void in
+            self.handleSuccessfulSignin(JSON(responseObject))
+        }) { (dataTask, responseError) -> Void in
             self.handleFailedSignin(responseError)
         }
     }

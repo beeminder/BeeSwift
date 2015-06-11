@@ -69,6 +69,24 @@ class GoalCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(self.thumbnailImageView.snp_centerY)
             make.right.equalTo(self.rateLabel)
         }
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "willSignOutNotificationReceived", name: CurrentUserManager.willSignOutNotificationName, object: nil)
+    }
+    
+    func willSignOutNotificationReceived() {
+        self.removeAllObservers()
+    }
+    
+    func deadbeatChanged() {
+        self.setThumbnailImage()
+    }
+    
+    func setThumbnailImage() {
+        if CurrentUserManager.sharedManager.isDeadbeat() {
+            self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
+        } else {
+            self.thumbnailImageView.setImageWithURL(NSURL(string: goal!.cacheBustingThumbUrl), placeholderImage: UIImage(named: "ThumbnailPlaceholder"))
+        }
     }
 
     required init(coder aDecoder: NSCoder) {
@@ -79,16 +97,51 @@ class GoalCollectionViewCell: UICollectionViewCell {
         super.layoutSubviews()
     }
     
+    func removeAllObservers() {
+        self.goal?.removeObserver(self, forKeyPath: "thumb_url")
+        self.goal?.removeObserver(self, forKeyPath: "losedate")
+        self.goal?.removeObserver(self, forKeyPath: "lane")
+        self.goal?.removeObserver(self, forKeyPath: "rate")
+        self.goal?.removeObserver(self, forKeyPath: "title")
+        self.goal?.removeObserver(self, forKeyPath: "delta_text")
+    }
+    
+    deinit {
+        self.removeAllObservers()
+    }
+    
+    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+        if keyPath == "thumb_url" {
+            self.thumbnailImageView.image = nil
+            self.setThumbnailImage()
+        } else if keyPath == "losedate" || keyPath == "lane" {
+            self.countdownLabel.text = goal!.briefLosedate
+            self.countdownView.backgroundColor = goal!.countdownColor
+        } else if keyPath == "title" {
+            self.titleLabel.text = goal!.title
+        } else if keyPath == "rate" {
+            self.rateLabel.text = goal!.rateString
+        } else if keyPath == "delta_text" {
+            self.deltasLabel.attributedText = goal!.attributedDeltaText
+        }
+    }
+    
     var goal :Goal?
     {
         didSet {
-            self.titleLabel.text = goal!.title
+            goal?.addObserver(self, forKeyPath: "thumb_url", options: .allZeros, context: nil)
+            goal?.addObserver(self, forKeyPath: "losedate", options: .allZeros, context: nil)
+            goal?.addObserver(self, forKeyPath: "lane", options: .allZeros, context: nil)
+            goal?.addObserver(self, forKeyPath: "rate", options: .allZeros, context: nil)
+            goal?.addObserver(self, forKeyPath: "title", options: .allZeros, context: nil)
+            goal?.addObserver(self, forKeyPath: "delta_text", options: .allZeros, context: nil)
             self.thumbnailImageView.image = nil
-            self.thumbnailImageView.setImageWithURL(NSURL(string: goal!.cacheBustingThumbUrl))
-            self.rateLabel.text = goal!.rateString
-            self.deltasLabel.attributedText = goal!.attributedDeltaText
+            self.setThumbnailImage()
             self.countdownLabel.text = goal!.briefLosedate
             self.countdownView.backgroundColor = goal!.countdownColor
+            self.titleLabel.text = goal!.title
+            self.rateLabel.text = goal!.rateString
+            self.deltasLabel.attributedText = goal!.attributedDeltaText
         }
     }
 }

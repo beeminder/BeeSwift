@@ -90,6 +90,18 @@
 #define COCOAPODS_VERSION_MINOR_FBSDKLoginKit 1
 #define COCOAPODS_VERSION_PATCH_FBSDKLoginKit 0
 
+// IQKeyboardManager
+#define COCOAPODS_POD_AVAILABLE_IQKeyboardManager
+#define COCOAPODS_VERSION_MAJOR_IQKeyboardManager 3
+#define COCOAPODS_VERSION_MINOR_IQKeyboardManager 2
+#define COCOAPODS_VERSION_PATCH_IQKeyboardManager 3
+
+// MBProgressHUD
+#define COCOAPODS_POD_AVAILABLE_MBProgressHUD
+#define COCOAPODS_VERSION_MAJOR_MBProgressHUD 0
+#define COCOAPODS_VERSION_MINOR_MBProgressHUD 9
+#define COCOAPODS_VERSION_PATCH_MBProgressHUD 1
+
 // MagicalRecord
 #define COCOAPODS_POD_AVAILABLE_MagicalRecord
 #define COCOAPODS_VERSION_MAJOR_MagicalRecord 2
@@ -113,10 +125,4 @@
 #define COCOAPODS_VERSION_MAJOR_SwiftyJSON 2
 #define COCOAPODS_VERSION_MINOR_SwiftyJSON 2
 #define COCOAPODS_VERSION_PATCH_SwiftyJSON 0
-
-// TPKeyboardAvoiding
-#define COCOAPODS_POD_AVAILABLE_TPKeyboardAvoiding
-#define COCOAPODS_VERSION_MAJOR_TPKeyboardAvoiding 1
-#define COCOAPODS_VERSION_MINOR_TPKeyboardAvoiding 2
-#define COCOAPODS_VERSION_PATCH_TPKeyboardAvoiding 6
 

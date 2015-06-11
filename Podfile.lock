@@ -37,30 +37,33 @@ PODS:
     - FBSDKCoreKit/arc
   - FBSDKLoginKit (4.1.0):
     - FBSDKCoreKit
+  - IQKeyboardManager (3.2.3)
   - MagicalRecord (2.2):
     - MagicalRecord/Core (= 2.2)
   - MagicalRecord/Core (2.2)
+  - MBProgressHUD (0.9.1)
   - SnapKit (0.11.0)
   - SwiftyJSON (2.2.0)
-  - TPKeyboardAvoiding (1.2.6)
 
 DEPENDENCIES:
   - AFNetworking
   - FBSDKCoreKit
   - FBSDKLoginKit
+  - IQKeyboardManager
   - MagicalRecord
+  - MBProgressHUD
   - SnapKit
   - SwiftyJSON
-  - TPKeyboardAvoiding
 
 SPEC CHECKSUMS:
   AFNetworking: e1d86c2a96bb5d2e7408da36149806706ee122fe
   Bolts: aac24961496d504aa56fc267cde95162a71bac39
   FBSDKCoreKit: 469ed167195f860dbd2b4c4bbaa33d2e90598db9
   FBSDKLoginKit: ff6224762732e3698f30942e4544321b8c7a23e6
+  IQKeyboardManager: 6ca5c54e3776eb54af4c7caf515833f3cd761d59
   MagicalRecord: f8a56bb87ab6552f20c4bb8681a1958a197ea3cd
+  MBProgressHUD: c47f2c166c126cf2ce36498d80f33e754d4e93ad
   SnapKit: 5194d53cee209d337a989919ff66a70b7aa3dda3
   SwiftyJSON: 0b3e6c07af17ff745e77e8e9984097b55c956e5c
-  TPKeyboardAvoiding: ee4dd35e3bb7bb64bfbda47e7cc9ba872ff10f77
 
 COCOAPODS: 0.37.0.beta.1

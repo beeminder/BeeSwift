@@ -48,27 +48,33 @@ class DataSyncManager :NSObject {
         
         self.isFetching = true
         
-        let manager = AFHTTPRequestOperationManager()
-        manager.responseSerializer = AFJSONResponseSerializer()
-        
-        manager.GET("https://www.beeminder.com/api/v1/users/me.json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&associations=true&datapoints_count=5&diff_since=0", parameters: nil, success: { (operation: AFHTTPRequestOperation!, responseObject: AnyObject!) -> Void in
-                self.handleResponse(JSON(responseObject))
-                if (success != nil) { success() }
-                self.isFetching = false
-                self.setLastSynced(NSDate())
-            }) { (operation: AFHTTPRequestOperation!, responseObject: AnyObject!) -> Void in
-                if (error != nil) { error() }
-                self.isFetching = false                
+        BSHTTPSessionManager.sharedManager.GET("/api/v1/users/me.json", parameters: ["associations": true, "datapoints_count": 5, "diff_since": 0], success: { (dataTask, responseObject) -> Void in
+            self.handleResponse(JSON(responseObject), completion: success)
+            self.isFetching = false
+            self.setLastSynced(NSDate())
+        }) { (dataTask, responseError) -> Void in
+            if (error != nil) { error() }
+            self.isFetching = false
         }
     }
     
-    func handleResponse(json: JSON) {
-        for (key: String, valueJSON: JSON) in json {
-            if key == "goals" {
-                for (index: String, goalJSON: JSON) in valueJSON {
-                    Goal.crupdateWithJSON(goalJSON)
+    func handleResponse(json: JSON, completion: (()->Void)!) {
+        CurrentUserManager.sharedManager.setDeatbeat(json["deadbeat"].boolValue)
+        var goals = json["goals"].array!
+        for goalJSON in goals {
+            Goal.crupdateWithJSON(goalJSON)
+        }
+        var deletedGoals = json["deleted_goals"].array!
+        for goalJSON in deletedGoals {
+            if let goal = Goal.MR_findFirstByAttribute("id", withValue: goalJSON["id"].string!) as! Goal? {
+                for datapoint in goal.datapoints {
+                    datapoint.MR_deleteEntity()
                 }
+                goal.serverDeleted = true
             }
+        }
+        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success: Bool, error: NSError!) -> Void in
+            if completion != nil && error == nil { completion() }
         }
     }
     

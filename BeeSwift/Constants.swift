@@ -13,4 +13,5 @@ struct Constants {
     static let thumbnailHeight = 70
     static let graphWidth = 696
     static let graphHeight = 453
+    static let defaultFontSize = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGFloat(18) : CGFloat(14)
 }

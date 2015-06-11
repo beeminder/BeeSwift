@@ -1,6 +1,0 @@
-framework module TPKeyboardAvoiding {
-  umbrella header "Pods-BeeSwift-TPKeyboardAvoiding-umbrella.h"
-
-  export *
-  module * { export * }
-}

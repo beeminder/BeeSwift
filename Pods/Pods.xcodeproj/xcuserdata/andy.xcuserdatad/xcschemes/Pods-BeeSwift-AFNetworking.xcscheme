@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BD68B4EF997639C316538F24"
+               BlueprintIdentifier = "447DF8B1C27C1C2FBE85DF4D"
                BuildableName = "AFNetworking.framework"
                BlueprintName = "Pods-BeeSwift-AFNetworking"
                ReferencedContainer = "container:Pods.xcodeproj">

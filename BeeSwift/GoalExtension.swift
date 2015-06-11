@@ -23,28 +23,30 @@ extension Goal {
     
     class func updateGoal(goal :Goal, withJSON json :JSON) {
         goal.slug = json["slug"].string!
+        goal.id = json["id"].string!
         goal.title = json["title"].string!
         goal.burner = json["burner"].string!
         goal.panic = json["panic"].number!
         goal.losedate = json["losedate"].number!
         goal.runits = json["runits"].string!
         if json["rate"].number != nil { goal.rate = json["rate"].number! }
-        goal.graph_url = json["graph_url"].string!
-        goal.thumb_url = json["thumb_url"].string!
         goal.delta_text = json["delta_text"].string!
         goal.won = json["won"].number!
         goal.lane = json["lane"].number!
         goal.yaw = json["yaw"].number!
+        goal.pledge = json["pledge"].number!
         var autodata : String? = json["autodata"].string
         if autodata != nil { goal.autodata = autodata! } else { goal.autodata = "" }
 
-        var newDatapoints = json["datapoints"].array!
-        for datapointJSON in newDatapoints {
-            var datapoint = Datapoint.crupdateWithJSON(datapointJSON)
-            datapoint.goal = goal
+        if let newDatapoints = json["datapoints"].array {
+            for datapointJSON in newDatapoints {
+                var datapoint = Datapoint.crupdateWithJSON(datapointJSON)
+                datapoint.goal = goal
+            }
         }
-
-        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion(nil)
+        // these are last because other classes use KVO on them...hack.
+        goal.graph_url = json["graph_url"].string!
+        goal.thumb_url = json["thumb_url"].string!
     }
     
     var rateString :String {
@@ -94,6 +96,26 @@ extension Goal {
             return "∞"
         }
         return "\(Int(losedateDate.timeIntervalSinceNow/(24*60*60))) days"
+    }
+    
+    var countdownText :NSString {
+
+        var losedateDate = NSDate(timeIntervalSince1970: self.losedate.doubleValue)
+        var seconds = losedateDate.timeIntervalSinceNow
+        if seconds < 0 {
+            return self.won.boolValue ? "Success!" : "Lost!"
+        }
+        var hours = Int((seconds % (3600*24))/3600)
+        var minutes = Int((seconds % 3600)/60)
+        var leftoverSeconds = Int(seconds % 60)
+        var days = Int(seconds/(3600*24))
+        
+        if (days > 0) {
+            return NSString(format: "%id, %i:%02i:%02i", days, hours, minutes,leftoverSeconds)
+        }
+        else { // days == 0
+            return NSString(format: "%i:%02i:%02i", hours, minutes,leftoverSeconds)
+        }
     }
     
     var countdownColor :UIColor {
@@ -176,7 +198,12 @@ extension Goal {
     
     func orderedDatapoints() -> [Datapoint] {
         var points : [Datapoint] = self.datapoints.allObjects as! [Datapoint]
-        return points.sorted({ $0.timestamp < $1.timestamp })
+        return points.sorted({ (d1, d2) -> Bool in
+            if d1.timestamp == d2.timestamp {
+                return d1.updated_at < d2.updated_at
+            }
+            return d1.timestamp < d2.timestamp
+        })
     }
     
     func lastFiveDatapoints() -> [Datapoint] {
@@ -185,7 +212,7 @@ extension Goal {
             return allDatapoints
         }
         
-        return Array(allDatapoints[count(allDatapoints) - 5...count(allDatapoints)])
+        return Array(allDatapoints[(count(allDatapoints) - 5)...(count(allDatapoints) - 1)])
     }
     
 }

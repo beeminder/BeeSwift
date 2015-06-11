@@ -11,7 +11,8 @@ target 'BeeSwift' do
 	pod "SwiftyJSON"
 	pod "FBSDKCoreKit"
 	pod "FBSDKLoginKit"
-	pod "TPKeyboardAvoiding"
+	pod "MBProgressHUD"
+	pod 'IQKeyboardManager'
 end
 
 target 'BeeSwiftTests' do

@@ -10,13 +10,18 @@ import UIKit
 import AFNetworking
 import MagicalRecord
 import SnapKit
+import MBProgressHUD
 
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
+    
+    private var hasFetchedData = false
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewLayout?
     let lastUpdatedView = UIView()
     let lastUpdatedLabel = BSLabel()
     let cellReuseIdentifier = "Cell"
+    var refreshControl = UIRefreshControl()
+    var deadbeatView = UIView()
     
     var frontburnerGoals : [Goal] = []
     var backburnerGoals  : [Goal] = []
@@ -50,7 +55,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.lastUpdatedView.addSubview(self.lastUpdatedLabel)
         self.lastUpdatedLabel.text = "Last updated:"
-        self.lastUpdatedLabel.font = UIFont(name: "Avenir", size: 14)
+        self.lastUpdatedLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
         self.lastUpdatedLabel.textAlignment = NSTextAlignment.Center
         self.lastUpdatedLabel.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(3)
@@ -62,30 +67,56 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.updateLastUpdatedLabel()
         NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: "updateLastUpdatedLabel", userInfo: nil, repeats: true)
         
+        self.view.addSubview(self.deadbeatView)
+        self.deadbeatView.backgroundColor = UIColor.beeGrayColor()
+        self.deadbeatView.snp_makeConstraints { (make) -> Void in
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+            make.top.equalTo(self.lastUpdatedView.snp_bottom)
+            if !CurrentUserManager.sharedManager.isDeadbeat() {
+                make.height.equalTo(0)
+            }
+        }
+        
+        let deadbeatLabel = BSLabel()
+        self.deadbeatView.addSubview(deadbeatLabel)
+        deadbeatLabel.textColor = UIColor.redColor()
+        deadbeatLabel.numberOfLines = 0
+        deadbeatLabel.font = UIFont(name: "Avenir-Heavy", size: 13)
+        deadbeatLabel.text = "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
+        deadbeatLabel.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(3)
+            make.bottom.equalTo(-3)
+            make.left.equalTo(10)
+            make.right.equalTo(-10)
+        }
+        
         self.collectionView!.delegate = self
         self.collectionView!.dataSource = self
         self.collectionView!.registerClass(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
         self.view.addSubview(self.collectionView!)
         
-        var refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: "fetchData:", forControlEvents: UIControlEvents.ValueChanged)
-        self.collectionView!.addSubview(refreshControl)
+        self.refreshControl = UIRefreshControl()
+        self.refreshControl.addTarget(self, action: "fetchData:", forControlEvents: UIControlEvents.ValueChanged)
+        self.collectionView!.addSubview(self.refreshControl)
         
         self.collectionView!.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.lastUpdatedView.snp_bottom)
+            make.top.equalTo(self.deadbeatView.snp_bottom)
             make.left.equalTo(0)
             make.bottom.equalTo(0)
             make.right.equalTo(0)
         }
         
-        self.fetchData(refreshControl)
+        self.fetchData(self.refreshControl)
     }
     
     override func viewDidAppear(animated: Bool) {
         if !CurrentUserManager.sharedManager.signedIn() {
             self.presentViewController(SignInViewController(), animated: true, completion: nil)
         }
-        else {
+        else if !self.hasFetchedData && self.frontburnerGoals.count == 0 && self.backburnerGoals.count == 0 {
+            var hud = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+            hud.mode = .Indeterminate
             self.fetchData(nil)
         }
     }
@@ -102,6 +133,18 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.frontburnerGoals = []
         self.backburnerGoals = []
         self.collectionView?.reloadData()
+        self.hasFetchedData = false
+    }
+    
+    func updateDeadbeatHeight() {
+        self.deadbeatView.snp_remakeConstraints { (make) -> Void in
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+            make.top.equalTo(self.lastUpdatedView.snp_bottom)
+            if !CurrentUserManager.sharedManager.isDeadbeat() {
+                make.height.equalTo(0)
+            }
+        }
     }
     
     func updateLastUpdatedLabel() {
@@ -133,6 +176,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.loadGoalsFromDatabase()
             self.collectionView!.reloadData()
             self.updateLastUpdatedLabel()
+            self.updateDeadbeatHeight()
+            self.hasFetchedData = true
+            MBProgressHUD.hideAllHUDsForView(self.view, animated: true)
             if refreshControl != nil {
                 refreshControl!.endRefreshing()
             }
@@ -149,9 +195,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func loadGoalsFromDatabase() {
-        self.frontburnerGoals = Goal.MR_findByAttribute("burner", withValue: "frontburner") as! [Goal]
+        
+        self.frontburnerGoals = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "frontburner")) as! [Goal]
         self.frontburnerGoals = self.frontburnerGoals.sorted { ($0.losedate < $1.losedate) }
-        self.backburnerGoals  = Goal.MR_findByAttribute("burner", withValue: "backburner")  as! [Goal]
+        self.backburnerGoals  = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "backburner")) as! [Goal]
         self.backburnerGoals = self.backburnerGoals.sorted { ($0.losedate < $1.losedate) }
     }
     

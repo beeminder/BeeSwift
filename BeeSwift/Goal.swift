@@ -2,7 +2,7 @@
 //  Goal.swift
 //  BeeSwift
 //
-//  Created by Andy Brett on 5/16/15.
+//  Created by Andy Brett on 5/23/15.
 //  Copyright (c) 2015 APB. All rights reserved.
 //
 
@@ -26,6 +26,9 @@ class Goal: NSManagedObject {
     @NSManaged var title: String
     @NSManaged var won: NSNumber
     @NSManaged var yaw: NSNumber
+    @NSManaged var pledge: NSNumber
+    @NSManaged var id: String
+    @NSManaged var serverDeleted: NSNumber
     @NSManaged var datapoints: NSSet
 
 }

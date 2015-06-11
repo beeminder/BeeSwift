@@ -52,18 +52,20 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework 'Bolts.framework'
   install_framework 'FBSDKCoreKit.framework'
   install_framework 'FBSDKLoginKit.framework'
+  install_framework 'IQKeyboardManager.framework'
+  install_framework 'MBProgressHUD.framework'
   install_framework 'MagicalRecord.framework'
   install_framework 'SnapKit.framework'
   install_framework 'SwiftyJSON.framework'
-  install_framework 'TPKeyboardAvoiding.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'AFNetworking.framework'
   install_framework 'Bolts.framework'
   install_framework 'FBSDKCoreKit.framework'
   install_framework 'FBSDKLoginKit.framework'
+  install_framework 'IQKeyboardManager.framework'
+  install_framework 'MBProgressHUD.framework'
   install_framework 'MagicalRecord.framework'
   install_framework 'SnapKit.framework'
   install_framework 'SwiftyJSON.framework'
-  install_framework 'TPKeyboardAvoiding.framework'
 fi

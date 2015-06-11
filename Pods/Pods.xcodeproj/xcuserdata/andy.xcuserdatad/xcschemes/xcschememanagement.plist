@@ -24,6 +24,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Pods-BeeSwift-IQKeyboardManager.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-BeeSwift-MBProgressHUD.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-BeeSwift-MagicalRecord.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -35,11 +45,6 @@
 			<false/>
 		</dict>
 		<key>Pods-BeeSwift-SwiftyJSON.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BeeSwift-TPKeyboardAvoiding.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -77,72 +82,77 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>101DA037A6FEAE5A71C937A1</key>
+		<key>0845A30D1B8FA77AA3F845B5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>1789FAC33A6CDF3C42E5C753</key>
+		<key>11AD30D78CCC9A4291113CF3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>1C84E6D4864DBBC9ED6EB3C6</key>
+		<key>249C3E6A9D542FD39BB11CFB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>258A58DF7FDB1DEF30F44CC4</key>
+		<key>3BCCC67ECAC235F1F8D9FE06</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>29A3EC336FA6068A55885C89</key>
+		<key>420B3B1B4220EF7A0DF37AD1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2E25D279B608F8C52DC82182</key>
+		<key>447DF8B1C27C1C2FBE85DF4D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>68654D221807F572881590C3</key>
+		<key>4ABC0622818B7ACBFD5BAA03</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>689A88AE6532F7DD0F84F2CA</key>
+		<key>6A5973D161BE330F0D2ED96F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>68F5BC4AB1C8B3EE76819E64</key>
+		<key>C406DFF44EB3B989260C9237</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>777E0C9E7D28486FE2DD7F67</key>
+		<key>C54152C60E9FE7A9397613FB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9E703264E7947C24A8562F50</key>
+		<key>C790E2BC79A02CDB24CCF61B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>BD68B4EF997639C316538F24</key>
+		<key>CB3FBB708964136AA1A0CE32</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F46532523CD9815716247C6A</key>
+		<key>D708749C53A3D54D36F611BB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F6298F24AAFEEEC6B2A90666</key>
+		<key>D8FA39ADAD74A0EAF1DA670C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EE1FBA8BE02157089E02C4EA</key>
 		<dict>
 			<key>primary</key>
 			<true/>

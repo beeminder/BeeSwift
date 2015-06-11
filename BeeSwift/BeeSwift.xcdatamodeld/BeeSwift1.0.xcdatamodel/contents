@@ -15,11 +15,14 @@
         <attribute name="burner" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="delta_text" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="graph_url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lane" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="losedate" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="panic" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="pledge" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="rate" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="runits" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="serverDeleted" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="slug" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="thumb_url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
@@ -29,6 +32,6 @@
     </entity>
     <elements>
         <element name="Datapoint" positionX="-54" positionY="9" width="128" height="165"/>
-        <element name="Goal" positionX="-63" positionY="-18" width="128" height="270"/>
+        <element name="Goal" positionX="-63" positionY="-18" width="128" height="315"/>
     </elements>
 </model>
