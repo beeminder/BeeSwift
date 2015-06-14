@@ -13,7 +13,7 @@ import MagicalRecord
 extension Goal {
     
     class func crupdateWithJSON(json :JSON) {
-        if let goal :Goal = Goal.MR_findFirstByAttribute("slug", withValue:json["slug"].string) as? Goal {
+        if let goal :Goal = Goal.MR_findFirstByAttribute("id", withValue:json["id"].string) as? Goal {
             Goal.updateGoal(goal, withJSON: json)
         }
         else if let goal :Goal = Goal.MR_createEntity() as? Goal {
@@ -34,6 +34,13 @@ extension Goal {
         goal.won = json["won"].number!
         goal.lane = json["lane"].number!
         goal.yaw = json["yaw"].number!
+        goal.limsum = json["limsum"].string!
+        if let safebump = json["safebump"].number {
+            goal.safebump = safebump
+        }
+        if let curval = json["curval"].number {
+            goal.curval = curval
+        }
         goal.pledge = json["pledge"].number!
         var autodata : String? = json["autodata"].string
         if autodata != nil { goal.autodata = autodata! } else { goal.autodata = "" }
@@ -146,7 +153,12 @@ extension Goal {
     
     var attributedDeltaText :NSAttributedString {
         if self.delta_text.componentsSeparatedByString("✔").count == 4 {
-            return NSAttributedString(string: "⭐️  ⭐️  ⭐️")
+            if (self.safebump.doubleValue - self.curval.doubleValue > 0) {
+                var attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump.doubleValue - self.curval.doubleValue))
+                attString.addAttribute(NSForegroundColorAttributeName, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: count(attString.string)))
+                return attString
+            }
+            return NSMutableAttributedString(string: "")
         }
         var spaceIndices :Array<Int> = [0]
         

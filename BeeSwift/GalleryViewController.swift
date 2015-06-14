@@ -114,7 +114,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if !CurrentUserManager.sharedManager.signedIn() {
             self.presentViewController(SignInViewController(), animated: true, completion: nil)
         }
-        else if !self.hasFetchedData && self.frontburnerGoals.count == 0 && self.backburnerGoals.count == 0 {
+        else if !self.hasFetchedData {
             var hud = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
             hud.mode = .Indeterminate
             self.fetchData(nil)
@@ -195,7 +195,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func loadGoalsFromDatabase() {
-        
         self.frontburnerGoals = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "frontburner")) as! [Goal]
         self.frontburnerGoals = self.frontburnerGoals.sorted { ($0.losedate < $1.losedate) }
         self.backburnerGoals  = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "backburner")) as! [Goal]

@@ -48,7 +48,7 @@ class DataSyncManager :NSObject {
         
         self.isFetching = true
         
-        BSHTTPSessionManager.sharedManager.GET("/api/v1/users/me.json", parameters: ["associations": true, "datapoints_count": 5, "diff_since": 0], success: { (dataTask, responseObject) -> Void in
+        BSHTTPSessionManager.sharedManager.GET("/api/v1/users/me.json", parameters: ["associations": true, "datapoints_count": 5, "diff_since": self.lastSynced == nil ? 0 : self.lastSynced!.timeIntervalSince1970], success: { (dataTask, responseObject) -> Void in
             self.handleResponse(JSON(responseObject), completion: success)
             self.isFetching = false
             self.setLastSynced(NSDate())
@@ -74,6 +74,9 @@ class DataSyncManager :NSObject {
             }
         }
         NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success: Bool, error: NSError!) -> Void in
+            let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+            delegate.updateBadgeCount()
+            delegate.updateTodayText()
             if completion != nil && error == nil { completion() }
         }
     }

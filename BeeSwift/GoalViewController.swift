@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import TPKeyboardAvoiding
 import SwiftyJSON
 import MagicalRecord
 import MBProgressHUD
@@ -18,7 +17,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         didSet {
             self.goal.addObserver(self, forKeyPath: "graph_url", options: .allZeros, context: nil)
             self.goal.addObserver(self, forKeyPath: "losedate", options: .allZeros, context: nil)
-            self.goal.addObserver(self, forKeyPath: "delta_text", options: .allZeros, context: nil)            
+            self.goal.addObserver(self, forKeyPath: "delta_text", options: .allZeros, context: nil)
+            self.goal.addObserver(self, forKeyPath: "safebump", options: .allZeros, context: nil)            
         }
     }
     
@@ -270,9 +270,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+        if (!CurrentUserManager.sharedManager.signedIn()) { return }
         if keyPath == "graph_url" {
             self.setGraphImage()
-        } else if keyPath == "delta_text" {
+        } else if keyPath == "delta_text" || keyPath == "safebump" {
             self.deltasLabel.attributedText = self.goal.attributedDeltaText
         }
     }
@@ -323,13 +324,19 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func valueStepperValueChanged() {
+        var valueString = ""
+        let formatter = NSNumberFormatter()
+        formatter.numberStyle = .DecimalStyle
+        
         if self.valueStepper.value < 0 {
             var value = self.valueStepper.value
             if self.valueDecimalRemnant > 0 { value += (1 - self.valueDecimalRemnant) }
-            self.valueTextField.text = "\(value)"
+            valueString = formatter.stringFromNumber(value)!
         } else {
-            self.valueTextField.text = "\(self.valueStepper.value + self.valueDecimalRemnant)"
+            valueString = formatter.stringFromNumber(self.valueStepper.value + self.valueDecimalRemnant)!
         }
+        valueString = valueString.stringByReplacingOccurrencesOfString(",", withString: ".", options: NSStringCompareOptions.allZeros, range: Range<String.Index>(start: valueString.startIndex, end: valueString.endIndex))
+        self.valueTextField.text = valueString
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
@@ -350,6 +357,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         if (textField.isEqual(self.valueTextField)) {
+            if (string == ",") {
+                textField.text = textField.text + "."
+                return false
+            }
             if (string as NSString).rangeOfCharacterFromSet(NSCharacterSet(charactersInString: "1234567890.").invertedSet).location != NSNotFound {
                 return false
             }
@@ -370,7 +381,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         hud.mode = .Indeterminate
         self.submitButton.userInteractionEnabled = false
         self.scrollView.scrollRectToVisible(CGRectMake(0, 0, 0, 0), animated: true)
-        var params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields()]
+        var params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": NSUUID().UUIDString]
         BSHTTPSessionManager.sharedManager.POST("api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
             self.successfullyAddedDatapointWithResponse(responseObject)
             self.commentTextField.text = ""
@@ -394,7 +405,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         datapoint.goal = self.goal
         
         NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success: Bool, error: NSError!) -> Void in
-            self.datapoints.removeObjectAtIndex(0)
+            if (self.datapoints.count >= 5) { // magic number
+                self.datapoints.removeObjectAtIndex(0)
+            }
+
             self.datapoints.addObject(datapoint)
             self.datapointsTableView.reloadSections(NSIndexSet(indexesInRange: NSMakeRange(0, 1)), withRowAnimation: .Automatic)
             self.pollUntilGraphUpdates()
@@ -418,6 +432,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 Goal.crupdateWithJSON(goalJSON)
                 self.pollTimer?.invalidate()
                 self.pollTimer = nil
+                let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+                delegate.updateBadgeCount()
+                delegate.updateTodayText()
             }
         }) { (dataTask, responseError) -> Void in
             //foo

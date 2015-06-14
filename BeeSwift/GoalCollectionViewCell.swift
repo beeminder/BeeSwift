@@ -111,6 +111,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     }
     
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+        if (!CurrentUserManager.sharedManager.signedIn()) { return }
         if keyPath == "thumb_url" {
             self.thumbnailImageView.image = nil
             self.setThumbnailImage()
