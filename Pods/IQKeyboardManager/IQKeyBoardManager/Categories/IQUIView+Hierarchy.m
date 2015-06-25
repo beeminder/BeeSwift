@@ -64,13 +64,13 @@ Class UISearchBarTextFieldClass;        //UISearchBar
 
 -(void)_setIsAskingCanBecomeFirstResponder:(BOOL)isAskingCanBecomeFirstResponder
 {
-    objc_setAssociatedObject(self, @selector(isAskingCanBecomeFirstResponder), [NSNumber numberWithBool:isAskingCanBecomeFirstResponder], OBJC_ASSOCIATION_ASSIGN);
+    objc_setAssociatedObject(self, @selector(isAskingCanBecomeFirstResponder), [NSNumber numberWithBool:isAskingCanBecomeFirstResponder], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 -(BOOL)isAskingCanBecomeFirstResponder
 {
-    NSNumber *shouldHideTitle = objc_getAssociatedObject(self, @selector(isAskingCanBecomeFirstResponder));
-    return [shouldHideTitle boolValue];
+    NSNumber *isAskingCanBecomeFirstResponder = objc_getAssociatedObject(self, @selector(isAskingCanBecomeFirstResponder));
+    return [isAskingCanBecomeFirstResponder boolValue];
 }
 
 -(UIViewController*)viewController
@@ -95,7 +95,10 @@ Class UISearchBarTextFieldClass;        //UISearchBar
     
     UIViewController *topController = self.window.rootViewController;
     
-    [controllersHierarchy addObject:topController];
+    if (topController)
+    {
+        [controllersHierarchy addObject:topController];
+    }
     
     while ([topController presentedViewController]) {
         

@@ -13,10 +13,10 @@ import MagicalRecord
 extension Goal {
     
     class func crupdateWithJSON(json :JSON) {
-        if let goal :Goal = Goal.MR_findFirstByAttribute("id", withValue:json["id"].string) as? Goal {
-            Goal.updateGoal(goal, withJSON: json)
+        if let goal :Goal? = Goal.MR_findFirstByAttribute("id", withValue:json["id"].string) {
+            Goal.updateGoal(goal!, withJSON: json)
         }
-        else if let goal :Goal = Goal.MR_createEntity() as? Goal {
+        else if let goal :Goal = Goal.MR_createEntity() {
             Goal.updateGoal(goal, withJSON: json)
         }
     }

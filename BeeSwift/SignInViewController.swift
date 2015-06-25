@@ -10,7 +10,7 @@ import Foundation
 import TwitterKit
 import FBSDKLoginKit
 
-class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextFieldDelegate, UIAlertViewDelegate {
+class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSignInUIDelegate, UITextFieldDelegate, UIAlertViewDelegate {
     
     var signInLabel :BSLabel = BSLabel()
     var emailTextField :UITextField = UITextField()
@@ -126,6 +126,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
         }
         
         let googleSigninButton = GIDSignInButton()
+        GIDSignIn.sharedInstance().uiDelegate = self
         scrollView.addSubview(googleSigninButton)
         googleSigninButton.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(facebookLoginButton.snp_bottom).offset(20)

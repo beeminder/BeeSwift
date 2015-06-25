@@ -12,5 +12,6 @@
 #import "GIDProfileData.h"
 #import "GIDSignIn.h"
 #import "GIDSignInButton.h"
+#import "UIViewController+SignIn.h"
 
 #endif

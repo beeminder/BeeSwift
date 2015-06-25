@@ -8,181 +8,151 @@
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>2</integer>
 		</dict>
 		<key>Pods-BeeSwift-Bolts.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>3</integer>
 		</dict>
 		<key>Pods-BeeSwift-FBSDKCoreKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>4</integer>
 		</dict>
 		<key>Pods-BeeSwift-FBSDKLoginKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>5</integer>
 		</dict>
 		<key>Pods-BeeSwift-IQKeyboardManager.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>6</integer>
 		</dict>
 		<key>Pods-BeeSwift-MBProgressHUD.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>8</integer>
 		</dict>
 		<key>Pods-BeeSwift-MagicalRecord.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>7</integer>
 		</dict>
 		<key>Pods-BeeSwift-SnapKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>9</integer>
 		</dict>
 		<key>Pods-BeeSwift-SwiftyJSON.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>10</integer>
 		</dict>
 		<key>Pods-BeeSwift.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>1</integer>
 		</dict>
 		<key>Pods-BeeSwiftTests-AFNetworking.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>12</integer>
 		</dict>
 		<key>Pods-BeeSwiftTests-MagicalRecord.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>13</integer>
 		</dict>
 		<key>Pods-BeeSwiftTests-SnapKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>14</integer>
 		</dict>
 		<key>Pods-BeeSwiftTests-SwiftyJSON.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>15</integer>
 		</dict>
 		<key>Pods-BeeSwiftTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>11</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>0845A30D1B8FA77AA3F845B5</key>
+		<key>0AEDA2D9E4622F3905B4239F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>11AD30D78CCC9A4291113CF3</key>
+		<key>2D18AD616DB16DA46E4EAF54</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>249C3E6A9D542FD39BB11CFB</key>
+		<key>33686D990E28D1AFB4954945</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>3BCCC67ECAC235F1F8D9FE06</key>
+		<key>661278A580489110E79047DA</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>420B3B1B4220EF7A0DF37AD1</key>
+		<key>73C9B4DE0619B8C47953DFA6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>447DF8B1C27C1C2FBE85DF4D</key>
+		<key>988BFB42DF5BA259029F3D10</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4ABC0622818B7ACBFD5BAA03</key>
+		<key>9E838728E26385C780418473</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6A5973D161BE330F0D2ED96F</key>
+		<key>B68036BFC8A5458CA00740D9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C406DFF44EB3B989260C9237</key>
+		<key>B9B2740476E7E9102FA6CBF7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C54152C60E9FE7A9397613FB</key>
+		<key>C63D30CF1BF688A77E897E1F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C790E2BC79A02CDB24CCF61B</key>
+		<key>D6882AB2221C7AE56D3A58DD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>CB3FBB708964136AA1A0CE32</key>
+		<key>D7D913AB3125B58C8C1E667F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D708749C53A3D54D36F611BB</key>
+		<key>E032997E60BA2676A3F012F1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D8FA39ADAD74A0EAF1DA670C</key>
+		<key>E65DEBACEC4BD7A8F55A12BA</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>EE1FBA8BE02157089E02C4EA</key>
+		<key>EA22B1051B3975EFB68894CF</key>
 		<dict>
 			<key>primary</key>
 			<true/>

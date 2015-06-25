@@ -12,6 +12,7 @@
 #import "NSManagedObject+MagicalFinders.h"
 #import "NSManagedObject+MagicalRecord.h"
 #import "NSManagedObject+MagicalRequests.h"
+#import "NSManagedObjectContext+MagicalChainSave.h"
 #import "NSManagedObjectContext+MagicalObserving.h"
 #import "NSManagedObjectContext+MagicalRecord.h"
 #import "NSManagedObjectContext+MagicalSaves.h"
@@ -24,10 +25,12 @@
 #import "MagicalRecord+iCloud.h"
 #import "MagicalRecord+Options.h"
 #import "MagicalRecord+Setup.h"
-#import "MagicalRecord+ShorthandSupport.h"
+#import "MagicalRecord+ShorthandMethods.h"
+#import "MagicalRecordDeprecationMacros.h"
+#import "MagicalRecordInternal.h"
+#import "MagicalRecordLogging.h"
+#import "MagicalRecordShorthandMethodAliases.h"
 #import "MagicalRecord.h"
-#import "MagicalRecordShorthand.h"
-#import "CoreData+MagicalRecord.h"
 
 FOUNDATION_EXPORT double MagicalRecordVersionNumber;
 FOUNDATION_EXPORT const unsigned char MagicalRecordVersionString[];

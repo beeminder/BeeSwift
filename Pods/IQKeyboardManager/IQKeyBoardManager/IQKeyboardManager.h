@@ -29,13 +29,29 @@
 #import <Foundation/NSObjCRuntime.h>
 
 #import <UIKit/UITextInputTraits.h>
-
+#import <UIKit/UIView.h>
 
 #if !(__has_feature(objc_instancetype))
 #define instancetype id
 #endif
 
 @class UIFont;
+
+///---------------------
+/// @name IQToolbar tags
+///---------------------
+
+/**
+ Default tag for toolbar with Done button   -1002.
+ */
+extern NSInteger const kIQDoneButtonToolbarTag;
+
+/**
+ Default tag for toolbar with Previous/Next buttons -1005.
+ */
+extern NSInteger const kIQPreviousNextButtonToolbarTag;
+
+
 
 /**
  Codeless drop-in universal library allows to prevent issues of keyboard sliding up and cover UITextField/UITextView. Neither need to write any code nor any setup required and much more. A generic version of KeyboardManagement. https://developer.apple.com/Library/ios/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html
@@ -190,6 +206,11 @@
  */
 @property(nonatomic, assign) BOOL shouldAdoptDefaultKeyboardAnimation;
 
+/**
+ If YES, then calls 'setNeedsLayout' and 'layoutIfNeeded' on any frame update of to viewController's view.
+ */
+@property(nonatomic, assign) BOOL layoutIfNeededOnUpdate;
+
 ///------------------------------------
 /// @name Class Level disabling methods
 ///------------------------------------
@@ -209,6 +230,13 @@
 -(void)removeDisableInViewControllerClass:(Class)disabledClass;
 
 /**
+ Returns YES if ViewController class is disabled for library, otherwise returns NO.
+ 
+ @param disabledClass Class which is to check for it's disability.
+ */
+-(BOOL)isDisableInViewControllerClass:(Class)disabledClass;
+
+/**
  Disable automatic toolbar creation in in toolbarDisabledClass
  
  @param toolbarDisabledClass Class in which library should not add toolbar over textField.
@@ -221,6 +249,13 @@
  @param toolbarDisabledClass Class in which library should re-enable automatic toolbar creation over textField.
  */
 -(void)removeDisableToolbarInViewControllerClass:(Class)toolbarDisabledClass;
+
+/**
+ Returns YES if toolbar is disabled in ViewController class, otherwise returns NO.
+ 
+ @param toolbarDisabledClass Class which is to check for toolbar disability.
+ */
+-(BOOL)isDisableToolbarInViewControllerClass:(Class)toolbarDisabledClass;
 
 /**
  Consider provided customView class as superView of all inner textField for calculating next/previous button logic.
@@ -236,9 +271,17 @@
  */
 -(void)removeConsiderToolbarPreviousNextInViewClass:(Class)toolbarPreviousNextConsideredClass;
 
-///------------------------------------------------
+/**
+ Returns YES if inner hierarchy is considered for previous/next in class, otherwise returns NO.
+ 
+ @param toolbarPreviousNextConsideredClass Class which is to check for previous next consideration
+ */
+-(BOOL)isConsiderToolbarPreviousNextInViewClass:(Class)toolbarPreviousNextConsideredClass;
+
+
+///----------------------------------------
 /// @name Must not be used for subclassing.
-///------------------------------------------------
+///----------------------------------------
 
 /**
  Should create only one instance of class. Should not call init.
@@ -251,18 +294,4 @@
 + (instancetype)new	__attribute__((unavailable("new is not available in IQKeyboardManager, Use sharedManager")));
 
 @end
-
-///---------------------
-/// @name IQToolbar tags
-///---------------------
-
-/**
- Default tag for toolbar with Done button   -1002.
- */
-extern NSInteger const kIQDoneButtonToolbarTag;
-
-/**
- Default tag for toolbar with Previous/Next buttons -1005.
- */
-extern NSInteger const kIQPreviousNextButtonToolbarTag;
 

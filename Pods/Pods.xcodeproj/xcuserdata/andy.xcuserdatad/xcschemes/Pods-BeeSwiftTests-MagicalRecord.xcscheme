@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0510"
+   LastUpgradeVersion = "0640"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D8FA39ADAD74A0EAF1DA670C"
+               BlueprintIdentifier = "2D18AD616DB16DA46E4EAF54"
                BuildableName = "MagicalRecord.framework"
                BlueprintName = "Pods-BeeSwiftTests-MagicalRecord"
                ReferencedContainer = "container:Pods.xcodeproj">

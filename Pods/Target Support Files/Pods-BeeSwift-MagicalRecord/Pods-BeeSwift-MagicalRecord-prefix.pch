@@ -4,4 +4,4 @@
 
 #import "Pods-BeeSwift-environment.h"
 #import <CoreData/CoreData.h>
-#import "CoreData+MagicalRecord.h"
+#import <MagicalRecord/MagicalRecord.h>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0510"
+   LastUpgradeVersion = "0640"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6A5973D161BE330F0D2ED96F"
+               BlueprintIdentifier = "B9B2740476E7E9102FA6CBF7"
                BuildableName = "FBSDKCoreKit.framework"
                BlueprintName = "Pods-BeeSwift-FBSDKCoreKit"
                ReferencedContainer = "container:Pods.xcodeproj">

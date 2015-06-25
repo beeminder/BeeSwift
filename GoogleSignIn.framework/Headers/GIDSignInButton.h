@@ -1,12 +1,12 @@
-//
-//  GIDSignInButton.h
-//  Google Sign-In iOS SDK
-//
-//  Copyright 2012 Google Inc.
-//
-//  Use of this SDK is subject to the Google APIs Terms of Service:
-//  https://developers.google.com/terms/
-//
+/*
+ * GIDSignInButton.h
+ * Google Sign-In iOS SDK
+ *
+ * Copyright 2012 Google Inc.
+ *
+ * Use of this SDK is subject to the Google APIs Terms of Service:
+ * https://developers.google.com/terms/
+ */
 
 #import <UIKit/UIKit.h>
 
@@ -15,7 +15,7 @@
 // The following dimensions (in points) fit for all languages:
 // kGIDSignInButtonStyleStandard: 224 x 44
 // kGIDSignInButtonStyleWide:     306 x 44
-// kGIDSignInButtonStyleIconOnly:  44 x 44 (no text, fixed size)
+// kGIDSignInButtonStyleIconOnly: 44 x 44 (no text, fixed size)
 typedef NS_ENUM(NSInteger, GIDSignInButtonStyle) {
   kGIDSignInButtonStyleStandard = 0,
   kGIDSignInButtonStyleWide = 1,
@@ -35,13 +35,23 @@ typedef NS_ENUM(NSInteger, GIDSignInButtonColorScheme) {
 // view hierarchy.
 @interface GIDSignInButton : UIControl
 
-// The layout style for the sign-in button. The default style is standard.
+// The layout style for the sign-in button.
+// Possible values:
+// - kGIDSignInButtonStyleStandard: 224 x 44 (default)
+// - kGIDSignInButtonStyleWide:     306 x 44
+// - kGIDSignInButtonStyleIconOnly: 44 x 44 (no text, fixed size)
 @property(nonatomic, assign) GIDSignInButtonStyle style;
 
-// The color scheme for the sign-in. The default scheme is dark.
+// The color scheme for the sign-in button.
+// Possible values:
+// - kGIDSignInButtonColorSchemeDark (default)
+// - kGIDSignInButtonColorSchemeLight
 @property(nonatomic, assign) GIDSignInButtonColorScheme colorScheme;
 
 // The view controller with which the button is associated.
+// Assigning this optional property enables the sign-in button to present the
+// user with a prompt to download the Google iOS app if sign-in with the browser
+// has been disabled.
 @property(nonatomic, weak) IBOutlet UIViewController *delegate;
 
 @end

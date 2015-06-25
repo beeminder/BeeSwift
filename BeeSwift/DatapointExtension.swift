@@ -13,12 +13,12 @@ import MagicalRecord
 extension Datapoint {
     
     class func crupdateWithJSON(json :JSON) -> Datapoint {
-        var datapoint :Datapoint? = Datapoint.MR_findFirstByAttribute("id", withValue:json["id"].string) as? Datapoint
+        var datapoint :Datapoint? = Datapoint.MR_findFirstByAttribute("id", withValue:json["id"].string)
         if (datapoint != nil) {
             Datapoint.updateDatapoint(datapoint!, withJSON: json)
         }
         else {
-            datapoint = Datapoint.MR_createEntity() as? Datapoint
+            datapoint = Datapoint.MR_createEntity()
             Datapoint.updateDatapoint(datapoint!, withJSON: json)
         }
         return datapoint!

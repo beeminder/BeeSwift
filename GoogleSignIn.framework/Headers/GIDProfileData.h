@@ -1,17 +1,16 @@
-//
-//  GIDProfileData.h
-//  Google Sign-In iOS SDK
-//
-//  Copyright 2014 Google Inc.
-//
-//  Use of this SDK is subject to the Google APIs Terms of Service:
-//  https://developers.google.com/terms/
-//
+/*
+ * GIDProfileData.h
+ * Google Sign-In iOS SDK
+ *
+ * Copyright 2014 Google Inc.
+ *
+ * Use of this SDK is subject to the Google APIs Terms of Service:
+ * https://developers.google.com/terms/
+ */
 
 #import <Foundation/Foundation.h>
 
 // This class represents the basic profile information of a GIDGoogleUser.
-//
 @interface GIDProfileData : NSObject <NSCoding>
 
 // The Google user's email.

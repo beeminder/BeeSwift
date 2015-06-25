@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0510"
+   LastUpgradeVersion = "0640"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C54152C60E9FE7A9397613FB"
+               BlueprintIdentifier = "33686D990E28D1AFB4954945"
                BuildableName = "SnapKit.framework"
                BlueprintName = "Pods-BeeSwiftTests-SnapKit"
                ReferencedContainer = "container:Pods.xcodeproj">
