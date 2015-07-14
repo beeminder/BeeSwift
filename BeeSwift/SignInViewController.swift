@@ -135,34 +135,6 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
             make.height.equalTo(signInButton)
             make.bottom.equalTo(-20)
         }
-        
-        let signUpDivider = UIView()
-        scrollView.addSubview(signUpDivider)
-        signUpDivider.backgroundColor = UIColor.beeGrayColor()
-        signUpDivider.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(signInButton)
-            make.right.equalTo(signInButton)
-            make.height.equalTo(1)
-            make.top.equalTo(googleSigninButton.snp_bottom).offset(20)
-        }
-        
-        let signUpButton = BSButton()
-        scrollView.addSubview(signUpButton)
-        signUpButton.setTitle("Sign Up", forState: .Normal)
-        signUpButton.backgroundColor = UIColor.beeGrayColor()
-        signUpButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
-        signUpButton.titleLabel?.textColor = UIColor.whiteColor()
-        signUpButton.addTarget(self, action: "signUpButtonPressed", forControlEvents: UIControlEvents.TouchUpInside)
-        signUpButton.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(self.passwordTextField)
-            make.right.equalTo(self.passwordTextField)
-            make.top.equalTo(signUpDivider.snp_bottom).offset(20)
-            make.height.equalTo(44)
-        }
-    }
-    
-    func signUpButtonPressed() {
-        UIAlertView(title: "Open Safari?", message:"", delegate: self, cancelButtonTitle:"No", otherButtonTitles: "Yes").show()
     }
     
     func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {

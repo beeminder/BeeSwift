@@ -292,6 +292,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     deinit {
         self.goal.removeObserver(self, forKeyPath: "graph_url")
+        self.goal.removeObserver(self, forKeyPath: "losedate")
+        self.goal.removeObserver(self, forKeyPath: "delta_text")
+        self.goal.removeObserver(self, forKeyPath: "safebump")
     }
     
     func setGraphImage() {
