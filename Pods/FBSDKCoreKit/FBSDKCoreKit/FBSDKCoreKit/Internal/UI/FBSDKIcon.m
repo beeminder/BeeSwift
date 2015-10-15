@@ -41,6 +41,9 @@
 
 - (UIImage *)imageWithSize:(CGSize)size
 {
+  if ((size.width == 0) || (size.height == 0)) {
+    return nil;
+  }
   CGFloat scale = [UIScreen mainScreen].scale;
   UIGraphicsBeginImageContextWithOptions(size, NO, scale);
   CGContextRef context = UIGraphicsGetCurrentContext();

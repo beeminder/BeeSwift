@@ -85,11 +85,11 @@ class GoalCollectionViewCell: UICollectionViewCell {
         if CurrentUserManager.sharedManager.isDeadbeat() {
             self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
         } else {
-            self.thumbnailImageView.setImageWithURL(NSURL(string: goal!.cacheBustingThumbUrl), placeholderImage: UIImage(named: "ThumbnailPlaceholder"))
+            self.thumbnailImageView.setImageWithURL(NSURL(string: goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"))
         }
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
@@ -110,7 +110,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.removeAllObservers()
     }
     
-    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if (!CurrentUserManager.sharedManager.signedIn()) { return }
         if keyPath == "thumb_url" {
             self.thumbnailImageView.image = nil
@@ -130,12 +130,12 @@ class GoalCollectionViewCell: UICollectionViewCell {
     var goal :Goal?
     {
         didSet {
-            goal?.addObserver(self, forKeyPath: "thumb_url", options: .allZeros, context: nil)
-            goal?.addObserver(self, forKeyPath: "losedate", options: .allZeros, context: nil)
-            goal?.addObserver(self, forKeyPath: "lane", options: .allZeros, context: nil)
-            goal?.addObserver(self, forKeyPath: "rate", options: .allZeros, context: nil)
-            goal?.addObserver(self, forKeyPath: "title", options: .allZeros, context: nil)
-            goal?.addObserver(self, forKeyPath: "delta_text", options: .allZeros, context: nil)
+            goal?.addObserver(self, forKeyPath: "thumb_url", options: [], context: nil)
+            goal?.addObserver(self, forKeyPath: "losedate", options: [], context: nil)
+            goal?.addObserver(self, forKeyPath: "lane", options: [], context: nil)
+            goal?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+            goal?.addObserver(self, forKeyPath: "title", options: [], context: nil)
+            goal?.addObserver(self, forKeyPath: "delta_text", options: [], context: nil)
             self.thumbnailImageView.image = nil
             self.setThumbnailImage()
 

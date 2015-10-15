@@ -70,7 +70,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
             make.height.equalTo(44)
         }
         
-        var signInButton = UIButton()
+        let signInButton = UIButton()
         scrollView.addSubview(signInButton)
         signInButton.setTitle("Sign In", forState: .Normal)
         signInButton.backgroundColor = UIColor.beeGrayColor()
@@ -158,7 +158,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     }
     
     func signInButtonPressed() {
-        CurrentUserManager.sharedManager.signInWithEmail(self.emailTextField.text, password: self.passwordTextField.text)
+        CurrentUserManager.sharedManager.signInWithEmail(self.emailTextField.text!, password: self.passwordTextField.text!)
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {

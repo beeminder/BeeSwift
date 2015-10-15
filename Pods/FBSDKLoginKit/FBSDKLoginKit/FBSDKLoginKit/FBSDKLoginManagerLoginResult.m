@@ -16,23 +16,41 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "FBSDKLoginManagerLoginResult.h"
+#import "FBSDKLoginManagerLoginResult+Internal.h"
 
-#import <FBSDKCoreKit/FBSDKAccessToken.h>
+#import "FBSDKCoreKit+Internal.h"
 
-@implementation FBSDKLoginManagerLoginResult
+@implementation FBSDKLoginManagerLoginResult {
+  NSMutableDictionary *_mutableLoggingExtras;
+}
+
+- (instancetype)init NS_UNAVAILABLE
+{
+  assert(0);
+}
 
 - (instancetype)initWithToken:(FBSDKAccessToken *)token
                   isCancelled:(BOOL)isCancelled
            grantedPermissions:(NSSet *)grantedPermissions
           declinedPermissions:(NSSet *)declinedPermissions {
   if ((self = [super init])) {
+    _mutableLoggingExtras = [NSMutableDictionary dictionary];
     _token = [token copy];
     _isCancelled = isCancelled;
     _grantedPermissions = [grantedPermissions copy];
     _declinedPermissions = [declinedPermissions copy];
   };
   return self;
+}
+
+- (void)addLoggingExtra:(id)object forKey:(id<NSCopying>)key
+{
+  [FBSDKInternalUtility dictionary:_mutableLoggingExtras setObject:object forKey:key];
+}
+
+- (NSDictionary *)loggingExtras
+{
+  return [_mutableLoggingExtras copy];
 }
 
 @end

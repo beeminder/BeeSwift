@@ -26,9 +26,8 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         self.view.addSubview(self.dataEntryReminderSwitch)
         self.dataEntryReminderSwitch.on = LocalNotificationsManager.sharedManager.on()
         self.dataEntryReminderSwitch.snp_makeConstraints { (make) -> Void in
-            let topLayoutGuide = self.topLayoutGuide as! UIView
             make.left.equalTo(20)
-            make.top.equalTo(topLayoutGuide.snp_bottom).offset(20)
+            make.top.equalTo(self.snp_topLayoutGuideBottom).offset(20)
         }
         
         self.dataEntryReminderLabel.font = UIFont(name: "Avenir", size: 16)
@@ -76,7 +75,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
             make.left.equalTo(self.dataEntryReminderLabel)
         }
         
-        var signOutButton = BSButton()
+        let signOutButton = BSButton()
         
         signOutButton.addTarget(self, action: "signOutButtonPressed", forControlEvents: UIControlEvents.TouchUpInside)
         self.view.addSubview(signOutButton)
@@ -146,7 +145,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         
         UIView.animateWithDuration(0.25, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: { () -> Void in
             self.timePickerContainerView.alpha = self.timePickerViewVisible ? 0 : 1
-            self.timePickerContainerView.snp_updateConstraints({ (make) -> Void in
+            self.timePickerContainerView.snp_updateConstraints(closure: { (make) -> Void in
                 make.height.equalTo(self.timePickerViewVisible ? 0 : self.pickerContainerViewHeight())
             })
             self.view.layoutIfNeeded()
@@ -200,7 +199,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         return self.use24HourTime() ? 2 : 3
     }
     
-    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView!) -> UIView {
+    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView?) -> UIView {
         let view = UIView()
         let label = BSLabel()
         view.addSubview(label)

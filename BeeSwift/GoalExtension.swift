@@ -42,12 +42,12 @@ extension Goal {
             goal.curval = curval
         }
         goal.pledge = json["pledge"].number!
-        var autodata : String? = json["autodata"].string
+        let autodata : String? = json["autodata"].string
         if autodata != nil { goal.autodata = autodata! } else { goal.autodata = "" }
 
         if let newDatapoints = json["datapoints"].array {
             for datapointJSON in newDatapoints {
-                var datapoint = Datapoint.crupdateWithJSON(datapointJSON)
+                let datapoint = Datapoint.crupdateWithJSON(datapointJSON)
                 datapoint.goal = goal
             }
         }
@@ -92,7 +92,7 @@ extension Goal {
         else if losedateDate.timeIntervalSinceNow < 7*24*60*60 {
             let dateFormatter = NSDateFormatter()
             let calendar = NSCalendar.currentCalendar()
-            let hour = calendar.component(.CalendarUnitHour, fromDate: losedateDate)
+            let hour = calendar.component(.Hour, fromDate: losedateDate)
             if hour < 6 {
                 losedateDate = losedateDate.dateByAddingTimeInterval(Double(-(hour + 1)*3600))
             }
@@ -107,15 +107,15 @@ extension Goal {
     
     var countdownText :NSString {
 
-        var losedateDate = NSDate(timeIntervalSince1970: self.losedate.doubleValue)
-        var seconds = losedateDate.timeIntervalSinceNow
+        let losedateDate = NSDate(timeIntervalSince1970: self.losedate.doubleValue)
+        let seconds = losedateDate.timeIntervalSinceNow
         if seconds < 0 {
             return self.won.boolValue ? "Success!" : "Lost!"
         }
-        var hours = Int((seconds % (3600*24))/3600)
-        var minutes = Int((seconds % 3600)/60)
-        var leftoverSeconds = Int(seconds % 60)
-        var days = Int(seconds/(3600*24))
+        let hours = Int((seconds % (3600*24))/3600)
+        let minutes = Int((seconds % 3600)/60)
+        let leftoverSeconds = Int(seconds % 60)
+        let days = Int(seconds/(3600*24))
         
         if (days > 0) {
             return NSString(format: "%id, %i:%02i:%02i", days, hours, minutes,leftoverSeconds)
@@ -126,7 +126,7 @@ extension Goal {
     }
     
     var countdownColor :UIColor {
-        var losedateDate = NSDate(timeIntervalSince1970: self.losedate.doubleValue)
+        let losedateDate = NSDate(timeIntervalSince1970: self.losedate.doubleValue)
         if losedateDate.timeIntervalSinceNow < 0 {
             if self.won.boolValue {
                 return UIColor.beeGreenColor()
@@ -154,32 +154,32 @@ extension Goal {
     var attributedDeltaText :NSAttributedString {
         if self.delta_text.componentsSeparatedByString("✔").count == 4 {
             if (self.safebump.doubleValue - self.curval.doubleValue > 0) {
-                var attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump.doubleValue - self.curval.doubleValue))
-                attString.addAttribute(NSForegroundColorAttributeName, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: count(attString.string)))
+                let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump.doubleValue - self.curval.doubleValue))
+                attString.addAttribute(NSForegroundColorAttributeName, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.characters.count))
                 return attString
             }
             return NSMutableAttributedString(string: "")
         }
         var spaceIndices :Array<Int> = [0]
         
-        for i in 0...count(self.delta_text) - 1 {
-            if Array(self.delta_text)[i] == " " {
+        for i in 0...self.delta_text.characters.count - 1 {
+            if Array(self.delta_text.characters)[i] == " " {
                 spaceIndices.append(i)
             }
         }
         
-        spaceIndices.append(count(self.delta_text))
+        spaceIndices.append(self.delta_text.characters.count)
 
-        var attString :NSMutableAttributedString = NSMutableAttributedString(string: self.delta_text)
+        let attString :NSMutableAttributedString = NSMutableAttributedString(string: self.delta_text)
         
-        for i in 0...count(spaceIndices) {
-            if i + 1 >= count(spaceIndices) {
+        for i in 0...spaceIndices.count {
+            if i + 1 >= spaceIndices.count {
                 continue
             }
             attString.addAttribute(NSForegroundColorAttributeName, value: self.deltaColors[i], range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
         }
         
-        attString.mutableString.replaceOccurrencesOfString("✔", withString: "", options: NSStringCompareOptions.LiteralSearch, range: NSRange(location: 0, length: count(attString.string)))
+        attString.mutableString.replaceOccurrencesOfString("✔", withString: "", options: NSStringCompareOptions.LiteralSearch, range: NSRange(location: 0, length: attString.string.characters.count))
 
         return attString
     }
@@ -209,8 +209,8 @@ extension Goal {
     }
     
     func orderedDatapoints() -> [Datapoint] {
-        var points : [Datapoint] = self.datapoints.allObjects as! [Datapoint]
-        return points.sorted({ (d1, d2) -> Bool in
+        let points : [Datapoint] = self.datapoints.allObjects as! [Datapoint]
+        return points.sort({ (d1, d2) -> Bool in
             if d1.timestamp == d2.timestamp {
                 return d1.updated_at < d2.updated_at
             }
@@ -220,11 +220,11 @@ extension Goal {
     
     func lastFiveDatapoints() -> [Datapoint] {
         var allDatapoints = self.orderedDatapoints()
-        if count(allDatapoints) < 6 {
+        if allDatapoints.count < 6 {
             return allDatapoints
         }
         
-        return Array(allDatapoints[(count(allDatapoints) - 5)...(count(allDatapoints) - 1)])
+        return Array(allDatapoints[(allDatapoints.count - 5)...(allDatapoints.count - 1)])
     }
     
 }

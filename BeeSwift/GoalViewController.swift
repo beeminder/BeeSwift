@@ -15,10 +15,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var goal :Goal! {
         didSet {
-            self.goal.addObserver(self, forKeyPath: "graph_url", options: .allZeros, context: nil)
-            self.goal.addObserver(self, forKeyPath: "losedate", options: .allZeros, context: nil)
-            self.goal.addObserver(self, forKeyPath: "delta_text", options: .allZeros, context: nil)
-            self.goal.addObserver(self, forKeyPath: "safebump", options: .allZeros, context: nil)            
+            self.goal.addObserver(self, forKeyPath: "graph_url", options: [], context: nil)
+            self.goal.addObserver(self, forKeyPath: "losedate", options: [], context: nil)
+            self.goal.addObserver(self, forKeyPath: "delta_text", options: [], context: nil)
+            self.goal.addObserver(self, forKeyPath: "safebump", options: [], context: nil)            
         }
     }
     
@@ -145,7 +145,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         let dataEntryView = UIView()
-        if (count(self.goal.autodata) > 0 || self.goal.won.boolValue) {
+        if (self.goal.autodata.characters.count > 0 || self.goal.won.boolValue) {
             dataEntryView.hidden = true
         }
 
@@ -182,6 +182,25 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.valueTextField.delegate = self
         self.valueTextField.textAlignment = .Center
         self.valueTextField.keyboardType = .DecimalPad
+        
+        let accessory = UIView(frame: CGRectMake(0, 0, 0, 44))
+        accessory.backgroundColor = UIColor.whiteColor()
+        self.valueTextField.inputAccessoryView = accessory
+        let colonButton = UIButton()
+        accessory.addSubview(colonButton)
+        accessory.clipsToBounds = true
+        colonButton.snp_makeConstraints { (make) -> Void in
+            make.width.equalTo(accessory).multipliedBy(1.0/3.0).offset(-1)
+            make.height.equalTo(accessory)
+            make.left.equalTo(-1)
+            make.top.equalTo(0)
+        }
+        colonButton.setTitle(":", forState: .Normal)
+        colonButton.layer.borderWidth = 1
+        colonButton.layer.borderColor = UIColor.beeGrayColor().CGColor
+        colonButton.titleLabel?.font = UIFont.boldSystemFontOfSize(26)
+        colonButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
+        colonButton.addTarget(self, action: "colonButtonPressed", forControlEvents: .TouchUpInside)
         self.valueTextField.addTarget(self, action: "valueTextFieldValueChanged", forControlEvents: .EditingChanged)
         self.valueTextField.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(self.dateTextField.snp_right).offset(10)
@@ -269,7 +288,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if (!CurrentUserManager.sharedManager.signedIn()) { return }
         if keyPath == "graph_url" {
             self.setGraphImage()
@@ -283,6 +302,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.refreshCountdown()
         self.pledgeLabel.text = "$\(self.goal.pledge)"
         self.deltasLabel.attributedText = self.goal.attributedDeltaText
+    }
+    
+    func colonButtonPressed() {
+        self.valueTextField.text = "\(self.valueTextField.text!):"
     }
     
     func refreshCountdown() {
@@ -301,7 +324,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         if CurrentUserManager.sharedManager.isDeadbeat() {
             self.goalImageView.image = UIImage(named: "GraphPlaceholder")
         } else {
-            self.goalImageView.setImageWithURL(NSURL(string: goal.cacheBustingGraphUrl), placeholderImage: UIImage(named: "GraphPlaceholder"))
+            self.goalImageView.setImageWithURL(NSURL(string: goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"))
         }
     }
     
@@ -311,15 +334,15 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func dateStepperValueChanged() {
         let calendar = NSCalendar(identifier: NSCalendarIdentifierGregorian)
-        var components = NSDateComponents()
+        let components = NSDateComponents()
         components.day = Int(self.dateStepper.value)
         
-        var newDate = calendar?.dateByAddingComponents(components, toDate: NSDate(), options: .allZeros)
+        let newDate = calendar?.dateByAddingComponents(components, toDate: NSDate(), options: [])
         
-        var formatter = NSDateFormatter()
+        let formatter = NSDateFormatter()
         var dateFormat = "d"
-        if calendar?.component(.CalendarUnitMonth, fromDate: newDate!) !=
-            calendar?.component(.CalendarUnitMonth, fromDate: NSDate()) {
+        if calendar?.component(.Month, fromDate: newDate!) !=
+            calendar?.component(.Month, fromDate: NSDate()) {
                 dateFormat = "M  d"
         }
         formatter.dateFormat = dateFormat
@@ -338,7 +361,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         } else {
             valueString = formatter.stringFromNumber(self.valueStepper.value + self.valueDecimalRemnant)!
         }
-        valueString = valueString.stringByReplacingOccurrencesOfString(",", withString: ".", options: NSStringCompareOptions.allZeros, range: Range<String.Index>(start: valueString.startIndex, end: valueString.endIndex))
+        valueString = valueString.stringByReplacingOccurrencesOfString(",", withString: ".", options: NSStringCompareOptions(), range: Range<String.Index>(start: valueString.startIndex, end: valueString.endIndex))
         self.valueTextField.text = valueString
     }
     
@@ -351,7 +374,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func valueTextFieldValueChanged() {
         var intPart : Double = 0;
-        var fractPart : Double = modf((self.valueTextField.text as NSString).doubleValue, &intPart);
+        let fractPart : Double = modf((self.valueTextField.text! as NSString).doubleValue, &intPart);
         
         self.valueStepper.value = intPart
         self.valueDecimalRemnant = abs(fractPart)
@@ -361,13 +384,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         if (textField.isEqual(self.valueTextField)) {
             if (string == ",") {
-                textField.text = textField.text + "."
+                textField.text = textField.text! + "."
                 return false
             }
             if (string as NSString).rangeOfCharacterFromSet(NSCharacterSet(charactersInString: "1234567890.").invertedSet).location != NSNotFound {
                 return false
             }
-            if textField.text.componentsSeparatedByString(".").count > 1 && string == "." {
+            if textField.text!.componentsSeparatedByString(".").count > 1 && string == "." {
                 return false
             }
         }
@@ -375,16 +398,16 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func urtextFromTextFields() -> String {
-        return "\(self.dateTextField.text) \(self.valueTextField.text) \"\(self.commentTextField.text)\""
+        return "\(self.dateTextField.text!) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
     }
     
     func submitDatapoint() {
         self.view.endEditing(true)
-        var hud = MBProgressHUD.showHUDAddedTo(self.datapointsTableView, animated: true)
+        let hud = MBProgressHUD.showHUDAddedTo(self.datapointsTableView, animated: true)
         hud.mode = .Indeterminate
         self.submitButton.userInteractionEnabled = false
         self.scrollView.scrollRectToVisible(CGRectMake(0, 0, 0, 0), animated: true)
-        var params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": NSUUID().UUIDString]
+        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": NSUUID().UUIDString]
         BSHTTPSessionManager.sharedManager.POST("api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
             self.successfullyAddedDatapointWithResponse(responseObject)
             self.commentTextField.text = ""
@@ -393,7 +416,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }) { (dataTask, error) -> Void in
             self.submitButton.userInteractionEnabled = true
             MBProgressHUD.hideAllHUDsForView(self.datapointsTableView, animated: true)
-            var response = dataTask.response as! NSHTTPURLResponse
+            let response = dataTask.response as! NSHTTPURLResponse
             if response.statusCode == 422 {
                 UIAlertView(title: "Error", message: "Invalid datapoint format", delegate: nil, cancelButtonTitle: "OK").show()
             }
@@ -404,7 +427,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func successfullyAddedDatapointWithResponse(responseObject: AnyObject) {
-        var datapoint = Datapoint.crupdateWithJSON(JSON(responseObject))
+        let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject))
         datapoint.goal = self.goal
         
         NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success: Bool, error: NSError!) -> Void in
@@ -421,7 +444,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func pollUntilGraphUpdates() {
         if self.pollTimer != nil { return }
-        var hud = MBProgressHUD.showHUDAddedTo(self.goalImageScrollView, animated: true)
+        let hud = MBProgressHUD.showHUDAddedTo(self.goalImageScrollView, animated: true)
         hud.mode = .Indeterminate
         hud.show(true)
         self.pollTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: "refreshGoal", userInfo: nil, repeats: true)
@@ -437,7 +460,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.pollTimer = nil
                 let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
                 delegate.updateBadgeCount()
-                delegate.updateTodayText()
+                delegate.updateTodayWidget()
             }
         }) { (dataTask, responseError) -> Void in
             //foo
@@ -465,7 +488,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell = tableView.dequeueReusableCellWithIdentifier(self.cellIdentifier) as! DatapointTableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(self.cellIdentifier) as! DatapointTableViewCell
         cell.datapoint = (self.datapoints[indexPath.row] as! Datapoint)
         return cell
     }

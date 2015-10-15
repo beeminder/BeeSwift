@@ -11,7 +11,7 @@ import UIKit
 
 class BSLabel : UILabel {
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.font = UIFont(name: "Avenir-Light", size: 18)
     }

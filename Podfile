@@ -5,19 +5,20 @@ inhibit_all_warnings!
 
 target 'BeeSwift' do
 	pod "AFNetworking"
-	pod "SnapKit"
+	pod "SnapKit"#, :git => "https://github.com/SnapKit/SnapKit.git", :branch => "swift-2.0"
 	pod "MagicalRecord"
-	pod "SwiftyJSON"
+	pod "SwiftyJSON", :git => "https://github.com/SwiftyJSON/SwiftyJSON.git", :branch => "xcode7"
 	pod "FBSDKCoreKit"
 	pod "FBSDKLoginKit"
 	pod "MBProgressHUD"
 	pod 'IQKeyboardManager'
+	pod 'Google/SignIn'
 end
 
 target 'BeeSwiftTests' do
 	pod "AFNetworking"
-	pod "SnapKit"
+	pod "SnapKit"#, :git => "https://github.com/SnapKit/SnapKit.git", :branch => "swift-2.0"	
 	pod "MagicalRecord"
-	pod "SwiftyJSON"
+	pod "SwiftyJSON", :git => "https://github.com/SwiftyJSON/SwiftyJSON.git", :branch => "xcode7"
 end
 

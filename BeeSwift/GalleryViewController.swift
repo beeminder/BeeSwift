@@ -39,7 +39,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.view.backgroundColor = UIColor.whiteColor()
         self.title = "Goals"
         
-        var item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItemStyle.Plain, target: self, action: "settingsButtonPressed")
+        let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItemStyle.Plain, target: self, action: "settingsButtonPressed")
         self.navigationItem.rightBarButtonItem = item
         
         self.loadGoalsFromDatabase()
@@ -47,8 +47,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.view.addSubview(self.lastUpdatedView)
         self.lastUpdatedView.backgroundColor = UIColor.beeGrayColor()
         self.lastUpdatedView.snp_makeConstraints { (make) -> Void in
-            var topLayoutGuide = self.topLayoutGuide as! UIView
-            make.top.equalTo(topLayoutGuide.snp_bottom)
+            make.top.equalTo(self.snp_topLayoutGuideBottom)
             make.left.equalTo(0)
             make.right.equalTo(0)
         }
@@ -115,8 +114,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.presentViewController(SignInViewController(), animated: true, completion: nil)
         }
         else if !self.hasFetchedData {
-            var hud = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
-            hud.mode = .Indeterminate
+//            let hud = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+//            hud.mode = .Indeterminate
             self.fetchData(nil)
         }
     }
@@ -150,8 +149,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func updateLastUpdatedLabel() {
         if let lastSynced = DataSyncManager.sharedManager.lastSynced {
             if lastSynced.timeIntervalSinceNow < -3600 {
-                var lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: more than an hour ago")
-                lastText.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSRange(location: 0, length: count(lastText.string)))
+                let lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: more than an hour ago")
+                lastText.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSRange(location: 0, length: lastText.string.characters.count))
                 self.lastUpdatedLabel.attributedText = lastText
             }
             else if lastSynced.timeIntervalSinceNow < -120 {
@@ -165,8 +164,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         else {
-            var lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: a long time ago...")
-            lastText.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSRange(location: 0, length: count(lastText.string)))
+            let lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: a long time ago...")
+            lastText.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSRange(location: 0, length: lastText.string.characters.count))
             self.lastUpdatedLabel.attributedText = lastText
         }
     }
@@ -178,11 +177,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.updateLastUpdatedLabel()
             self.updateDeadbeatHeight()
             self.hasFetchedData = true
-            MBProgressHUD.hideAllHUDsForView(self.view, animated: true)
+//            MBProgressHUD.hideAllHUDsForView(self.view, animated: true)
             if refreshControl != nil {
                 refreshControl!.endRefreshing()
             }
             }, error: { () -> Void in
+//                MBProgressHUD.hideAllHUDsForView(self.view, animated: true)                
                 if refreshControl != nil {
                     refreshControl!.endRefreshing()
                 }
@@ -196,9 +196,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func loadGoalsFromDatabase() {
         self.frontburnerGoals = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "frontburner")) as! [Goal]
-        self.frontburnerGoals = self.frontburnerGoals.sorted { ($0.losedate < $1.losedate) }
+        self.frontburnerGoals = self.frontburnerGoals.sort { ($0.losedate < $1.losedate) }
         self.backburnerGoals  = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "backburner")) as! [Goal]
-        self.backburnerGoals = self.backburnerGoals.sorted { ($0.losedate < $1.losedate) }
+        self.backburnerGoals = self.backburnerGoals.sort { ($0.losedate < $1.losedate) }
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -214,9 +214,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        var cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCellWithReuseIdentifier(self.cellReuseIdentifier, forIndexPath: indexPath) as! GoalCollectionViewCell
+        let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCellWithReuseIdentifier(self.cellReuseIdentifier, forIndexPath: indexPath) as! GoalCollectionViewCell
         
-        var goal:Goal = indexPath.section == 0 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
+        let goal:Goal = indexPath.section == 0 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
         
         cell.goal = goal
         
@@ -225,7 +225,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
         if kind == UICollectionElementKindSectionFooter {
-            var footer = self.collectionView?.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionFooter, withReuseIdentifier: "footer", forIndexPath: indexPath) as! UICollectionReusableView
+            let footer = self.collectionView?.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionFooter, withReuseIdentifier: "footer", forIndexPath: indexPath) as UICollectionReusableView!
             footer.backgroundColor = UIColor.beeGrayColor()
             return footer
         }
@@ -237,7 +237,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        var goalViewController = GoalViewController()
+        let goalViewController = GoalViewController()
         if indexPath.section == 0 {
             goalViewController.goal = self.frontburnerGoals[indexPath.row]
         }

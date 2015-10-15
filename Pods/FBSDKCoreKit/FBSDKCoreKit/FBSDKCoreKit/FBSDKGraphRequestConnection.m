@@ -31,7 +31,7 @@
 #import "FBSDKGraphRequestPiggybackManager.h"
 #import "FBSDKInternalUtility.h"
 #import "FBSDKLogger.h"
-#import "FBSDKSettings.h"
+#import "FBSDKSettings+Internal.h"
 #import "FBSDKURLConnection.h"
 
 NSString *const FBSDKNonJSONResponseProperty = @"FACEBOOK_NON_JSON_RESULT";
@@ -176,7 +176,6 @@ typedef NS_ENUM(NSUInteger, FBSDKGraphRequestConnectionState)
 
   self.state = kStateStarted;
 
-  [request setValue:[FBSDKGraphRequestConnection userAgent] forHTTPHeaderField:@"User-Agent"];
   [self logRequest:request bodyLength:0 bodyLogger:nil attachmentLogger:nil];
   _requestStartTime = [FBSDKInternalUtility currentTimeInMilliseconds];
 
@@ -321,6 +320,38 @@ typedef NS_ENUM(NSUInteger, FBSDKGraphRequestConnectionState)
   }
 }
 
+- (BOOL)_shouldWarnOnMissingFieldsParam:(FBSDKGraphRequest *)request
+{
+  NSString *minVersion = @"2.4";
+  NSString *version = request.version;
+  if (!version) {
+    return YES;
+  }
+  if ([version hasPrefix:@"v"]) {
+    version = [version substringFromIndex:1];
+  }
+
+  NSComparisonResult result = [version compare:minVersion options:NSNumericSearch];
+
+  // if current version is the same as minVersion, or if the current version is > minVersion
+  return (result == NSOrderedSame) || (result == NSOrderedDescending);
+}
+
+// Validate that all GET requests after v2.4 have a "fields" param
+- (void)_validateFieldsParamForGetRequests:(NSArray *)requests
+{
+  for (FBSDKGraphRequestMetadata *metadata in requests) {
+    FBSDKGraphRequest *request = metadata.request;
+    if ([request.HTTPMethod.uppercaseString isEqualToString:@"GET"] &&
+        [self _shouldWarnOnMissingFieldsParam:request] &&
+        !request.parameters[@"fields"] &&
+        [request.graphPath rangeOfString:@"fields="].location == NSNotFound) {
+      [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors
+                         formatString:@"starting with Graph API v2.4, GET requests for /%@ should contain an explicit \"fields\" parameter", request.graphPath];
+    }
+  }
+}
+
 //
 // Generates a NSURLRequest based on the contents of self.requests, and sets
 // options on the request.  Chooses between URL-based request for a single
@@ -342,6 +373,8 @@ typedef NS_ENUM(NSUInteger, FBSDKGraphRequestConnectionState)
      raise];
 
   }
+
+  [self _validateFieldsParamForGetRequests:requests];
 
   if ([requests count] == 1) {
     FBSDKGraphRequestMetadata *metadata = [requests objectAtIndex:0];
@@ -396,6 +429,7 @@ typedef NS_ENUM(NSUInteger, FBSDKGraphRequestConnectionState)
 
   [request setValue:[FBSDKGraphRequestConnection userAgent] forHTTPHeaderField:@"User-Agent"];
   [request setValue:[FBSDKGraphRequestBody mimeContentType] forHTTPHeaderField:@"Content-Type"];
+  [request setHTTPShouldHandleCookies:NO];
 
   [self logRequest:request bodyLength:bodyLength bodyLogger:bodyLogger attachmentLogger:attachmentLogger];
 
@@ -660,7 +694,7 @@ typedef NS_ENUM(NSUInteger, FBSDKGraphRequestConnectionState)
       }
     }
 
-    [self processResultBody:body error:resultError metadata:metadata];
+    [self processResultBody:body error:resultError metadata:metadata canNotifyDelegate:(networkError ? NO : YES)];
   }];
 
   if (networkError) {
@@ -670,7 +704,7 @@ typedef NS_ENUM(NSUInteger, FBSDKGraphRequestConnectionState)
   }
 }
 
-- (void)processResultBody:(NSDictionary *)body error:(NSError *)error metadata:(FBSDKGraphRequestMetadata *)metadata
+- (void)processResultBody:(NSDictionary *)body error:(NSError *)error metadata:(FBSDKGraphRequestMetadata *)metadata canNotifyDelegate:(BOOL)canNotifyDelegate
 {
   void (^clearToken)() = ^{
     if (!(metadata.request.flags & FBSDKGraphRequestFlagDoNotInvalidateTokenOnError)) {
@@ -685,7 +719,7 @@ typedef NS_ENUM(NSUInteger, FBSDKGraphRequestConnectionState)
     [metadata invokeCompletionHandlerForConnection:self withResults:body error:error];
 
     if (--_expectingResults == 0) {
-      if ([_delegate respondsToSelector:@selector(requestConnectionDidFinishLoading:)]) {
+      if (canNotifyDelegate && [_delegate respondsToSelector:@selector(requestConnectionDidFinishLoading:)]) {
         [_delegate requestConnectionDidFinishLoading:self];
       }
     }
@@ -889,6 +923,9 @@ typedef NS_ENUM(NSUInteger, FBSDKGraphRequestConnectionState)
   if (!agent) {
     agent = [NSString stringWithFormat:@"%@.%@", kUserAgentBase, FBSDK_VERSION_STRING];
   }
+  if ([FBSDKSettings userAgentSuffix]) {
+    return [NSString stringWithFormat:@"%@/%@", agent, [FBSDKSettings userAgentSuffix]];
+  }
   return agent;
 }
 
@@ -931,12 +968,12 @@ typedef NS_ENUM(NSUInteger, FBSDKGraphRequestConnectionState)
     [retryRequest setGraphErrorRecoveryDisabled:YES];
     FBSDKGraphRequestMetadata *retryMetadata = [[FBSDKGraphRequestMetadata alloc] initWithRequest:retryRequest completionHandler:_recoveringRequestMetadata.completionHandler batchParameters:_recoveringRequestMetadata.batchParameters];
     [retryRequest startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *retriedError) {
-      [self processResultBody:result error:retriedError metadata:retryMetadata];
+      [self processResultBody:result error:retriedError metadata:retryMetadata canNotifyDelegate:YES];
       _errorRecoveryProcessor = nil;
       _recoveringRequestMetadata = nil;
     }];
   } else {
-    [self processResultBody:nil error:error metadata:_recoveringRequestMetadata];
+    [self processResultBody:nil error:error metadata:_recoveringRequestMetadata canNotifyDelegate:YES];
     _errorRecoveryProcessor = nil;
     _recoveringRequestMetadata = nil;
   }

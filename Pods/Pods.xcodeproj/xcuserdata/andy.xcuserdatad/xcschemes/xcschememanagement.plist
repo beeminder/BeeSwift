@@ -4,47 +4,37 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Pods-BeeSwift-AFNetworking.xcscheme</key>
+		<key>AFNetworking.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BeeSwift-Bolts.xcscheme</key>
+		<key>Bolts.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BeeSwift-FBSDKCoreKit.xcscheme</key>
+		<key>FBSDKCoreKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BeeSwift-FBSDKLoginKit.xcscheme</key>
+		<key>FBSDKLoginKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BeeSwift-IQKeyboardManager.xcscheme</key>
+		<key>IQKeyboardManager.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BeeSwift-MBProgressHUD.xcscheme</key>
+		<key>MBProgressHUD.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BeeSwift-MagicalRecord.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BeeSwift-SnapKit.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BeeSwift-SwiftyJSON.xcscheme</key>
+		<key>MagicalRecord.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -54,27 +44,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BeeSwiftTests-AFNetworking.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BeeSwiftTests-MagicalRecord.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BeeSwiftTests-SnapKit.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BeeSwiftTests-SwiftyJSON.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-BeeSwiftTests.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SnapKit.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SwiftyJSON.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -82,77 +62,57 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>0AEDA2D9E4622F3905B4239F</key>
+		<key>00FA81E7D121AC4F2FA46E1D5CFF948E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2D18AD616DB16DA46E4EAF54</key>
+		<key>26FA88F448E022A3618E5EECAC70D86E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>33686D990E28D1AFB4954945</key>
+		<key>3C5990E743946E2660F1444094DABE28</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>661278A580489110E79047DA</key>
+		<key>4EDA452517A913B556C7860F490D5FD3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>73C9B4DE0619B8C47953DFA6</key>
+		<key>584A21B6FD6A545F91E2A9F25E7EB033</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>988BFB42DF5BA259029F3D10</key>
+		<key>81F1D8E772014D2D6C41693AD5AEBA07</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9E838728E26385C780418473</key>
+		<key>95D0B1A15E6D8DA6E634615AD2DBAC3B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B68036BFC8A5458CA00740D9</key>
+		<key>B61AC9F4ABA548048F58B3AC46F6CB5D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B9B2740476E7E9102FA6CBF7</key>
+		<key>B9A04D3C9B208813656510FDA8ADAE02</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C63D30CF1BF688A77E897E1F</key>
+		<key>DDB38D844642388D5A0B4AD2CEBA6E3B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D6882AB2221C7AE56D3A58DD</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>D7D913AB3125B58C8C1E667F</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>E032997E60BA2676A3F012F1</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>E65DEBACEC4BD7A8F55A12BA</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>EA22B1051B3975EFB68894CF</key>
+		<key>ECDFB07CB9B9AAEC64A2C361FC4A6D6C</key>
 		<dict>
 			<key>primary</key>
 			<true/>

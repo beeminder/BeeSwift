@@ -19,21 +19,32 @@
 #import <Foundation/Foundation.h>
 
 #import <FBSDKCoreKit/FBSDKApplicationDelegate.h>
+#import <FBSDKCoreKit/FBSDKMacros.h>
 
 #import "BridgeAPI/FBSDKBridgeAPIRequest.h"
 #import "BridgeAPI/FBSDKBridgeAPIResponse.h"
 #import "BridgeAPI/FBSDKURLOpening.h"
+#import "FBSDKContainerViewController.h"
+
+FBSDK_EXTERN NSString *const FBSDKApplicationDidBecomeActiveNotification;
 
 @class FBSDKApplicationCall;
 
 typedef void(^FBSDKBridgeAPICallbackBlock)(FBSDKBridgeAPIResponse *response);
 
-@interface FBSDKApplicationDelegate ()
+@interface FBSDKApplicationDelegate () <FBSDKContainerViewControllerDelegate>
 
 - (void)openBridgeAPIRequest:(FBSDKBridgeAPIRequest *)request
+     useSafariViewController:(BOOL)useSafariViewController
+          fromViewController:(UIViewController *)fromViewController
              completionBlock:(FBSDKBridgeAPICallbackBlock)completionBlock;
 
-- (BOOL)openURL:(NSURL *)url sender:(id<FBSDKURLOpening>)sender;
+- (void)openURLWithSafariViewController:(NSURL *)url
+                                 sender:(id<FBSDKURLOpening>)sender
+                     fromViewController:(UIViewController *)fromViewController
+                                handler:(void(^)(BOOL))handler;
+
+- (void)openURL:(NSURL *)url sender:(id<FBSDKURLOpening>)sender handler:(void(^)(BOOL))handler;
 
 @property (nonatomic, readonly, getter=isActive) BOOL active;
 

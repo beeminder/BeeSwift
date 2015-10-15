@@ -22,6 +22,7 @@
 
 #import <FBSDKCoreKit/FBSDKMacros.h>
 
+#import "FBSDKApplicationDelegate+Internal.h"
 #import "FBSDKBase64.h"
 #import "FBSDKBridgeAPIRequest.h"
 #import "FBSDKConstants.h"
@@ -130,14 +131,6 @@ static const struct
   return [self initWithAppScheme:nil];
 }
 
-#pragma mark - Properties
-
-- (BOOL)isEnabled
-{
-  NSURL *URL = [[NSURL alloc] initWithScheme:self.appScheme host:nil path:@"/"];
-  return [[UIApplication sharedApplication] canOpenURL:URL];
-}
-
 #pragma mark - FBSDKBridgeAPIProtocol
 
 - (NSURL *)requestURLWithActionID:(NSString *)actionID
@@ -177,7 +170,7 @@ static const struct
                             forKey:FBSDKBridgeAPIProtocolNativeV1OutputKeys.bridgeArgs];
 
 
-  return [FBSDKInternalUtility URLWithScheme:scheme
+  return [FBSDKInternalUtility URLWithScheme:self.appScheme
                                         host:host
                                         path:path
                              queryParameters:queryParameters
@@ -333,11 +326,11 @@ static const struct
   void(^notificationBlock)(NSNotification *) = ^(NSNotification *note){
     NSData *pasteboardData = [pasteboard dataForPasteboardType:FBSDKBridgeAPIProtocolNativeV1DataPasteboardKey];
     if ([data isEqualToData:pasteboardData]) {
-      [pasteboard setData:nil forPasteboardType:FBSDKBridgeAPIProtocolNativeV1DataPasteboardKey];
+      [pasteboard setData:[NSData data] forPasteboardType:FBSDKBridgeAPIProtocolNativeV1DataPasteboardKey];
     }
   };
-  [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification
-                                                    object:[UIApplication sharedApplication]
+  [[NSNotificationCenter defaultCenter] addObserverForName:FBSDKApplicationDidBecomeActiveNotification
+                                                    object:[FBSDKApplicationDelegate sharedInstance]
                                                      queue:nil
                                                 usingBlock:notificationBlock];
 }

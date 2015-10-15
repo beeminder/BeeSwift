@@ -60,13 +60,13 @@ class DataSyncManager :NSObject {
     
     func handleResponse(json: JSON, completion: (()->Void)!) {
         CurrentUserManager.sharedManager.setDeatbeat(json["deadbeat"].boolValue)
-        var goals = json["goals"].array!
+        let goals = json["goals"].array!
         for goalJSON in goals {
             Goal.crupdateWithJSON(goalJSON)
         }
-        var deletedGoals = json["deleted_goals"].array!
+        let deletedGoals = json["deleted_goals"].array!
         for goalJSON in deletedGoals {
-            if let goal = Goal.MR_findFirstByAttribute("id", withValue: goalJSON["id"].string!) as! Goal? {
+            if let goal = Goal.MR_findFirstByAttribute("id", withValue: goalJSON["id"].string!) as Goal? {
                 for datapoint in goal.datapoints {
                     datapoint.MR_deleteEntity()
                 }
@@ -76,7 +76,7 @@ class DataSyncManager :NSObject {
         NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success: Bool, error: NSError!) -> Void in
             let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
             delegate.updateBadgeCount()
-            delegate.updateTodayText()
+            delegate.updateTodayWidget()
             if completion != nil && error == nil { completion() }
         }
     }

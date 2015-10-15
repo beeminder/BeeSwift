@@ -77,7 +77,7 @@ class LocalNotificationsManager :NSObject {
         NSUserDefaults.standardUserDefaults().setBool(true, forKey: self.notificationsOnKey())
         NSUserDefaults.standardUserDefaults().synchronize()
         UIApplication.sharedApplication().cancelAllLocalNotifications()
-        UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: .Sound | .Alert | .Badge, categories: nil))
+        UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: [.Sound, .Alert, .Badge], categories: nil))
         self.scheduleNotifications()
     }
     
@@ -90,13 +90,13 @@ class LocalNotificationsManager :NSObject {
     
     func scheduleNotifications() {
         UIApplication.sharedApplication().cancelAllLocalNotifications()
-        var notification = UILocalNotification()
+        let notification = UILocalNotification()
         notification.alertBody = "Don't forget to enter your Beeminder data for today!"
-        notification.repeatInterval = .CalendarUnitDay
+        notification.repeatInterval = .Day
         notification.soundName = UILocalNotificationDefaultSoundName
         
         let calendar = NSCalendar(identifier: NSCalendarIdentifierGregorian)
-        let components = calendar?.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate())
+        let components = calendar?.components([.Year, .Month, .Day], fromDate: NSDate())
         components!.hour = self.reminderTimeHour().integerValue
         components!.minute = self.reminderTimeMinute().integerValue
         let date = calendar!.dateFromComponents(components!)

@@ -1,6 +1,0 @@
-framework module IQKeyboardManager {
-  umbrella header "Pods-BeeSwift-IQKeyboardManager-umbrella.h"
-
-  export *
-  module * { export * }
-}

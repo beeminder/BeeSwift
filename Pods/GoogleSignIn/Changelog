@@ -1,0 +1,31 @@
+2015-07-15 -- v2.2.0
+- Compatible with iOS 9 (beta).
+- Adds descriptive identifiers for GIDSignInButton's Auto Layout constraints.
+- |signInSilently| no longer requires setting |uiDelegate|.
+
+2015-06-17 -- v2.1.0
+- Fixes Auto Layout issues with GIDSignInButton.
+- Adds API to refresh access token in GIDAuthentication.
+- Better exception description for unassigned clientID in GIDSignIn.
+- Other minor bug fixes.
+
+2015-05-28 -- v2.0.1
+- Bug fixes
+
+2015-05-21 -- v2.0.0
+- Supports sign-in via UIWebView rather than app switching to a browser,
+  configurable with the new |allowsSignInWithWebView| property.
+- Now apps which have disabled the app switch to a browser via the
+  |allowsSignInWithBrowser| and in-app web view via |allowsSignInWithWebView|
+  properties have the option to display a prompt instructing the user to
+  download the Google app from the App Store.
+- Fixes sign-in button sizing issue when auto-layout is enabled
+- |signInSilently| now calls the delegate with error when |hasAuthInKeychain|
+  is |NO| as documented
+- Other minor bug fixes
+
+2015-03-12 -- v1.0.0
+- New sign-in focused SDK with refreshed API
+- Dynamically rendered sign-in button with contextual branding
+- Basic profile support
+- Added allowsSignInWithBrowser property

@@ -24,7 +24,7 @@ class DatapointTableViewCell : UITableViewCell {
         self.setup()
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.setup()        
     }
@@ -34,7 +34,7 @@ class DatapointTableViewCell : UITableViewCell {
         self.datapointLabel.lineBreakMode = .ByTruncatingTail
         self.contentView.addSubview(self.datapointLabel)
         self.selectionStyle = .None
-        self.datapointLabel.snp_makeConstraints({ (make) -> Void in
+        self.datapointLabel.snp_makeConstraints(closure: { (make) -> Void in
             make.left.equalTo(5)
             make.right.equalTo(-5)
             make.centerY.equalTo(0)
