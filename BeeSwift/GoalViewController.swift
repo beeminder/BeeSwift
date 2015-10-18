@@ -244,6 +244,17 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         dataEntryView.addSubview(self.dateStepper)
         self.dateStepper.addTarget(self, action: "dateStepperValueChanged", forControlEvents: .ValueChanged)
         self.dateStepper.value = 0
+        
+        // if the goal's deadline is after midnight, and it's after midnight, 
+        // default to entering data for the "previous" day.
+        let now = NSDate()
+        let calendar = NSCalendar.currentCalendar()
+        let components = calendar.components(NSCalendarUnit.Hour, fromDate: now)
+        let hour = components.hour
+        if self.goal.deadline > 0 && hour < 6 {
+            self.dateStepper.value = -1
+        }
+        
         self.dateStepper.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.dateTextField.snp_bottom).offset(10)
             make.left.equalTo(self.dateTextField)

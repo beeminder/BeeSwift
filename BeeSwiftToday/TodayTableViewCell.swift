@@ -37,7 +37,7 @@ class TodayTableViewCell: UITableViewCell {
         self.contentView.addSubview(textLabel)
         textLabel.numberOfLines = 0
         textLabel.text = self.goalDictionary["limSum"] as? String
-        textLabel.font = UIFont(name: "Avenir", size: 14)
+        textLabel.font = UIFont.systemFontOfSize(14)
         textLabel.textColor = UIColor.whiteColor()
         
         textLabel.snp_makeConstraints(closure: { (make) -> Void in

@@ -27,6 +27,7 @@ extension Goal {
         goal.title = json["title"].string!
         goal.burner = json["burner"].string!
         goal.panic = json["panic"].number!
+        goal.deadline = json["deadline"].number!
         goal.losedate = json["losedate"].number!
         goal.runits = json["runits"].string!
         if json["rate"].number != nil { goal.rate = json["rate"].number! }

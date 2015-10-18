@@ -22,6 +22,8 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         self.title = "Settings"
         self.view.backgroundColor = UIColor.whiteColor()
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "userDefaultsDidChange", name: NSUserDefaultsDidChangeNotification, object: nil)
+        
         self.view.addSubview(self.numberOfTodayGoalsLabel)
         var numberOfTodayGoals = NSUserDefaults.standardUserDefaults().objectForKey("numberOfTodayGoals")?.integerValue
         if numberOfTodayGoals == nil {
@@ -67,9 +69,8 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         
         self.view.addSubview(self.emergencyRemindersSwitch)
         self.emergencyRemindersSwitch.addTarget(self, action: "emergencyRemindersSwitchChanged", forControlEvents: .ValueChanged)
-        self.emergencyRemindersSwitch.on = RemoteNotificationsManager.sharedManager.on()
+        self.updateEmergencyRemindersSwitch()
         self.emergencyRemindersSwitch.snp_makeConstraints { (make) -> Void in
-            make.centerX.equalTo(self.numberOfTodayGoalsLabel)
             make.top.equalTo(self.numberOfTodayGoalsStepper.snp_bottom).offset(20)
             make.right.equalTo(self.numberOfTodayGoalsStepper)
         }
@@ -98,10 +99,18 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         self.setTimePickerViewValues()
     }
     
+    func userDefaultsDidChange() {
+        self.updateEmergencyRemindersSwitch()
+        self.numberOfTodayGoalsLabel.text = "Number of Goals in Today view: \(Int(self.numberOfTodayGoalsStepper.value))"
+    }
+    
+    func updateEmergencyRemindersSwitch() {
+        self.emergencyRemindersSwitch.on = RemoteNotificationsManager.sharedManager.on()
+    }
+    
     func numberOfTodayGoalsStepperValueChanged() {
         NSUserDefaults.standardUserDefaults().setObject(Int(self.numberOfTodayGoalsStepper.value), forKey: "numberOfTodayGoals")
         NSUserDefaults.standardUserDefaults().synchronize()
-        self.numberOfTodayGoalsLabel.text = "Number of Goals in Today view: \(Int(self.numberOfTodayGoalsStepper.value))"
     }
     
     func setTimePickerViewValues() {

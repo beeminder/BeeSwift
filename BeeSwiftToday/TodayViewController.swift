@@ -31,7 +31,7 @@ class TodayViewControler: UIViewController, UITableViewDataSource, UITableViewDe
             make.bottom.equalTo(0)
         }
         self.updateDataSource()
-        self.preferredContentSize = CGSizeMake(0, CGFloat(Double(self.goalDictionaries.count)*(0.4*122.0/200.0)*Double(self.view.frame.size.width)))
+        self.preferredContentSize = CGSizeMake(0, CGFloat(Double(self.goalDictionaries.count)*(122.0/200.0)*0.4*Double(self.view.frame.size.width)))
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -48,7 +48,7 @@ class TodayViewControler: UIViewController, UITableViewDataSource, UITableViewDe
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let slug = self.goalDictionaries[indexPath.row]["slug"] as! String
-
+        
         self.extensionContext?.openURL(NSURL(string: "beeminder://?slug=\(slug)")!, completionHandler: nil)
     }
     

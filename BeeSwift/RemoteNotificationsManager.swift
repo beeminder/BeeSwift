@@ -25,6 +25,7 @@ class RemoteNotificationsManager :NSObject {
     }
     
     func turnNotificationsOn() {
+        UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: [UIUserNotificationType.Alert, UIUserNotificationType.Sound, UIUserNotificationType.Badge], categories: nil))
         UIApplication.sharedApplication().registerForRemoteNotifications()
     }
     
@@ -46,10 +47,30 @@ class RemoteNotificationsManager :NSObject {
         }
     }
     
-    func handleRegistrationFailure(error: NSError) {
-        let alert = UIAlertController(title: "Sorry!", message: "Couldn't turn on push notifications. ", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Go to settings", style: UIAlertActionStyle.Default, handler: { (alertAction) -> Void in
+    func didFailToRegisterForRemoteNotificationsWithError(error: NSError) {
+        let alert = UIAlertController(title: "Sorry!", message: "There was a problem turning on notifications. Please email support@beeminder.com.", preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: "Email support", style: .Default, handler: { (alertAction) -> Void in
+            UIApplication.sharedApplication().openURL(NSURL(string: "mailto:support@beeminder.com?subject=iOS%20notifications%20error")!)
+        }))
+        alert.addAction(UIAlertAction(title: "Skip", style: .Cancel, handler: { (alertAction) -> Void in
+            // do nothing, just cancel
+        }))
+        UIApplication.sharedApplication().windows.first?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
+        self.turnNotificationsOff()
+    }
+    
+    func didRegisterUserNotificationSettings(notificationSettings: UIUserNotificationSettings) {
+        if notificationSettings.types != UIUserNotificationType.None { return }
+        
+        let alert = UIAlertController(title: "Sorry!", message: "It looks like Beeminder isn't allowed to send you notifications. Please open settings and make sure that you've allowed Beeminder to send you notifications, or email support@beeminder.com if have and you're still seeing this message.", preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: "Open Settings", style: .Default, handler: { (alertAction) -> Void in
             UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
+        }))
+        alert.addAction(UIAlertAction(title: "Email support", style: .Default, handler: { (alertAction) -> Void in
+            UIApplication.sharedApplication().openURL(NSURL(string: "mailto:support@beeminder.com?subject=iOS%20notifications%20problem")!)
+        }))
+        alert.addAction(UIAlertAction(title: "Skip", style: .Cancel, handler: { (alertAction) -> Void in
+            // do nothing, just cancel
         }))
         UIApplication.sharedApplication().windows.first?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
         self.turnNotificationsOff()

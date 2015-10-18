@@ -33,5 +33,5 @@ class Goal: NSManagedObject {
     @NSManaged var curval: NSNumber
     @NSManaged var limsum: String
     @NSManaged var datapoints: NSSet
-
+    @NSManaged var deadline: NSNumber
 }
