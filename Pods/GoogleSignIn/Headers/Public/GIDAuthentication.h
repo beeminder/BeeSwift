@@ -10,6 +10,8 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol GTMFetcherAuthorizationProtocol;
+
 // @relates GIDAuthentication
 //
 // The callback block that takes an access token or an error if attempt to refresh was unsuccessful.
@@ -35,11 +37,18 @@ typedef void (^GIDAccessTokenHandler)(NSString *accessToken, NSError *error);
 // https://developers.google.com/identity/sign-in/ios/backend-auth
 @property(nonatomic, readonly) NSString *idToken;
 
+// Gets a new authorizer for GTLService, GTMSessionFetcher, or GTMHTTPFetcher.
+- (id<GTMFetcherAuthorizationProtocol>)fetcherAuthorizer;
+
 // Gets the access token, which may be a new one from the refresh token if the original has already
 // expired or is about to expire.
+// This method is only needed for adding the access token to the request by hand, i.e. not using
+// |fetcherAuthorizer| or |GTMOAuth2Authentication|.
 - (void)getAccessTokenWithHandler:(GIDAccessTokenHandler)handler;
 
 // Refreshes the access token with the refresh token.
+// This method is only needed for adding the access token to the request by hand, i.e. not using
+// |fetcherAuthorizer| or |GTMOAuth2Authentication|.
 - (void)refreshAccessTokenWithHandler:(GIDAccessTokenHandler)handler;
 
 @end

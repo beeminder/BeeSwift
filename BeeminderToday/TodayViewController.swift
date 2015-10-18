@@ -8,73 +8,58 @@
 
 import Foundation
 import UIKit
-import AFNetworking
 import SnapKit
 
-class TodayViewControler: UIViewController {
+class TodayViewControler: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    var button = UIButton()
-    var graph = UIImageView()
+    var tableView = UITableView()
+    var goalDictionaries : Array<NSDictionary> = []
     
     override func viewDidLoad() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateLabelText", name: NSUserDefaultsDidChangeNotification, object: nil)
-        let defaults = NSUserDefaults(suiteName: "group.beeminder.beeminder")
-        self.button.setTitle(defaults?.objectForKey("todayString") as? String, forState: .Normal)
-        let goalURLs = defaults?.objectForKey("todayURLs") as! Array<String>
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateDataSource", name: NSUserDefaultsDidChangeNotification, object: nil)
         
-        self.view.addSubview(self.graph)
-        self.graph.snp_makeConstraints { (make) -> Void in
-            make.height.equalTo(100)
-            make.width.equalTo(100)
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.tableFooterView = UIView()
+        self.tableView.separatorStyle = .None
+        self.tableView.registerClass(TodayTableViewCell.self, forCellReuseIdentifier: "todayCell")
+        self.view.addSubview(self.tableView)
+        self.tableView.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.top.equalTo(0)
+            make.width.equalTo(self.view)
+            make.bottom.equalTo(0)
         }
-        graph.setImageWithURL(NSURL(string: goalURLs.first!)!, placeholderImage: UIImage(named: "GraphPlaceholder"))
+        self.updateDataSource()
+        self.preferredContentSize = CGSizeMake(0, CGFloat(Double(self.goalDictionaries.count)*(0.4*122.0/200.0)*Double(self.view.frame.size.width)))
     }
     
-    func updateLabelText() {
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.goalDictionaries.count
+    }
+    
+    func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 100
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let slug = self.goalDictionaries[indexPath.row]["slug"] as! String
+
+        self.extensionContext?.openURL(NSURL(string: "beeminder://?slug=\(slug)")!, completionHandler: nil)
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("todayCell") as! TodayTableViewCell
+        cell.goalDictionary = self.goalDictionaries[indexPath.row]
+        return cell
+    }
+    
+    func updateDataSource() {
         let defaults = NSUserDefaults(suiteName: "group.beeminder.beeminder")
-        self.button.setTitle(defaults?.objectForKey("todayString") as? String, forState: .Normal)
+        self.goalDictionaries = defaults?.objectForKey("todayGoalDictionaries") as! Array<NSDictionary>
     }
 }
-
-//@implementation TodayViewController
-//
-//- (void)viewDidLoad {
-//    [super viewDidLoad];
-//    
-//    [self updateLabelText];
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//    selector:@selector(updateLabelText)
-//    name:NSUserDefaultsDidChangeNotification
-//    object:nil];
-//    self.button.titleLabel.numberOfLines = 0;
-//    [self.button addTarget:self action:@selector(buttonPressed) forControlEvents:UIControlEventTouchUpInside];
-//    
-//    
-//    }
-//    
-//    - (void)buttonPressed
-//        {
-//            [self.extensionContext openURL:[NSURL URLWithString:@"beeminder://"] completionHandler:nil];
-//        }
-//        
-//        - (void)didReceiveMemoryWarning {
-//            [super didReceiveMemoryWarning];
-//            // Dispose of any resources that can be recreated.
-//            }
-//            
-//            - (void)updateLabelText {
-//                NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.beeminder.beeminder"];
-//                [self.button setTitle:[defaults objectForKey:@"todayString"] forState:UIControlStateNormal];
-//                }
-//                
-//                - (void)widgetPerformUpdateWithCompletionHandler:(void (^)(NCUpdateResult))completionHandler {
-//                    // Perform any setup necessary in order to update the view.
-//                    
-//                    // If an error is encountered, use NCUpdateResultFailed
-//                    // If there's no update required, use NCUpdateResultNoData
-//                    // If there's an update, use NCUpdateResultNewData
-//                    
-//                    completionHandler(NCUpdateResultNewData);
-//}

@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 APB. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import <AFNetworking/AFNetworking.h>
 #import <MagicalRecord/MagicalRecord.h>
 #import <CommonCrypto/CommonHMAC.h>

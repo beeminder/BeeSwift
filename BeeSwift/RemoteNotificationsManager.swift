@@ -26,8 +26,6 @@ class RemoteNotificationsManager :NSObject {
     
     func turnNotificationsOn() {
         UIApplication.sharedApplication().registerForRemoteNotifications()
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: self.remoteNotificationsOnKey())
-        NSUserDefaults.standardUserDefaults().synchronize()
     }
     
     func turnNotificationsOff() {
@@ -35,7 +33,9 @@ class RemoteNotificationsManager :NSObject {
         NSUserDefaults.standardUserDefaults().synchronize()
     }
     
-    func handleDeviceToken(deviceToken: NSData) {
+    func didRegisterForRemoteNotificationsWithDeviceToken(deviceToken: NSData) {
+        NSUserDefaults.standardUserDefaults().setBool(true, forKey: self.remoteNotificationsOnKey())
+        NSUserDefaults.standardUserDefaults().synchronize()
         var deviceTokenString = deviceToken.description.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "<>"))
         deviceTokenString = deviceTokenString.stringByReplacingOccurrencesOfString(" ", withString: "", options: [], range: nil)
         
@@ -47,6 +47,11 @@ class RemoteNotificationsManager :NSObject {
     }
     
     func handleRegistrationFailure(error: NSError) {
+        let alert = UIAlertController(title: "Sorry!", message: "Couldn't turn on push notifications. ", preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: "Go to settings", style: UIAlertActionStyle.Default, handler: { (alertAction) -> Void in
+            UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
+        }))
+        UIApplication.sharedApplication().windows.first?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
         self.turnNotificationsOff()
     }
 

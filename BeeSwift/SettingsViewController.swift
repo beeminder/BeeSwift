@@ -10,8 +10,8 @@ import Foundation
 
 class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
     
-    private var dataEntryReminderLabel = BSLabel()
-    private var dataEntryReminderSwitch = UISwitch()
+    private var numberOfTodayGoalsLabel = BSLabel()
+    private var numberOfTodayGoalsStepper = UIStepper()
     private var timePickerView = UIPickerView()
     private var timePickerContainerView = UIView()
     private var animatingTimePickerView = false
@@ -22,31 +22,38 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         self.title = "Settings"
         self.view.backgroundColor = UIColor.whiteColor()
         
-        self.dataEntryReminderSwitch.addTarget(self, action: "dataEntryReminderSwitchChanged", forControlEvents: .ValueChanged)
-        self.view.addSubview(self.dataEntryReminderSwitch)
-        self.dataEntryReminderSwitch.on = LocalNotificationsManager.sharedManager.on()
-        self.dataEntryReminderSwitch.snp_makeConstraints { (make) -> Void in
+        self.view.addSubview(self.numberOfTodayGoalsLabel)
+        var numberOfTodayGoals = NSUserDefaults.standardUserDefaults().objectForKey("numberOfTodayGoals")?.integerValue
+        if numberOfTodayGoals == nil {
+            numberOfTodayGoals = 3
+            NSUserDefaults.standardUserDefaults().setObject(3, forKey: "numberOfTodayGoals")
+            NSUserDefaults.standardUserDefaults().synchronize()
+        }
+        
+        self.numberOfTodayGoalsLabel.text = "Number of Goals in Today view: \(numberOfTodayGoals!)"
+        self.numberOfTodayGoalsLabel.adjustsFontSizeToFitWidth = true
+        self.numberOfTodayGoalsLabel.minimumScaleFactor = 0.8
+        self.numberOfTodayGoalsLabel.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(20)
+            make.width.lessThanOrEqualTo(self.view).multipliedBy(0.7).offset(-20)
             make.top.equalTo(self.snp_topLayoutGuideBottom).offset(20)
         }
         
-        self.dataEntryReminderLabel.font = UIFont(name: "Avenir", size: 16)
-        self.dataEntryReminderLabel.text = "Data entry reminder: off"
-        self.dataEntryReminderLabel.userInteractionEnabled = true
-        let tapGR = UITapGestureRecognizer()
-        tapGR.addTarget(self, action: "dataEntryReminderLabelTapped")
-        self.dataEntryReminderLabel.addGestureRecognizer(tapGR)
-        self.view.addSubview(self.dataEntryReminderLabel)
-        self.dataEntryReminderLabel.snp_makeConstraints { (make) -> Void in
-            make.centerY.equalTo(self.dataEntryReminderSwitch)
-            make.left.equalTo(self.dataEntryReminderSwitch.snp_right).offset(20)
+        self.view.addSubview(self.numberOfTodayGoalsStepper)
+        self.numberOfTodayGoalsStepper.tintColor = UIColor.darkGrayColor()
+        self.numberOfTodayGoalsStepper.maximumValue = 3
+        self.numberOfTodayGoalsStepper.snp_makeConstraints { (make) -> Void in
+            make.centerY.equalTo(self.numberOfTodayGoalsLabel)
+            make.left.equalTo(self.numberOfTodayGoalsLabel.snp_right).offset(10)
         }
+        self.numberOfTodayGoalsStepper.addTarget(self, action: "numberOfTodayGoalsStepperValueChanged", forControlEvents: .ValueChanged)
+        self.numberOfTodayGoalsStepper.value = Double(numberOfTodayGoals!)
         
         self.timePickerContainerView.clipsToBounds = true
         self.view.addSubview(self.timePickerContainerView)
         self.timePickerContainerView.alpha = 0
         self.timePickerContainerView.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.dataEntryReminderLabel.snp_bottom)
+            make.top.equalTo(self.numberOfTodayGoalsLabel.snp_bottom)
             make.width.equalTo(self.view)
             make.height.equalTo(0)
         }
@@ -62,17 +69,18 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         self.emergencyRemindersSwitch.addTarget(self, action: "emergencyRemindersSwitchChanged", forControlEvents: .ValueChanged)
         self.emergencyRemindersSwitch.on = RemoteNotificationsManager.sharedManager.on()
         self.emergencyRemindersSwitch.snp_makeConstraints { (make) -> Void in
-            make.centerX.equalTo(self.dataEntryReminderSwitch)
-            make.top.equalTo(self.timePickerContainerView.snp_bottom).offset(20)
+            make.centerX.equalTo(self.numberOfTodayGoalsLabel)
+            make.top.equalTo(self.numberOfTodayGoalsStepper.snp_bottom).offset(20)
+            make.right.equalTo(self.numberOfTodayGoalsStepper)
         }
         
         let emergencyRemindersLabel = BSLabel()
         self.view.addSubview(emergencyRemindersLabel)
         emergencyRemindersLabel.text = "Goal emergency notifications"
-        emergencyRemindersLabel.font = self.dataEntryReminderLabel.font!
+        emergencyRemindersLabel.font = self.numberOfTodayGoalsLabel.font!
         emergencyRemindersLabel.snp_makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.emergencyRemindersSwitch)
-            make.left.equalTo(self.dataEntryReminderLabel)
+            make.left.equalTo(self.numberOfTodayGoalsLabel)
         }
         
         let signOutButton = BSButton()
@@ -88,7 +96,12 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         }
         
         self.setTimePickerViewValues()
-        self.updateDataEntryReminderLabel()
+    }
+    
+    func numberOfTodayGoalsStepperValueChanged() {
+        NSUserDefaults.standardUserDefaults().setObject(Int(self.numberOfTodayGoalsStepper.value), forKey: "numberOfTodayGoals")
+        NSUserDefaults.standardUserDefaults().synchronize()
+        self.numberOfTodayGoalsLabel.text = "Number of Goals in Today view: \(Int(self.numberOfTodayGoalsStepper.value))"
     }
     
     func setTimePickerViewValues() {
@@ -114,29 +127,6 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         return UIPickerView().frame.size.height
     }
     
-    func dataEntryReminderLabelTapped() {
-        if self.timePickerViewVisible {
-            self.hideTimePickerView()
-        } else {
-            self.showTimePickerView()
-        }
-        self.updateDataEntryReminderLabel()
-    }
-    
-    func hideTimePickerView() {
-        if self.timePickerViewVisible {
-            self.toggleTimePickerView()
-        }
-    }
-    
-    func showTimePickerView() {
-        if !self.timePickerViewVisible {
-            self.dataEntryReminderSwitch.on = true
-            LocalNotificationsManager.sharedManager.turnNotificationsOn()
-            self.toggleTimePickerView()
-        }
-    }
-    
     func toggleTimePickerView() {
         if self.animatingTimePickerView {
             return
@@ -155,30 +145,9 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         }
     }
     
-    func updateDataEntryReminderLabel() {
-        if LocalNotificationsManager.sharedManager.on() {
-            self.dataEntryReminderLabel.text = "Data entry reminder: \(LocalNotificationsManager.sharedManager.humanizedReminderTime())"
-        }
-        else {
-            self.dataEntryReminderLabel.text = "Data entry reminder: off"
-        }
-    }
-    
     func signOutButtonPressed() {
         CurrentUserManager.sharedManager.signOut()
         self.navigationController?.popViewControllerAnimated(true)
-    }
-    
-    func dataEntryReminderSwitchChanged() {
-        if self.dataEntryReminderSwitch.on {
-            self.showTimePickerView()
-            LocalNotificationsManager.sharedManager.turnNotificationsOn()
-        }
-        else {
-            self.hideTimePickerView()
-            LocalNotificationsManager.sharedManager.turnNotificationsOff()
-        }
-        self.updateDataEntryReminderLabel()
     }
     
     func emergencyRemindersSwitchChanged() {
@@ -261,10 +230,5 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     
     func reminderMinuteFromTimePicker() -> NSNumber {
         return self.timePickerView.selectedRowInComponent(1)
-    }
-    
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        LocalNotificationsManager.sharedManager.setReminder(self.reminderHourFromTimePicker(), minute: self.reminderMinuteFromTimePicker())
-        self.updateDataEntryReminderLabel()
     }
 }

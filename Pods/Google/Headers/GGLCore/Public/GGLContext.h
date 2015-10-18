@@ -1,23 +1,27 @@
-@import Foundation;
+#import <Foundation/Foundation.h>
 
 @class GGLConfiguration;
-@class GGLIdentity;
 
 /**
- * Main entry point for Google API core configuration. Developers should call
- * -[[GGLContext sharedInstance] configureWithError:] to configure the integrated services such as
- * AdMob, Analytics, AppInvite, CloudMessaging, SignIn, etc. See GGLContext+ServiceName
- * for details on the individual APIs. Generally, you will import those files
- * directly rather than import the GGLContext.h header itself.
+ * Main entry point for Google API core configuration. Google services such as AdMob, Analytics,
+ * AppInvite, CloudMessaging, SignIn, etc can be configured via this class and its categories.
+ * See GGLContext+ServiceName for details on the individual APIs. Generally, you will import those
+ * files directly rather than import the GGLContext.h header itself.
  *
  * Once the appropriate categories are imported, you can configure all services via the
  * |configureWithError:| method, for example:
  *
+ * <pre>
  * NSError* configureError;
  * [[GGLContext sharedInstance] configureWithError: &configureError];
  * if (configureError != nil) {
  *   NSLog(@"Error configuring the Google context: %@", configureError);
  * }
+ * </pre>
+ *
+ * The method |configureWithError:| will read from the file GoogleServices-Info.plist bundled with
+ * your app target for the keys to configure each individual API. To generate your
+ * GoogleServices-Info.plist, please go to https://developers.google.com/mobile/add
  *
  * @see GGLContext (AdMob)
  * @see GGLContext (Analytics)

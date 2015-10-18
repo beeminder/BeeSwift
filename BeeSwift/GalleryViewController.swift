@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import AFNetworking
 import MagicalRecord
 import SnapKit
 import MBProgressHUD
@@ -31,6 +30,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleSignIn", name: CurrentUserManager.signedInNotificationName, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleSignOut", name: CurrentUserManager.signedOutNotificationName, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "openGoalFromNotification:", name: "openGoal", object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
@@ -196,9 +196,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func loadGoalsFromDatabase() {
         self.frontburnerGoals = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "frontburner")) as! [Goal]
-        self.frontburnerGoals = self.frontburnerGoals.sort { ($0.losedate < $1.losedate) }
+        self.frontburnerGoals = self.frontburnerGoals.sort { ($0.losedate.integerValue < $1.losedate.integerValue) }
         self.backburnerGoals  = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "backburner")) as! [Goal]
-        self.backburnerGoals = self.backburnerGoals.sort { ($0.losedate < $1.losedate) }
+        self.backburnerGoals = self.backburnerGoals.sort { ($0.losedate.integerValue < $1.losedate.integerValue) }
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -237,16 +237,27 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        let goalViewController = GoalViewController()
         if indexPath.section == 0 {
-            goalViewController.goal = self.frontburnerGoals[indexPath.row]
+            self.openGoal(self.frontburnerGoals[indexPath.row])
         }
         else {
-            goalViewController.goal = self.backburnerGoals[indexPath.row]
+            self.openGoal(self.backburnerGoals[indexPath.row])
         }
-
-        self.navigationController?.pushViewController(goalViewController, animated: true)
     }
 
+    func openGoalFromNotification(notification: NSNotification) {
+        let slug = notification.userInfo!["slug"] as! String
+        guard let goal = Goal.MR_findFirstByAttribute("slug", withValue: slug) else {
+            return
+        }
+        self.navigationController?.popToRootViewControllerAnimated(false)
+        self.openGoal(goal)
+    }
+    
+    func openGoal(goal: Goal) {
+        let goalViewController = GoalViewController()
+        goalViewController.goal = goal
+        self.navigationController?.pushViewController(goalViewController, animated: true)
+    }
 }
 

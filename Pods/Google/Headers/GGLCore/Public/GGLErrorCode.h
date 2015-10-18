@@ -17,58 +17,40 @@ typedef enum {
    */
   kGGLErrorCodeNoOp = -2,
 
-  // 100 series codes are for GGLIdentity
-  /**
-   * Sign In was cancelled before completion. This indicates that the user cancelled login. If
-   * non-login users are supported receiving this error code should start that flow.
-   **/
-  kGGLErrorCodeSignInCancelled = -100,
-
-  /**
-   * Sign in failed due to the e-mail returned by the provider did not match the one inputted by
-   * the user. This indicates some sort of issue with the identity provider. Possibly the user is
-   * using an alias for the email that they created the account with. This is likely a permanent
-   * failure without remediation by the identity provider. The provided UI does not indicate the
-   * failure to the user, so it is the responsibility of the caller to communicate this reason for
-   * failure to the user.
-   */
-  kGGLErrorCodeEmailMismatch = -101,
-
-  /**
-   * Sign in failed due to the user attempting to create a new account with an e-mail that is
-   * already associated with an account. The provided UI does not indicate the failure to the user,
-   * so it is the responsibility of the caller to communicate this reason for failure to the user.
-   */
-  kGGLErrorCodeEmailExists = -102,
-
-  /**
-   * Sign in failed due to an unexpected response during sign in process. This may or may not be a
-   * transitory error, so on first occurrence it is reasonable to attempt again. If it is
-   * consistently occurring it may indicate that the identity provider is not available, check the
-   * internet connection.
-   */
-  kGGLErrorCodeUnexpectedResponse = -103,
-
-  /**
-   * Indicates the session is not stored locally.
-   */
-  kGGLErrorCodeSessionNotStored = -104,
-
-  /**
-   * The user cannot sign in silently without a user interface.
-   */
-  kGGLErrorCodeCannotSignInSilently = -105,
-
-  // 200 series error codes are for GGLContext
-  /**
-   * Configuration of one of the requested subspecs failed. Additional details on what failed and
-   * why it failed should appear in the log.
-   */
-  kGGLErrorCodeFeatureSubspecConfigFailed = -200,
-
+  // 100 series error codes are for GGLContext
   /**
    * Loading data from the GoogleService-Info.plist file failed. This is a fatal error and should
    * not be ignored. Further calls to the API will fail and/or possibly cause crashes.
    */
-  kGGLErrorCodeInvalidPlistFile = -200
+  kGGLErrorCodeInvalidPlistFile = -100,
+
+  /**
+   * Configuration of AdMob subspec failed. Additional details on the reason for the failure
+   * appear in the related NSError.
+   */
+  kGGLErrorCodeAdMobSubspecConfigFailed = -101,
+
+  /**
+   * Configuration of Analytics subspec failed. Additional details on the reason for the failure
+   * appear in the related NSError.
+   */
+  kGGLErrorCodeAnalyticsSubspecConfigFailed = -102,
+
+  /**
+   * Configuration of AppInvite subspec failed. Additional details on the reason for the failure
+   * appear in the related NSError.
+   */
+  kGGLErrorCodeAppInviteSubspecConfigFailed = -103,
+
+  /**
+   * Configuration of CloudMessaging subspec failed. Additional details on the reason for the failure
+   * appear in the related NSError.
+   */
+  kGGLErrorCodeCloudMessagingSubspecConfigFailed = -104,
+
+  /**
+   * Configuration of SignIn subspec failed. Additional details on the reason for the failure appear
+   * in the related NSError.
+   */
+  kGGLErrorCodeSignInSubspecConfigFailed = -105,
 } GGLErrorCode;

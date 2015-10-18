@@ -9,6 +9,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Alamofire.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>AlamofireImage.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Bolts.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -62,17 +72,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>00FA81E7D121AC4F2FA46E1D5CFF948E</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>26FA88F448E022A3618E5EECAC70D86E</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>3C5990E743946E2660F1444094DABE28</key>
+		<key>1C1BAB4E813C0193BFCA5F223B0C79B2</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -82,22 +82,42 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>584A21B6FD6A545F91E2A9F25E7EB033</key>
+		<key>64C86E5681CF1896DC79C5ABD3FF2834</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>81F1D8E772014D2D6C41693AD5AEBA07</key>
+		<key>68ADD8897DBA01608D17E043587E7E9D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>95D0B1A15E6D8DA6E634615AD2DBAC3B</key>
+		<key>68D1739F7CDBD1C2120A02E5C12AC457</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B61AC9F4ABA548048F58B3AC46F6CB5D</key>
+		<key>6C14FE39807B130DEA68D9B2230D818D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7B8742AD5C565D630A672B80E0F317B4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>98291CD6166D7558BCD983DCD9406060</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>995E1B98F15452EBB4BF37504A9EE82A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9F2F9CCD177A63D029DB0176A9B57D60</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -107,12 +127,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DDB38D844642388D5A0B4AD2CEBA6E3B</key>
+		<key>CDAC7AC0744EFFE667F0E8E0CBCEFAD0</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>ECDFB07CB9B9AAEC64A2C361FC4A6D6C</key>
+		<key>DA5837B92D2DF5B515B0AA6247A7556C</key>
 		<dict>
 			<key>primary</key>
 			<true/>

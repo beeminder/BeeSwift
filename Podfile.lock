@@ -1,47 +1,51 @@
 PODS:
-  - AFNetworking (2.6.0):
-    - AFNetworking/NSURLConnection (= 2.6.0)
-    - AFNetworking/NSURLSession (= 2.6.0)
-    - AFNetworking/Reachability (= 2.6.0)
-    - AFNetworking/Security (= 2.6.0)
-    - AFNetworking/Serialization (= 2.6.0)
-    - AFNetworking/UIKit (= 2.6.0)
-  - AFNetworking/NSURLConnection (2.6.0):
+  - AFNetworking (2.6.1):
+    - AFNetworking/NSURLConnection (= 2.6.1)
+    - AFNetworking/NSURLSession (= 2.6.1)
+    - AFNetworking/Reachability (= 2.6.1)
+    - AFNetworking/Security (= 2.6.1)
+    - AFNetworking/Serialization (= 2.6.1)
+    - AFNetworking/UIKit (= 2.6.1)
+  - AFNetworking/NSURLConnection (2.6.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.6.0):
+  - AFNetworking/NSURLSession (2.6.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (2.6.0)
-  - AFNetworking/Security (2.6.0)
-  - AFNetworking/Serialization (2.6.0)
-  - AFNetworking/UIKit (2.6.0):
+  - AFNetworking/Reachability (2.6.1)
+  - AFNetworking/Security (2.6.1)
+  - AFNetworking/Serialization (2.6.1)
+  - AFNetworking/UIKit (2.6.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - Bolts (1.2.2):
-    - Bolts/AppLinks (= 1.2.2)
-    - Bolts/Tasks (= 1.2.2)
-  - Bolts/AppLinks (1.2.2):
+  - Alamofire (2.0.2)
+  - AlamofireImage (1.1.2):
+    - Alamofire (~> 2.0)
+  - Bolts (1.3.0):
+    - Bolts/AppLinks (= 1.3.0)
+    - Bolts/Tasks (= 1.3.0)
+  - Bolts/AppLinks (1.3.0):
     - Bolts/Tasks
-  - Bolts/Tasks (1.2.2)
-  - FBSDKCoreKit (4.6.0):
+  - Bolts/Tasks (1.3.0)
+  - FBSDKCoreKit (4.7.0):
     - Bolts (~> 1.1)
-    - FBSDKCoreKit/arc (= 4.6.0)
-    - FBSDKCoreKit/no-arc (= 4.6.0)
-  - FBSDKCoreKit/arc (4.6.0):
+    - FBSDKCoreKit/arc (= 4.7.0)
+    - FBSDKCoreKit/no-arc (= 4.7.0)
+  - FBSDKCoreKit/arc (4.7.0):
     - Bolts (~> 1.1)
-  - FBSDKCoreKit/no-arc (4.6.0):
+  - FBSDKCoreKit/no-arc (4.7.0):
     - Bolts (~> 1.1)
     - FBSDKCoreKit/arc
-  - FBSDKLoginKit (4.6.0):
+  - FBSDKLoginKit (4.7.0):
     - FBSDKCoreKit
-  - Google/Core (1.0.7):
+  - Google/Core (1.1.1):
+    - GoogleInterchangeUtilities (~> 1.0)
     - GoogleNetworkingUtilities (~> 1.0)
     - GoogleSymbolUtilities (~> 1.0)
-    - GoogleUtilities (~> 1.0)
-  - Google/SignIn (1.0.7):
+    - GoogleUtilities (~> 1.1)
+  - Google/SignIn (1.1.1):
     - Google/Core
     - GoogleSignIn (~> 2.0)
   - GoogleAppUtilities (1.0.0):
@@ -49,24 +53,28 @@ PODS:
   - GoogleAuthUtilities (1.0.1):
     - GoogleNetworkingUtilities (~> 1.0)
     - GoogleSymbolUtilities (~> 1.0)
+  - GoogleInterchangeUtilities (1.0.0):
+    - GoogleSymbolUtilities (~> 1.0)
   - GoogleNetworkingUtilities (1.0.0):
     - GoogleSymbolUtilities (~> 1.0)
-  - GoogleSignIn (2.2.0):
-    - GoogleAppUtilities (~> 1)
-    - GoogleAuthUtilities (~> 1)
-    - GoogleNetworkingUtilities (~> 1)
-    - GoogleUtilities (~> 1)
+  - GoogleSignIn (2.3.2):
+    - GoogleAppUtilities (~> 1.0)
+    - GoogleAuthUtilities (~> 1.0)
+    - GoogleNetworkingUtilities (~> 1.0)
+    - GoogleUtilities (~> 1.0)
   - GoogleSymbolUtilities (1.0.0)
-  - GoogleUtilities (1.0.1):
-    - GoogleSymbolUtilities (~> 1.0)
-  - IQKeyboardManager (3.3.1)
+  - GoogleUtilities (1.1.0):
+    - GoogleSymbolUtilities (~> 1.0.0)
+  - IQKeyboardManager (3.3.2)
   - MagicalRecord (2.3.0)
   - MBProgressHUD (0.9.1)
   - SnapKit (0.15.0)
-  - SwiftyJSON (2.2.1)
+  - SwiftyJSON (2.3.0)
 
 DEPENDENCIES:
   - AFNetworking
+  - Alamofire
+  - AlamofireImage
   - FBSDKCoreKit
   - FBSDKLoginKit
   - Google/SignIn
@@ -74,34 +82,37 @@ DEPENDENCIES:
   - MagicalRecord
   - MBProgressHUD
   - SnapKit
-  - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, branch `xcode7`)
+  - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, branch `xcode7.1`)
 
 EXTERNAL SOURCES:
   SwiftyJSON:
-    :branch: xcode7
+    :branch: xcode7.1
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
 
 CHECKOUT OPTIONS:
   SwiftyJSON:
-    :commit: d4df13c66146a8e9c8d96c852746a08363003d36
+    :commit: 35c94b244ceb3be1b1b89371642564e912d2ffbd
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
 
 SPEC CHECKSUMS:
-  AFNetworking: 79f7eb1a0fcfa7beb409332b2ca49afe9ce53b05
-  Bolts: 20a2bd788273360cb1e31530dc19b8544eef2544
-  FBSDKCoreKit: 9954492d90c5fd65ae831395697a1660360d61f1
-  FBSDKLoginKit: 3d07febbfa884b9878cacba54f705bb41f07d4b6
-  Google: 875f5a8ade86dd02e36586e4a54814843938c7f6
+  AFNetworking: 8e4e60500beb8bec644cf575beee72990a76d399
+  Alamofire: 8edbab00802a752bb5240cc2abe70e7e881488ad
+  AlamofireImage: dc3d3de5d095fd9545b144ba8f6da5bfc539512a
+  Bolts: 805a4a87413e49d4a0c2b7d469084cbc46b09342
+  FBSDKCoreKit: eb580bfc2040ad44f4c0b4f4d0befb1d35bce59c
+  FBSDKLoginKit: 01bce8dd3f3a26a023b0ba4ffdde7ef5062889fe
+  Google: 529a5d8719dff90ea2e7cba5f45302cd359b5456
   GoogleAppUtilities: c01c6a5671e9da8b9d690fdaec5959d6c2aac699
   GoogleAuthUtilities: 049ffd3a297cdffd271451b82fd4e75304f15ef3
+  GoogleInterchangeUtilities: fe088bea8c936218e52324a004d279c4491b9d65
   GoogleNetworkingUtilities: 292992ab31b7b4ba32809a0e8b40e324cdfb2c0c
-  GoogleSignIn: c45d8d1a873784a3283b4f47f331dc06d8a727b6
+  GoogleSignIn: bfeffe8bbb5f5b377d9cc0d36e97e5f4758cfec4
   GoogleSymbolUtilities: a7b0feed1fe667c8d5e647177938d0ecd62d6948
-  GoogleUtilities: e3475cd4d45134221d2f3f3626095a1c49b62041
-  IQKeyboardManager: 860a5b9df32cc1435a3e967a08ed87de3e59c12e
+  GoogleUtilities: 8ed9134debe11719097881711464752900668f10
+  IQKeyboardManager: d863eb0bca424d1f6dad6bdd1f856af52664add8
   MagicalRecord: 89eb7d7ead39fb37f01c3d010665ee94d17f8dba
   MBProgressHUD: c47f2c166c126cf2ce36498d80f33e754d4e93ad
   SnapKit: 4962eed2ee18e48cbd2b2292fffc57efe7235f87
-  SwiftyJSON: ae2d0a3d68025d136602a33c4ee215091ced3e33
+  SwiftyJSON: cacfe0373d584585716bd1d43202c24cc66afd65
 
 COCOAPODS: 0.38.2

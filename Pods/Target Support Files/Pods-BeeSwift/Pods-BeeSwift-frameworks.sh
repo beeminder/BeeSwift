@@ -53,6 +53,8 @@ code_sign_if_enabled() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework 'Pods-BeeSwift/AFNetworking.framework'
+  install_framework 'Pods-BeeSwift/Alamofire.framework'
+  install_framework 'Pods-BeeSwift/AlamofireImage.framework'
   install_framework 'Pods-BeeSwift/Bolts.framework'
   install_framework 'Pods-BeeSwift/FBSDKCoreKit.framework'
   install_framework 'Pods-BeeSwift/FBSDKLoginKit.framework'
@@ -64,6 +66,8 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'Pods-BeeSwift/AFNetworking.framework'
+  install_framework 'Pods-BeeSwift/Alamofire.framework'
+  install_framework 'Pods-BeeSwift/AlamofireImage.framework'
   install_framework 'Pods-BeeSwift/Bolts.framework'
   install_framework 'Pods-BeeSwift/FBSDKCoreKit.framework'
   install_framework 'Pods-BeeSwift/FBSDKLoginKit.framework'

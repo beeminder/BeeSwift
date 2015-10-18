@@ -53,12 +53,16 @@ code_sign_if_enabled() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework 'Pods-BeeSwiftTests/AFNetworking.framework'
+  install_framework 'Pods-BeeSwiftTests/Alamofire.framework'
+  install_framework 'Pods-BeeSwiftTests/AlamofireImage.framework'
   install_framework 'Pods-BeeSwiftTests/MagicalRecord.framework'
   install_framework 'Pods-BeeSwiftTests/SnapKit.framework'
   install_framework 'Pods-BeeSwiftTests/SwiftyJSON.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'Pods-BeeSwiftTests/AFNetworking.framework'
+  install_framework 'Pods-BeeSwiftTests/Alamofire.framework'
+  install_framework 'Pods-BeeSwiftTests/AlamofireImage.framework'
   install_framework 'Pods-BeeSwiftTests/MagicalRecord.framework'
   install_framework 'Pods-BeeSwiftTests/SnapKit.framework'
   install_framework 'Pods-BeeSwiftTests/SwiftyJSON.framework'

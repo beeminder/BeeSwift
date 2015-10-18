@@ -31,6 +31,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.titleLabel.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(self.margin)
             make.top.equalTo(10)
+            make.right.equalTo(-self.margin)
         }
         
         self.countdownView.snp_makeConstraints { (make) -> Void in

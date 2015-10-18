@@ -16,23 +16,7 @@
                     <view key="view" contentMode="scaleToFill" simulatedAppContext="notificationCenter" id="S3S-Oj-5AN">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="37"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aEI-Kf-TUr">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="37"/>
-                                <animations/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
-                                <state key="normal" title="Button">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="0.59999999999999998" colorSpace="calibratedRGB"/>
-                                </state>
-                            </button>
-                        </subviews>
                         <animations/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="aEI-Kf-TUr" secondAttribute="trailing" id="2dP-FQ-OCo"/>
-                            <constraint firstItem="aEI-Kf-TUr" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" id="bwq-Ca-1ds"/>
-                            <constraint firstItem="aEI-Kf-TUr" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" id="cWs-UN-3eW"/>
-                            <constraint firstItem="aEI-Kf-TUr" firstAttribute="bottom" secondItem="FKl-LY-JtV" secondAttribute="top" id="cy5-uR-mMa"/>
-                        </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <nil key="simulatedStatusBarMetrics"/>
@@ -40,9 +24,6 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="320" height="37"/>
-                    <connections>
-                        <outlet property="button" destination="aEI-Kf-TUr" id="emp-gF-z4c"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
