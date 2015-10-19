@@ -115,20 +115,10 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     
     func setTimePickerViewValues() {
         if self.use24HourTime() {
-            self.timePickerView.selectRow(LocalNotificationsManager.sharedManager.reminderTimeHour().integerValue, inComponent: 0, animated: false)
-            self.timePickerView.selectRow(LocalNotificationsManager.sharedManager.reminderTimeMinute().integerValue, inComponent: 1, animated: false)
+
         }
         else {
-            let hour = LocalNotificationsManager.sharedManager.reminderTimeHour().integerValue
-            let minute = LocalNotificationsManager.sharedManager.reminderTimeMinute().integerValue
-            if hour > 12 {
-                self.timePickerView.selectRow(1, inComponent: 2, animated: false)
-                self.timePickerView.selectRow(hour - 12, inComponent: 0, animated: false)
-            }
-            else {
-                self.timePickerView.selectRow(hour, inComponent: 0, animated: false)
-            }
-            self.timePickerView.selectRow(minute, inComponent: 1, animated: false)
+
         }
     }
     
