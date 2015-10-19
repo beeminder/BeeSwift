@@ -110,12 +110,25 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(animated: Bool) {
+        // begin 4.2 shim
+        if NSUserDefaults.standardUserDefaults().objectForKey("42notificationreset") == nil {
+            RemoteNotificationsManager.sharedManager.turnNotificationsOff()
+            let alert = UIAlertController(title: "Thanks for updating!", message: "We've made some changes to how notifications work.\n\nPlease take a look and set them up.\n\nThanks for Beeminding.", preferredStyle: .Alert)
+            alert.addAction(UIAlertAction(title: "Open now", style: .Default, handler: { (alertAction) -> Void in
+                self.settingsButtonPressed()
+            }))
+            alert.addAction(UIAlertAction(title: "Later", style: .Default, handler: { (alertAction) -> Void in
+                // do nothing, just dismiss
+            }))
+            self.presentViewController(alert, animated: true, completion: nil)
+            NSUserDefaults.standardUserDefaults().setObject(true, forKey: "42notificationreset")
+            NSUserDefaults.standardUserDefaults().synchronize()
+        }
+        // end 4.2 shim
         if !CurrentUserManager.sharedManager.signedIn() {
             self.presentViewController(SignInViewController(), animated: true, completion: nil)
         }
         else if !self.hasFetchedData {
-//            let hud = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
-//            hud.mode = .Indeterminate
             self.fetchData(nil)
         }
     }
