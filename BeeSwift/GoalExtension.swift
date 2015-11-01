@@ -59,6 +59,7 @@ extension Goal {
     
     var rateString :String {
         let formatter = NSNumberFormatter()
+        formatter.locale = NSLocale(localeIdentifier: "en_US")
         formatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
         formatter.maximumFractionDigits = 2
         return "\(formatter.stringFromNumber(self.rate)!)/\(self.humanizedRunits)"
@@ -87,12 +88,15 @@ extension Goal {
             // add 1 second since a 3 am goal technically derails at 2:59:59
             losedateDate = losedateDate.dateByAddingTimeInterval(1)
             let dateFormatter = NSDateFormatter()
+            dateFormatter.locale = NSLocale(localeIdentifier: "en_US")
             dateFormatter.dateFormat = "h a!"
             return dateFormatter.stringFromDate(losedateDate)
         }
         else if losedateDate.timeIntervalSinceNow < 7*24*60*60 {
             let dateFormatter = NSDateFormatter()
             let calendar = NSCalendar.currentCalendar()
+            calendar.locale = NSLocale(localeIdentifier: "en_US")
+            dateFormatter.locale = NSLocale(localeIdentifier: "en_US")
             let hour = calendar.component(.Hour, fromDate: losedateDate)
             if hour < 6 {
                 losedateDate = losedateDate.dateByAddingTimeInterval(Double(-(hour + 1)*3600))
