@@ -351,6 +351,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let newDate = calendar?.dateByAddingComponents(components, toDate: NSDate(), options: [])
         
         let formatter = NSDateFormatter()
+        formatter.locale = NSLocale(localeIdentifier: "en_US")
         var dateFormat = "d"
         if calendar?.component(.Month, fromDate: newDate!) !=
             calendar?.component(.Month, fromDate: NSDate()) {
@@ -363,6 +364,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func valueStepperValueChanged() {
         var valueString = ""
         let formatter = NSNumberFormatter()
+        formatter.locale = NSLocale(localeIdentifier: "en_US")
         formatter.numberStyle = .DecimalStyle
         
         if self.valueStepper.value < 0 {

@@ -192,12 +192,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.updateLastUpdatedLabel()
             self.updateDeadbeatHeight()
             self.hasFetchedData = true
-//            MBProgressHUD.hideAllHUDsForView(self.view, animated: true)
             if refreshControl != nil {
                 refreshControl!.endRefreshing()
             }
-            }, error: { () -> Void in
-//                MBProgressHUD.hideAllHUDsForView(self.view, animated: true)                
+            }, error: { () -> Void in              
                 if refreshControl != nil {
                     refreshControl!.endRefreshing()
                 }

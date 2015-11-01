@@ -17,6 +17,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     private var animatingTimePickerView = false
     private var timePickerViewVisible = false
     private var emergencyRemindersSwitch = UISwitch()
+    private var tableView = UITableView()
 
     override func viewDidLoad() {
         self.title = "Settings"
