@@ -297,6 +297,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.top.equalTo(self.valueStepper.snp_bottom).offset(10)
             make.bottom.equalTo(self.submitButton)
         }
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: "refreshButtonPressed")
     }
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
@@ -313,6 +315,20 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.refreshCountdown()
         self.pledgeLabel.text = "$\(self.goal.pledge)"
         self.deltasLabel.attributedText = self.goal.attributedDeltaText
+    }
+    
+    func refreshButtonPressed() {
+        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": NSUUID().UUIDString]
+
+        
+        BSHTTPSessionManager.sharedManager.GET("api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: params, success:
+            { (task, responseObject) -> Void in
+                self.pollUntilGraphUpdates()
+            }) { (task, error) -> Void in
+                let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .Alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                self.presentViewController(alert, animated: true, completion: nil)
+        }
     }
     
     func colonButtonPressed() {
