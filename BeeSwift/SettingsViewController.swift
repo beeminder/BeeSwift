@@ -8,16 +8,14 @@
 
 import Foundation
 
-class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class SettingsViewController: UIViewController {
     
     private var numberOfTodayGoalsLabel = BSLabel()
     private var numberOfTodayGoalsStepper = UIStepper()
-    private var timePickerView = UIPickerView()
-    private var timePickerContainerView = UIView()
-    private var animatingTimePickerView = false
-    private var timePickerViewVisible = false
     private var emergencyRemindersSwitch = UISwitch()
     private var tableView = UITableView()
+    private var frontburnerGoals : [Goal] = []
+    private var backburnerGoals  : [Goal] = []
 
     override func viewDidLoad() {
         self.title = "Settings"
@@ -33,11 +31,9 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
             NSUserDefaults.standardUserDefaults().synchronize()
         }
         
-        self.numberOfTodayGoalsLabel.text = "Number of Goals in Today view: \(numberOfTodayGoals!)"
-        self.numberOfTodayGoalsLabel.adjustsFontSizeToFitWidth = true
-        self.numberOfTodayGoalsLabel.minimumScaleFactor = 0.8
+        self.numberOfTodayGoalsLabel.text = "Goals in Today view: \(numberOfTodayGoals!)"
         self.numberOfTodayGoalsLabel.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(20)
+            make.left.equalTo(15)
             make.width.lessThanOrEqualTo(self.view).multipliedBy(0.7).offset(-20)
             make.top.equalTo(self.snp_topLayoutGuideBottom).offset(20)
         }
@@ -47,26 +43,10 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         self.numberOfTodayGoalsStepper.maximumValue = 3
         self.numberOfTodayGoalsStepper.snp_makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.numberOfTodayGoalsLabel)
-            make.left.equalTo(self.numberOfTodayGoalsLabel.snp_right).offset(10)
+            make.right.equalTo(-15)
         }
         self.numberOfTodayGoalsStepper.addTarget(self, action: "numberOfTodayGoalsStepperValueChanged", forControlEvents: .ValueChanged)
         self.numberOfTodayGoalsStepper.value = Double(numberOfTodayGoals!)
-        
-        self.timePickerContainerView.clipsToBounds = true
-        self.view.addSubview(self.timePickerContainerView)
-        self.timePickerContainerView.alpha = 0
-        self.timePickerContainerView.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.numberOfTodayGoalsLabel.snp_bottom)
-            make.width.equalTo(self.view)
-            make.height.equalTo(0)
-        }
-        
-        self.timePickerView.delegate = self
-        self.timePickerView.dataSource = self
-        self.timePickerContainerView.addSubview(self.timePickerView)
-        self.timePickerView.snp_makeConstraints { (make) -> Void in
-            make.center.equalTo(self.timePickerContainerView)
-        }
         
         self.view.addSubview(self.emergencyRemindersSwitch)
         self.emergencyRemindersSwitch.addTarget(self, action: "emergencyRemindersSwitchChanged", forControlEvents: .ValueChanged)
@@ -97,12 +77,24 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
             make.height.equalTo(44)
         }
         
-        self.setTimePickerViewValues()
+        self.view.addSubview(self.tableView)
+        self.tableView.snp_makeConstraints { (make) -> Void in
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+            make.top.equalTo(emergencyRemindersSwitch.snp_bottom).offset(5)
+            make.bottom.equalTo(signOutButton.snp_top)
+        }
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.tableFooterView = UIView()
+        self.tableView.backgroundColor = UIColor.clearColor()
+        self.tableView.registerClass(GoalNotificationSettingsTableViewCell.self, forCellReuseIdentifier: "foo")
+        self.loadGoalsFromDatabase()
     }
     
     func userDefaultsDidChange() {
         self.updateEmergencyRemindersSwitch()
-        self.numberOfTodayGoalsLabel.text = "Number of Goals in Today view: \(Int(self.numberOfTodayGoalsStepper.value))"
+        self.numberOfTodayGoalsLabel.text = "Goals in Today view: \(Int(self.numberOfTodayGoalsStepper.value))"
     }
     
     func updateEmergencyRemindersSwitch() {
@@ -112,37 +104,6 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     func numberOfTodayGoalsStepperValueChanged() {
         NSUserDefaults.standardUserDefaults().setObject(Int(self.numberOfTodayGoalsStepper.value), forKey: "numberOfTodayGoals")
         NSUserDefaults.standardUserDefaults().synchronize()
-    }
-    
-    func setTimePickerViewValues() {
-        if self.use24HourTime() {
-
-        }
-        else {
-
-        }
-    }
-    
-    func pickerContainerViewHeight() -> CGFloat {
-        return UIPickerView().frame.size.height
-    }
-    
-    func toggleTimePickerView() {
-        if self.animatingTimePickerView {
-            return
-        }
-        self.animatingTimePickerView = true
-        
-        UIView.animateWithDuration(0.25, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: { () -> Void in
-            self.timePickerContainerView.alpha = self.timePickerViewVisible ? 0 : 1
-            self.timePickerContainerView.snp_updateConstraints(closure: { (make) -> Void in
-                make.height.equalTo(self.timePickerViewVisible ? 0 : self.pickerContainerViewHeight())
-            })
-            self.view.layoutIfNeeded()
-        }) { (flag) -> Void in
-            self.animatingTimePickerView = false
-            self.timePickerViewVisible = !self.timePickerViewVisible
-        }
     }
     
     func signOutButtonPressed() {
@@ -159,76 +120,32 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         }
     }
     
-    func use24HourTime() -> Bool {
-        let formatString: NSString = NSDateFormatter.dateFormatFromTemplate("j", options: 0, locale: NSLocale.currentLocale())!
-        return !formatString.containsString("a")
+    func loadGoalsFromDatabase() {
+        self.frontburnerGoals = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "frontburner")) as! [Goal]
+        self.frontburnerGoals = self.frontburnerGoals.sort { ($0.losedate.integerValue < $1.losedate.integerValue) }
+        self.backburnerGoals  = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "backburner")) as! [Goal]
+        self.backburnerGoals = self.backburnerGoals.sort { ($0.losedate.integerValue < $1.losedate.integerValue) }
     }
-    
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-        return self.use24HourTime() ? 2 : 3
-    }
-    
-    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView?) -> UIView {
-        let view = UIView()
-        let label = BSLabel()
-        view.addSubview(label)
-        label.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(0)
-            make.bottom.equalTo(0)
-            make.left.equalTo(10)
-            make.right.equalTo(-10)
-        }
-        label.font = UIFont(name: "Avenir", size: 17)
-        
-        var text = ""
-        var alignment = NSTextAlignment.Center
-        
-        if (component == 2) {
-            text = row == 0 ? "AM" : "PM"
-            alignment = .Left
-        }
-        else if (component == 1) {
-            text = row < 10 ? "0\(row)" : "\(row)"
-            if self.use24HourTime() {
-                alignment = .Left
-            } else {
-                alignment = .Center
-            }
-        }
-        else {
-            if (!self.use24HourTime() && row == 0) {
-                text = "12"
-            }
-            else {
-                text = "\(row)"
-            }
-            alignment = .Right
-        }
-        
-        label.text = text
-        label.textAlignment = alignment
-        
-        return view
-    }
-    
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if component == 0 {
-            return Bool(self.use24HourTime()) ? 24 : 12
-        }
-        else if component == 1 {
-            return 60
-        }
+}
+
+extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 2
     }
     
-    func reminderHourFromTimePicker() -> NSNumber {
-        if self.use24HourTime() || self.timePickerView.selectedRowInComponent(2) == 0 {
-            return self.timePickerView.selectedRowInComponent(0)
-        }
-        return self.timePickerView.selectedRowInComponent(0) + 12
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return section == 0 ? self.frontburnerGoals.count : self.backburnerGoals.count
     }
     
-    func reminderMinuteFromTimePicker() -> NSNumber {
-        return self.timePickerView.selectedRowInComponent(1)
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        //TODO: replace foo gracefully
+        let cell = tableView.dequeueReusableCellWithIdentifier("foo") as! GoalNotificationSettingsTableViewCell!
+        cell.goal = indexPath.section == 0 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let goal = indexPath.section == 0 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
+        self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
     }
 }

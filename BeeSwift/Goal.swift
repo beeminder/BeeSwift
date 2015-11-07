@@ -34,4 +34,6 @@ class Goal: NSManagedObject {
     @NSManaged var limsum: String
     @NSManaged var datapoints: NSSet
     @NSManaged var deadline: NSNumber
+    @NSManaged var leadtime: NSNumber
+    @NSManaged var alertstart: NSNumber
 }
