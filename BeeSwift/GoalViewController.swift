@@ -318,10 +318,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func refreshButtonPressed() {
-        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": NSUUID().UUIDString]
-
-        
-        BSHTTPSessionManager.sharedManager.GET("api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: params, success:
+        BSHTTPSessionManager.sharedManager.GET("api/v1/users/me/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success:
             { (task, responseObject) -> Void in
                 self.pollUntilGraphUpdates()
             }) { (task, error) -> Void in
@@ -437,7 +434,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.submitButton.userInteractionEnabled = false
         self.scrollView.scrollRectToVisible(CGRectMake(0, 0, 0, 0), animated: true)
         let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": NSUUID().UUIDString]
-        BSHTTPSessionManager.sharedManager.POST("api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
+        BSHTTPSessionManager.sharedManager.POST("api/v1/users/me/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
             self.successfullyAddedDatapointWithResponse(responseObject)
             self.commentTextField.text = ""
             MBProgressHUD.hideAllHUDsForView(self.datapointsTableView, animated: true)

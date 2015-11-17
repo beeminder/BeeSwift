@@ -130,22 +130,33 @@ class SettingsViewController: UIViewController {
 
 extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? self.frontburnerGoals.count : self.backburnerGoals.count
+        if section == 1 { return self.frontburnerGoals.count }
+        if section == 2 { return self.backburnerGoals.count  }
+        return 1
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         //TODO: replace foo gracefully
         let cell = tableView.dequeueReusableCellWithIdentifier("foo") as! GoalNotificationSettingsTableViewCell!
-        cell.goal = indexPath.section == 0 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
+        if indexPath.section == 0 {
+            cell.title = "Default notification settings"
+            return cell
+        }
+        let goal = indexPath.section == 1 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
+        cell.title = goal.slug
         return cell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let goal = indexPath.section == 0 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
-        self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
+        if indexPath.section == 0 {
+            self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
+        } else {
+            let goal = indexPath.section == 1 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
+            self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
+        }
     }
 }

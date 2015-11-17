@@ -17,12 +17,15 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     
     static let sharedManager = CurrentUserManager()
     static let signedInNotificationName     = "com.beeminder.signedInNotification"
-    static let willSignOutNotificationName     = "com.beeminder.willSignOutNotification"
+    static let willSignOutNotificationName  = "com.beeminder.willSignOutNotification"
     static let failedSignInNotificationName = "com.beeminder.failedSignInNotification"
     static let signedOutNotificationName    = "com.beeminder.signedOutNotification"
     private let accessTokenKey = "access_token"
     private let usernameKey = "username"
     private let deadbeatKey = "deadbeat"
+    private let defaultLeadtimeKey = "default_leadtime"
+    private let defaultAlertstartKey = "default_alertstart"
+    private let defaultDeadlineKey = "default_deadline"
     private let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
     
     var accessToken :String? {
@@ -33,6 +36,33 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
         return NSUserDefaults.standardUserDefaults().objectForKey(usernameKey) as! String?
     }
     
+    func defaultLeadTime() -> NSNumber {
+        return (NSUserDefaults.standardUserDefaults().objectForKey(self.defaultLeadtimeKey) ?? 0) as! NSNumber
+    }
+    
+    func setDefaultLeadTime(leadtime : NSNumber) {
+        NSUserDefaults.standardUserDefaults().setObject(leadtime, forKey: self.defaultLeadtimeKey)
+        NSUserDefaults.standardUserDefaults().synchronize()
+    }
+    
+    func defaultAlertstart() -> NSNumber {
+        return (NSUserDefaults.standardUserDefaults().objectForKey(self.defaultAlertstartKey) ?? 0) as! NSNumber
+    }
+    
+    func setDefaultAlertstart(alertstart : NSNumber) {
+        NSUserDefaults.standardUserDefaults().setObject(alertstart, forKey: self.defaultAlertstartKey)
+        NSUserDefaults.standardUserDefaults().synchronize()
+    }
+    
+    func defaultDeadline() -> NSNumber {
+        return (NSUserDefaults.standardUserDefaults().objectForKey(self.defaultDeadlineKey) ?? 0) as! NSNumber
+    }
+    
+    func setDefaultDeadline(deadline : NSNumber) {
+        NSUserDefaults.standardUserDefaults().setObject(deadline, forKey: self.defaultDeadlineKey)
+        NSUserDefaults.standardUserDefaults().synchronize()
+    }
+    
     func signedIn() -> Bool {
         return self.accessToken != nil && self.username != nil
     }
@@ -41,7 +71,7 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
         return NSUserDefaults.standardUserDefaults().objectForKey(deadbeatKey) != nil
     }
     
-    func setDeatbeat(deadbeat: Bool) {
+    func setDeadbeat(deadbeat: Bool) {
         if deadbeat {
             NSUserDefaults.standardUserDefaults().setObject(true, forKey: deadbeatKey)
         } else {
@@ -65,12 +95,29 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     
     func handleSuccessfulSignin(responseJSON: JSON) {
         if responseJSON["deadbeat"].boolValue {
-            self.setDeatbeat(true)
+            self.setDeadbeat(true)
         }
         NSUserDefaults.standardUserDefaults().setObject(responseJSON[accessTokenKey].string!, forKey: accessTokenKey)
         NSUserDefaults.standardUserDefaults().setObject(responseJSON[usernameKey].string!, forKey: usernameKey)
+        NSUserDefaults.standardUserDefaults().setObject(responseJSON[defaultAlertstartKey].number!, forKey: defaultAlertstartKey)
+        NSUserDefaults.standardUserDefaults().setObject(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
+        NSUserDefaults.standardUserDefaults().setObject(responseJSON[defaultLeadtimeKey].number!, forKey: defaultLeadtimeKey)
         NSUserDefaults.standardUserDefaults().synchronize()
         NSNotificationCenter.defaultCenter().postNotificationName(CurrentUserManager.signedInNotificationName, object: self)
+    }
+    
+    func syncNotificationDefaults(success: (() -> Void)?, failure: (() -> Void)?) {
+        BSHTTPSessionManager.sharedManager.GET("api/v1/users/me.json", parameters: [],
+            success: { (task, responseObject) -> Void in
+                let responseJSON = JSON(responseObject)
+                NSUserDefaults.standardUserDefaults().setObject(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
+                NSUserDefaults.standardUserDefaults().setObject(responseJSON["default_deadline"].number!, forKey: "default_deadline")
+                NSUserDefaults.standardUserDefaults().setObject(responseJSON["default_leadtime"].number!, forKey: "default_leadtime")
+                NSUserDefaults.standardUserDefaults().synchronize()
+                if (success != nil) { success!() }
+            }, failure: { (task, error) -> Void in
+                if (failure != nil) { failure!() }
+        })
     }
     
     func handleFailedSignin(responseError: NSError) {

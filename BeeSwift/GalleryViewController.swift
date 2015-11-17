@@ -10,6 +10,7 @@ import UIKit
 import MagicalRecord
 import SnapKit
 import MBProgressHUD
+import SwiftyJSON
 
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
     
@@ -112,6 +113,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     override func viewDidAppear(animated: Bool) {
         // begin 4.2 shim
         if CurrentUserManager.sharedManager.signedIn() && NSUserDefaults.standardUserDefaults().objectForKey("42notificationreset") == nil {
+            CurrentUserManager.sharedManager.syncNotificationDefaults(nil, failure: nil)
             RemoteNotificationsManager.sharedManager.turnNotificationsOff()
             if Goal.MR_findAll().count > 0 {
                 let alert = UIAlertController(title: "Thanks for updating!", message: "We've made some changes to how notifications work.\n\nPlease take a look and set them up.\n\nThanks for Beeminding.", preferredStyle: .Alert)

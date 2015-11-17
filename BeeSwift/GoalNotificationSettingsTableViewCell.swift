@@ -9,13 +9,12 @@
 import Foundation
 
 class GoalNotificationSettingsTableViewCell: UITableViewCell {
-    var goal : Goal? {
+    var title : String? {
         didSet {
-            self.goalLabel.text = self.goal?.title
+            self.titleLabel.text = self.title
         }
     }
-    
-    private var goalLabel = BSLabel()
+    private var titleLabel = BSLabel()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -32,8 +31,8 @@ class GoalNotificationSettingsTableViewCell: UITableViewCell {
         self.backgroundColor = UIColor.clearColor()
         self.accessoryType = .DisclosureIndicator
         
-        self.contentView.addSubview(self.goalLabel)
-        self.goalLabel.snp_makeConstraints { (make) -> Void in
+        self.contentView.addSubview(self.titleLabel)
+        self.titleLabel.snp_makeConstraints { (make) -> Void in
             make.centerY.equalTo(0)
             make.left.equalTo(15)
         }

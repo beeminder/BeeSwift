@@ -36,4 +36,5 @@ class Goal: NSManagedObject {
     @NSManaged var deadline: NSNumber
     @NSManaged var leadtime: NSNumber
     @NSManaged var alertstart: NSNumber
+    @NSManaged var use_defaults: NSNumber
 }

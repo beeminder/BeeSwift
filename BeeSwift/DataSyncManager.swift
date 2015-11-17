@@ -59,7 +59,7 @@ class DataSyncManager :NSObject {
     }
     
     func handleResponse(json: JSON, completion: (()->Void)!) {
-        CurrentUserManager.sharedManager.setDeatbeat(json["deadbeat"].boolValue)
+        CurrentUserManager.sharedManager.setDeadbeat(json["deadbeat"].boolValue)
         let goals = json["goals"].array!
         for goalJSON in goals {
             Goal.crupdateWithJSON(goalJSON)
