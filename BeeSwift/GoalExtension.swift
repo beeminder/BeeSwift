@@ -38,8 +38,7 @@ extension Goal {
         goal.lane = json["lane"].number!
         goal.yaw = json["yaw"].number!
         goal.limsum = json["limsum"].string!
-        // TODO: uncomment this
-//        goal.use_defaults = json["use_defaults"].bool!
+        goal.use_defaults = json["use_defaults"].bool!
         if let safebump = json["safebump"].number {
             goal.safebump = safebump
         }

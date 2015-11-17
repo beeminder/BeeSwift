@@ -43,6 +43,11 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     func setDefaultLeadTime(leadtime : NSNumber) {
         NSUserDefaults.standardUserDefaults().setObject(leadtime, forKey: self.defaultLeadtimeKey)
         NSUserDefaults.standardUserDefaults().synchronize()
+        let goals = Goal.MR_findByAttribute("use_defaults", withValue: NSNumber(bool: true)) as! [Goal]
+        for goal in goals {
+            goal.leadtime = leadtime
+        }
+        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion(nil)
     }
     
     func defaultAlertstart() -> NSNumber {
@@ -52,6 +57,11 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     func setDefaultAlertstart(alertstart : NSNumber) {
         NSUserDefaults.standardUserDefaults().setObject(alertstart, forKey: self.defaultAlertstartKey)
         NSUserDefaults.standardUserDefaults().synchronize()
+        let goals = Goal.MR_findByAttribute("use_defaults", withValue: NSNumber(bool: true)) as! [Goal]
+        for goal in goals {
+            goal.alertstart = alertstart
+        }
+        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion(nil)
     }
     
     func defaultDeadline() -> NSNumber {
@@ -61,6 +71,11 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     func setDefaultDeadline(deadline : NSNumber) {
         NSUserDefaults.standardUserDefaults().setObject(deadline, forKey: self.defaultDeadlineKey)
         NSUserDefaults.standardUserDefaults().synchronize()
+        let goals = Goal.MR_findByAttribute("use_defaults", withValue: NSNumber(bool: true)) as! [Goal]
+        for goal in goals {
+            goal.deadline = deadline
+        }
+        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion(nil)
     }
     
     func signedIn() -> Bool {

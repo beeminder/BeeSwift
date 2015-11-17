@@ -16,6 +16,7 @@ class SettingsViewController: UIViewController {
     private var tableView = UITableView()
     private var frontburnerGoals : [Goal] = []
     private var backburnerGoals  : [Goal] = []
+    private var cellReuseIdentifier = "goalNotificationSettingsTableViewCell"
 
     override func viewDidLoad() {
         self.title = "Settings"
@@ -88,7 +89,7 @@ class SettingsViewController: UIViewController {
         self.tableView.dataSource = self
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor.clearColor()
-        self.tableView.registerClass(GoalNotificationSettingsTableViewCell.self, forCellReuseIdentifier: "foo")
+        self.tableView.registerClass(GoalNotificationSettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.loadGoalsFromDatabase()
     }
     
@@ -99,6 +100,7 @@ class SettingsViewController: UIViewController {
     
     func updateEmergencyRemindersSwitch() {
         self.emergencyRemindersSwitch.on = RemoteNotificationsManager.sharedManager.on()
+        self.tableView.hidden = !self.emergencyRemindersSwitch.on        
     }
     
     func numberOfTodayGoalsStepperValueChanged() {
@@ -112,6 +114,7 @@ class SettingsViewController: UIViewController {
     }
     
     func emergencyRemindersSwitchChanged() {
+        self.tableView.hidden = !self.emergencyRemindersSwitch.on
         if self.emergencyRemindersSwitch.on {
             RemoteNotificationsManager.sharedManager.turnNotificationsOn()
         }
@@ -140,8 +143,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        //TODO: replace foo gracefully
-        let cell = tableView.dequeueReusableCellWithIdentifier("foo") as! GoalNotificationSettingsTableViewCell!
+        let cell = tableView.dequeueReusableCellWithIdentifier(self.cellReuseIdentifier) as! GoalNotificationSettingsTableViewCell!
         if indexPath.section == 0 {
             cell.title = "Default notification settings"
             return cell
