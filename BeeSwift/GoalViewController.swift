@@ -442,13 +442,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }) { (dataTask, error) -> Void in
             self.submitButton.userInteractionEnabled = true
             MBProgressHUD.hideAllHUDsForView(self.datapointsTableView, animated: true)
-            let response = dataTask.response as! NSHTTPURLResponse
-            if response.statusCode == 422 {
-                UIAlertView(title: "Error", message: "Invalid datapoint format", delegate: nil, cancelButtonTitle: "OK").show()
-            }
-            else {
-                UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
-            }
+            UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
         }
     }
     
