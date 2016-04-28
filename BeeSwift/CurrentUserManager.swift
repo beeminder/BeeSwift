@@ -167,7 +167,9 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     }
     
     func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
-        self.signInWithOAuthUserId(result.token.userID, provider: "facebook")
+        if (result.token != nil) {
+            self.signInWithOAuthUserId(result.token.userID, provider: "facebook")
+        }
     }
     
     func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
