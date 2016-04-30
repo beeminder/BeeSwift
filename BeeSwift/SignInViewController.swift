@@ -17,7 +17,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     var passwordTextField :UITextField = UITextField()
     
     override func viewDidLoad() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleFailedSignIn:", name: CurrentUserManager.failedSignInNotificationName, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SignInViewController.handleFailedSignIn(_:)), name: CurrentUserManager.failedSignInNotificationName, object: nil)
         self.view.backgroundColor = UIColor.whiteColor()
         
         let scrollView = UIScrollView()
@@ -127,6 +127,9 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         
         let googleSigninButton = GIDSignInButton()
         GIDSignIn.sharedInstance().uiDelegate = self
+        GIDSignIn.sharedInstance().delegate = CurrentUserManager.sharedManager
+        GIDSignIn.sharedInstance().scopes = ["profile", "email"]
+        GIDSignIn.sharedInstance().shouldFetchBasicProfile = true
         scrollView.addSubview(googleSigninButton)
         googleSigninButton.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(facebookLoginButton.snp_bottom).offset(20)

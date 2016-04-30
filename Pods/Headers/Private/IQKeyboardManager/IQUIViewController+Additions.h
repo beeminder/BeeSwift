@@ -1,1 +1,1 @@
-../../../IQKeyboardManager/IQKeyBoardManager/Categories/IQUIViewController+Additions.h
+../../../IQKeyboardManager/IQKeyboardManager/Categories/IQUIViewController+Additions.h

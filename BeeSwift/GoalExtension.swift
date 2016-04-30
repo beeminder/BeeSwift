@@ -13,8 +13,8 @@ import MagicalRecord
 extension Goal {
     
     class func crupdateWithJSON(json :JSON) {
-        if let goal :Goal? = Goal.MR_findFirstByAttribute("id", withValue:json["id"].string) {
-            Goal.updateGoal(goal!, withJSON: json)
+        if let goal :Goal = Goal.MR_findFirstByAttribute("id", withValue:json["id"].string!) {
+            Goal.updateGoal(goal, withJSON: json)
         }
         else if let goal :Goal = Goal.MR_createEntity() {
             Goal.updateGoal(goal, withJSON: json)
@@ -33,11 +33,11 @@ extension Goal {
         goal.losedate = json["losedate"].number!
         goal.runits = json["runits"].string!
         if json["rate"].number != nil { goal.rate = json["rate"].number! }
-        goal.delta_text = json["delta_text"].string!
+        if json["delta_text"].string != nil { goal.delta_text = json["delta_text"].string! }
         goal.won = json["won"].number!
-        goal.lane = json["lane"].number!
+        if json["lane"].number != nil { goal.lane = json["lane"].number! }
         goal.yaw = json["yaw"].number!
-        goal.limsum = json["limsum"].string!
+        if json["limsum"].string != nil { goal.limsum = json["limsum"].string! }
         goal.use_defaults = json["use_defaults"].bool!
         if let safebump = json["safebump"].number {
             goal.safebump = safebump
@@ -56,8 +56,8 @@ extension Goal {
             }
         }
         // these are last because other classes use KVO on them...hack.
-        goal.graph_url = json["graph_url"].string!
-        goal.thumb_url = json["thumb_url"].string!
+        if json["graph_url"].string != nil { goal.graph_url = json["graph_url"].string! }
+        if json["thumb_url"].string != nil { goal.thumb_url = json["thumb_url"].string!}
     }
     
     var rateString :String {

@@ -1,7 +1,7 @@
 # AlamofireImage
 
 [![Build Status](https://travis-ci.org/Alamofire/AlamofireImage.svg)](https://travis-ci.org/Alamofire/AlamofireImage)
-[![Cocoapods Compatible](https://img.shields.io/cocoapods/v/AlamofireImage.svg)](https://img.shields.io/cocoapods/v/AlamofireImage.svg)
+[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/AlamofireImage.svg)](https://img.shields.io/cocoapods/v/AlamofireImage.svg)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![Platform](https://img.shields.io/cocoapods/p/AlamofireImage.svg?style=flat)](http://cocoadocs.org/docsets/AlamofireImage)
 [![Twitter](https://img.shields.io/badge/twitter-@AlamofireSF-blue.svg?style=flat)](http://twitter.com/AlamofireSF)
@@ -23,12 +23,16 @@ AlamofireImage is an image component library for Alamofire.
 
 ## Requirements
 
-- iOS 8.0+ / Mac OS X 10.9+ / watchOS 2
-- Xcode 7.0+
+- iOS 8.0+ / Mac OS X 10.9+ / tvOS 9.0+ / watchOS 2.0+
+- Xcode 7.3+
+
+## Migration Guides
+
+- [AlamofireImage 2.0 Migration Guide](https://github.com/Alamofire/AlamofireImage/blob/master/Documentation/AlamofireImage%202.0%20Migration%20Guide.md)
 
 ## Dependencies
 
-- [Alamofire 2.0+](https://github.com/Alamofire/Alamofire)
+- [Alamofire 3.2+](https://github.com/Alamofire/Alamofire)
 
 ## Communication
 
@@ -42,13 +46,13 @@ AlamofireImage is an image component library for Alamofire.
 
 ### CocoaPods
 
-[CocoaPods](http://cocoapods.org) is a dependency manager for Cocoa projects.
-
-CocoaPods 0.38.2 is required to build AlamofireImage. It adds support for Xcode 7, Swift 2.0 and embedded frameworks. You can install it with the following command:
+[CocoaPods](http://cocoapods.org) is a dependency manager for Cocoa projects. You can install it with the following command:
 
 ```bash
 $ gem install cocoapods
 ```
+
+> CocoaPods 0.39.0+ is required.
 
 To integrate AlamofireImage into your Xcode project using CocoaPods, specify it in your `Podfile`:
 
@@ -57,7 +61,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '8.0'
 use_frameworks!
 
-pod 'AlamofireImage', '~> 1.0'
+pod 'AlamofireImage', '~> 2.0'
 ```
 
 Then, run the following command:
@@ -68,7 +72,7 @@ $ pod install
 
 ### Carthage
 
-[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that automates the process of adding frameworks to your Cocoa application.
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
 
 You can install Carthage with [Homebrew](http://brew.sh/) using the following command:
 
@@ -80,7 +84,7 @@ $ brew install carthage
 To integrate AlamofireImage into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "Alamofire/AlamofireImage" ~> 1.0
+github "Alamofire/AlamofireImage" ~> 2.0
 ```
 
 ---
@@ -93,12 +97,14 @@ github "Alamofire/AlamofireImage" ~> 1.0
 import AlamofireImage
 
 Alamofire.request(.GET, "https://httpbin.org/image/png")
-         .responseImage { request, response, result in
-             print(request)
-             print(response)
-             debugPrint(result)
-             
-             if let image = result.value {
+         .responseImage { response in
+             debugPrint(response)
+
+             print(response.request)
+             print(response.response)
+             debugPrint(response.result)
+
+             if let image = response.result.value {
                  print("image downloaded: \(image)")
              }
          }
@@ -117,7 +123,7 @@ The AlamofireImage response image serializers support a wide range of image type
 - `image/x-xbitmap`
 - `image/x-win-bitmap`
 
-> Support for other image types will continue to be added as the library matures. Pull requests welcome!
+> If the image you are attempting to download is an invalid MIME type not in the list, you can add custom acceptable content types using the `addAcceptableImageContentTypes` extension on the `Request` type.
 
 ### UIImage Extensions
 
@@ -240,11 +246,11 @@ let imageCache = AutoPurgingImageCache(
 )
 ```
 
-The `AutoPurgingImageCache` in AlamofireImage fills the roll of that additional caching layer. It is an in-memory image cache used to store images up to a given memory capacity. When the memory capacity is reached, the image cache is sorted by last access date, then the oldest image is continuously purged until the preferred memory usage after purge is met. Each time an image is accessed through the cache, the internal access date of the image is updated.
+The `AutoPurgingImageCache` in AlamofireImage fills the role of that additional caching layer. It is an in-memory image cache used to store images up to a given memory capacity. When the memory capacity is reached, the image cache is sorted by last access date, then the oldest image is continuously purged until the preferred memory usage after purge is met. Each time an image is accessed through the cache, the internal access date of the image is updated.
 
 #### Add / Remove / Fetch Images
 
-Interacting with the `ImageCache` protocol APIs is very straight-forward.
+Interacting with the `ImageCache` protocol APIs is very straightforward.
 
 ```swift
 let imageCache = AutoPurgingImageCache()
@@ -308,7 +314,7 @@ By updating the last access date for each image, the image cache can make more i
 
 #### Memory Warnings
 
-The `AutoPurgingImageCache` also listens for memory warnings from your application and will purge all images from the cache is a memory warning is observed.
+The `AutoPurgingImageCache` also listens for memory warnings from your application and will purge all images from the cache if a memory warning is observed.
 
 ### Image Downloader
 
@@ -331,16 +337,18 @@ let imageDownloader = ImageDownloader(
 let downloader = ImageDownloader()
 let URLRequest = NSURLRequest(URL: NSURL(string: "https://httpbin.org/image/jpeg")!)
 
-downloader.downloadImage(URLRequest: URLRequest) { request, response, result in
-    print(request)
-    print(response)
-    debugPrint(result)
+downloader.downloadImage(URLRequest: URLRequest) { response in
+    print(response.request)
+    print(response.response)
+    debugPrint(response.result)
 
-    if let image = result.value {
+    if let image = response.result.value {
         print(image)
     }
 }
 ```
+
+> Make sure to keep a strong reference to the `ImageDownloader` instance, otherwise the `completion` closure will not be called because the `downloader` reference will go out of scope before the `completion` closure can be called.
 
 #### Applying an ImageFilter
 
@@ -349,12 +357,12 @@ let downloader = ImageDownloader()
 let URLRequest = NSURLRequest(URL: NSURL(string: "https://httpbin.org/image/jpeg")!)
 let filter = AspectScaledToFillSizeCircleFilter(size: CGSize(width: 100.0, height: 100.0))
 
-downloader.downloadImage(URLRequest: URLRequest, filter: filter) { request, response, result in
-    print(request)
-    print(response)
-    debugPrint(result)
+downloader.downloadImage(URLRequest: URLRequest, filter: filter) { response in
+    print(response.request)
+    print(response.response)
+    debugPrint(response.result)
     
-    if let image = result.value {
+    if let image = response.result.value {
         print(image)
     }
 }
@@ -413,6 +421,14 @@ Sometimes application logic can end up attempting to download an image more than
 ##### Image Filter Reuse
 
 In addition to merging duplicate downloads, AlamofireImage can also merge duplicate image filters. If two image filters with the same identifier are attached to the same download, the image filter is only executed once and both completion handlers are called with the same resulting image. This can save large amounts of time and resources for computationally expensive filters such as ones leveraging CoreImage.
+
+##### Request Receipts
+
+Sometimes it is necessary to cancel an image download for various reasons. AlamofireImage can intelligently handle cancellation logic in the `ImageDownloader` by leveraging the `RequestReceipt` type along with the `cancelRequestForRequestReceipt` method. Each download request vends a `RequestReceipt` which can be later used to cancel the request.
+
+By cancelling the request through the `ImageDownloader` using the `RequestReceipt`, AlamofireImage is able to determine how to best handle the cancellation. The cancelled download will always receive a cancellation error, while duplicate downloads are allowed to complete. If the download is already active, it is allowed to complete even though the completion handler will be called with a cancellation error. This greatly improves performance of table and collection views displaying large amounts of images.
+
+> It is NOT recommended to directly call `cancel` on the `request` in the `RequestReceipt`. Doing so can lead to issues such as duplicate downloads never being allowed to complete.
 
 ### UIImageView Extension
 

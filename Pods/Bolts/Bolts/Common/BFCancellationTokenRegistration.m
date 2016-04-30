@@ -12,10 +12,12 @@
 
 #import "BFCancellationToken.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface BFCancellationTokenRegistration ()
 
 @property (nonatomic, weak) BFCancellationToken *token;
-@property (nonatomic, strong) BFCancellationBlock cancellationObserverBlock;
+@property (nullable, nonatomic, strong) BFCancellationBlock cancellationObserverBlock;
 @property (nonatomic, strong) NSObject *lock;
 @property (nonatomic) BOOL disposed;
 
@@ -37,9 +39,11 @@
 }
 
 - (instancetype)init {
-    if (self = [super init]) {
-        _lock = [NSObject new];
-    }
+    self = [super init];
+    if (!self) return self;
+
+    _lock = [NSObject new];
+    
     return self;
 }
 
@@ -71,3 +75,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

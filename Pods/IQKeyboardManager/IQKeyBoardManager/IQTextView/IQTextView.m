@@ -1,7 +1,7 @@
 //
 //  IQTextView.m
 // https://github.com/hackiftekhar/IQKeyboardManager
-// Copyright (c) 2013-15 Iftekhar Qurashi.
+// Copyright (c) 2013-16 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,6 @@
 
 #import <UIKit/UILabel.h>
 #import <UIKit/UINibLoading.h>
-
-#if !(__has_feature(objc_instancetype))
-    #define instancetype id
-#endif
-
-//Xcode 4.5 compatibility check
-#ifndef NSFoundationVersionNumber_iOS_5_1
-    #define NSLineBreakByWordWrapping UILineBreakModeWordWrap
-#endif
 
 @interface IQTextView ()
 

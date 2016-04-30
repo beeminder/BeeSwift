@@ -29,18 +29,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleSignIn", name: CurrentUserManager.signedInNotificationName, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleSignOut", name: CurrentUserManager.signedOutNotificationName, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "openGoalFromNotification:", name: "openGoal", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(GalleryViewController.handleSignIn), name: CurrentUserManager.signedInNotificationName, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(GalleryViewController.handleSignOut), name: CurrentUserManager.signedOutNotificationName, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(GalleryViewController.openGoalFromNotification(_:)), name: "openGoal", object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
         self.collectionView?.backgroundColor = UIColor.whiteColor()
+        self.collectionView?.alwaysBounceVertical = true
         self.collectionView?.registerClass(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: "footer")
         self.view.backgroundColor = UIColor.whiteColor()
         self.title = "Goals"
         
-        let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItemStyle.Plain, target: self, action: "settingsButtonPressed")
+        let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItemStyle.Plain, target: self, action: #selector(GalleryViewController.settingsButtonPressed))
         self.navigationItem.rightBarButtonItem = item
         
         self.loadGoalsFromDatabase()
@@ -65,7 +66,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         
         self.updateLastUpdatedLabel()
-        NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: "updateLastUpdatedLabel", userInfo: nil, repeats: true)
+        NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: #selector(GalleryViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
         self.view.addSubview(self.deadbeatView)
         self.deadbeatView.backgroundColor = UIColor.beeGrayColor()
@@ -97,7 +98,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.view.addSubview(self.collectionView!)
         
         self.refreshControl = UIRefreshControl()
-        self.refreshControl.addTarget(self, action: "fetchData:", forControlEvents: UIControlEvents.ValueChanged)
+        self.refreshControl.addTarget(self, action: #selector(GalleryViewController.fetchData(_:)), forControlEvents: UIControlEvents.ValueChanged)
         self.collectionView!.addSubview(self.refreshControl)
         
         self.collectionView!.snp_makeConstraints { (make) -> Void in
@@ -115,7 +116,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if CurrentUserManager.sharedManager.signedIn() && NSUserDefaults.standardUserDefaults().objectForKey("42notificationreset") == nil {
             CurrentUserManager.sharedManager.syncNotificationDefaults(nil, failure: nil)
             RemoteNotificationsManager.sharedManager.turnNotificationsOff()
-            if Goal.MR_findAll().count > 0 {
+            
+            if let _ = Goal.MR_findAll() {
                 let alert = UIAlertController(title: "Thanks for updating!", message: "We've made some changes to how notifications work.\n\nPlease take a look and set them up.\n\nThanks for Beeminding.", preferredStyle: .Alert)
                 alert.addAction(UIAlertAction(title: "Open now", style: .Default, handler: { (alertAction) -> Void in
                     self.settingsButtonPressed()

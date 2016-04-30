@@ -12,7 +12,7 @@
 #import <CommonCrypto/CommonHMAC.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
-#import <GoogleSignIn/GoogleSignIn.h>
+#import <Google/SignIn.h>
 #import "MBProgressHUD/MBProgressHUD.h"
 
 #ifndef BeeSwift_BeeSwift_Bridge_h

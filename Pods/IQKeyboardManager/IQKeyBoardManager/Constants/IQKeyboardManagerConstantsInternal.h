@@ -1,7 +1,7 @@
 //
 //  IQKeyboardManagerConstantsInternal.h
 // https://github.com/hackiftekhar/IQKeyboardManager
-// Copyright (c) 2013-15 Iftekhar Qurashi.
+// Copyright (c) 2013-16 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,32 +39,10 @@
  `IQLayoutGuidePositionBottom`
  If provided IQLayoutGuideConstraint is associated with with viewController bottomLayoutGuide
  */
-#ifndef NS_ENUM
-typedef enum IQLayoutGuidePosition {
-    IQLayoutGuidePositionNone,
-    IQLayoutGuidePositionTop,
-    IQLayoutGuidePositionBottom,
-}IQLayoutGuidePosition;
-#else
 typedef NS_ENUM(NSInteger, IQLayoutGuidePosition) {
     IQLayoutGuidePositionNone,
     IQLayoutGuidePositionTop,
     IQLayoutGuidePositionBottom,
 };
-#endif
-
-//Xcode 5 compatibility check
-#ifdef NSFoundationVersionNumber_iOS_6_1
-    #define IQ_IS_IOS7_OR_GREATER (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1)
-#else
-    #define IQ_IS_IOS7_OR_GREATER NO
-#endif
-
-//Xcode 6 compatibility check
-#ifdef NSFoundationVersionNumber_iOS_7_1
-    #define IQ_IS_IOS8_OR_GREATER (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1)
-#else
-    #define IQ_IS_IOS8_OR_GREATER NO
-#endif
 
 #endif

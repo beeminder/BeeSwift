@@ -29,7 +29,7 @@
 #import "MagicalRecordDeprecationMacros.h"
 #import "MagicalRecordInternal.h"
 #import "MagicalRecordLogging.h"
-#import "MagicalRecordShorthandMethodAliases.h"
+#import "MagicalRecordXcode7CompatibilityMacros.h"
 #import "MagicalRecord.h"
 
 FOUNDATION_EXPORT double MagicalRecordVersionNumber;

@@ -1,7 +1,7 @@
 //
 //  IQUIViewController+Additions.m
 // https://github.com/hackiftekhar/IQKeyboardManager
-// Copyright (c) 2013-15 Iftekhar Qurashi.
+// Copyright (c) 2013-16 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,6 @@
 
 @implementation UIViewController (Additions)
 
-#ifdef NSFoundationVersionNumber_iOS_5_1
-
 -(void)setIQLayoutGuideConstraint:(NSLayoutConstraint *)IQLayoutGuideConstraint
 {
     objc_setAssociatedObject(self, @selector(IQLayoutGuideConstraint), IQLayoutGuideConstraint, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -37,7 +35,5 @@
 {
     return objc_getAssociatedObject(self, @selector(IQLayoutGuideConstraint));
 }
-
-#endif
 
 @end

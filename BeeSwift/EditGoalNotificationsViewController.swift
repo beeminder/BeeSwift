@@ -64,7 +64,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 self.goal!.leadtime = leadtime
                 self.goal!.use_defaults = NSNumber(bool: false)
                 self.useDefaultsSwitch.on = false
-                NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success: Bool, error: NSError!) -> Void in
+                NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success, error) -> Void in
                     //completion
                 }
             }) { (task, error) -> Void in
@@ -81,7 +81,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     self.goal!.alertstart = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(bool: false)
                     self.useDefaultsSwitch.on = false
-                    NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success: Bool, error: NSError!) -> Void in
+                    NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success, error) -> Void in
                         //completion
                     }
                 }) { (task, error) -> Void in
@@ -96,7 +96,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     self.goal?.deadline = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(bool: false)
                     self.useDefaultsSwitch.on = false
-                    NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success: Bool, error: NSError!) -> Void in
+                    NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success, error) -> Void in
                         //foo
                     })
                 }) { (task, error) -> Void in
@@ -113,7 +113,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 BSHTTPSessionManager.sharedManager.PUT("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
                     success: { (task, responseObject) -> Void in
                         self.goal?.use_defaults = NSNumber(bool: true)
-                        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success: Bool, error: NSError!) -> Void in
+                        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success, error) -> Void in
                             //foo
                         })
                         CurrentUserManager.sharedManager.syncNotificationDefaults({ () -> Void in
@@ -125,7 +125,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                             self.goal!.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
                             self.goal!.deadline = CurrentUserManager.sharedManager.defaultDeadline()
                             self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
-                            NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success: Bool, error: NSError!) -> Void in
+                            NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success, error) -> Void in
                                 //foo
                             })
                             }, failure: { () -> Void in
@@ -145,7 +145,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             BSHTTPSessionManager.sharedManager.PUT("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
                 success: { (task, responseObject) -> Void in
                     self.goal?.use_defaults = NSNumber(bool: false)
-                    NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success: Bool, error: NSError!) -> Void in
+                    NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success, error) -> Void in
                         //foo
                     })
                 }) { (task, error) -> Void in

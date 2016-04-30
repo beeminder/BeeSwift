@@ -1,6 +1,6 @@
 // UIImage+AlamofireImage.swift
 //
-// Copyright (c) 2015 Alamofire Software Foundation (http://alamofire.org/)
+// Copyright (c) 2015-2016 Alamofire Software Foundation (http://alamofire.org/)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ import CoreGraphics
 import Foundation
 import UIKit
 
-#if os(iOS)
+#if os(iOS) || os(tvOS)
 import CoreImage
 #endif
 
@@ -110,6 +110,25 @@ extension UIImage {
     }
 }
 
+// MARK: - Alpha
+
+extension UIImage {
+    /// Returns whether the image contains an alpha component.
+    public var af_containsAlphaComponent: Bool {
+        let alphaInfo = CGImageGetAlphaInfo(CGImage)
+
+        return (
+            alphaInfo == .First ||
+            alphaInfo == .Last ||
+            alphaInfo == .PremultipliedFirst ||
+            alphaInfo == .PremultipliedLast
+        )
+    }
+
+    /// Returns whether the image is opaque.
+    public var af_isOpaque: Bool { return !af_containsAlphaComponent }
+}
+
 // MARK: - Scaling
 
 extension UIImage {
@@ -121,7 +140,7 @@ extension UIImage {
         - returns: A new image object.
     */
     public func af_imageScaledToSize(size: CGSize) -> UIImage {
-        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+        UIGraphicsBeginImageContextWithOptions(size, af_isOpaque, 0.0)
         drawInRect(CGRect(origin: CGPointZero, size: size))
 
         let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
@@ -133,6 +152,11 @@ extension UIImage {
     /**
         Returns a new version of the image scaled from the center while maintaining the aspect ratio to fit within 
         a specified size.
+
+        The resulting image contains an alpha component used to pad the width or height with the necessary transparent
+        pixels to fit the specified size. In high performance critical situations, this may not be the optimal approach.
+        To maintain an opaque image, you could compute the `scaledSize` manually, then use the `af_imageScaledToSize`
+        method in conjunction with a `.Center` content mode to achieve the same visual result.
 
         - parameter size: The size to use when scaling the new image.
 
@@ -185,7 +209,7 @@ extension UIImage {
         let scaledSize = CGSize(width: self.size.width * resizeFactor, height: self.size.height * resizeFactor)
         let origin = CGPoint(x: (size.width - scaledSize.width) / 2.0, y: (size.height - scaledSize.height) / 2.0)
 
-        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+        UIGraphicsBeginImageContextWithOptions(size, af_isOpaque, 0.0)
         drawInRect(CGRect(origin: origin, size: scaledSize))
 
         let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
@@ -259,7 +283,7 @@ extension UIImage {
     }
 }
 
-#if os(iOS)
+#if os(iOS) || os(tvOS)
 
 // MARK: - Core Image Filters
 
@@ -292,7 +316,7 @@ extension UIImage {
         guard let filter = CIFilter(name: filterName, withInputParameters: parameters) else { return nil }
         guard let outputImage = filter.outputImage else { return nil }
 
-        let cgImageRef = context.createCGImage(outputImage, fromRect: coreImage.extent)
+        let cgImageRef = context.createCGImage(outputImage, fromRect: outputImage.extent)
 
         return UIImage(CGImage: cgImageRef, scale: scale, orientation: imageOrientation)
     }

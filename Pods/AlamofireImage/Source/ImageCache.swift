@@ -1,6 +1,6 @@
 // ImageCache.swift
 //
-// Copyright (c) 2015 Alamofire Software Foundation (http://alamofire.org/)
+// Copyright (c) 2015-2016 Alamofire Software Foundation (http://alamofire.org/)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
 import Alamofire
 import Foundation
 
-#if os(iOS) || os(watchOS)
+#if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
 #elseif os(OSX)
 import Cocoa
@@ -78,7 +78,7 @@ public class AutoPurgingImageCache: ImageRequestCache {
             self.lastAccessDate = NSDate()
 
             self.totalBytes = {
-                #if os(iOS) || os(watchOS)
+                #if os(iOS) || os(tvOS) || os(watchOS)
                     let size = CGSize(width: image.size.width * image.scale, height: image.size.height * image.scale)
                 #elseif os(OSX)
                     let size = CGSize(width: image.size.width, height: image.size.height)
@@ -125,14 +125,21 @@ public class AutoPurgingImageCache: ImageRequestCache {
         Initialies the `AutoPurgingImageCache` instance with the given memory capacity and preferred memory usage 
         after purge limit.
 
+        Please note, the memory capacity must always be greater than or equal to the preferred memory usage after purge.
+
         - parameter memoryCapacity:                 The total memory capacity of the cache in bytes. `100 MB` by default.
         - parameter preferredMemoryUsageAfterPurge: The preferred memory usage after purge in bytes. `60 MB` by default.
 
         - returns: The new `AutoPurgingImageCache` instance.
     */
-    public init(memoryCapacity: UInt64 = 100 * 1024 * 1024, preferredMemoryUsageAfterPurge: UInt64 = 60 * 1024 * 1024) {
+    public init(memoryCapacity: UInt64 = 100_000_000, preferredMemoryUsageAfterPurge: UInt64 = 60_000_000) {
         self.memoryCapacity = memoryCapacity
         self.preferredMemoryUsageAfterPurge = preferredMemoryUsageAfterPurge
+
+        precondition(
+            memoryCapacity >= preferredMemoryUsageAfterPurge,
+            "The `memoryCapacity` must be greater than or equal to `preferredMemoryUsageAfterPurge`"
+        )
 
         self.cachedImages = [:]
         self.currentMemoryUsage = 0
@@ -142,10 +149,10 @@ public class AutoPurgingImageCache: ImageRequestCache {
             return dispatch_queue_create(name, DISPATCH_QUEUE_CONCURRENT)
         }()
 
-        #if os(iOS)
+        #if os(iOS) || os(tvOS)
             NSNotificationCenter.defaultCenter().addObserver(
                 self,
-                selector: "removeAllImages",
+                selector: #selector(AutoPurgingImageCache.removeAllImages),
                 name: UIApplicationDidReceiveMemoryWarningNotification,
                 object: nil
             )

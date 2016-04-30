@@ -4,3 +4,4 @@
 #import "GGLConfiguration.h"
 #import "GGLContext.h"
 #import "GGLErrorCode.h"
+#import "GMRConfiguration.h"

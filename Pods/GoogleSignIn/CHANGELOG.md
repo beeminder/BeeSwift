@@ -1,3 +1,20 @@
+# 2016-03-04 -- v3.0.0
+- Provides |givenName| and |familyName| properties on |GIDProfileData|.
+- Allows setting the |loginHint| property on |GIDSignIn| to prefill the user's
+  ID or email address in the sign-in flow.
+- Removed the |UIViewController(SignIn)| category as well as the |delegate|
+  property from |GIDSignInButton|.
+- Requires that |uiDelegate| has been set properly on |GIDSignIn| and that
+  SafariServices framework has been linked.
+- Removes the dependency on StoreKit.
+- Provides bitcode support.
+- Requires Xcode 7.0 or above due to bitcode incompatibilities with Xcode 6.
+
+# 2015-10-26 -- v2.4.0
+- Updates sign-in button with the new Google logo.
+- Supports domain restriction for sign-in.
+- Allows refreshing ID tokens.
+
 # 2015-10-09 -- v2.3.2
 - No longer requires Xcode 7.
 

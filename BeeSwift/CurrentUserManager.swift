@@ -102,7 +102,7 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     
     func signInWithEmail(email: String, password: String) {
         BSHTTPSessionManager.sharedManager.POST("/api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret], success: { (dataTask, responseObject) -> Void in
-            self.handleSuccessfulSignin(JSON(responseObject))
+            self.handleSuccessfulSignin(JSON(responseObject!))
         }) { (dataTask, responseError) -> Void in
             self.handleFailedSignin(responseError)
             }
@@ -124,7 +124,7 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     func syncNotificationDefaults(success: (() -> Void)?, failure: (() -> Void)?) {
         BSHTTPSessionManager.sharedManager.GET("api/v1/users/me.json", parameters: [],
             success: { (task, responseObject) -> Void in
-                let responseJSON = JSON(responseObject)
+                let responseJSON = JSON(responseObject!)
                 NSUserDefaults.standardUserDefaults().setObject(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
                 NSUserDefaults.standardUserDefaults().setObject(responseJSON["default_deadline"].number!, forKey: "default_deadline")
                 NSUserDefaults.standardUserDefaults().setObject(responseJSON["default_leadtime"].number!, forKey: "default_leadtime")
@@ -146,21 +146,20 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
         NSUserDefaults.standardUserDefaults().removeObjectForKey(deadbeatKey)
         NSUserDefaults.standardUserDefaults().removeObjectForKey(usernameKey)
         NSUserDefaults.standardUserDefaults().synchronize()
-        for datapoint in Datapoint.MR_findAll() {
+        for datapoint in Datapoint.MR_findAll()! {
             datapoint.MR_deleteEntity()
         }
-        for goal in Goal.MR_findAll() {
+        for goal in Goal.MR_findAll()! {
             goal.MR_deleteEntity()
         }
-        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success: Bool, error: NSError!) -> Void in
+        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success, error) -> Void in
             NSNotificationCenter.defaultCenter().postNotificationName(CurrentUserManager.signedOutNotificationName, object: self)
         }
-
     }
     
     func signInWithOAuthUserId(userId: String, provider: String) {
         BSHTTPSessionManager.sharedManager.signedPOST("/api/private/sign_in", parameters: ["oauth_user_id": userId, "provider": provider], success: { (dataTask, responseObject) -> Void in
-            self.handleSuccessfulSignin(JSON(responseObject))
+            self.handleSuccessfulSignin(JSON(responseObject!))
         }) { (dataTask, responseError) -> Void in
             self.handleFailedSignin(responseError)
         }

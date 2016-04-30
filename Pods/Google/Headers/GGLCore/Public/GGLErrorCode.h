@@ -53,4 +53,14 @@ typedef enum {
    * in the related NSError.
    */
   kGGLErrorCodeSignInSubspecConfigFailed = -105,
+
+  /**
+   * Missing expected subspec error.
+   */
+  kGGLErrorCodeMissingExpectedSubspec = -106,
+
+  /**
+   * Invalid Google App ID error.
+   */
+  kGGLErrorCodeInvalidAppID = -107,
 } GGLErrorCode;

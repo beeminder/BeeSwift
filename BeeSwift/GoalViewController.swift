@@ -102,7 +102,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
         }
         
-        NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: "refreshCountdown", userInfo: nil, repeats: true)
+        NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(GoalViewController.refreshCountdown), userInfo: nil, repeats: true)
         
         self.scrollView.addSubview(self.goalImageScrollView)
         self.goalImageScrollView.showsHorizontalScrollIndicator = false
@@ -120,7 +120,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         self.goalImageScrollView.addSubview(self.goalImageView)
-        let tapGR = UITapGestureRecognizer(target: self, action: "goalImageTapped")
+        let tapGR = UITapGestureRecognizer(target: self, action: #selector(GoalViewController.goalImageTapped))
         tapGR.numberOfTapsRequired = 2
         self.goalImageScrollView.addGestureRecognizer(tapGR)
         self.goalImageView.snp_makeConstraints { (make) -> Void in
@@ -167,7 +167,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.dateTextField.textAlignment = .Center
         self.dateTextField.delegate = self
         self.dateTextField.keyboardType = .NumberPad
-        self.dateTextField.addTarget(self, action: "dateTextFieldValueChanged", forControlEvents: .EditingChanged)
         self.dateTextField.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.height.equalTo(44)
@@ -200,8 +199,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         colonButton.layer.borderColor = UIColor.beeGrayColor().CGColor
         colonButton.titleLabel?.font = UIFont.boldSystemFontOfSize(26)
         colonButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        colonButton.addTarget(self, action: "colonButtonPressed", forControlEvents: .TouchUpInside)
-        self.valueTextField.addTarget(self, action: "valueTextFieldValueChanged", forControlEvents: .EditingChanged)
+        colonButton.addTarget(self, action: #selector(GoalViewController.colonButtonPressed), forControlEvents: .TouchUpInside)
+        self.valueTextField.addTarget(self, action: #selector(GoalViewController.valueTextFieldValueChanged), forControlEvents: .EditingChanged)
         self.valueTextField.snp_makeConstraints { (make) -> Void in
             make.left.equalTo(self.dateTextField.snp_right).offset(10)
             make.height.equalTo(44)
@@ -233,7 +232,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         dataEntryView.addSubview(self.submitButton)
         self.submitButton.setTitle("Submit", forState: .Normal)
-        self.submitButton.addTarget(self, action: "submitDatapoint", forControlEvents: .TouchUpInside)
+        self.submitButton.addTarget(self, action: #selector(GoalViewController.submitDatapoint), forControlEvents: .TouchUpInside)
         self.submitButton.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.commentTextField.snp_bottom).offset(10)
             make.left.equalTo(self.commentTextField)
@@ -242,7 +241,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.dateStepper.tintColor = UIColor.beeGrayColor()
         dataEntryView.addSubview(self.dateStepper)
-        self.dateStepper.addTarget(self, action: "dateStepperValueChanged", forControlEvents: .ValueChanged)
+        self.dateStepper.addTarget(self, action: #selector(GoalViewController.dateStepperValueChanged), forControlEvents: .ValueChanged)
         self.dateStepper.value = 0
         
         // if the goal's deadline is after midnight, and it's after midnight, 
@@ -277,7 +276,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.valueStepper.tintColor = UIColor.beeGrayColor()
         dataEntryView.addSubview(self.valueStepper)
-        self.valueStepper.addTarget(self, action: "valueStepperValueChanged", forControlEvents: .ValueChanged)
+        self.valueStepper.addTarget(self, action: #selector(GoalViewController.valueStepperValueChanged), forControlEvents: .ValueChanged)
         self.valueStepper.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.dateStepper)
             make.left.equalTo(self.dateStepper.snp_right).offset(10)
@@ -298,7 +297,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.bottom.equalTo(self.submitButton)
         }
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: "refreshButtonPressed")
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: #selector(GoalViewController.refreshButtonPressed))
     }
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
@@ -435,7 +434,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.scrollView.scrollRectToVisible(CGRectMake(0, 0, 0, 0), animated: true)
         let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": NSUUID().UUIDString]
         BSHTTPSessionManager.sharedManager.POST("api/v1/users/me/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
-            self.successfullyAddedDatapointWithResponse(responseObject)
+            self.successfullyAddedDatapointWithResponse(responseObject!)
             self.commentTextField.text = ""
             MBProgressHUD.hideAllHUDsForView(self.datapointsTableView, animated: true)
             self.submitButton.userInteractionEnabled = true
@@ -450,7 +449,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject))
         datapoint.goal = self.goal
         
-        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success: Bool, error: NSError!) -> Void in
+        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success, error) -> Void in
             if (self.datapoints.count >= 5) { // magic number
                 self.datapoints.removeObjectAtIndex(0)
             }
@@ -467,12 +466,12 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let hud = MBProgressHUD.showHUDAddedTo(self.goalImageScrollView, animated: true)
         hud.mode = .Indeterminate
         hud.show(true)
-        self.pollTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: "refreshGoal", userInfo: nil, repeats: true)
+        self.pollTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: #selector(GoalViewController.refreshGoal), userInfo: nil, repeats: true)
     }
     
     func refreshGoal() {
         BSHTTPSessionManager.sharedManager.GET("/api/v1/users/me/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)", parameters: nil, success: { (dataTask, responseObject) -> Void in
-            var goalJSON = JSON(responseObject)
+            var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
                 MBProgressHUD.hideAllHUDsForView(self.goalImageScrollView, animated: true)
                 Goal.crupdateWithJSON(goalJSON)
