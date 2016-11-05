@@ -11,9 +11,9 @@ import Foundation
 class GalleryNavigationController: UINavigationController {
     
     override func viewDidLoad() {
-        self.navigationBar.barStyle = UIBarStyle.Black
-        self.navigationBar.barTintColor = UIColor.blackColor()
-        self.navigationBar.tintColor = UIColor.whiteColor()
+        self.navigationBar.barStyle = UIBarStyle.black
+        self.navigationBar.barTintColor = UIColor.black
+        self.navigationBar.tintColor = UIColor.white
 //
 //        let titleDict: NSDictionary = [NSForegroundColorAttributeName: UIColor.whiteColor()]
 //        self.navigationBar.titleTextAttributes = titleDict as [NSObject : AnyObject]

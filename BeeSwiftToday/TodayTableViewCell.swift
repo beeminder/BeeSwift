@@ -18,30 +18,30 @@ class TodayTableViewCell: UITableViewCell {
         }
     }
     
-    private
+    fileprivate
     
     func configureCell() {
-        self.selectionStyle = .None
+        self.selectionStyle = .none
         let graph = UIImageView()
         self.contentView.addSubview(graph)
-        graph.snp_makeConstraints(closure: { (make) -> Void in
+        graph.snp.makeConstraints({ (make) -> Void in
             make.width.equalTo(self.contentView).multipliedBy(0.4)
-            make.height.equalTo(graph.snp_width).multipliedBy(122.0/200.0).priorityHigh()
+            make.height.equalTo(graph.snp.width).multipliedBy(122.0/200.0).priorityHigh()
             make.left.equalTo(0)
             make.top.equalTo(5)
             make.bottom.equalTo(-5)
         })
-        graph.af_setImageWithURL(NSURL(string: self.goalDictionary["thumbUrl"] as! String)!)
+        graph.af_setImage(withURL: URL(string: self.goalDictionary["thumbUrl"] as! String)!)
         
         let textLabel = UILabel()
         self.contentView.addSubview(textLabel)
         textLabel.numberOfLines = 0
         textLabel.text = self.goalDictionary["limSum"] as? String
-        textLabel.font = UIFont.systemFontOfSize(14)
-        textLabel.textColor = UIColor.whiteColor()
+        textLabel.font = UIFont.systemFont(ofSize: 14)
+        textLabel.textColor = UIColor.white
         
-        textLabel.snp_makeConstraints(closure: { (make) -> Void in
-            make.left.equalTo(graph.snp_right).offset(10)
+        textLabel.snp.makeConstraints({ (make) -> Void in
+            make.left.equalTo(graph.snp.right).offset(10)
             make.centerY.equalTo(graph)
             make.right.equalTo(-10)
         })

@@ -1,21 +1,28 @@
-#SwiftyJSON [中文介绍](http://tangplin.github.io/swiftyjson/)
+#SwiftyJSON
+
+[![Travis CI](https://travis-ci.org/SwiftyJSON/SwiftyJSON.svg?branch=master)](https://travis-ci.org/SwiftyJSON/SwiftyJSON) [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) ![CocoaPods](https://img.shields.io/cocoapods/v/SwiftyJSON.svg) ![Platform](https://img.shields.io/badge/platforms-iOS%208.0+%20%7C%20macOS%2010.10+%20%7C%20tvOS%209.0+%20%7C%20watchOS%202.0+-333333.svg)
 
 SwiftyJSON makes it easy to deal with JSON data in Swift.
 
 1. [Why is the typical JSON handling in Swift NOT good](#why-is-the-typical-json-handling-in-swift-not-good)
-1. [Requirements](#requirements)
-1. [Integration](#integration)
-1. [Usage](#usage)
-	- [Initialization](#initialization)
-	- [Subscript](#subscript)
-	- [Loop](#loop)
-	- [Error](#error)
-	- [Optional getter](#optional-getter)
-	- [Non-optional getter](#non-optional-getter)
-	- [Setter](#setter)
-	- [Raw object](#raw-object)
-	- [Literal convertibles](#literal-convertibles)
-1. [Work with Alamofire](#work-with-alamofire)
+2. [Requirements](#requirements)
+3. [Integration](#integration)
+4. [Usage](#usage)
+   - [Initialization](#initialization)
+   - [Subscript](#subscript)
+   - [Loop](#loop)
+   - [Error](#error)
+   - [Optional getter](#optional-getter)
+   - [Non-optional getter](#non-optional-getter)
+   - [Setter](#setter)
+   - [Raw object](#raw-object)
+   - [Literal convertibles](#literal-convertibles)
+5. [Work with Alamofire](#work-with-alamofire)
+
+> For Legacy Swift support, take a look at the [swift2 branch](https://github.com/SwiftyJSON/SwiftyJSON/tree/swift2)
+
+> [中文介绍](http://tangplin.github.io/swiftyjson/)
+
 
 ##Why is the typical JSON handling in Swift NOT good?
 Swift is very strict about types. But although explicit typing is good for saving us from mistakes, it becomes painful when dealing with JSON and other areas that are, by nature, implicit about types.
@@ -26,7 +33,7 @@ The code would look like this:
 
 ```swift
 
-if let statusesArray = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as? [[String: AnyObject]],
+if let statusesArray = try? NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as? [[String: AnyObject]],
     let user = statusesArray[0]["user"] as? [String: AnyObject],
     let username = user["name"] as? String {
     // Finally we got the username
@@ -75,28 +82,45 @@ if let userName = json[999999]["wrong_key"]["wrong_name"].string {
 
 ## Requirements
 
-- iOS 7.0+ / Mac OS X 10.9+
-- Xcode 7
+- iOS 8.0+ | macOS 10.10+ | tvOS 9.0+ | watchOS 2.0+
+- Xcode 8
 
 ##Integration
 
 ####CocoaPods (iOS 8+, OS X 10.9+)
-You can use [Cocoapods](http://cocoapods.org/) to install `SwiftyJSON`by adding it to your `Podfile`:
+You can use [CocoaPods](http://cocoapods.org/) to install `SwiftyJSON`by adding it to your `Podfile`:
 ```ruby
 platform :ios, '8.0'
 use_frameworks!
 
 target 'MyApp' do
-	pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
+	pod 'SwiftyJSON'
 end
 ```
 Note that this requires CocoaPods version 36, and your iOS deployment target to be at least 8.0:
+
 
 ####Carthage (iOS 8+, OS X 10.9+)
 You can use [Carthage](https://github.com/Carthage/Carthage) to install `SwiftyJSON` by adding it to your `Cartfile`:
 ```
 github "SwiftyJSON/SwiftyJSON"
 ```
+
+####Swift Package Manager
+You can use [The Swift Package Manager](https://swift.org/package-manager) to install `SwiftyJSON` by adding the proper description to your `Package.swift` file:
+```swift
+import PackageDescription
+
+let package = Package(
+    name: "YOUR_PROJECT_NAME",
+    targets: [],
+    dependencies: [
+        .Package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", versions: Version(1,0,0)..<Version(2, .max, .max)),
+    ]
+)
+```
+
+Note that the [Swift Package Manager](https://swift.org/package-manager) is still in early design and development, for more infomation checkout its [GitHub Page](https://github.com/apple/swift-package-manager)
 
 ####Manually (iOS 7+, OS X 10.9+)
 
@@ -128,6 +152,12 @@ if let dataFromString = jsonString.dataUsingEncoding(NSUTF8StringEncoding, allow
 //Getting a double from a JSON Array
 let name = json[0].double
 ```
+
+```swift
+//Getting an array of string from a JSON Array
+let arrayNames =  json["users"].arrayValue.map({$0["name"].stringValue})
+```
+
 ```swift
 //Getting a string from a JSON Dictionary
 let name = json["name"].stringValue
@@ -161,7 +191,7 @@ for (key,subJson):(String, JSON) in json {
 ```swift
 //If json is .Array
 //The `index` is 0..<json.count's string value
-for (key,subJson):(String, JSON) in json {
+for (index,subJson):(String, JSON) in json {
     //Do something you want
 }
 ```
@@ -275,7 +305,7 @@ json["id"].int =  1234567890
 json["coordinate"].double =  8766.766
 json["name"].string =  "Jack"
 json.arrayObject = [1,2,3,4]
-json.dictionary = ["name":"Jack", "age":25]
+json.dictionaryObject = ["name":"Jack", "age":25]
 ```
 
 ####Raw object
@@ -296,13 +326,13 @@ if let data = json.rawData() {
 if let string = json.rawString() {
     //Do something you want
 }
-
-####Existance
+```
+####Existence
 ```swift
 //shows you whether value specified in JSON or not
 if json["name"].isExists()
 ```
-```
+
 ####Literal convertibles
 For more info about literal convertibles: [Swift Literal Convertibles](http://nshipster.com/swift-literal-convertible/)
 ```swift
@@ -360,16 +390,13 @@ json[path] = "that"
 
 SwiftyJSON nicely wraps the result of the Alamofire JSON response handler:
 ```swift
-Alamofire.request(.GET, url, parameters: parameters)
-  .responseJSON { (req, res, json, error) in
-    if(error != nil) {
-      NSLog("Error: \(error)")
-      print(req)
-      print(res)
+Alamofire.request(.GET, url).validate().responseJSON { response in
+    switch response.result {
+    case .Success(let value):
+        let json = JSON(value)
+        print("JSON: \(json)")
+    case .Failure(let error):
+        print(error)
     }
-    else {
-      NSLog("Success: \(url)")
-      var json = JSON(json!)
-    }
-  }
+}
 ```

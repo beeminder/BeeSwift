@@ -14,15 +14,16 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - Alamofire (3.3.1)
-  - AlamofireImage (2.4.0):
-    - Alamofire (~> 3.3)
+  - Alamofire (4.0.1)
+  - AlamofireImage (3.0.0):
+    - Alamofire (~> 4.0)
   - Bolts (1.7.0):
     - Bolts/AppLinks (= 1.7.0)
     - Bolts/Tasks (= 1.7.0)
   - Bolts/AppLinks (1.7.0):
     - Bolts/Tasks
   - Bolts/Tasks (1.7.0)
+  - CryptoSwift (0.6.5)
   - FBSDKCoreKit (4.11.0):
     - Bolts (~> 1.7)
   - FBSDKLoginKit (4.11.0):
@@ -57,13 +58,14 @@ PODS:
     - MagicalRecord/Core (= 2.3.2)
   - MagicalRecord/Core (2.3.2)
   - MBProgressHUD (0.9.2)
-  - SnapKit (0.20.0)
-  - SwiftyJSON (2.3.0)
+  - SnapKit (3.0.1)
+  - SwiftyJSON (3.1.0)
 
 DEPENDENCIES:
-  - AFNetworking
-  - Alamofire
-  - AlamofireImage
+  - AFNetworking (~> 3.0)
+  - Alamofire (~> 4.0)
+  - AlamofireImage (~> 3.0)
+  - CryptoSwift
   - FBSDKCoreKit
   - FBSDKLoginKit
   - Google/SignIn
@@ -71,23 +73,14 @@ DEPENDENCIES:
   - MagicalRecord
   - MBProgressHUD
   - SnapKit
-  - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, branch `xcode7.1`)
-
-EXTERNAL SOURCES:
-  SwiftyJSON:
-    :branch: xcode7.1
-    :git: https://github.com/SwiftyJSON/SwiftyJSON.git
-
-CHECKOUT OPTIONS:
-  SwiftyJSON:
-    :commit: 3db7e39b11b58c91a0a360381ec7620b2caab46a
-    :git: https://github.com/SwiftyJSON/SwiftyJSON.git
+  - SwiftyJSON
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  Alamofire: 369bc67b6f5ac33ded3648d7bd21c5bfb91c2ecc
-  AlamofireImage: 87408b652e0f5ae5fe364035f15aea8b9b24c77e
+  Alamofire: 7682d43245de14874acd142ec137b144aa1dd335
+  AlamofireImage: 6594aa1139a67dcd36cde6da79ea4e5b318e60fb
   Bolts: a0058fa3b331c5a1e4402d534f2dae36dbff31e4
+  CryptoSwift: d86b1d97d39b4a361ba44c77180b221e9c5b864f
   FBSDKCoreKit: 686ac982723a14ec9ddb85e2f81235d7706c891b
   FBSDKLoginKit: bade9fc78277764149ccc5bfaadbf13c83175c6a
   Google: d0932824c5b97c96be489aa6f4e8cd6c294d637d
@@ -101,7 +94,7 @@ SPEC CHECKSUMS:
   IQKeyboardManager: 2341089c4ae25fa2fa82ce356a259fcd267dc6b6
   MagicalRecord: 53bed74b4323b930992a725be713e53b37d19755
   MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
-  SnapKit: 5fce3c1bbbf1fbd31de9aa92f33eb9fa03f15650
-  SwiftyJSON: 705aa707804b63377e49adf096d3f1bd59afafbc
+  SnapKit: f818b8326d45b4e1c777d0ab27b5c0a3624bfdeb
+  SwiftyJSON: 29b9f2a64f118c07e691667c2ba1efe536acfe0b
 
 COCOAPODS: 0.39.0

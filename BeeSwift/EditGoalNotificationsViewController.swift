@@ -15,7 +15,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
 
         }
     }
-    private var useDefaultsSwitch = UISwitch()
+    fileprivate var useDefaultsSwitch = UISwitch()
     
     init(goal : Goal) {
         super.init()
@@ -37,34 +37,35 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         let useDefaultsLabel = BSLabel()
         useDefaultsLabel.text = "Use defaults"
         self.view.addSubview(useDefaultsLabel)
-        useDefaultsLabel.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.snp_topLayoutGuideBottom).offset(20)
+        useDefaultsLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(20)
             make.left.equalTo(self.leadTimeLabel)
         }
         
         self.view.addSubview(self.useDefaultsSwitch)
-        self.useDefaultsSwitch.snp_makeConstraints { (make) -> Void in
+        self.useDefaultsSwitch.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(useDefaultsLabel)
             make.right.equalTo(-20)
         }
-        self.useDefaultsSwitch.on = (self.goal?.use_defaults.boolValue)!
-        self.useDefaultsSwitch.addTarget(self, action: "useDefaultsSwitchValueChanged", forControlEvents: .ValueChanged)
+        self.useDefaultsSwitch.isOn = (self.goal?.use_defaults.boolValue)!
+        self.useDefaultsSwitch.addTarget(self, action: #selector(EditGoalNotificationsViewController.useDefaultsSwitchValueChanged), for: .valueChanged)
         
-        self.leadTimeLabel.snp_remakeConstraints { (make) -> Void in
-            make.top.equalTo(self.useDefaultsSwitch.snp_bottom).offset(20)
+        self.leadTimeLabel.snp.remakeConstraints { (make) -> Void in
+            make.top.equalTo(self.useDefaultsSwitch.snp.bottom).offset(20)
             make.left.equalTo(20)
         }
     }
     
-    override func sendLeadTimeToServer(timer : NSTimer) {
-        let leadtime = timer.userInfo!["leadtime"] as! NSNumber
+    override func sendLeadTimeToServer(_ timer : Timer) {
+        var userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
+        let leadtime = userInfo["leadtime"]
         let params = [ "leadtime" : leadtime, "use_defaults" : false ]
-        BSHTTPSessionManager.sharedManager.PUT("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+        BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
             success: { (task, responseObject) -> Void in
-                self.goal!.leadtime = leadtime
-                self.goal!.use_defaults = NSNumber(bool: false)
-                self.useDefaultsSwitch.on = false
-                NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success, error) -> Void in
+                self.goal!.leadtime = leadtime!
+                self.goal!.use_defaults = NSNumber(value: false as Bool)
+                self.useDefaultsSwitch.isOn = false
+                NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
                     //completion
                 }
             }) { (task, error) -> Void in
@@ -72,31 +73,31 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         }
     }
     
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if self.timePickerEditingMode == .Alertstart {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if self.timePickerEditingMode == .alertstart {
             self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
             let params = ["alertstart" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
-            BSHTTPSessionManager.sharedManager.PUT("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
                 success: { (task, responseObject) -> Void in
                     self.goal!.alertstart = self.midnightOffsetFromTimePickerView()
-                    self.goal!.use_defaults = NSNumber(bool: false)
-                    self.useDefaultsSwitch.on = false
-                    NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success, error) -> Void in
+                    self.goal!.use_defaults = NSNumber(value: false as Bool)
+                    self.useDefaultsSwitch.isOn = false
+                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
                         //completion
                     }
                 }) { (task, error) -> Void in
                     //foo
             }
         }
-        if self.timePickerEditingMode == .Deadline {
+        if self.timePickerEditingMode == .deadline {
             self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
             let params = ["deadline" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
-            BSHTTPSessionManager.sharedManager.PUT("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
                 success: { (task, responseObject) -> Void in
                     self.goal?.deadline = self.midnightOffsetFromTimePickerView()
-                    self.goal!.use_defaults = NSNumber(bool: false)
-                    self.useDefaultsSwitch.on = false
-                    NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success, error) -> Void in
+                    self.goal!.use_defaults = NSNumber(value: false as Bool)
+                    self.useDefaultsSwitch.isOn = false
+                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
                         //foo
                     })
                 }) { (task, error) -> Void in
@@ -106,14 +107,14 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
     }
     
     func useDefaultsSwitchValueChanged() {
-        if self.useDefaultsSwitch.on {
-            let alertController = UIAlertController(title: "Confirm", message: "This will wipe out your current settings for this goal. Are you sure?", preferredStyle: .Alert)
-            alertController.addAction(UIAlertAction(title: "Yes", style: .Default, handler: { (action) -> Void in
+        if self.useDefaultsSwitch.isOn {
+            let alertController = UIAlertController(title: "Confirm", message: "This will wipe out your current settings for this goal. Are you sure?", preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                 let params = ["use_defaults" : true]
-                BSHTTPSessionManager.sharedManager.PUT("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+                BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
                     success: { (task, responseObject) -> Void in
-                        self.goal?.use_defaults = NSNumber(bool: true)
-                        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success, error) -> Void in
+                        self.goal?.use_defaults = NSNumber(value: true as Bool)
+                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
                             //foo
                         })
                         CurrentUserManager.sharedManager.syncNotificationDefaults({ () -> Void in
@@ -125,7 +126,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                             self.goal!.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
                             self.goal!.deadline = CurrentUserManager.sharedManager.defaultDeadline()
                             self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
-                            NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success, error) -> Void in
+                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
                                 //foo
                             })
                             }, failure: { () -> Void in
@@ -135,17 +136,17 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                         //foo
                 }
             }))
-            alertController.addAction(UIAlertAction(title: "No", style: .Cancel, handler: { (action) -> Void in
-                self.useDefaultsSwitch.on = false
+            alertController.addAction(UIAlertAction(title: "No", style: .cancel, handler: { (action) -> Void in
+                self.useDefaultsSwitch.isOn = false
             }))
-            self.presentViewController(alertController, animated: true, completion: nil)
+            self.present(alertController, animated: true, completion: nil)
         }
         else {
             let params = ["use_defaults" : false]
-            BSHTTPSessionManager.sharedManager.PUT("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
                 success: { (task, responseObject) -> Void in
-                    self.goal?.use_defaults = NSNumber(bool: false)
-                    NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion({ (success, error) -> Void in
+                    self.goal?.use_defaults = NSNumber(value: false as Bool)
+                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
                         //foo
                     })
                 }) { (task, error) -> Void in

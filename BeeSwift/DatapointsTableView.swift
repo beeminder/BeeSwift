@@ -10,8 +10,8 @@ import Foundation
 
 class DatapointsTableView : UITableView {
     
-    override func intrinsicContentSize() -> CGSize {
+    override var intrinsicContentSize : CGSize {
         self.layoutIfNeeded()
-        return CGSizeMake(UIViewNoIntrinsicMetric, self.contentSize.height)
+        return CGSize(width: UIViewNoIntrinsicMetric, height: self.contentSize.height)
     }
 }

@@ -22,27 +22,27 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    private var cellIdentifier = "datapointCell"
-    private var goalImageView = UIImageView()
-    private var dateTextField = UITextField()
-    private var valueTextField = UITextField()
-    private var commentTextField = UITextField()
-    private var dateStepper = UIStepper()
-    private var valueStepper = UIStepper()
-    private var valueDecimalRemnant : Double = 0.0
-    private var datapoints = NSMutableArray()
-    private var goalImageScrollView = UIScrollView()
-    private var datapointsTableView = DatapointsTableView()
-    private var pollTimer : NSTimer?
-    private var deltasLabel = BSLabel()
-    private var countdownLabel = BSLabel()
-    private var pledgeLabel = BSLabel()
-    private var scrollView = UIScrollView()
-    private var submitButton = BSButton()
-    private let headerWidth = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? Double(1.0/3.0) : Double(0.5)
+    fileprivate var cellIdentifier = "datapointCell"
+    fileprivate var goalImageView = UIImageView()
+    fileprivate var dateTextField = UITextField()
+    fileprivate var valueTextField = UITextField()
+    fileprivate var commentTextField = UITextField()
+    fileprivate var dateStepper = UIStepper()
+    fileprivate var valueStepper = UIStepper()
+    fileprivate var valueDecimalRemnant : Double = 0.0
+    fileprivate var datapoints = NSMutableArray()
+    fileprivate var goalImageScrollView = UIScrollView()
+    fileprivate var datapointsTableView = DatapointsTableView()
+    fileprivate var pollTimer : Timer?
+    fileprivate var deltasLabel = BSLabel()
+    fileprivate var countdownLabel = BSLabel()
+    fileprivate var pledgeLabel = BSLabel()
+    fileprivate var scrollView = UIScrollView()
+    fileprivate var submitButton = BSButton()
+    fileprivate let headerWidth = UIDevice.current.userInterfaceIdiom == .pad ? Double(1.0/3.0) : Double(0.5)
 
     override func viewDidLoad() {
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIColor.white
         self.title = self.goal.title
         
         // have to set these before the datapoints since setting the most recent datapoint updates the text field,
@@ -55,7 +55,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.datapoints = NSMutableArray(array: self.goal.lastFiveDatapoints())
         
         self.view.addSubview(self.scrollView)
-        self.scrollView.snp_makeConstraints { (make) -> Void in
+        self.scrollView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view.layoutMargins.top)
             make.left.equalTo(0)
             make.right.equalTo(0)
@@ -64,7 +64,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         let deltasView = UIView()
         self.scrollView.addSubview(deltasView)
-        deltasView.snp_makeConstraints { (make) -> Void in
+        deltasView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(0)
             make.left.equalTo(0)
             make.right.equalTo(0)
@@ -77,9 +77,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         deltasView.addSubview(self.countdownLabel)
         
         self.pledgeLabel.font = UIFont(name:"Avenir-Heavy", size:Constants.defaultFontSize)
-        self.pledgeLabel.textAlignment = .Center
-        self.pledgeLabel.snp_makeConstraints { (make) -> Void in
-            if UIDevice.currentDevice().userInterfaceIdiom == .Pad {
+        self.pledgeLabel.textAlignment = .center
+        self.pledgeLabel.snp.makeConstraints { (make) -> Void in
+            if UIDevice.current.userInterfaceIdiom == .pad {
                 make.left.equalTo(0)
                 make.centerY.equalTo(0)
                 make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
@@ -87,22 +87,22 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         self.deltasLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
-        self.deltasLabel.textAlignment = .Center
-        self.deltasLabel.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(self.countdownLabel.snp_right)
+        self.deltasLabel.textAlignment = .center
+        self.deltasLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.countdownLabel.snp.right)
             make.centerY.equalTo(0)
             make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
         }
 
         self.countdownLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
-        self.countdownLabel.textAlignment = .Center
-        self.countdownLabel.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(self.pledgeLabel.snp_right)
+        self.countdownLabel.textAlignment = .center
+        self.countdownLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.pledgeLabel.snp.right)
             make.centerY.equalTo(0)
             make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
         }
         
-        NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(GoalViewController.refreshCountdown), userInfo: nil, repeats: true)
+        Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GoalViewController.refreshCountdown), userInfo: nil, repeats: true)
         
         self.scrollView.addSubview(self.goalImageScrollView)
         self.goalImageScrollView.showsHorizontalScrollIndicator = false
@@ -110,20 +110,20 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.goalImageScrollView.minimumZoomScale = 1.0
         self.goalImageScrollView.maximumZoomScale = 3.0
         self.goalImageScrollView.delegate = self
-        self.goalImageScrollView.snp_makeConstraints { (make) -> Void in
+        self.goalImageScrollView.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.view)
             make.left.greaterThanOrEqualTo(0)
             make.right.lessThanOrEqualTo(0)
-            make.top.equalTo(deltasView.snp_bottom)
+            make.top.equalTo(deltasView.snp.bottom)
             make.width.equalTo(self.scrollView)
-            make.height.equalTo(self.goalImageScrollView.snp_width).multipliedBy(Float(Constants.graphHeight)/Float(Constants.graphWidth))
+            make.height.equalTo(self.goalImageScrollView.snp.width).multipliedBy(Float(Constants.graphHeight)/Float(Constants.graphWidth))
         }
         
         self.goalImageScrollView.addSubview(self.goalImageView)
         let tapGR = UITapGestureRecognizer(target: self, action: #selector(GoalViewController.goalImageTapped))
         tapGR.numberOfTapsRequired = 2
         self.goalImageScrollView.addGestureRecognizer(tapGR)
-        self.goalImageView.snp_makeConstraints { (make) -> Void in
+        self.goalImageView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(0)
             make.bottom.equalTo(0)
             make.width.equalTo(self.goalImageScrollView)
@@ -134,24 +134,24 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.datapointsTableView.dataSource = self
         self.datapointsTableView.delegate = self
-        self.datapointsTableView.separatorStyle = .None
-        self.datapointsTableView.scrollEnabled = false
-        self.datapointsTableView.registerClass(DatapointTableViewCell.self, forCellReuseIdentifier: self.cellIdentifier)
+        self.datapointsTableView.separatorStyle = .none
+        self.datapointsTableView.isScrollEnabled = false
+        self.datapointsTableView.register(DatapointTableViewCell.self, forCellReuseIdentifier: self.cellIdentifier)
         self.scrollView.addSubview(self.datapointsTableView)
-        self.datapointsTableView.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.goalImageScrollView.snp_bottom)
+        self.datapointsTableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.goalImageScrollView.snp.bottom)
             make.left.equalTo(self.goalImageScrollView).offset(10)
             make.right.equalTo(self.goalImageScrollView).offset(-10)
         }
         
         let dataEntryView = UIView()
         if (self.goal.autodata.characters.count > 0 || self.goal.won.boolValue) {
-            dataEntryView.hidden = true
+            dataEntryView.isHidden = true
         }
 
         self.scrollView.addSubview(dataEntryView)
-        dataEntryView.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.datapointsTableView.snp_bottom).offset(10)
+        dataEntryView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.datapointsTableView.snp.bottom).offset(10)
             make.left.equalTo(self.datapointsTableView)
             make.right.equalTo(self.datapointsTableView)
             make.bottom.equalTo(0)
@@ -161,13 +161,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         dataEntryView.addSubview(self.dateTextField)
         self.dateTextField.font = UIFont(name: "Avenir", size: 16)
         self.dateTextField.tintColor = UIColor.beeGrayColor()
-        self.dateTextField.layer.borderColor = UIColor.beeGrayColor().CGColor
+        self.dateTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
         self.dateTextField.layer.borderWidth = 1
-        self.dateTextField.userInteractionEnabled = false
-        self.dateTextField.textAlignment = .Center
+        self.dateTextField.isUserInteractionEnabled = false
+        self.dateTextField.textAlignment = .center
         self.dateTextField.delegate = self
-        self.dateTextField.keyboardType = .NumberPad
-        self.dateTextField.snp_makeConstraints { (make) -> Void in
+        self.dateTextField.keyboardType = .numberPad
+        self.dateTextField.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.height.equalTo(44)
             make.top.equalTo(0)
@@ -176,33 +176,33 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         dataEntryView.addSubview(self.valueTextField)
         self.valueTextField.font = UIFont(name: "Avenir", size: 16)
         self.valueTextField.tintColor = UIColor.beeGrayColor()
-        self.valueTextField.layer.borderColor = UIColor.beeGrayColor().CGColor
+        self.valueTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
         self.valueTextField.layer.borderWidth = 1
         self.valueTextField.delegate = self
-        self.valueTextField.textAlignment = .Center
-        self.valueTextField.keyboardType = .DecimalPad
+        self.valueTextField.textAlignment = .center
+        self.valueTextField.keyboardType = .decimalPad
         
-        let accessory = UIView(frame: CGRectMake(0, 0, 0, 44))
-        accessory.backgroundColor = UIColor.whiteColor()
+        let accessory = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
+        accessory.backgroundColor = UIColor.white
         self.valueTextField.inputAccessoryView = accessory
         let colonButton = UIButton()
         accessory.addSubview(colonButton)
         accessory.clipsToBounds = true
-        colonButton.snp_makeConstraints { (make) -> Void in
+        colonButton.snp.makeConstraints { (make) -> Void in
             make.width.equalTo(accessory).multipliedBy(1.0/3.0).offset(-1)
             make.height.equalTo(accessory)
             make.left.equalTo(-1)
             make.top.equalTo(0)
         }
-        colonButton.setTitle(":", forState: .Normal)
+        colonButton.setTitle(":", for: UIControlState())
         colonButton.layer.borderWidth = 1
-        colonButton.layer.borderColor = UIColor.beeGrayColor().CGColor
-        colonButton.titleLabel?.font = UIFont.boldSystemFontOfSize(26)
-        colonButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        colonButton.addTarget(self, action: #selector(GoalViewController.colonButtonPressed), forControlEvents: .TouchUpInside)
-        self.valueTextField.addTarget(self, action: #selector(GoalViewController.valueTextFieldValueChanged), forControlEvents: .EditingChanged)
-        self.valueTextField.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(self.dateTextField.snp_right).offset(10)
+        colonButton.layer.borderColor = UIColor.beeGrayColor().cgColor
+        colonButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 26)
+        colonButton.setTitleColor(UIColor.black, for: UIControlState())
+        colonButton.addTarget(self, action: #selector(GoalViewController.colonButtonPressed), for: .touchUpInside)
+        self.valueTextField.addTarget(self, action: #selector(GoalViewController.valueTextFieldValueChanged), for: .editingChanged)
+        self.valueTextField.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.dateTextField.snp.right).offset(10)
             make.height.equalTo(44)
             make.top.equalTo(0)
         }
@@ -211,51 +211,51 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         self.valueTextFieldValueChanged()
         
-        let commentLeftPaddingView = UIView(frame: CGRectMake(0, 0, 5, 1))
+        let commentLeftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 1))
         
         dataEntryView.addSubview(self.commentTextField)
         self.commentTextField.font = UIFont(name: "Avenir", size: 16)
         self.commentTextField.leftView = commentLeftPaddingView
-        self.commentTextField.leftViewMode = .Always
+        self.commentTextField.leftViewMode = .always
         self.commentTextField.tintColor = UIColor.beeGrayColor()
-        self.commentTextField.layer.borderColor = UIColor.beeGrayColor().CGColor
+        self.commentTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
         self.commentTextField.layer.borderWidth = 1
         self.commentTextField.delegate = self
         self.commentTextField.placeholder = "Comment"
-        self.commentTextField.returnKeyType = .Send
-        self.commentTextField.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(self.valueTextField.snp_right).offset(10).priorityHigh()
+        self.commentTextField.returnKeyType = .send
+        self.commentTextField.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.valueTextField.snp.right).offset(10).priorityHigh()
             make.height.equalTo(44)
             make.right.equalTo(0).priorityHigh()
             make.top.equalTo(0)
         }
         
         dataEntryView.addSubview(self.submitButton)
-        self.submitButton.setTitle("Submit", forState: .Normal)
-        self.submitButton.addTarget(self, action: #selector(GoalViewController.submitDatapoint), forControlEvents: .TouchUpInside)
-        self.submitButton.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.commentTextField.snp_bottom).offset(10)
+        self.submitButton.setTitle("Submit", for: UIControlState())
+        self.submitButton.addTarget(self, action: #selector(GoalViewController.submitDatapoint), for: .touchUpInside)
+        self.submitButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.commentTextField.snp.bottom).offset(10)
             make.left.equalTo(self.commentTextField)
             make.right.equalTo(0)
         }
         
         self.dateStepper.tintColor = UIColor.beeGrayColor()
         dataEntryView.addSubview(self.dateStepper)
-        self.dateStepper.addTarget(self, action: #selector(GoalViewController.dateStepperValueChanged), forControlEvents: .ValueChanged)
+        self.dateStepper.addTarget(self, action: #selector(GoalViewController.dateStepperValueChanged), for: .valueChanged)
         self.dateStepper.value = 0
         
         // if the goal's deadline is after midnight, and it's after midnight, 
         // default to entering data for the "previous" day.
-        let now = NSDate()
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components(NSCalendarUnit.Hour, fromDate: now)
+        let now = Date()
+        let calendar = Calendar.current
+        let components = (calendar as NSCalendar).components(NSCalendar.Unit.hour, from: now)
         let hour = components.hour
-        if self.goal.deadline > 0 && hour < 6 {
+        if self.goal.deadline.intValue > 0 && hour! < 6 {
             self.dateStepper.value = -1
         }
         
-        self.dateStepper.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.dateTextField.snp_bottom).offset(10)
+        self.dateStepper.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.dateTextField.snp.bottom).offset(10)
             make.left.equalTo(self.dateTextField)
             make.width.equalTo(self.dateStepper.frame.size.width)
             make.width.equalTo(self.dateTextField)
@@ -267,19 +267,19 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         dataEntryView.addSubview(dateLabel)
         dateLabel.text = "Date"
         dateLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
-        dateLabel.textAlignment = .Center
-        dateLabel.snp_makeConstraints { (make) -> Void in
+        dateLabel.textAlignment = .center
+        dateLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.dateStepper)
             make.right.equalTo(self.dateStepper)
-            make.top.equalTo(self.dateStepper.snp_bottom).offset(10)
+            make.top.equalTo(self.dateStepper.snp.bottom).offset(10)
         }
         
         self.valueStepper.tintColor = UIColor.beeGrayColor()
         dataEntryView.addSubview(self.valueStepper)
-        self.valueStepper.addTarget(self, action: #selector(GoalViewController.valueStepperValueChanged), forControlEvents: .ValueChanged)
-        self.valueStepper.snp_makeConstraints { (make) -> Void in
+        self.valueStepper.addTarget(self, action: #selector(GoalViewController.valueStepperValueChanged), for: .valueChanged)
+        self.valueStepper.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.dateStepper)
-            make.left.equalTo(self.dateStepper.snp_right).offset(10)
+            make.left.equalTo(self.dateStepper.snp.right).offset(10)
             make.width.equalTo(self.valueStepper.frame.size.width)
             make.width.equalTo(self.valueTextField)
             make.centerX.equalTo(self.valueTextField)
@@ -289,18 +289,18 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         dataEntryView.addSubview(valueLabel)
         valueLabel.text = "Value"
         valueLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
-        valueLabel.textAlignment = .Center
-        valueLabel.snp_makeConstraints { (make) -> Void in
+        valueLabel.textAlignment = .center
+        valueLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.valueStepper)
             make.right.equalTo(self.valueStepper)
-            make.top.equalTo(self.valueStepper.snp_bottom).offset(10)
+            make.top.equalTo(self.valueStepper.snp.bottom).offset(10)
             make.bottom.equalTo(self.submitButton)
         }
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: #selector(GoalViewController.refreshButtonPressed))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(GoalViewController.refreshButtonPressed))
     }
     
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if (!CurrentUserManager.sharedManager.signedIn()) { return }
         if keyPath == "graph_url" {
             self.setGraphImage()
@@ -309,7 +309,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         self.setGraphImage()
         self.refreshCountdown()
         self.pledgeLabel.text = "$\(self.goal.pledge)"
@@ -317,13 +317,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func refreshButtonPressed() {
-        BSHTTPSessionManager.sharedManager.GET("api/v1/users/me/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success:
+        BSHTTPSessionManager.sharedManager.get("api/v1/users/me/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success:
             { (task, responseObject) -> Void in
                 self.pollUntilGraphUpdates()
             }) { (task, error) -> Void in
-                let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                self.presentViewController(alert, animated: true, completion: nil)
+                let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
         }
     }
     
@@ -347,7 +347,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         if CurrentUserManager.sharedManager.isDeadbeat() {
             self.goalImageView.image = UIImage(named: "GraphPlaceholder")
         } else {
-            self.goalImageView.setImageWithURL(NSURL(string: goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"))
+            self.goalImageView.setImageWith(URL(string: goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"))
         }
     }
     
@@ -356,41 +356,41 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func dateStepperValueChanged() {
-        let calendar = NSCalendar(identifier: NSCalendarIdentifierGregorian)
-        let components = NSDateComponents()
+        let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
+        var components = DateComponents()
         components.day = Int(self.dateStepper.value)
         
-        let newDate = calendar?.dateByAddingComponents(components, toDate: NSDate(), options: [])
+        let newDate = (calendar as NSCalendar?)?.date(byAdding: components, to: Date(), options: [])
         
-        let formatter = NSDateFormatter()
-        formatter.locale = NSLocale(localeIdentifier: "en_US")
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US")
         var dateFormat = "d"
-        if calendar?.component(.Month, fromDate: newDate!) !=
-            calendar?.component(.Month, fromDate: NSDate()) {
+        if (calendar as NSCalendar?)?.component(.month, from: newDate!) !=
+            (calendar as NSCalendar?)?.component(.month, from: Date()) {
                 dateFormat = "M  d"
         }
         formatter.dateFormat = dateFormat
-        self.dateTextField.text = formatter.stringFromDate(newDate!)
+        self.dateTextField.text = formatter.string(from: newDate!)
     }
     
     func valueStepperValueChanged() {
         var valueString = ""
-        let formatter = NSNumberFormatter()
-        formatter.locale = NSLocale(localeIdentifier: "en_US")
-        formatter.numberStyle = .DecimalStyle
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.numberStyle = .decimal
         
         if self.valueStepper.value < 0 {
             var value = self.valueStepper.value
             if self.valueDecimalRemnant > 0 { value += (1 - self.valueDecimalRemnant) }
-            valueString = formatter.stringFromNumber(value)!
+            valueString = formatter.string(from: NSNumber(value: value))!
         } else {
-            valueString = formatter.stringFromNumber(self.valueStepper.value + self.valueDecimalRemnant)!
+            valueString = formatter.string(from: NSNumber(value: self.valueStepper.value + self.valueDecimalRemnant))!
         }
-        valueString = valueString.stringByReplacingOccurrencesOfString(",", withString: ".", options: NSStringCompareOptions(), range: Range<String.Index>(start: valueString.startIndex, end: valueString.endIndex))
+        valueString = valueString.replacingOccurrences(of: ",", with: ".", options: NSString.CompareOptions(), range: nil)
         self.valueTextField.text = valueString
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField.isEqual(self.commentTextField) {
             self.submitDatapoint()
         }
@@ -406,16 +406,16 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         if intPart < 0 && self.valueDecimalRemnant > 0 { self.valueStepper.value = intPart - 1 }
     }
     
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if (textField.isEqual(self.valueTextField)) {
             if (string == ",") {
                 textField.text = textField.text! + "."
                 return false
             }
-            if (string as NSString).rangeOfCharacterFromSet(NSCharacterSet(charactersInString: "1234567890.").invertedSet).location != NSNotFound {
+            if (string as NSString).rangeOfCharacter(from: CharacterSet(charactersIn: "1234567890.").inverted).location != NSNotFound {
                 return false
             }
-            if textField.text!.componentsSeparatedByString(".").count > 1 && string == "." {
+            if textField.text!.components(separatedBy: ".").count > 1 && string == "." {
                 return false
             }
         }
@@ -428,34 +428,34 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func submitDatapoint() {
         self.view.endEditing(true)
-        let hud = MBProgressHUD.showHUDAddedTo(self.datapointsTableView, animated: true)
-        hud.mode = .Indeterminate
-        self.submitButton.userInteractionEnabled = false
-        self.scrollView.scrollRectToVisible(CGRectMake(0, 0, 0, 0), animated: true)
-        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": NSUUID().UUIDString]
-        BSHTTPSessionManager.sharedManager.POST("api/v1/users/me/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
-            self.successfullyAddedDatapointWithResponse(responseObject!)
+        let hud = MBProgressHUD.showAdded(to: self.datapointsTableView, animated: true)
+        hud?.mode = .indeterminate
+        self.submitButton.isUserInteractionEnabled = false
+        self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
+        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": UUID().uuidString]
+        BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
+            self.successfullyAddedDatapointWithResponse(responseObject! as AnyObject)
             self.commentTextField.text = ""
-            MBProgressHUD.hideAllHUDsForView(self.datapointsTableView, animated: true)
-            self.submitButton.userInteractionEnabled = true
+            MBProgressHUD.hideAllHUDs(for: self.datapointsTableView, animated: true)
+            self.submitButton.isUserInteractionEnabled = true
         }) { (dataTask, error) -> Void in
-            self.submitButton.userInteractionEnabled = true
-            MBProgressHUD.hideAllHUDsForView(self.datapointsTableView, animated: true)
+            self.submitButton.isUserInteractionEnabled = true
+            MBProgressHUD.hideAllHUDs(for: self.datapointsTableView, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
         }
     }
     
-    func successfullyAddedDatapointWithResponse(responseObject: AnyObject) {
+    func successfullyAddedDatapointWithResponse(_ responseObject: AnyObject) {
         let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject))
         datapoint.goal = self.goal
         
-        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success, error) -> Void in
+        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
             if (self.datapoints.count >= 5) { // magic number
-                self.datapoints.removeObjectAtIndex(0)
+                self.datapoints.removeObject(at: 0)
             }
 
-            self.datapoints.addObject(datapoint)
-            self.datapointsTableView.reloadSections(NSIndexSet(indexesInRange: NSMakeRange(0, 1)), withRowAnimation: .Automatic)
+            self.datapoints.add(datapoint)
+            self.datapointsTableView.reloadSections(IndexSet(integersIn: NSMakeRange(0, 1).toRange()!), with: .automatic)
             self.pollUntilGraphUpdates()
         }
         self.view.endEditing(true)
@@ -463,21 +463,21 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func pollUntilGraphUpdates() {
         if self.pollTimer != nil { return }
-        let hud = MBProgressHUD.showHUDAddedTo(self.goalImageScrollView, animated: true)
-        hud.mode = .Indeterminate
-        hud.show(true)
-        self.pollTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: #selector(GoalViewController.refreshGoal), userInfo: nil, repeats: true)
+        let hud = MBProgressHUD.showAdded(to: self.goalImageScrollView, animated: true)
+        hud?.mode = .indeterminate
+        hud?.show(true)
+        self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(GoalViewController.refreshGoal), userInfo: nil, repeats: true)
     }
     
     func refreshGoal() {
-        BSHTTPSessionManager.sharedManager.GET("/api/v1/users/me/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)", parameters: nil, success: { (dataTask, responseObject) -> Void in
+        BSHTTPSessionManager.sharedManager.get("/api/v1/users/me/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)", parameters: nil, success: { (dataTask, responseObject) -> Void in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
-                MBProgressHUD.hideAllHUDsForView(self.goalImageScrollView, animated: true)
+                MBProgressHUD.hideAllHUDs(for: self.goalImageScrollView, animated: true)
                 Goal.crupdateWithJSON(goalJSON)
                 self.pollTimer?.invalidate()
                 self.pollTimer = nil
-                let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+                let delegate = UIApplication.shared.delegate as! AppDelegate
                 delegate.updateBadgeCount()
                 delegate.updateTodayWidget()
             }
@@ -486,29 +486,29 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.goalImageView
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 24
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.datapoints.count
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.view.endEditing(true)
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(self.cellIdentifier) as! DatapointTableViewCell
-        cell.datapoint = (self.datapoints[indexPath.row] as! Datapoint)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier) as! DatapointTableViewCell
+        cell.datapoint = (self.datapoints[(indexPath as NSIndexPath).row] as! Datapoint)
         return cell
     }
 }

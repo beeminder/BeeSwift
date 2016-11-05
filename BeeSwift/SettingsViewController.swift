@@ -10,50 +10,50 @@ import Foundation
 
 class SettingsViewController: UIViewController {
     
-    private var numberOfTodayGoalsLabel = BSLabel()
-    private var numberOfTodayGoalsStepper = UIStepper()
-    private var emergencyRemindersSwitch = UISwitch()
-    private var tableView = UITableView()
-    private var frontburnerGoals : [Goal] = []
-    private var backburnerGoals  : [Goal] = []
-    private var cellReuseIdentifier = "goalNotificationSettingsTableViewCell"
+    fileprivate var numberOfTodayGoalsLabel = BSLabel()
+    fileprivate var numberOfTodayGoalsStepper = UIStepper()
+    fileprivate var emergencyRemindersSwitch = UISwitch()
+    fileprivate var tableView = UITableView()
+    fileprivate var frontburnerGoals : [Goal] = []
+    fileprivate var backburnerGoals  : [Goal] = []
+    fileprivate var cellReuseIdentifier = "goalNotificationSettingsTableViewCell"
 
     override func viewDidLoad() {
         self.title = "Settings"
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIColor.white
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "userDefaultsDidChange", name: NSUserDefaultsDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SettingsViewController.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         
         self.view.addSubview(self.numberOfTodayGoalsLabel)
-        var numberOfTodayGoals = NSUserDefaults.standardUserDefaults().objectForKey("numberOfTodayGoals")?.integerValue
+        var numberOfTodayGoals = (UserDefaults.standard.object(forKey: "numberOfTodayGoals") as! NSNumber).intValue
         if numberOfTodayGoals == nil {
             numberOfTodayGoals = 3
-            NSUserDefaults.standardUserDefaults().setObject(3, forKey: "numberOfTodayGoals")
-            NSUserDefaults.standardUserDefaults().synchronize()
+            UserDefaults.standard.set(3, forKey: "numberOfTodayGoals")
+            UserDefaults.standard.synchronize()
         }
         
-        self.numberOfTodayGoalsLabel.text = "Goals in Today view: \(numberOfTodayGoals!)"
-        self.numberOfTodayGoalsLabel.snp_makeConstraints { (make) -> Void in
+        self.numberOfTodayGoalsLabel.text = "Goals in Today view: \(numberOfTodayGoals)"
+        self.numberOfTodayGoalsLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(15)
             make.width.lessThanOrEqualTo(self.view).multipliedBy(0.7).offset(-20)
-            make.top.equalTo(self.snp_topLayoutGuideBottom).offset(20)
+            make.top.equalTo(40)
         }
         
         self.view.addSubview(self.numberOfTodayGoalsStepper)
-        self.numberOfTodayGoalsStepper.tintColor = UIColor.darkGrayColor()
+        self.numberOfTodayGoalsStepper.tintColor = UIColor.darkGray
         self.numberOfTodayGoalsStepper.maximumValue = 3
-        self.numberOfTodayGoalsStepper.snp_makeConstraints { (make) -> Void in
+        self.numberOfTodayGoalsStepper.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.numberOfTodayGoalsLabel)
             make.right.equalTo(-15)
         }
-        self.numberOfTodayGoalsStepper.addTarget(self, action: "numberOfTodayGoalsStepperValueChanged", forControlEvents: .ValueChanged)
-        self.numberOfTodayGoalsStepper.value = Double(numberOfTodayGoals!)
+        self.numberOfTodayGoalsStepper.addTarget(self, action: #selector(SettingsViewController.numberOfTodayGoalsStepperValueChanged), for: .valueChanged)
+        self.numberOfTodayGoalsStepper.value = Double(numberOfTodayGoals)
         
         self.view.addSubview(self.emergencyRemindersSwitch)
-        self.emergencyRemindersSwitch.addTarget(self, action: "emergencyRemindersSwitchChanged", forControlEvents: .ValueChanged)
+        self.emergencyRemindersSwitch.addTarget(self, action: #selector(SettingsViewController.emergencyRemindersSwitchChanged), for: .valueChanged)
         self.updateEmergencyRemindersSwitch()
-        self.emergencyRemindersSwitch.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.numberOfTodayGoalsStepper.snp_bottom).offset(20)
+        self.emergencyRemindersSwitch.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.numberOfTodayGoalsStepper.snp.bottom).offset(20)
             make.right.equalTo(self.numberOfTodayGoalsStepper)
         }
         
@@ -61,17 +61,17 @@ class SettingsViewController: UIViewController {
         self.view.addSubview(emergencyRemindersLabel)
         emergencyRemindersLabel.text = "Goal emergency notifications"
         emergencyRemindersLabel.font = self.numberOfTodayGoalsLabel.font!
-        emergencyRemindersLabel.snp_makeConstraints { (make) -> Void in
+        emergencyRemindersLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.emergencyRemindersSwitch)
             make.left.equalTo(self.numberOfTodayGoalsLabel)
         }
         
         let signOutButton = BSButton()
         
-        signOutButton.addTarget(self, action: "signOutButtonPressed", forControlEvents: UIControlEvents.TouchUpInside)
+        signOutButton.addTarget(self, action: #selector(SettingsViewController.signOutButtonPressed), for: UIControlEvents.touchUpInside)
         self.view.addSubview(signOutButton)
-        signOutButton.setTitle("Sign Out", forState: UIControlState.Normal)
-        signOutButton.snp_makeConstraints { (make) -> Void in
+        signOutButton.setTitle("Sign Out", for: UIControlState())
+        signOutButton.snp.makeConstraints { (make) -> Void in
             make.bottom.equalTo(-30)
             make.width.equalTo(self.view).multipliedBy(0.75)
             make.centerX.equalTo(self.view)
@@ -79,17 +79,17 @@ class SettingsViewController: UIViewController {
         }
         
         self.view.addSubview(self.tableView)
-        self.tableView.snp_makeConstraints { (make) -> Void in
+        self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
-            make.top.equalTo(emergencyRemindersSwitch.snp_bottom).offset(5)
-            make.bottom.equalTo(signOutButton.snp_top)
+            make.top.equalTo(emergencyRemindersSwitch.snp.bottom).offset(5)
+            make.bottom.equalTo(signOutButton.snp.top)
         }
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.tableFooterView = UIView()
-        self.tableView.backgroundColor = UIColor.clearColor()
-        self.tableView.registerClass(GoalNotificationSettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
+        self.tableView.backgroundColor = UIColor.clear
+        self.tableView.register(GoalNotificationSettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.loadGoalsFromDatabase()
     }
     
@@ -99,23 +99,23 @@ class SettingsViewController: UIViewController {
     }
     
     func updateEmergencyRemindersSwitch() {
-        self.emergencyRemindersSwitch.on = RemoteNotificationsManager.sharedManager.on()
-        self.tableView.hidden = !self.emergencyRemindersSwitch.on        
+        self.emergencyRemindersSwitch.isOn = RemoteNotificationsManager.sharedManager.on()
+        self.tableView.isHidden = !self.emergencyRemindersSwitch.isOn        
     }
     
     func numberOfTodayGoalsStepperValueChanged() {
-        NSUserDefaults.standardUserDefaults().setObject(Int(self.numberOfTodayGoalsStepper.value), forKey: "numberOfTodayGoals")
-        NSUserDefaults.standardUserDefaults().synchronize()
+        UserDefaults.standard.set(Int(self.numberOfTodayGoalsStepper.value), forKey: "numberOfTodayGoals")
+        UserDefaults.standard.synchronize()
     }
     
     func signOutButtonPressed() {
         CurrentUserManager.sharedManager.signOut()
-        self.navigationController?.popViewControllerAnimated(true)
+        self.navigationController?.popViewController(animated: true)
     }
     
     func emergencyRemindersSwitchChanged() {
-        self.tableView.hidden = !self.emergencyRemindersSwitch.on
-        if self.emergencyRemindersSwitch.on {
+        self.tableView.isHidden = !self.emergencyRemindersSwitch.isOn
+        if self.emergencyRemindersSwitch.isOn {
             RemoteNotificationsManager.sharedManager.turnNotificationsOn()
         }
         else {
@@ -124,40 +124,40 @@ class SettingsViewController: UIViewController {
     }
     
     func loadGoalsFromDatabase() {
-        self.frontburnerGoals = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "frontburner")) as! [Goal]
-        self.frontburnerGoals = self.frontburnerGoals.sort { ($0.losedate.integerValue < $1.losedate.integerValue) }
-        self.backburnerGoals  = Goal.MR_findAllWithPredicate(NSPredicate(format: "burner = %@ and serverDeleted = false", "backburner")) as! [Goal]
-        self.backburnerGoals = self.backburnerGoals.sort { ($0.losedate.integerValue < $1.losedate.integerValue) }
+        self.frontburnerGoals = Goal.mr_findAll(with: NSPredicate(format: "burner = %@ and serverDeleted = false", "frontburner")) as! [Goal]
+        self.frontburnerGoals = self.frontburnerGoals.sorted { ($0.losedate.intValue < $1.losedate.intValue) }
+        self.backburnerGoals  = Goal.mr_findAll(with: NSPredicate(format: "burner = %@ and serverDeleted = false", "backburner")) as! [Goal]
+        self.backburnerGoals = self.backburnerGoals.sorted { ($0.losedate.intValue < $1.losedate.intValue) }
     }
 }
 
 extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 3
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 { return self.frontburnerGoals.count }
         if section == 2 { return self.backburnerGoals.count  }
         return 1
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(self.cellReuseIdentifier) as! GoalNotificationSettingsTableViewCell!
-        if indexPath.section == 0 {
-            cell.title = "Default notification settings"
-            return cell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! GoalNotificationSettingsTableViewCell!
+        if (indexPath as NSIndexPath).section == 0 {
+            cell?.title = "Default notification settings"
+            return cell!
         }
-        let goal = indexPath.section == 1 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
-        cell.title = goal.slug
-        return cell
+        let goal = (indexPath as NSIndexPath).section == 1 ? self.frontburnerGoals[(indexPath as NSIndexPath).row] : self.backburnerGoals[(indexPath as NSIndexPath).row]
+        cell?.title = goal.slug
+        return cell!
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.section == 0 {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if (indexPath as NSIndexPath).section == 0 {
             self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
         } else {
-            let goal = indexPath.section == 1 ? self.frontburnerGoals[indexPath.row] : self.backburnerGoals[indexPath.row]
+            let goal = (indexPath as NSIndexPath).section == 1 ? self.frontburnerGoals[(indexPath as NSIndexPath).row] : self.backburnerGoals[(indexPath as NSIndexPath).row]
             self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
         }
     }

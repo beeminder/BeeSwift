@@ -11,21 +11,21 @@ import MagicalRecord
 
 class EditNotificationsViewController: UIViewController {
     enum TimePickerEditingMode {
-        case Alertstart, Deadline
+        case alertstart, deadline
     }
     var timePickerEditingMode : TimePickerEditingMode? {
         didSet {
             if self.timePickerEditingMode == nil {
-                self.timePickerView.hidden = true
-            } else if self.timePickerEditingMode == .Alertstart {
-                self.timePickerView.hidden = false
-                self.setTimePickerComponents(self.alertstart.integerValue)
+                self.timePickerView.isHidden = true
+            } else if self.timePickerEditingMode == .alertstart {
+                self.timePickerView.isHidden = false
+                self.setTimePickerComponents(self.alertstart.intValue)
                 self.alertStartLabel.font = UIFont.beeminderDefaultBoldFont()
                 self.deadlineLabel.font = UIFont.beeminderDefaultFont()
             }
-            else if self.timePickerEditingMode == .Deadline {
-                self.timePickerView.hidden = false
-                self.setTimePickerComponents(self.deadline.integerValue)
+            else if self.timePickerEditingMode == .deadline {
+                self.timePickerView.isHidden = false
+                self.setTimePickerComponents(self.deadline.intValue)
                 self.alertStartLabel.font = UIFont.beeminderDefaultFont()
                 self.deadlineLabel.font = UIFont.beeminderDefaultBoldFont()
             }
@@ -46,7 +46,7 @@ class EditNotificationsViewController: UIViewController {
             self.updateDeadlineLabel(self.deadline)
         }
     }
-    private var leadTimeDelayTimer : NSTimer?
+    fileprivate var leadTimeDelayTimer : Timer?
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -57,51 +57,51 @@ class EditNotificationsViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIColor.white
         
         self.view.addSubview(self.leadTimeLabel)
-        self.leadTimeLabel.snp_makeConstraints { (make) -> Void in
+        self.leadTimeLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(10)
-            make.top.equalTo(self.snp_topLayoutGuideBottom).offset(20)
+            make.top.equalTo(40)
         }
         
         self.leadTimeStepper.minimumValue = 0
         self.leadTimeStepper.maximumValue = 30
         self.leadTimeStepper.tintColor = UIColor.beeGrayColor()
-        self.leadTimeStepper.addTarget(self, action: "leadTimeStepperValueChanged", forControlEvents: .ValueChanged)
+        self.leadTimeStepper.addTarget(self, action: #selector(EditNotificationsViewController.leadTimeStepperValueChanged), for: .valueChanged)
         self.view.addSubview(self.leadTimeStepper)
-        self.leadTimeStepper.snp_makeConstraints { (make) -> Void in
+        self.leadTimeStepper.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.leadTimeLabel)
-            make.left.equalTo(self.leadTimeLabel.snp_right).offset(10)
+            make.left.equalTo(self.leadTimeLabel.snp.right).offset(10)
         }
         
         self.updateLeadTimeLabel()
         
         self.view.addSubview(self.alertStartLabel)
-        self.alertStartLabel.snp_makeConstraints { (make) -> Void in
+        self.alertStartLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.leadTimeLabel)
-            make.top.equalTo(self.leadTimeStepper.snp_bottom).offset(20)
+            make.top.equalTo(self.leadTimeStepper.snp.bottom).offset(20)
         }
-        self.alertStartLabel.userInteractionEnabled = true
-        let tapGR = UITapGestureRecognizer(target: self, action: "alertstartLabelTapped")
+        self.alertStartLabel.isUserInteractionEnabled = true
+        let tapGR = UITapGestureRecognizer(target: self, action: #selector(EditNotificationsViewController.alertstartLabelTapped))
         self.alertStartLabel.addGestureRecognizer(tapGR)
         self.updateAlertstartLabel(self.alertstart)
         
         self.view.addSubview(self.deadlineLabel)
-        self.deadlineLabel.snp_makeConstraints { (make) -> Void in
+        self.deadlineLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.alertStartLabel)
-            make.top.equalTo(self.alertStartLabel.snp_bottom).offset(20)
+            make.top.equalTo(self.alertStartLabel.snp.bottom).offset(20)
         }
-        self.deadlineLabel.userInteractionEnabled = true
-        let deadlineTapGR = UITapGestureRecognizer(target: self, action: "deadlineLabelTapped")
+        self.deadlineLabel.isUserInteractionEnabled = true
+        let deadlineTapGR = UITapGestureRecognizer(target: self, action: #selector(EditNotificationsViewController.deadlineLabelTapped))
         self.deadlineLabel.addGestureRecognizer(deadlineTapGR)
         self.updateDeadlineLabel(self.deadline)
         
-        self.timePickerView.hidden = true
+        self.timePickerView.isHidden = true
         self.timePickerView.delegate = self
         self.timePickerView.dataSource = self
         self.view.addSubview(self.timePickerView)
-        self.timePickerView.snp_makeConstraints { (make) -> Void in
+        self.timePickerView.snp.makeConstraints { (make) -> Void in
             make.bottom.equalTo(0)
             make.left.equalTo(0)
             make.right.equalTo(0)
@@ -109,28 +109,28 @@ class EditNotificationsViewController: UIViewController {
     }
     
     func alertstartLabelTapped() {
-        self.timePickerEditingMode = .Alertstart
+        self.timePickerEditingMode = .alertstart
     }
     
     func deadlineLabelTapped() {
-        self.timePickerEditingMode = .Deadline
+        self.timePickerEditingMode = .deadline
     }
     
-    func updateAlertstartLabel(alertstart : NSNumber) {
+    func updateAlertstartLabel(_ alertstart : NSNumber) {
         self.alertStartLabel.text = "Start notifications at: \(self.stringFromMidnightOffset(alertstart))"
     }
     
-    func updateDeadlineLabel(deadline: NSNumber) {
+    func updateDeadlineLabel(_ deadline: NSNumber) {
         self.deadlineLabel.text = "Goal deadline: \(self.stringFromMidnightOffset(deadline))"
     }
     
-    func stringFromMidnightOffset(offset : NSNumber) -> NSString {
-        let date = NSDate(timeInterval: offset.doubleValue, sinceDate: NSCalendar.currentCalendar().startOfDayForDate(NSDate()))
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.locale = NSLocale(localeIdentifier: self.use24HourTime() ? "en_UK" : "en_US")
-        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-        return dateFormatter.stringFromDate(date)
+    func stringFromMidnightOffset(_ offset : NSNumber) -> NSString {
+        let date = Date(timeInterval: offset.doubleValue, since: Calendar.current.startOfDay(for: Date()))
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: self.use24HourTime() ? "en_UK" : "en_US")
+        dateFormatter.timeStyle = DateFormatter.Style.short
+        dateFormatter.dateStyle = DateFormatter.Style.none
+        return dateFormatter.string(from: date) as NSString
     }
     
     func updateLeadTimeLabel() {
@@ -144,19 +144,19 @@ class EditNotificationsViewController: UIViewController {
     func leadTimeStepperValueChanged() {
         self.updateLeadTimeLabel()
         self.leadTimeDelayTimer?.invalidate()
-        self.leadTimeDelayTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: "sendLeadTimeToServer:", userInfo: [ "leadtime" : NSNumber(double: self.leadTimeStepper.value)], repeats: false)
+        self.leadTimeDelayTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(EditNotificationsViewController.sendLeadTimeToServer(_:)), userInfo: [ "leadtime" : NSNumber(value: self.leadTimeStepper.value as Double)], repeats: false)
     }
     
-    func sendLeadTimeToServer(timer : NSTimer) {
+    func sendLeadTimeToServer(_ timer : Timer) {
         assertionFailure("this method must be overridden by a subclass")
     }
     
     func use24HourTime() -> Bool {
-        let formatString: NSString = NSDateFormatter.dateFormatFromTemplate("j", options: 0, locale: NSLocale.currentLocale())!
-        return !formatString.containsString("a")
+        let formatString: NSString = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: Locale.current)! as NSString
+        return !formatString.contains("a")
     }
     
-    func setTimePickerComponents(offsetFromMidnight : Int) {
+    func setTimePickerComponents(_ offsetFromMidnight : Int) {
         let hour = offsetFromMidnight / 3600
         let minute = (offsetFromMidnight % 3600) / 60
         if self.use24HourTime() {
@@ -177,7 +177,7 @@ class EditNotificationsViewController: UIViewController {
 }
 
 extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerViewDelegate {
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if component == 0 {
             return Bool(self.use24HourTime()) ? 24 : 12
         }
@@ -188,30 +188,30 @@ extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerView
     }
     
     func midnightOffsetFromTimePickerView() -> NSNumber {
-        let minute = self.timePickerView.selectedRowInComponent(1)
+        let minute = NSNumber.init(value: self.timePickerView.selectedRow(inComponent: 1))
         let hour = self.hourFromTimePicker()
         
-        return 3600*hour.integerValue + 60*minute
+        return NSNumber(value: 3600*hour.intValue + 60*minute.intValue)
     }
     
     // we're doing this instead of just using a UIDatePicker so that we can use the
     // Beeminder font in the picker instead of the system font
     func hourFromTimePicker() -> NSNumber {
-        if self.use24HourTime() || self.timePickerView.selectedRowInComponent(2) == 0 {
-            return self.timePickerView.selectedRowInComponent(0)
+        if self.use24HourTime() || self.timePickerView.selectedRow(inComponent: 2) == 0 {
+            return NSNumber(value: self.timePickerView.selectedRow(inComponent: 0))
         }
-        return self.timePickerView.selectedRowInComponent(0) + 12
+        return NSNumber(value: self.timePickerView.selectedRow(inComponent: 0) + 12)
     }
     
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return self.use24HourTime() ? 2 : 3
     }
     
-    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView?) -> UIView {
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         let view = UIView()
         let label = BSLabel()
         view.addSubview(label)
-        label.snp_makeConstraints { (make) -> Void in
+        label.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(0)
             make.bottom.equalTo(0)
             make.left.equalTo(10)
@@ -220,18 +220,18 @@ extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerView
         label.font = UIFont(name: "Avenir", size: 17)
         
         var text = ""
-        var alignment = NSTextAlignment.Center
+        var alignment = NSTextAlignment.center
         
         if (component == 2) {
             text = row == 0 ? "AM" : "PM"
-            alignment = .Left
+            alignment = .left
         }
         else if (component == 1) {
             text = row < 10 ? "0\(row)" : "\(row)"
             if self.use24HourTime() {
-                alignment = .Left
+                alignment = .left
             } else {
-                alignment = .Center
+                alignment = .center
             }
         }
         else {
@@ -241,7 +241,7 @@ extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerView
             else {
                 text = "\(row)"
             }
-            alignment = .Right
+            alignment = .right
         }
         
         label.text = text

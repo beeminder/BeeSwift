@@ -17,54 +17,54 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     var passwordTextField :UITextField = UITextField()
     
     override func viewDidLoad() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SignInViewController.handleFailedSignIn(_:)), name: CurrentUserManager.failedSignInNotificationName, object: nil)
-        self.view.backgroundColor = UIColor.whiteColor()
+        NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
+        self.view.backgroundColor = UIColor.white
         
         let scrollView = UIScrollView()
         self.view.addSubview(scrollView)
-        scrollView.snp_makeConstraints { (make) -> Void in
+        scrollView.snp.makeConstraints { (make) -> Void in
             make.edges.equalTo(self.view)
         }
         
         scrollView.addSubview(self.signInLabel)
         self.signInLabel.text = "Sign in to Beeminder"
-        self.signInLabel.textAlignment = NSTextAlignment.Center
-        self.signInLabel.snp_makeConstraints { (make) -> Void in
+        self.signInLabel.textAlignment = NSTextAlignment.center
+        self.signInLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(50)
             make.centerX.equalTo(scrollView)
         }
         
         scrollView.addSubview(self.emailTextField)
-        self.emailTextField.layer.borderColor = UIColor.beeGrayColor().CGColor
+        self.emailTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
         self.emailTextField.tintColor = UIColor.beeGrayColor()
         self.emailTextField.layer.borderWidth = 1
         self.emailTextField.placeholder = "Email or username"
-        self.emailTextField.autocapitalizationType = .None
-        self.emailTextField.autocorrectionType = .No
-        self.emailTextField.textAlignment = NSTextAlignment.Center
+        self.emailTextField.autocapitalizationType = .none
+        self.emailTextField.autocorrectionType = .no
+        self.emailTextField.textAlignment = NSTextAlignment.center
         self.emailTextField.font = UIFont(name: "Avenir", size: 20)
-        self.emailTextField.keyboardType = UIKeyboardType.EmailAddress
-        self.emailTextField.returnKeyType = .Next
+        self.emailTextField.keyboardType = UIKeyboardType.emailAddress
+        self.emailTextField.returnKeyType = .next
         self.emailTextField.delegate = self
-        self.emailTextField.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.signInLabel.snp_bottom).offset(20)
+        self.emailTextField.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.signInLabel.snp.bottom).offset(20)
             make.centerX.equalTo(0)
             make.width.equalTo(scrollView).multipliedBy(0.75)
             make.height.equalTo(44)
         }
         
         scrollView.addSubview(self.passwordTextField)
-        self.passwordTextField.layer.borderColor = UIColor.beeGrayColor().CGColor
+        self.passwordTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
         self.passwordTextField.tintColor = UIColor.beeGrayColor()
         self.passwordTextField.layer.borderWidth = 1
         self.passwordTextField.placeholder = "Password"
-        self.passwordTextField.textAlignment = NSTextAlignment.Center
+        self.passwordTextField.textAlignment = NSTextAlignment.center
         self.passwordTextField.font = UIFont(name: "Avenir", size: 20)
-        self.passwordTextField.secureTextEntry = true
-        self.passwordTextField.returnKeyType = .Done
+        self.passwordTextField.isSecureTextEntry = true
+        self.passwordTextField.returnKeyType = .done
         self.passwordTextField.delegate = self
-        self.passwordTextField.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.emailTextField.snp_bottom).offset(20)
+        self.passwordTextField.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.emailTextField.snp.bottom).offset(20)
             make.centerX.equalTo(self.emailTextField)
             make.width.equalTo(self.emailTextField)
             make.height.equalTo(44)
@@ -72,40 +72,40 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         
         let signInButton = UIButton()
         scrollView.addSubview(signInButton)
-        signInButton.setTitle("Sign In", forState: .Normal)
+        signInButton.setTitle("Sign In", for: UIControlState())
         signInButton.backgroundColor = UIColor.beeGrayColor()
         signInButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
-        signInButton.titleLabel?.textColor = UIColor.whiteColor()
-        signInButton.addTarget(self, action: "signInButtonPressed", forControlEvents: UIControlEvents.TouchUpInside)
-        signInButton.snp_makeConstraints { (make) -> Void in
+        signInButton.titleLabel?.textColor = UIColor.white
+        signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControlEvents.touchUpInside)
+        signInButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.passwordTextField)
             make.right.equalTo(self.passwordTextField)
-            make.top.equalTo(self.passwordTextField.snp_bottom).offset(20)
+            make.top.equalTo(self.passwordTextField.snp.bottom).offset(20)
             make.height.equalTo(44)
         }
         
         let divider = UIView()
         scrollView.addSubview(divider)
         divider.backgroundColor = UIColor.beeGrayColor()
-        divider.snp_makeConstraints { (make) -> Void in
+        divider.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(signInButton)
             make.right.equalTo(signInButton)
             make.height.equalTo(1)
-            make.top.equalTo(signInButton.snp_bottom).offset(20)
+            make.top.equalTo(signInButton.snp.bottom).offset(20)
         }
 
-        let twitterLoginButton = TWTRLogInButton(logInCompletion: {
-            (session: TWTRSession!, error: NSError!) in
+        let twitterLoginButton = TWTRLogInButton { (session, error) in
             if error == nil {
                 CurrentUserManager.sharedManager.loginWithTwitterSession(session)
             }
             else {
                 // show error
             }
-        })
-        scrollView.addSubview(twitterLoginButton)
-        twitterLoginButton.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(divider.snp_bottom).offset(20)
+        }
+        
+        scrollView.addSubview(twitterLoginButton!)
+        twitterLoginButton?.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(divider.snp.bottom).offset(20)
             make.centerX.equalTo(signInButton)
             make.width.equalTo(signInButton)
             make.height.equalTo(signInButton)
@@ -115,14 +115,14 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         scrollView.addSubview(facebookLoginButton)
         facebookLoginButton.readPermissions = ["public_profile", "email", "user_friends"]
         facebookLoginButton.delegate = self
-        facebookLoginButton.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(twitterLoginButton.snp_bottom).offset(20)
+        facebookLoginButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo((twitterLoginButton?.snp.bottom)!).offset(20)
             make.centerX.equalTo(signInButton)
             make.width.equalTo(signInButton)
             make.height.equalTo(signInButton)
         }
-        if FBSDKAccessToken.currentAccessToken() != nil {
-            FBSDKAccessToken.setCurrentAccessToken(nil)
+        if FBSDKAccessToken.current() != nil {
+            FBSDKAccessToken.setCurrent(nil)
         }
         
         let googleSigninButton = GIDSignInButton()
@@ -131,8 +131,8 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         GIDSignIn.sharedInstance().scopes = ["profile", "email"]
         GIDSignIn.sharedInstance().shouldFetchBasicProfile = true
         scrollView.addSubview(googleSigninButton)
-        googleSigninButton.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(facebookLoginButton.snp_bottom).offset(20)
+        googleSigninButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(facebookLoginButton.snp.bottom).offset(20)
             make.centerX.equalTo(signInButton)
             make.width.equalTo(signInButton)
             make.height.equalTo(signInButton)
@@ -140,22 +140,22 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         }
     }
     
-    func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
+    func alertView(_ alertView: UIAlertView, clickedButtonAt buttonIndex: Int) {
         if buttonIndex == 1 {
-            UIApplication.sharedApplication().openURL(NSURL(string: "https://www.beeminder.com")!)
+            UIApplication.shared.openURL(URL(string: "https://www.beeminder.com")!)
         }
     }
     
-    func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
+    func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
         // show message if error
-        CurrentUserManager.sharedManager.loginButton(loginButton, didCompleteWithResult: result, error: error)
+        CurrentUserManager.sharedManager.loginButton(loginButton, didCompleteWith: result, error: error as NSError!)
     }
     
-    func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
+    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
         CurrentUserManager.sharedManager.loginButtonDidLogOut(loginButton)
     }
     
-    func handleFailedSignIn(notification : NSNotification) {
+    func handleFailedSignIn(_ notification : Notification) {
 //        notification.userInfo["error"]
         UIAlertView(title: "Could not sign in", message: "Invalid credentials", delegate: self, cancelButtonTitle: "OK").show()
     }
@@ -164,7 +164,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         CurrentUserManager.sharedManager.signInWithEmail(self.emailTextField.text!, password: self.passwordTextField.text!)
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField.isEqual(self.emailTextField) {
             self.passwordTextField.becomeFirstResponder()
         }

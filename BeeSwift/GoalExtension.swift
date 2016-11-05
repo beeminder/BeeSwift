@@ -12,16 +12,16 @@ import MagicalRecord
 
 extension Goal {
     
-    class func crupdateWithJSON(json :JSON) {
-        if let goal :Goal = Goal.MR_findFirstByAttribute("id", withValue:json["id"].string!) {
+    class func crupdateWithJSON(_ json :JSON) {
+        if let goal :Goal = Goal.mr_findFirst(byAttribute: "id", withValue:json["id"].string!) {
             Goal.updateGoal(goal, withJSON: json)
         }
-        else if let goal :Goal = Goal.MR_createEntity() {
+        else if let goal :Goal = Goal.mr_createEntity() {
             Goal.updateGoal(goal, withJSON: json)
         }
     }
     
-    class func updateGoal(goal :Goal, withJSON json :JSON) {
+    class func updateGoal(_ goal :Goal, withJSON json :JSON) {
         goal.slug = json["slug"].string!
         goal.id = json["id"].string!
         goal.title = json["title"].string!
@@ -38,7 +38,7 @@ extension Goal {
         if json["lane"].number != nil { goal.lane = json["lane"].number! }
         goal.yaw = json["yaw"].number!
         if json["limsum"].string != nil { goal.limsum = json["limsum"].string! }
-        goal.use_defaults = json["use_defaults"].bool!
+        goal.use_defaults = json["use_defaults"].bool! as NSNumber
         if let safebump = json["safebump"].number {
             goal.safebump = safebump
         }
@@ -61,51 +61,51 @@ extension Goal {
     }
     
     var rateString :String {
-        let formatter = NSNumberFormatter()
-        formatter.locale = NSLocale(localeIdentifier: "en_US")
-        formatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.numberStyle = NumberFormatter.Style.decimal
         formatter.maximumFractionDigits = 2
-        return "\(formatter.stringFromNumber(self.rate)!)/\(self.humanizedRunits)"
+        return "\(formatter.string(from: self.rate)!)/\(self.humanizedRunits)"
     }
     
     var cacheBustingThumbUrl :String {
-        if self.thumb_url.rangeOfString("&") == nil {
-            return "\(self.thumb_url)?t=\(NSDate().timeIntervalSince1970)"
+        if self.thumb_url.range(of: "&") == nil {
+            return "\(self.thumb_url)?t=\(Date().timeIntervalSince1970)"
         }
-        return "\(self.thumb_url)&t=\(NSDate().timeIntervalSince1970)"
+        return "\(self.thumb_url)&t=\(Date().timeIntervalSince1970)"
     }
     
     var cacheBustingGraphUrl :String {
-        if self.graph_url.rangeOfString("&") == nil {
-            return "\(self.graph_url)?t=\(NSDate().timeIntervalSince1970)"
+        if self.graph_url.range(of: "&") == nil {
+            return "\(self.graph_url)?t=\(Date().timeIntervalSince1970)"
         }
-        return "\(self.graph_url)&t=\(NSDate().timeIntervalSince1970)"
+        return "\(self.graph_url)&t=\(Date().timeIntervalSince1970)"
     }
     
     var briefLosedate :String {
-        var losedateDate = NSDate(timeIntervalSince1970: self.losedate.doubleValue)
+        var losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
         if losedateDate.timeIntervalSinceNow < 0 {
             return self.won.boolValue ? "Success!" : "Lost!"
         }
         else if losedateDate.timeIntervalSinceNow < 24*60*60 {
             // add 1 second since a 3 am goal technically derails at 2:59:59
-            losedateDate = losedateDate.dateByAddingTimeInterval(1)
-            let dateFormatter = NSDateFormatter()
-            dateFormatter.locale = NSLocale(localeIdentifier: "en_US")
+            losedateDate = losedateDate.addingTimeInterval(1)
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "en_US")
             dateFormatter.dateFormat = "h a!"
-            return dateFormatter.stringFromDate(losedateDate)
+            return dateFormatter.string(from: losedateDate)
         }
         else if losedateDate.timeIntervalSinceNow < 7*24*60*60 {
-            let dateFormatter = NSDateFormatter()
-            let calendar = NSCalendar.currentCalendar()
-            calendar.locale = NSLocale(localeIdentifier: "en_US")
-            dateFormatter.locale = NSLocale(localeIdentifier: "en_US")
-            let hour = calendar.component(.Hour, fromDate: losedateDate)
+            let dateFormatter = DateFormatter()
+            var calendar = Calendar.current
+            calendar.locale = Locale(identifier: "en_US")
+            dateFormatter.locale = Locale(identifier: "en_US")
+            let hour = (calendar as NSCalendar).component(.hour, from: losedateDate)
             if hour < 6 {
-                losedateDate = losedateDate.dateByAddingTimeInterval(Double(-(hour + 1)*3600))
+                losedateDate = losedateDate.addingTimeInterval(Double(-(hour + 1)*3600))
             }
             dateFormatter.dateFormat = "EEE"
-            return dateFormatter.stringFromDate(losedateDate)
+            return dateFormatter.string(from: losedateDate)
         }
         else if losedateDate.timeIntervalSinceNow > 99*24*60*60 {
             return "∞"
@@ -115,14 +115,14 @@ extension Goal {
     
     var countdownText :NSString {
 
-        let losedateDate = NSDate(timeIntervalSince1970: self.losedate.doubleValue)
+        let losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
         let seconds = losedateDate.timeIntervalSinceNow
         if seconds < 0 {
             return self.won.boolValue ? "Success!" : "Lost!"
         }
-        let hours = Int((seconds % (3600*24))/3600)
-        let minutes = Int((seconds % 3600)/60)
-        let leftoverSeconds = Int(seconds % 60)
+        let hours = Int((seconds.truncatingRemainder(dividingBy: (3600*24)))/3600)
+        let minutes = Int((seconds.truncatingRemainder(dividingBy: 3600))/60)
+        let leftoverSeconds = Int(seconds.truncatingRemainder(dividingBy: 60))
         let days = Int(seconds/(3600*24))
         
         if (days > 0) {
@@ -134,33 +134,33 @@ extension Goal {
     }
     
     var countdownColor :UIColor {
-        let losedateDate = NSDate(timeIntervalSince1970: self.losedate.doubleValue)
+        let losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
         if losedateDate.timeIntervalSinceNow < 0 {
             if self.won.boolValue {
                 return UIColor.beeGreenColor()
             }
             else {
-                return UIColor.redColor()
+                return UIColor.red
             }
         }
-        else if self.relativeLane <= -2 {
-            return UIColor.redColor()
+        else if self.relativeLane.intValue <= -2 {
+            return UIColor.red
         }
         else if self.relativeLane == -1 {
-            return UIColor.orangeColor()
+            return UIColor.orange
         }
         else if self.relativeLane == 1 {
-            return UIColor.blueColor()
+            return UIColor.blue
         }
         return UIColor.beeGreenColor()
     }
     
     var relativeLane : NSNumber {
-        return NSNumber(int: self.lane.intValue * self.yaw.intValue)
+        return NSNumber(value: self.lane.int32Value * self.yaw.int32Value as Int32)
     }
     
     var attributedDeltaText :NSAttributedString {
-        if self.delta_text.componentsSeparatedByString("✔").count == 4 {
+        if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump.doubleValue - self.curval.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump.doubleValue - self.curval.doubleValue))
                 attString.addAttribute(NSForegroundColorAttributeName, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.characters.count))
@@ -187,16 +187,16 @@ extension Goal {
             attString.addAttribute(NSForegroundColorAttributeName, value: self.deltaColors[i], range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
         }
         
-        attString.mutableString.replaceOccurrencesOfString("✔", withString: "", options: NSStringCompareOptions.LiteralSearch, range: NSRange(location: 0, length: attString.string.characters.count))
+        attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.characters.count))
 
         return attString
     }
     
     var deltaColors :Array<UIColor> {
         if self.yaw == 1 {
-            return [UIColor.orangeColor(), UIColor.blueColor(), UIColor.beeGreenColor()]
+            return [UIColor.orange, UIColor.blue, UIColor.beeGreenColor()]
         }
-        return [UIColor.beeGreenColor(), UIColor.blueColor(), UIColor.orangeColor()]
+        return [UIColor.beeGreenColor(), UIColor.blue, UIColor.orange]
     }
     
     var humanizedRunits :String {
@@ -218,11 +218,11 @@ extension Goal {
     
     func orderedDatapoints() -> [Datapoint] {
         let points : [Datapoint] = self.datapoints.allObjects as! [Datapoint]
-        return points.sort({ (d1, d2) -> Bool in
+        return points.sorted(by: { (d1, d2) -> Bool in
             if d1.timestamp == d2.timestamp {
-                return d1.updated_at < d2.updated_at
+                return d1.updated_at.intValue < d2.updated_at.intValue
             }
-            return d1.timestamp < d2.timestamp
+            return d1.timestamp.intValue < d2.timestamp.intValue
         })
     }
     

@@ -12,19 +12,19 @@ import MagicalRecord
 
 extension Datapoint {
     
-    class func crupdateWithJSON(json :JSON) -> Datapoint {
-        var datapoint :Datapoint? = Datapoint.MR_findFirstByAttribute("id", withValue:json["id"].string!)
+    class func crupdateWithJSON(_ json :JSON) -> Datapoint {
+        var datapoint :Datapoint? = Datapoint.mr_findFirst(byAttribute: "id", withValue:json["id"].string!)
         if (datapoint != nil) {
             Datapoint.updateDatapoint(datapoint!, withJSON: json)
         }
         else {
-            datapoint = Datapoint.MR_createEntity()
+            datapoint = Datapoint.mr_createEntity()
             Datapoint.updateDatapoint(datapoint!, withJSON: json)
         }
         return datapoint!
     }
     
-    class func updateDatapoint(datapoint :Datapoint, withJSON json :JSON) {
+    class func updateDatapoint(_ datapoint :Datapoint, withJSON json :JSON) {
         datapoint.timestamp = json["timestamp"].number!
         datapoint.value = json["value"].number!
         datapoint.comment = json["comment"].string!
@@ -34,7 +34,7 @@ extension Datapoint {
         if json["requestid"].string != nil {
             datapoint.requestid = json["requestid"].string!
         }
-        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion(nil)        
+        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)        
     }
     
 }

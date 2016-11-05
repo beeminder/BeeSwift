@@ -14,7 +14,7 @@ class GoalNotificationSettingsTableViewCell: UITableViewCell {
             self.titleLabel.text = self.title
         }
     }
-    private var titleLabel = BSLabel()
+    fileprivate var titleLabel = BSLabel()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -27,12 +27,12 @@ class GoalNotificationSettingsTableViewCell: UITableViewCell {
     }
     
     func configure() {
-        self.selectionStyle = .None
-        self.backgroundColor = UIColor.clearColor()
-        self.accessoryType = .DisclosureIndicator
+        self.selectionStyle = .none
+        self.backgroundColor = UIColor.clear
+        self.accessoryType = .disclosureIndicator
         
         self.contentView.addSubview(self.titleLabel)
-        self.titleLabel.snp_makeConstraints { (make) -> Void in
+        self.titleLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(0)
             make.left.equalTo(15)
         }

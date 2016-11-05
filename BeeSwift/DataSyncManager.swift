@@ -14,51 +14,51 @@ import MagicalRecord
 class DataSyncManager :NSObject {
 
     var isFetching = false
-    private let lastSyncedKey = "lastSynced"
+    fileprivate let lastSyncedKey = "lastSynced"
 
     static let sharedManager = DataSyncManager()
 
     required override init() {
         super.init()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(DataSyncManager.handleUserSignoutNotification), name: CurrentUserManager.signedOutNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(DataSyncManager.handleUserSignoutNotification), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
     }
     
     func handleUserSignoutNotification() {
         self.setLastSynced(nil)
     }
     
-    var lastSynced :NSDate? {
-        return NSUserDefaults.standardUserDefaults().objectForKey(lastSyncedKey) as! NSDate?
+    var lastSynced :Date? {
+        return UserDefaults.standard.object(forKey: lastSyncedKey) as! Date?
     }
     
-    func setLastSynced(date: NSDate?) {
+    func setLastSynced(_ date: Date?) {
         if date == nil {
-            NSUserDefaults.standardUserDefaults().removeObjectForKey(lastSyncedKey)
+            UserDefaults.standard.removeObject(forKey: lastSyncedKey)
         }
         else {
-            NSUserDefaults.standardUserDefaults().setObject(date, forKey: lastSyncedKey)
+            UserDefaults.standard.set(date, forKey: lastSyncedKey)
         }
-        NSUserDefaults.standardUserDefaults().synchronize()
+        UserDefaults.standard.synchronize()
     }
     
-    func fetchData(success: (()->Void)!, error: (()->Void)!) {
+    func fetchData(_ success: (()->Void)!, error: (()->Void)!) {
         if self.isFetching || !CurrentUserManager.sharedManager.signedIn() {
             return
         }
         
         self.isFetching = true
         
-        BSHTTPSessionManager.sharedManager.GET("/api/v1/users/me.json", parameters: ["associations": true, "datapoints_count": 5, "diff_since": self.lastSynced == nil ? 0 : self.lastSynced!.timeIntervalSince1970], success: { (dataTask, responseObject) -> Void in
+        BSHTTPSessionManager.sharedManager.get("/api/v1/users/me.json", parameters: ["associations": true, "datapoints_count": 5, "diff_since": self.lastSynced == nil ? 0 : self.lastSynced!.timeIntervalSince1970] as AnyObject, success: { (dataTask, responseObject) -> Void in
             self.handleResponse(JSON(responseObject!), completion: success)
             self.isFetching = false
-            self.setLastSynced(NSDate())
+            self.setLastSynced(Date())
         }) { (dataTask, responseError) -> Void in
             if (error != nil) { error() }
             self.isFetching = false
         }
     }
     
-    func handleResponse(json: JSON, completion: (()->Void)!) {
+    func handleResponse(_ json: JSON, completion: (()->Void)!) {
         CurrentUserManager.sharedManager.setDeadbeat(json["deadbeat"].boolValue)
         let goals = json["goals"].array!
         for goalJSON in goals {
@@ -66,15 +66,15 @@ class DataSyncManager :NSObject {
         }
         let deletedGoals = json["deleted_goals"].array!
         for goalJSON in deletedGoals {
-            if let goal = Goal.MR_findFirstByAttribute("id", withValue: goalJSON["id"].string!) as Goal? {
+            if let goal = Goal.mr_findFirst(byAttribute: "id", withValue: goalJSON["id"].string!) as Goal? {
                 for datapoint in goal.datapoints {
-                    datapoint.MR_deleteEntity()
+                    (datapoint as AnyObject).mr_deleteEntity()
                 }
                 goal.serverDeleted = true
             }
         }
-        NSManagedObjectContext.MR_defaultContext().MR_saveToPersistentStoreWithCompletion { (success, error) -> Void in
-            let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
+            let delegate = UIApplication.shared.delegate as! AppDelegate
             delegate.updateBadgeCount()
             delegate.updateTodayWidget()
             if completion != nil && error == nil { completion() }

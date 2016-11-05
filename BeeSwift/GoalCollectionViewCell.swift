@@ -28,50 +28,50 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.countdownView.addSubview(self.countdownLabel)
         
         self.titleLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
-        self.titleLabel.snp_makeConstraints { (make) -> Void in
+        self.titleLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.margin)
             make.top.equalTo(10)
             make.right.equalTo(-self.margin)
         }
         
-        self.countdownView.snp_makeConstraints { (make) -> Void in
+        self.countdownView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(8)
-            make.top.equalTo(self.titleLabel.snp_bottom).offset(5)
+            make.top.equalTo(self.titleLabel.snp.bottom).offset(5)
             make.bottom.equalTo(self.thumbnailImageView)
             make.width.equalTo(75)
         }
         
         self.countdownView.addSubview(self.countdownLabel)
-        self.countdownLabel.textColor = UIColor.whiteColor()
+        self.countdownLabel.textColor = UIColor.white
         self.countdownLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
-        self.countdownLabel.snp_makeConstraints { (make) -> Void in
+        self.countdownLabel.snp.makeConstraints { (make) -> Void in
             make.center.equalTo(self.countdownView)
         }
 
-        self.thumbnailImageView.snp_makeConstraints { (make) -> Void in
+        self.thumbnailImageView.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(0)
             make.top.equalTo(self.countdownView)
             make.height.equalTo(Constants.thumbnailHeight)
             make.width.equalTo(Constants.thumbnailWidth)
         }
         
-        self.rateLabel.textAlignment = NSTextAlignment.Center
-        self.rateLabel.snp_makeConstraints { (make) -> Void in
-            make.left.equalTo(self.thumbnailImageView.snp_right).offset(5)
-            make.bottom.equalTo(self.thumbnailImageView.snp_centerY)
+        self.rateLabel.textAlignment = NSTextAlignment.center
+        self.rateLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
+            make.bottom.equalTo(self.thumbnailImageView.snp.centerY)
             make.right.equalTo(-self.margin)
         }
 
-        self.deltasLabel.textAlignment = NSTextAlignment.Center
+        self.deltasLabel.textAlignment = NSTextAlignment.center
         self.deltasLabel.font = UIFont(name: "Avenir-Black", size: 13)
         self.deltasLabel.numberOfLines = 0
-        self.deltasLabel.snp_makeConstraints { (make) -> Void in
+        self.deltasLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.rateLabel)
-            make.top.equalTo(self.thumbnailImageView.snp_centerY)
+            make.top.equalTo(self.thumbnailImageView.snp.centerY)
             make.right.equalTo(self.rateLabel)
         }
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "willSignOutNotificationReceived", name: CurrentUserManager.willSignOutNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GoalCollectionViewCell.willSignOutNotificationReceived), name: NSNotification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: nil)
     }
     
     func willSignOutNotificationReceived() {
@@ -86,7 +86,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         if CurrentUserManager.sharedManager.isDeadbeat() {
             self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
         } else {
-            self.thumbnailImageView.setImageWithURL(NSURL(string: goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"))
+            self.thumbnailImageView.setImageWith(URL(string: goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"))
         }
     }
 
@@ -111,7 +111,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.removeAllObservers()
     }
     
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if (!CurrentUserManager.sharedManager.signedIn()) { return }
         if keyPath == "thumb_url" {
             self.thumbnailImageView.image = nil

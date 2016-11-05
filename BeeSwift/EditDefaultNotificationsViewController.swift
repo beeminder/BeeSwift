@@ -21,12 +21,13 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
         super.init(coder: aDecoder)
     }
     
-    override func sendLeadTimeToServer(timer : NSTimer) {
-        let leadtime = timer.userInfo!["leadtime"] as! NSNumber
+    override func sendLeadTimeToServer(_ timer : Timer) {
+        var userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
+        let leadtime = userInfo["leadtime"]
         let params = [ "default_leadtime" : leadtime ]
-        BSHTTPSessionManager.sharedManager.PUT("api/v1/users/me.json", parameters: params,
+        BSHTTPSessionManager.sharedManager.put("api/v1/users/me.json", parameters: params,
             success: { (task, responseObject) -> Void in
-                CurrentUserManager.sharedManager.setDefaultLeadTime(leadtime)
+                CurrentUserManager.sharedManager.setDefaultLeadTime(leadtime!)
             }) { (task, error) -> Void in
                 // show alert
         }
@@ -37,21 +38,21 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
         self.title = "Defaults"
     }
     
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if self.timePickerEditingMode == .Alertstart {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if self.timePickerEditingMode == .alertstart {
             self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
             let params = ["default_alertstart" : self.midnightOffsetFromTimePickerView()]
-            BSHTTPSessionManager.sharedManager.PUT("api/v1/users/me.json", parameters: params,
+            BSHTTPSessionManager.sharedManager.put("api/v1/users/me.json", parameters: params as AnyObject?,
                 success: { (task, responseObject) -> Void in
                     CurrentUserManager.sharedManager.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
                 }) { (task, error) -> Void in
                     //foo
             }
         }
-        if self.timePickerEditingMode == .Deadline {
+        if self.timePickerEditingMode == .deadline {
             self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
             let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
-            BSHTTPSessionManager.sharedManager.PUT("api/v1/users/me.json", parameters: params,
+            BSHTTPSessionManager.sharedManager.put("api/v1/users/me.json", parameters: params as AnyObject?,
                 success: { (task, responseObject) -> Void in
                     CurrentUserManager.sharedManager.setDefaultDeadline(self.midnightOffsetFromTimePickerView())
                 }) { (task, error) -> Void in

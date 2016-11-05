@@ -13,7 +13,7 @@ class RemoteNotificationsManager :NSObject {
     
     static let sharedManager = RemoteNotificationsManager()
     
-    private func remoteNotificationsOnKey() -> String {
+    fileprivate func remoteNotificationsOnKey() -> String {
         if CurrentUserManager.sharedManager.signedIn() {
             return "\(CurrentUserManager.sharedManager.username!)-remoteNotificationsOn"
         }
@@ -21,24 +21,24 @@ class RemoteNotificationsManager :NSObject {
     }
     
     func on() -> Bool {
-        return NSUserDefaults.standardUserDefaults().objectForKey(self.remoteNotificationsOnKey()) != nil
+        return UserDefaults.standard.object(forKey: self.remoteNotificationsOnKey()) != nil
     }
     
     func turnNotificationsOn() {
-        UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: [UIUserNotificationType.Alert, UIUserNotificationType.Sound, UIUserNotificationType.Badge], categories: nil))
-        UIApplication.sharedApplication().registerForRemoteNotifications()
+        UIApplication.shared.registerUserNotificationSettings(UIUserNotificationSettings(types: [UIUserNotificationType.alert, UIUserNotificationType.sound, UIUserNotificationType.badge], categories: nil))
+        UIApplication.shared.registerForRemoteNotifications()
     }
     
     func turnNotificationsOff() {
-        NSUserDefaults.standardUserDefaults().removeObjectForKey(self.remoteNotificationsOnKey())
-        NSUserDefaults.standardUserDefaults().synchronize()
+        UserDefaults.standard.removeObject(forKey: self.remoteNotificationsOnKey())
+        UserDefaults.standard.synchronize()
     }
     
-    func didRegisterForRemoteNotificationsWithDeviceToken(deviceToken: NSData) {
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: self.remoteNotificationsOnKey())
-        NSUserDefaults.standardUserDefaults().synchronize()
-        var deviceTokenString = deviceToken.description.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "<>"))
-        deviceTokenString = deviceTokenString.stringByReplacingOccurrencesOfString(" ", withString: "", options: [], range: nil)
+    func didRegisterForRemoteNotificationsWithDeviceToken(_ deviceToken: Data) {
+        UserDefaults.standard.set(true, forKey: self.remoteNotificationsOnKey())
+        UserDefaults.standard.synchronize()
+        var deviceTokenString = deviceToken.description.trimmingCharacters(in: CharacterSet(charactersIn: "<>"))
+        deviceTokenString = deviceTokenString.replacingOccurrences(of: " ", with: "", options: [], range: nil)
         
         BSHTTPSessionManager.sharedManager.signedPOST("/api/private/device_tokens", parameters: ["device_token" : deviceTokenString], success: { (dataTask, responseObject) -> Void in
             //foo
@@ -47,32 +47,32 @@ class RemoteNotificationsManager :NSObject {
         }
     }
     
-    func didFailToRegisterForRemoteNotificationsWithError(error: NSError) {
-        let alert = UIAlertController(title: "Sorry!", message: "There was a problem turning on notifications. Please email support@beeminder.com.", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Email support", style: .Default, handler: { (alertAction) -> Void in
-            UIApplication.sharedApplication().openURL(NSURL(string: "mailto:support@beeminder.com?subject=iOS%20notifications%20error")!)
+    func didFailToRegisterForRemoteNotificationsWithError(_ error: Error) {
+        let alert = UIAlertController(title: "Sorry!", message: "There was a problem turning on notifications. Please email support@beeminder.com.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Email support", style: .default, handler: { (alertAction) -> Void in
+            UIApplication.shared.openURL(URL(string: "mailto:support@beeminder.com?subject=iOS%20notifications%20error")!)
         }))
-        alert.addAction(UIAlertAction(title: "Skip", style: .Cancel, handler: { (alertAction) -> Void in
+        alert.addAction(UIAlertAction(title: "Skip", style: .cancel, handler: { (alertAction) -> Void in
             // do nothing, just cancel
         }))
-        UIApplication.sharedApplication().windows.first?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
+        UIApplication.shared.windows.first?.rootViewController?.present(alert, animated: true, completion: nil)
         self.turnNotificationsOff()
     }
     
-    func didRegisterUserNotificationSettings(notificationSettings: UIUserNotificationSettings) {
-        if notificationSettings.types != UIUserNotificationType.None { return }
+    func didRegisterUserNotificationSettings(_ notificationSettings: UIUserNotificationSettings) {
+        if notificationSettings.types != UIUserNotificationType() { return }
         
-        let alert = UIAlertController(title: "Sorry!", message: "It looks like Beeminder isn't allowed to send you notifications. Please open settings and make sure that you've allowed Beeminder to send you notifications, or email support@beeminder.com if have and you're still seeing this message.", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Open Settings", style: .Default, handler: { (alertAction) -> Void in
-            UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
+        let alert = UIAlertController(title: "Sorry!", message: "It looks like Beeminder isn't allowed to send you notifications. Please open settings and make sure that you've allowed Beeminder to send you notifications, or email support@beeminder.com if have and you're still seeing this message.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Open Settings", style: .default, handler: { (alertAction) -> Void in
+            UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
         }))
-        alert.addAction(UIAlertAction(title: "Email support", style: .Default, handler: { (alertAction) -> Void in
-            UIApplication.sharedApplication().openURL(NSURL(string: "mailto:support@beeminder.com?subject=iOS%20notifications%20problem")!)
+        alert.addAction(UIAlertAction(title: "Email support", style: .default, handler: { (alertAction) -> Void in
+            UIApplication.shared.openURL(URL(string: "mailto:support@beeminder.com?subject=iOS%20notifications%20problem")!)
         }))
-        alert.addAction(UIAlertAction(title: "Skip", style: .Cancel, handler: { (alertAction) -> Void in
+        alert.addAction(UIAlertAction(title: "Skip", style: .cancel, handler: { (alertAction) -> Void in
             // do nothing, just cancel
         }))
-        UIApplication.sharedApplication().windows.first?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
+        UIApplication.shared.windows.first?.rootViewController?.present(alert, animated: true, completion: nil)
         self.turnNotificationsOff()
     }
 
