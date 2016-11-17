@@ -31,7 +31,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         NotificationCenter.default.addObserver(self, selector: #selector(GalleryViewController.handleSignIn), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GalleryViewController.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(GalleryViewController.handleReset), name: NSNotification.Name(rawValue: CurrentUserManager.willResetNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GalleryViewController.handleWillReset), name: NSNotification.Name(rawValue: CurrentUserManager.willResetNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GalleryViewController.handleReset), name: NSNotification.Name(rawValue: CurrentUserManager.resetNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GalleryViewController.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
@@ -155,11 +156,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.hasFetchedData = false
     }
     
-    func handleReset() {
+    func handleWillReset() {
         self.frontburnerGoals = []
         self.backburnerGoals = []
         self.collectionView?.reloadData()
-        self.hasFetchedData = false
+    }
+    
+    func handleReset() {
+        self.fetchData(nil)
     }
     
     func updateDeadbeatHeight() {

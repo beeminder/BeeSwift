@@ -168,15 +168,13 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     
     func reset() {
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willResetNotificationName), object: self)
-        
-        
-        UserDefaults.standard.synchronize()
         for datapoint in Datapoint.mr_findAll()! {
             datapoint.mr_deleteEntity()
         }
         for goal in Goal.mr_findAll()! {
             goal.mr_deleteEntity()
         }
+        DataSyncManager.sharedManager.setLastSynced(nil)
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.resetNotificationName), object: self)
         }

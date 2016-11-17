@@ -21,11 +21,6 @@ class DataSyncManager :NSObject {
     required override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(DataSyncManager.handleUserSignoutNotification), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(DataSyncManager.handleResetNotification), name: NSNotification.Name(rawValue: CurrentUserManager.resetNotificationName), object: nil)
-    }
-    
-    func handleResetNotification() {
-        self.setLastSynced(nil)
     }
     
     func handleUserSignoutNotification() {
