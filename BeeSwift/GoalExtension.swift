@@ -13,7 +13,8 @@ import MagicalRecord
 extension Goal {
     
     class func crupdateWithJSON(_ json :JSON) {
-        if let goal :Goal = Goal.mr_findFirst(byAttribute: "id", withValue:json["id"].string!) {
+        
+        if let id = json["id"].string, let goal :Goal = Goal.mr_findFirst(byAttribute: "id", withValue:id) {
             Goal.updateGoal(goal, withJSON: json)
         }
         else if let goal :Goal = Goal.mr_createEntity() {
@@ -57,7 +58,7 @@ extension Goal {
         }
         // these are last because other classes use KVO on them...hack.
         if json["graph_url"].string != nil { goal.graph_url = json["graph_url"].string! }
-        if json["thumb_url"].string != nil { goal.thumb_url = json["thumb_url"].string!}
+        if json["thumb_url"].string != nil { goal.thumb_url = json["thumb_url"].string! }
     }
     
     var rateString :String {
@@ -160,6 +161,7 @@ extension Goal {
     }
     
     var attributedDeltaText :NSAttributedString {
+        if self.delta_text.characters.count == 0 { return NSAttributedString.init(string: self.delta_text) }
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump.doubleValue - self.curval.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump.doubleValue - self.curval.doubleValue))

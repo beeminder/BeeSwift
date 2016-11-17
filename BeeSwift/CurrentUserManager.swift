@@ -20,6 +20,8 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     static let willSignOutNotificationName  = "com.beeminder.willSignOutNotification"
     static let failedSignInNotificationName = "com.beeminder.failedSignInNotification"
     static let signedOutNotificationName    = "com.beeminder.signedOutNotification"
+    static let resetNotificationName        = "com.beeminder.resetNotification"
+    static let willResetNotificationName    = "com.beeminder.willResetNotification"
     fileprivate let accessTokenKey = "access_token"
     fileprivate let usernameKey = "username"
     fileprivate let deadbeatKey = "deadbeat"
@@ -102,7 +104,7 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     
     func signInWithEmail(_ email: String, password: String) {
         BSHTTPSessionManager.sharedManager.post("/api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, progress: nil, success: { (dataTask, responseObject) in
-                self.handleSuccessfulSignin(responseObject as! JSON)
+                self.handleSuccessfulSignin(JSON(responseObject))
             }) { (dataTask, responseError) in
                 self.handleFailedSignin(responseError)
         }
@@ -161,6 +163,22 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
         }
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
+        }
+    }
+    
+    func reset() {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willResetNotificationName), object: self)
+        
+        
+        UserDefaults.standard.synchronize()
+        for datapoint in Datapoint.mr_findAll()! {
+            datapoint.mr_deleteEntity()
+        }
+        for goal in Goal.mr_findAll()! {
+            goal.mr_deleteEntity()
+        }
+        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
+            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.resetNotificationName), object: self)
         }
     }
     

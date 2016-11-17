@@ -21,6 +21,11 @@ class DataSyncManager :NSObject {
     required override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(DataSyncManager.handleUserSignoutNotification), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(DataSyncManager.handleResetNotification), name: NSNotification.Name(rawValue: CurrentUserManager.resetNotificationName), object: nil)
+    }
+    
+    func handleResetNotification() {
+        self.setLastSynced(nil)
     }
     
     func handleUserSignoutNotification() {
@@ -64,7 +69,7 @@ class DataSyncManager :NSObject {
         for goalJSON in goals {
             Goal.crupdateWithJSON(goalJSON)
         }
-        let deletedGoals = json["deleted_goals"].array!
+        guard let deletedGoals = json["deleted_goals"].array else { return }
         for goalJSON in deletedGoals {
             if let goal = Goal.mr_findFirst(byAttribute: "id", withValue: goalJSON["id"].string!) as Goal? {
                 for datapoint in goal.datapoints {

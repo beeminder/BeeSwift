@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MBProgressHUD
 
 class SettingsViewController: UIViewController {
     
@@ -25,7 +26,8 @@ class SettingsViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(SettingsViewController.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         
         self.view.addSubview(self.numberOfTodayGoalsLabel)
-        var numberOfTodayGoals = (UserDefaults.standard.object(forKey: "numberOfTodayGoals") as! NSNumber).intValue
+        var numberOfTodayGoals :Int? = (UserDefaults.standard.object(forKey: "numberOfTodayGoals") as? NSNumber)?.intValue
+            
         if numberOfTodayGoals == nil {
             numberOfTodayGoals = 3
             UserDefaults.standard.set(3, forKey: "numberOfTodayGoals")
@@ -47,7 +49,7 @@ class SettingsViewController: UIViewController {
             make.right.equalTo(-15)
         }
         self.numberOfTodayGoalsStepper.addTarget(self, action: #selector(SettingsViewController.numberOfTodayGoalsStepperValueChanged), for: .valueChanged)
-        self.numberOfTodayGoalsStepper.value = Double(numberOfTodayGoals)
+        self.numberOfTodayGoalsStepper.value = Double(numberOfTodayGoals!)
         
         self.view.addSubview(self.emergencyRemindersSwitch)
         self.emergencyRemindersSwitch.addTarget(self, action: #selector(SettingsViewController.emergencyRemindersSwitchChanged), for: .valueChanged)
@@ -70,7 +72,7 @@ class SettingsViewController: UIViewController {
         
         signOutButton.addTarget(self, action: #selector(SettingsViewController.signOutButtonPressed), for: UIControlEvents.touchUpInside)
         self.view.addSubview(signOutButton)
-        signOutButton.setTitle("Sign Out", for: UIControlState())
+        signOutButton.setTitle("Sign Out", for: .normal)
         signOutButton.snp.makeConstraints { (make) -> Void in
             make.bottom.equalTo(-30)
             make.width.equalTo(self.view).multipliedBy(0.75)
@@ -78,12 +80,24 @@ class SettingsViewController: UIViewController {
             make.height.equalTo(44)
         }
         
+        let resetButton = BSButton()
+        resetButton.addTarget(self, action: #selector(SettingsViewController.resetButtonPressed), for: .touchUpInside)
+        self.view.addSubview(resetButton)
+        resetButton.setTitle("Reset data", for: .normal)
+        resetButton.snp.makeConstraints { (make) -> Void in
+            make.bottom.equalTo(signOutButton.snp.top).offset(-10)
+            make.left.equalTo(signOutButton)
+            make.right.equalTo(signOutButton)
+            make.height.equalTo(44)
+            make.centerX.equalTo(self.view)
+        }
+        
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(emergencyRemindersSwitch.snp.bottom).offset(5)
-            make.bottom.equalTo(signOutButton.snp.top)
+            make.bottom.equalTo(resetButton.snp.top)
         }
         self.tableView.delegate = self
         self.tableView.dataSource = self
@@ -106,6 +120,11 @@ class SettingsViewController: UIViewController {
     func numberOfTodayGoalsStepperValueChanged() {
         UserDefaults.standard.set(Int(self.numberOfTodayGoalsStepper.value), forKey: "numberOfTodayGoals")
         UserDefaults.standard.synchronize()
+    }
+    
+    func resetButtonPressed() {
+        CurrentUserManager.sharedManager.reset()
+        self.navigationController?.popViewController(animated: true)
     }
     
     func signOutButtonPressed() {

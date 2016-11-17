@@ -72,9 +72,14 @@ class GoalCollectionViewCell: UICollectionViewCell {
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(GoalCollectionViewCell.willSignOutNotificationReceived), name: NSNotification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GoalCollectionViewCell.willResetNotificationReceived), name: NSNotification.Name(rawValue: CurrentUserManager.willResetNotificationName), object: nil)
     }
     
     func willSignOutNotificationReceived() {
+        self.removeAllObservers()
+    }
+    
+    func willResetNotificationReceived() {
         self.removeAllObservers()
     }
     
