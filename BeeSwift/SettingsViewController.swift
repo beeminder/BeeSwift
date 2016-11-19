@@ -34,11 +34,11 @@ class SettingsViewController: UIViewController {
             UserDefaults.standard.synchronize()
         }
         
-        self.numberOfTodayGoalsLabel.text = "Goals in Today view: \(numberOfTodayGoals)"
+        self.numberOfTodayGoalsLabel.text = "Goals in Today view: \(numberOfTodayGoals!)"
         self.numberOfTodayGoalsLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(15)
             make.width.lessThanOrEqualTo(self.view).multipliedBy(0.7).offset(-20)
-            make.top.equalTo(40)
+            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
         }
         
         self.view.addSubview(self.numberOfTodayGoalsStepper)
