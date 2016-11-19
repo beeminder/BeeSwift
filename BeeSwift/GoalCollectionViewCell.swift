@@ -77,10 +77,12 @@ class GoalCollectionViewCell: UICollectionViewCell {
     
     func willSignOutNotificationReceived() {
         self.removeAllObservers()
+        self.goal = nil
     }
     
     func willResetNotificationReceived() {
         self.removeAllObservers()
+        self.goal = nil
     }
     
     func deadbeatChanged() {
@@ -88,6 +90,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     }
     
     func setThumbnailImage() {
+        guard let _ = self.goal else { return } 
         if CurrentUserManager.sharedManager.isDeadbeat() {
             self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
         } else {
@@ -122,14 +125,14 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.thumbnailImageView.image = nil
             self.setThumbnailImage()
         } else if keyPath == "losedate" || keyPath == "lane" {
-            self.countdownLabel.text = goal!.briefLosedate
-            self.countdownView.backgroundColor = goal!.countdownColor
+            self.countdownLabel.text = goal?.briefLosedate
+            self.countdownView.backgroundColor = goal?.countdownColor
         } else if keyPath == "title" {
-            self.titleLabel.text = goal!.title
+            self.titleLabel.text = goal?.title
         } else if keyPath == "rate" {
-            self.rateLabel.text = goal!.rateString
+            self.rateLabel.text = goal?.rateString
         } else if keyPath == "delta_text" {
-            self.deltasLabel.attributedText = goal!.attributedDeltaText
+            self.deltasLabel.attributedText = goal?.attributedDeltaText
         }
     }
     
@@ -145,7 +148,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.thumbnailImageView.image = nil
             self.setThumbnailImage()
 
-            if DataSyncManager.sharedManager.isFetching {
+            if DataSyncManager.sharedManager.isFetching || goal == nil {
                 self.countdownLabel.text = ""
                 self.countdownView.backgroundColor = UIColor.beeGrayColor()
             } else {
@@ -153,9 +156,9 @@ class GoalCollectionViewCell: UICollectionViewCell {
                 self.countdownView.backgroundColor = goal!.countdownColor
             }
 
-            self.titleLabel.text = goal!.title
-            self.rateLabel.text = goal!.rateString
-            self.deltasLabel.attributedText = goal!.attributedDeltaText
+            self.titleLabel.text = goal?.title
+            self.rateLabel.text = goal?.rateString
+            self.deltasLabel.attributedText = goal?.attributedDeltaText
         }
     }
 }
