@@ -13,11 +13,20 @@ class RemoteNotificationsManager :NSObject {
     
     static let sharedManager = RemoteNotificationsManager()
     
+    required override init() {
+        super.init()
+        NotificationCenter.default.addObserver(self, selector: #selector(RemoteNotificationsManager.handleUserSignoutNotification), name: NSNotification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: nil)
+    }
+    
     fileprivate func remoteNotificationsOnKey() -> String {
         if CurrentUserManager.sharedManager.signedIn() {
             return "\(CurrentUserManager.sharedManager.username!)-remoteNotificationsOn"
         }
         return "remoteNotificationsOn"
+    }
+    
+    func handleUserSignoutNotification() {
+        turnNotificationsOff()
     }
     
     func on() -> Bool {
