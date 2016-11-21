@@ -1,8 +1,7 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '9.0'
+platform :ios, '10.0'
 use_frameworks!
 inhibit_all_warnings!
-link_with 'BeeSwift', 'BeeminderToday'
 target 'BeeSwift' do
 	pod "AFNetworking", '~> 3.0'
 	pod "Alamofire", '~> 4.0'
@@ -15,9 +14,17 @@ target 'BeeSwift' do
 	pod "MBProgressHUD"
 	pod 'IQKeyboardManager'
 	pod 'Google/SignIn'
-	pod 'CryptoSwift'
+	pod 'IDZSwiftCommonCrypto', '~> 0.9.0'
 end
-
+target 'BeeSwiftToday' do
+	pod 'AFNetworking', '~>3.0'
+	pod 'Alamofire', '~>4.0'
+	pod 'AlamofireImage', '~>3.0'
+	pod "SnapKit"
+	pod "MagicalRecord" 
+	pod "SwiftyJSON"
+	
+end
 target 'BeeSwiftTests' do
 	pod "AFNetworking", '~> 3.0'
 	pod "Alamofire", '~> 4.0'

@@ -1,4 +1,6 @@
+#ifdef __OBJC__
 #import <UIKit/UIKit.h>
+#endif
 
 #import "MagicalImportFunctions.h"
 #import "NSAttributeDescription+MagicalDataImport.h"
