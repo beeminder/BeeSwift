@@ -46,10 +46,12 @@ class RemoteNotificationsManager :NSObject {
     func didRegisterForRemoteNotificationsWithDeviceToken(_ deviceToken: Data) {
         UserDefaults.standard.set(true, forKey: self.remoteNotificationsOnKey())
         UserDefaults.standard.synchronize()
-        var deviceTokenString = deviceToken.description.trimmingCharacters(in: CharacterSet(charactersIn: "<>"))
-        deviceTokenString = deviceTokenString.replacingOccurrences(of: " ", with: "", options: [], range: nil)
         
-        BSHTTPSessionManager.sharedManager.signedPOST("/api/private/device_tokens", parameters: ["device_token" : deviceTokenString], success: { (dataTask, responseObject) -> Void in
+        guard let token = String(data: deviceToken.base64EncodedData(), encoding: .utf8)?.trimmingCharacters(in: CharacterSet.whitespaces).trimmingCharacters(in: CharacterSet(charactersIn: "<>")) else {
+            return
+        }
+        
+        BSHTTPSessionManager.sharedManager.signedPOST("/api/private/device_tokens", parameters: ["device_token" : token], success: { (dataTask, responseObject) -> Void in
             //foo
         }) { (dataTask, error) -> Void in
             //bar
