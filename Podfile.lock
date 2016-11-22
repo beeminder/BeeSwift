@@ -23,7 +23,6 @@ PODS:
   - Bolts/AppLinks (1.7.0):
     - Bolts/Tasks
   - Bolts/Tasks (1.7.0)
-  - CryptoSwift (0.6.5)
   - FBSDKCoreKit (4.11.0):
     - Bolts (~> 1.7)
   - FBSDKLoginKit (4.11.0):
@@ -66,7 +65,6 @@ DEPENDENCIES:
   - AFNetworking (~> 3.0)
   - Alamofire (~> 4.0)
   - AlamofireImage (~> 3.0)
-  - CryptoSwift
   - FBSDKCoreKit
   - FBSDKLoginKit
   - Google/SignIn
@@ -82,7 +80,6 @@ SPEC CHECKSUMS:
   Alamofire: 7682d43245de14874acd142ec137b144aa1dd335
   AlamofireImage: 6594aa1139a67dcd36cde6da79ea4e5b318e60fb
   Bolts: a0058fa3b331c5a1e4402d534f2dae36dbff31e4
-  CryptoSwift: d86b1d97d39b4a361ba44c77180b221e9c5b864f
   FBSDKCoreKit: 686ac982723a14ec9ddb85e2f81235d7706c891b
   FBSDKLoginKit: bade9fc78277764149ccc5bfaadbf13c83175c6a
   Google: d0932824c5b97c96be489aa6f4e8cd6c294d637d
@@ -100,6 +97,6 @@ SPEC CHECKSUMS:
   SnapKit: f818b8326d45b4e1c777d0ab27b5c0a3624bfdeb
   SwiftyJSON: 29b9f2a64f118c07e691667c2ba1efe536acfe0b
 
-PODFILE CHECKSUM: c7341143a786a4b849e1dbccca74ab8d2dabf73e
+PODFILE CHECKSUM: 2be81d8381b517a100622ee82298ad659c0adb1e
 
 COCOAPODS: 1.1.1

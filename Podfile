@@ -32,7 +32,7 @@ target 'BeeSwiftTests' do
 	pod "SnapKit"	
 	pod "MagicalRecord"
 	pod "SwiftyJSON"
-	pod "CryptoSwift"	
+	pod "IDZSwiftCommonCrypto", '~> 0.9.0'	
 end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
