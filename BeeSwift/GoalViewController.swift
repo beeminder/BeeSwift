@@ -169,7 +169,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.dateTextField.keyboardType = .numberPad
         self.dateTextField.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
-            make.height.equalTo(44)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
             make.top.equalTo(0)
         }
         
@@ -203,7 +203,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.valueTextField.addTarget(self, action: #selector(GoalViewController.valueTextFieldValueChanged), for: .editingChanged)
         self.valueTextField.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.dateTextField.snp.right).offset(10)
-            make.height.equalTo(44)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
             make.top.equalTo(0)
         }
         if let datapoint = self.goal.orderedDatapoints().last {
@@ -225,7 +225,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.commentTextField.returnKeyType = .send
         self.commentTextField.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.valueTextField.snp.right).offset(10).priorityHigh()
-            make.height.equalTo(44)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
             make.right.equalTo(0).priorityHigh()
             make.top.equalTo(0)
         }

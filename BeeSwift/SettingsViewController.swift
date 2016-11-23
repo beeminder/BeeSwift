@@ -77,7 +77,7 @@ class SettingsViewController: UIViewController {
             make.bottom.equalTo(-30)
             make.width.equalTo(self.view).multipliedBy(0.75)
             make.centerX.equalTo(self.view)
-            make.height.equalTo(44)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         
         let resetButton = BSButton()
@@ -88,7 +88,7 @@ class SettingsViewController: UIViewController {
             make.bottom.equalTo(signOutButton.snp.top).offset(-10)
             make.left.equalTo(signOutButton)
             make.right.equalTo(signOutButton)
-            make.height.equalTo(44)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
             make.centerX.equalTo(self.view)
         }
         

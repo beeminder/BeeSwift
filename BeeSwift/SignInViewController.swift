@@ -12,89 +12,109 @@ import FBSDKLoginKit
 
 class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSignInUIDelegate, UITextFieldDelegate, UIAlertViewDelegate {
     
-    var signInLabel :BSLabel = BSLabel()
-    var emailTextField :UITextField = UITextField()
-    var passwordTextField :UITextField = UITextField()
+    var headerLabel = BSLabel()
+    var emailTextField = BSTextField()
+    var passwordTextField = BSTextField()
+    var newEmailTextField = BSTextField()
+    var newUsernameTextField = BSTextField()
+    var newPasswordTextField = BSTextField()
+    var chooseSignInButton = BSButton()
+    var chooseSignUpButton = BSButton()
+    var signUpButton = BSButton()
+    var backToSignInButton = BSButton()
+    var backToSignUpButton = BSButton()
+    var signInButton = BSButton()
+    var facebookLoginButton : FBSDKLoginButton = FBSDKLoginButton()
+    var twitterLoginButton : TWTRLogInButton = TWTRLogInButton()
+    var googleSigninButton = GIDSignInButton()
+    var divider = UIView()
     
     override func viewDidLoad() {
-        NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
-        self.view.backgroundColor = UIColor.white
-        
         let scrollView = UIScrollView()
         self.view.addSubview(scrollView)
         scrollView.snp.makeConstraints { (make) -> Void in
             make.edges.equalTo(self.view)
         }
         
-        scrollView.addSubview(self.signInLabel)
-        self.signInLabel.text = "Sign in to Beeminder"
-        self.signInLabel.textAlignment = NSTextAlignment.center
-        self.signInLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(50)
+        NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
+        self.view.backgroundColor = UIColor.white
+        
+        scrollView.addSubview(self.chooseSignInButton)
+        self.chooseSignInButton.setTitle("I have a Beeminder account", for: .normal)
+        self.chooseSignInButton.snp.makeConstraints { (make) in
+            make.centerX.equalTo(self.view)
+            make.bottom.equalTo(self.view.snp.centerY).offset(-10)
+            make.width.equalTo(self.view).multipliedBy(0.75)
+        }
+        self.chooseSignInButton.addTarget(self, action: #selector(SignInViewController.chooseSignInButtonPressed), for: .touchUpInside)
+        
+        scrollView.addSubview(self.chooseSignUpButton)
+        self.chooseSignUpButton.setTitle("Create a Beeminder account", for: .normal)
+        self.chooseSignUpButton.snp.makeConstraints { (make) in
+            make.centerX.equalTo(self.view)
+            make.top.equalTo(self.chooseSignInButton.snp.bottom).offset(15)
+            make.width.equalTo(self.view).multipliedBy(0.75)
+            
+        }
+        self.chooseSignUpButton.addTarget(self, action: #selector(SignInViewController.chooseSignUpButtonPressed), for: .touchUpInside)
+        
+        scrollView.addSubview(self.headerLabel)
+        
+        self.headerLabel.text = "Sign in to Beeminder"
+        self.headerLabel.isHidden = true
+        self.headerLabel.textAlignment = NSTextAlignment.center
+        self.headerLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(40)
             make.centerX.equalTo(scrollView)
         }
         
         scrollView.addSubview(self.emailTextField)
-        self.emailTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
-        self.emailTextField.tintColor = UIColor.beeGrayColor()
-        self.emailTextField.layer.borderWidth = 1
+        self.emailTextField.isHidden = true
         self.emailTextField.placeholder = "Email or username"
         self.emailTextField.autocapitalizationType = .none
         self.emailTextField.autocorrectionType = .no
-        self.emailTextField.textAlignment = NSTextAlignment.center
-        self.emailTextField.font = UIFont(name: "Avenir", size: 20)
         self.emailTextField.keyboardType = UIKeyboardType.emailAddress
         self.emailTextField.returnKeyType = .next
         self.emailTextField.delegate = self
         self.emailTextField.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.signInLabel.snp.bottom).offset(20)
+            make.top.equalTo(self.headerLabel.snp.bottom).offset(15)
             make.centerX.equalTo(0)
             make.width.equalTo(scrollView).multipliedBy(0.75)
-            make.height.equalTo(44)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         
         scrollView.addSubview(self.passwordTextField)
-        self.passwordTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
-        self.passwordTextField.tintColor = UIColor.beeGrayColor()
-        self.passwordTextField.layer.borderWidth = 1
+        self.passwordTextField.isHidden = true
         self.passwordTextField.placeholder = "Password"
-        self.passwordTextField.textAlignment = NSTextAlignment.center
-        self.passwordTextField.font = UIFont(name: "Avenir", size: 20)
         self.passwordTextField.isSecureTextEntry = true
         self.passwordTextField.returnKeyType = .done
         self.passwordTextField.delegate = self
         self.passwordTextField.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.emailTextField.snp.bottom).offset(20)
+            make.top.equalTo(self.emailTextField.snp.bottom).offset(15)
             make.centerX.equalTo(self.emailTextField)
             make.width.equalTo(self.emailTextField)
-            make.height.equalTo(44)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         
-        let signInButton = UIButton()
-        scrollView.addSubview(signInButton)
-        signInButton.setTitle("Sign In", for: UIControlState())
-        signInButton.backgroundColor = UIColor.beeGrayColor()
-        signInButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
-        signInButton.titleLabel?.textColor = UIColor.white
-        signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControlEvents.touchUpInside)
-        signInButton.snp.makeConstraints { (make) -> Void in
+        scrollView.addSubview(self.signInButton)
+        self.signInButton.isHidden = true
+        self.signInButton.setTitle("Sign In", for: UIControlState())
+        self.signInButton.backgroundColor = UIColor.beeGrayColor()
+        self.signInButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
+        self.signInButton.titleLabel?.textColor = UIColor.white
+        self.signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControlEvents.touchUpInside)
+        self.signInButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.passwordTextField)
             make.right.equalTo(self.passwordTextField)
-            make.top.equalTo(self.passwordTextField.snp.bottom).offset(20)
-            make.height.equalTo(44)
+            make.top.equalTo(self.passwordTextField.snp.bottom).offset(15)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         
-        let divider = UIView()
-        scrollView.addSubview(divider)
-        divider.backgroundColor = UIColor.beeGrayColor()
-        divider.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(signInButton)
-            make.right.equalTo(signInButton)
-            make.height.equalTo(1)
-            make.top.equalTo(signInButton.snp.bottom).offset(20)
-        }
+        scrollView.addSubview(self.divider)
+        self.divider.isHidden = true
+        self.divider.backgroundColor = UIColor.beeGrayColor()
 
-        let twitterLoginButton = TWTRLogInButton { (session, error) in
+        self.twitterLoginButton = TWTRLogInButton { (session, error) in
             if error == nil {
                 CurrentUserManager.sharedManager.loginWithTwitterSession(session)
             }
@@ -103,40 +123,162 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
             }
         }
         
-        scrollView.addSubview(twitterLoginButton!)
-        twitterLoginButton?.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(divider.snp.bottom).offset(20)
-            make.centerX.equalTo(signInButton)
-            make.width.equalTo(signInButton)
-            make.height.equalTo(signInButton)
+        self.twitterLoginButton.isHidden = true
+        scrollView.addSubview(self.twitterLoginButton)
+        self.twitterLoginButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.divider.snp.bottom).offset(15)
+            make.centerX.equalTo(self.signInButton)
+            make.width.equalTo(self.signInButton)
+            make.height.equalTo(self.signInButton)
         }
         
-        let facebookLoginButton : FBSDKLoginButton = FBSDKLoginButton()
-        scrollView.addSubview(facebookLoginButton)
-        facebookLoginButton.readPermissions = ["public_profile", "email", "user_friends"]
-        facebookLoginButton.delegate = self
-        facebookLoginButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo((twitterLoginButton?.snp.bottom)!).offset(20)
-            make.centerX.equalTo(signInButton)
-            make.width.equalTo(signInButton)
-            make.height.equalTo(signInButton)
+        scrollView.addSubview(self.facebookLoginButton)
+        self.facebookLoginButton.isHidden = true
+        self.facebookLoginButton.readPermissions = ["public_profile", "email", "user_friends"]
+        self.facebookLoginButton.delegate = self
+        self.facebookLoginButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.twitterLoginButton.snp.bottom).offset(15)
+            make.centerX.equalTo(self.signInButton)
+            make.width.equalTo(self.signInButton)
+            make.height.equalTo(self.signInButton)
         }
         if FBSDKAccessToken.current() != nil {
             FBSDKAccessToken.setCurrent(nil)
         }
         
-        let googleSigninButton = GIDSignInButton()
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().delegate = CurrentUserManager.sharedManager
         GIDSignIn.sharedInstance().scopes = ["profile", "email"]
         GIDSignIn.sharedInstance().shouldFetchBasicProfile = true
-        scrollView.addSubview(googleSigninButton)
-        googleSigninButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(facebookLoginButton.snp.bottom).offset(20)
-            make.centerX.equalTo(signInButton)
-            make.width.equalTo(signInButton)
-            make.height.equalTo(signInButton)
-            make.bottom.equalTo(-20)
+        scrollView.addSubview(self.googleSigninButton)
+        self.googleSigninButton.isHidden = true
+        self.googleSigninButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.facebookLoginButton.snp.bottom).offset(15)
+            make.centerX.equalTo(self.signInButton)
+            make.width.equalTo(self.signInButton)
+            make.height.equalTo(self.signInButton)
+        }
+        
+        scrollView.addSubview(self.backToSignUpButton)
+        self.backToSignUpButton.isHidden = true
+        self.backToSignUpButton.setTitle("Back to Sign Up", for: .normal)
+        self.backToSignUpButton.snp.makeConstraints { (make) in
+            make.top.equalTo(self.googleSigninButton.snp.bottom).offset(15)
+            make.centerX.equalTo(scrollView)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
+            make.width.equalTo(self.view).multipliedBy(0.75)
+            make.bottom.equalTo(20)
+        }
+        self.backToSignUpButton.addTarget(self, action: #selector(SignInViewController.chooseSignUpButtonPressed), for: .touchUpInside)
+        
+        scrollView.addSubview(self.newUsernameTextField)
+        self.newUsernameTextField.isHidden = true
+        self.newUsernameTextField.snp.makeConstraints { (make) in
+            make.top.equalTo(self.headerLabel.snp.bottom).offset(15)
+            make.centerX.equalTo(scrollView)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
+            make.width.equalTo(self.view).multipliedBy(0.75)
+        }
+        self.newUsernameTextField.placeholder = "Username"
+        
+        scrollView.addSubview(self.newEmailTextField)
+        self.newEmailTextField.isHidden = true
+        self.newEmailTextField.snp.makeConstraints { (make) in
+            make.top.equalTo(self.newUsernameTextField.snp.bottom).offset(15)
+            make.centerX.equalTo(scrollView)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
+            make.width.equalTo(self.view).multipliedBy(0.75)
+        }
+        self.newEmailTextField.placeholder = "Email"
+        
+        scrollView.addSubview(self.newPasswordTextField)
+        self.newPasswordTextField.isHidden = true
+        self.newPasswordTextField.snp.makeConstraints { (make) in
+            make.top.equalTo(self.newEmailTextField.snp.bottom).offset(15)
+            make.centerX.equalTo(scrollView)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
+            make.width.equalTo(self.view).multipliedBy(0.75)
+        }
+        
+        self.newPasswordTextField.placeholder = "Password"
+        
+        scrollView.addSubview(self.signUpButton)
+        self.signUpButton.isHidden = true
+        self.signUpButton.setTitle("Sign Up", for: .normal)
+        self.signUpButton.addTarget(self, action: #selector(SignInViewController.signUpButtonPressed), for: .touchUpInside)
+        self.signUpButton.snp.makeConstraints { (make) in
+            make.top.equalTo(self.newPasswordTextField.snp.bottom).offset(15)
+            make.centerX.equalTo(self.view)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
+            make.width.equalTo(self.view).multipliedBy(0.75)
+        }
+        
+        scrollView.addSubview(self.backToSignInButton)
+        self.backToSignInButton.isHidden = true
+        self.backToSignInButton.setTitle("Back to Sign In", for: .normal)
+        self.backToSignInButton.snp.makeConstraints { (make) in
+            make.top.equalTo(self.googleSigninButton.snp.bottom).offset(15)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
+            make.centerX.equalTo(self.view)
+            make.width.equalTo(self.view).multipliedBy(0.75)
+            make.bottom.equalTo(20)
+        }
+        self.backToSignInButton.addTarget(self, action: #selector(SignInViewController.chooseSignInButtonPressed), for: .touchUpInside)
+    }
+    
+    func signUpButtonPressed() {
+        
+    }
+    
+    func chooseSignInButtonPressed() {
+        self.divider.isHidden = false
+        self.googleSigninButton.isHidden = false
+        self.twitterLoginButton.isHidden = false
+        self.facebookLoginButton.isHidden = false
+        self.backToSignUpButton.isHidden = false
+        self.emailTextField.isHidden = false
+        self.passwordTextField.isHidden = false
+        self.backToSignInButton.isHidden = true
+        self.newUsernameTextField.isHidden = true
+        self.newPasswordTextField.isHidden = true
+        self.newEmailTextField.isHidden = true
+        self.chooseSignInButton.isHidden = true
+        self.chooseSignUpButton.isHidden = true
+        self.headerLabel.text = "Sign in to Beeminder"
+        self.headerLabel.isHidden = false
+        self.signInButton.isHidden = false
+        self.signUpButton.isHidden = true
+        self.divider.snp.remakeConstraints { (make) -> Void in
+            make.left.equalTo(self.signInButton)
+            make.right.equalTo(self.signInButton)
+            make.height.equalTo(1)
+            make.top.equalTo(self.signInButton.snp.bottom).offset(15)
+        }
+    }
+    
+    func chooseSignUpButtonPressed() {
+        self.divider.isHidden = false
+        self.googleSigninButton.isHidden = false
+        self.twitterLoginButton.isHidden = false
+        self.facebookLoginButton.isHidden = false
+        self.backToSignUpButton.isHidden = true
+        self.emailTextField.isHidden = true
+        self.passwordTextField.isHidden = true
+        self.backToSignInButton.isHidden = false
+        self.newUsernameTextField.isHidden = false
+        self.newPasswordTextField.isHidden = false
+        self.newEmailTextField.isHidden = false
+        self.chooseSignInButton.isHidden = true
+        self.chooseSignUpButton.isHidden = true
+        self.headerLabel.text = "Sign up for Beeminder"
+        self.headerLabel.isHidden = false
+        self.signInButton.isHidden = true
+        self.signUpButton.isHidden = false
+        self.divider.snp.remakeConstraints { (make) -> Void in
+            make.left.equalTo(self.signUpButton)
+            make.right.equalTo(self.signUpButton)
+            make.height.equalTo(1)
+            make.top.equalTo(self.signUpButton.snp.bottom).offset(15)
         }
     }
     
