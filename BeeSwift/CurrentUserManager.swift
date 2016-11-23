@@ -190,7 +190,7 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     }
     
     func signUpWith(email: String, password: String, username: String) {
-        BSHTTPSessionManager.sharedManager.post("/api/v1/users", parameters: ["email": email, "password": password, "username": username], progress: nil, success: { (dataTask, responseObject) -> Void in
+        BSHTTPSessionManager.sharedManager.signedPOST("/api/v1/users", parameters: ["email": email, "password": password, "username": username], success: { (dataTask, responseObject) -> Void in
             self.handleSuccessfulSignin(JSON(responseObject!))
         }) { (dataTask, responseError) -> Void in
             self.handleFailedSignup(responseError)
