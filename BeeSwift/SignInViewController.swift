@@ -37,6 +37,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.handleFailedSignUp(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: nil)
         self.view.backgroundColor = UIColor.white
         
         scrollView.addSubview(self.chooseSignInButton)
@@ -64,7 +65,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         self.headerLabel.isHidden = true
         self.headerLabel.textAlignment = NSTextAlignment.center
         self.headerLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(40)
+            make.top.equalTo(30)
             make.centerX.equalTo(scrollView)
         }
         
@@ -88,6 +89,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         self.passwordTextField.placeholder = "Password"
         self.passwordTextField.isSecureTextEntry = true
         self.passwordTextField.returnKeyType = .done
+        self.passwordTextField.autocapitalizationType = .none
         self.passwordTextField.delegate = self
         self.passwordTextField.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.emailTextField.snp.bottom).offset(15)
@@ -133,7 +135,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         }
         
         scrollView.addSubview(self.facebookLoginButton)
-        self.facebookLoginButton.isHidden = true
+        self.facebookLoginButton.alpha = 0.0
         self.facebookLoginButton.readPermissions = ["public_profile", "email", "user_friends"]
         self.facebookLoginButton.delegate = self
         self.facebookLoginButton.snp.makeConstraints { (make) -> Void in
@@ -167,12 +169,13 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
             make.centerX.equalTo(scrollView)
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.width.equalTo(self.view).multipliedBy(0.75)
-            make.bottom.equalTo(20)
+            make.bottom.equalTo(-20)
         }
         self.backToSignUpButton.addTarget(self, action: #selector(SignInViewController.chooseSignUpButtonPressed), for: .touchUpInside)
         
         scrollView.addSubview(self.newUsernameTextField)
         self.newUsernameTextField.isHidden = true
+        self.newUsernameTextField.autocapitalizationType = .none
         self.newUsernameTextField.snp.makeConstraints { (make) in
             make.top.equalTo(self.headerLabel.snp.bottom).offset(15)
             make.centerX.equalTo(scrollView)
@@ -183,6 +186,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         
         scrollView.addSubview(self.newEmailTextField)
         self.newEmailTextField.isHidden = true
+        self.newEmailTextField.autocapitalizationType = .none
         self.newEmailTextField.snp.makeConstraints { (make) in
             make.top.equalTo(self.newUsernameTextField.snp.bottom).offset(15)
             make.centerX.equalTo(scrollView)
@@ -193,6 +197,8 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         
         scrollView.addSubview(self.newPasswordTextField)
         self.newPasswordTextField.isHidden = true
+        self.newPasswordTextField.autocapitalizationType = .none
+        self.newPasswordTextField.isSecureTextEntry = true
         self.newPasswordTextField.snp.makeConstraints { (make) in
             make.top.equalTo(self.newEmailTextField.snp.bottom).offset(15)
             make.centerX.equalTo(scrollView)
@@ -217,24 +223,24 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         self.backToSignInButton.isHidden = true
         self.backToSignInButton.setTitle("Back to Sign In", for: .normal)
         self.backToSignInButton.snp.makeConstraints { (make) in
-            make.top.equalTo(self.googleSigninButton.snp.bottom).offset(15)
+            make.top.equalTo(divider.snp.bottom).offset(15)
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.centerX.equalTo(self.view)
             make.width.equalTo(self.view).multipliedBy(0.75)
-            make.bottom.equalTo(20)
         }
         self.backToSignInButton.addTarget(self, action: #selector(SignInViewController.chooseSignInButtonPressed), for: .touchUpInside)
     }
     
     func signUpButtonPressed() {
-        
+        CurrentUserManager.sharedManager.signUpWith(email: self.newEmailTextField.text!, password: self.newPasswordTextField.text!, username: self.newUsernameTextField.text!)
     }
     
     func chooseSignInButtonPressed() {
+        CurrentUserManager.sharedManager.signingUp = false
         self.divider.isHidden = false
         self.googleSigninButton.isHidden = false
         self.twitterLoginButton.isHidden = false
-        self.facebookLoginButton.isHidden = false
+        self.facebookLoginButton.alpha = 1.0
         self.backToSignUpButton.isHidden = false
         self.emailTextField.isHidden = false
         self.passwordTextField.isHidden = false
@@ -257,10 +263,11 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     }
     
     func chooseSignUpButtonPressed() {
+        CurrentUserManager.sharedManager.signingUp = true
         self.divider.isHidden = false
-        self.googleSigninButton.isHidden = false
-        self.twitterLoginButton.isHidden = false
-        self.facebookLoginButton.isHidden = false
+        self.googleSigninButton.isHidden = true
+        self.twitterLoginButton.isHidden = true
+        self.facebookLoginButton.alpha = 0.0
         self.backToSignUpButton.isHidden = true
         self.emailTextField.isHidden = true
         self.passwordTextField.isHidden = true
@@ -298,8 +305,11 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     }
     
     func handleFailedSignIn(_ notification : Notification) {
-//        notification.userInfo["error"]
         UIAlertView(title: "Could not sign in", message: "Invalid credentials", delegate: self, cancelButtonTitle: "OK").show()
+    }
+    
+    func handleFailedSignUp(_ notification : Notification) {
+        UIAlertView(title: "Could not sign up", message: "Username or email is already taken", delegate: self, cancelButtonTitle: "OK").show()
     }
     
     func signInButtonPressed() {

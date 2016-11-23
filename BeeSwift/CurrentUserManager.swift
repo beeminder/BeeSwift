@@ -19,6 +19,7 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     static let signedInNotificationName     = "com.beeminder.signedInNotification"
     static let willSignOutNotificationName  = "com.beeminder.willSignOutNotification"
     static let failedSignInNotificationName = "com.beeminder.failedSignInNotification"
+    static let failedSignUpNotificationName = "com.beeminder.failedSignUpNotification"
     static let signedOutNotificationName    = "com.beeminder.signedOutNotification"
     static let resetNotificationName        = "com.beeminder.resetNotification"
     static let willResetNotificationName    = "com.beeminder.willResetNotification"
@@ -37,6 +38,8 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     var username :String? {
         return UserDefaults.standard.object(forKey: usernameKey) as! String?
     }
+    
+    var signingUp : Bool = false
     
     func defaultLeadTime() -> NSNumber {
         return (UserDefaults.standard.object(forKey: self.defaultLeadtimeKey) ?? 0) as! NSNumber
@@ -108,13 +111,6 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
             }) { (dataTask, responseError) in
                 self.handleFailedSignin(responseError)
         }
-        
-        
-//        BSHTTPSessionManager.sharedManager.post("/api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as AnyObject, success: { (dataTask, responseObject) -> Void in
-//            self.handleSuccessfulSignin(JSON(responseObject!))
-//        }) { (dataTask, responseError) -> Void in
-//            self.handleFailedSignin(responseError)
-//            }
     }
     
     func handleSuccessfulSignin(_ responseJSON: JSON) {
@@ -146,6 +142,11 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     
     func handleFailedSignin(_ responseError: Error) {
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: self, userInfo: ["error" : responseError])
+        self.signOut()
+    }
+    
+    func handleFailedSignup(_ responseError: Error) {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: self, userInfo: ["error" : responseError])
         self.signOut()
     }
     
@@ -185,6 +186,14 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
             self.handleSuccessfulSignin(JSON(responseObject!))
         }) { (dataTask, responseError) -> Void in
             self.handleFailedSignin(responseError)
+        }
+    }
+    
+    func signUpWith(email: String, password: String, username: String) {
+        BSHTTPSessionManager.sharedManager.post("/api/v1/users", parameters: ["email": email, "password": password, "username": username], progress: nil, success: { (dataTask, responseObject) -> Void in
+            self.handleSuccessfulSignin(JSON(responseObject!))
+        }) { (dataTask, responseError) -> Void in
+            self.handleFailedSignup(responseError)
         }
     }
     
