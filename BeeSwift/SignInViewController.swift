@@ -20,6 +20,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     var newPasswordTextField = BSTextField()
     var chooseSignInButton = BSButton()
     var chooseSignUpButton = BSButton()
+    var beeImageView = UIImageView()
     var signUpButton = BSButton()
     var backToSignInButton = BSButton()
     var backToSignUpButton = BSButton()
@@ -55,9 +56,15 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
             make.centerX.equalTo(self.view)
             make.top.equalTo(self.chooseSignInButton.snp.bottom).offset(15)
             make.width.equalTo(self.view).multipliedBy(0.75)
-            
         }
         self.chooseSignUpButton.addTarget(self, action: #selector(SignInViewController.chooseSignUpButtonPressed), for: .touchUpInside)
+        
+        self.beeImageView.image = UIImage(named: "GraphPlaceholder")
+        scrollView.addSubview(self.beeImageView)
+        self.beeImageView.snp.makeConstraints { (make) in
+            make.bottom.equalTo(self.chooseSignInButton.snp.top)
+            make.centerX.equalTo(scrollView)
+        }
         
         scrollView.addSubview(self.headerLabel)
         
@@ -237,6 +244,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     
     func chooseSignInButtonPressed() {
         CurrentUserManager.sharedManager.signingUp = false
+        self.beeImageView.isHidden = true
         self.divider.isHidden = false
         self.googleSigninButton.isHidden = false
         self.twitterLoginButton.isHidden = false
@@ -264,6 +272,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     
     func chooseSignUpButtonPressed() {
         CurrentUserManager.sharedManager.signingUp = true
+        self.beeImageView.isHidden = true
         self.divider.isHidden = false
         self.googleSigninButton.isHidden = true
         self.twitterLoginButton.isHidden = true

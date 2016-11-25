@@ -20,11 +20,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let lastUpdatedView = UIView()
     let lastUpdatedLabel = BSLabel()
     let cellReuseIdentifier = "Cell"
+    let newGoalCellReuseIdentifier = "NewGoalCell"
     var refreshControl = UIRefreshControl()
     var deadbeatView = UIView()
     
-    var frontburnerGoals : [Goal] = []
-    var backburnerGoals  : [Goal] = []
+    var goals : [Goal] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -97,6 +97,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView!.delegate = self
         self.collectionView!.dataSource = self
         self.collectionView!.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
+        self.collectionView!.register(NewGoalCollectionViewCell.self, forCellWithReuseIdentifier: self.newGoalCellReuseIdentifier)
         self.view.addSubview(self.collectionView!)
         
         self.refreshControl = UIRefreshControl()
@@ -150,15 +151,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func handleSignOut() {
-        self.frontburnerGoals = []
-        self.backburnerGoals = []
+        self.goals = []
         self.collectionView?.reloadData()
         self.hasFetchedData = false
     }
     
     func handleWillReset() {
-        self.frontburnerGoals = []
-        self.backburnerGoals = []
+        self.goals = []
         self.collectionView?.reloadData()
     }
     
@@ -224,18 +223,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func loadGoalsFromDatabase() {
-        self.frontburnerGoals = Goal.mr_findAll(with: NSPredicate(format: "burner = %@ and serverDeleted = false", "frontburner")) as! [Goal]
-        self.frontburnerGoals = self.frontburnerGoals.sorted { ($0.losedate.intValue < $1.losedate.intValue) }
-        self.backburnerGoals  = Goal.mr_findAll(with: NSPredicate(format: "burner = %@ and serverDeleted = false", "backburner")) as! [Goal]
-        self.backburnerGoals = self.backburnerGoals.sorted { ($0.losedate.intValue < $1.losedate.intValue) }
+        self.goals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
+        self.goals = self.goals.sorted { ($0.losedate.intValue < $1.losedate.intValue) }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return section == 0 ? self.frontburnerGoals.count : self.backburnerGoals.count
+        return self.goals.count + 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2
+        return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -243,35 +240,25 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if (indexPath as NSIndexPath).row >= self.goals.count {
+            let cell:NewGoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.newGoalCellReuseIdentifier, for: indexPath) as! NewGoalCollectionViewCell
+            return cell
+        }
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let goal:Goal = (indexPath as NSIndexPath).section == 0 ? self.frontburnerGoals[(indexPath as NSIndexPath).row] : self.backburnerGoals[(indexPath as NSIndexPath).row]
+        let goal:Goal = self.goals[(indexPath as NSIndexPath).row]
         
         cell.goal = goal
         
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if kind == UICollectionElementKindSectionFooter {
-            let footer = self.collectionView?.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionFooter, withReuseIdentifier: "footer", for: indexPath) as UICollectionReusableView!
-            footer?.backgroundColor = UIColor.beeGrayColor()
-            return footer!
-        }
-        return UICollectionReusableView()
-    }
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: 320, height: section == 0 && self.frontburnerGoals.count > 0 ? 5 : 0)
+        return CGSize(width: 320, height: section == 0 && self.goals.count > 0 ? 5 : 0)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if (indexPath as NSIndexPath).section == 0 {
-            self.openGoal(self.frontburnerGoals[(indexPath as NSIndexPath).row])
-        }
-        else {
-            self.openGoal(self.backburnerGoals[(indexPath as NSIndexPath).row])
-        }
+        self.openGoal(self.goals[(indexPath as NSIndexPath).row])
     }
 
     func openGoalFromNotification(_ notification: Notification) {
