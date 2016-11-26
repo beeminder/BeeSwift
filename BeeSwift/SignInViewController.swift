@@ -47,6 +47,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
             make.centerX.equalTo(self.view)
             make.bottom.equalTo(self.view.snp.centerY).offset(-10)
             make.width.equalTo(self.view).multipliedBy(0.75)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         self.chooseSignInButton.addTarget(self, action: #selector(SignInViewController.chooseSignInButtonPressed), for: .touchUpInside)
         
@@ -56,6 +57,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
             make.centerX.equalTo(self.view)
             make.top.equalTo(self.chooseSignInButton.snp.bottom).offset(15)
             make.width.equalTo(self.view).multipliedBy(0.75)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         self.chooseSignUpButton.addTarget(self, action: #selector(SignInViewController.chooseSignUpButtonPressed), for: .touchUpInside)
         
