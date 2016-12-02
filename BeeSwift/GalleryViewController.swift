@@ -115,25 +115,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        // begin 4.2 shim
-        if CurrentUserManager.sharedManager.signedIn() && UserDefaults.standard.object(forKey: "42notificationreset") == nil {
-            CurrentUserManager.sharedManager.syncNotificationDefaults(nil, failure: nil)
-            RemoteNotificationsManager.sharedManager.turnNotificationsOff()
-            
-            if let _ = Goal.mr_findAll() {
-                let alert = UIAlertController(title: "Thanks for updating!", message: "We've made some changes to how notifications work.\n\nPlease take a look and set them up.\n\nThanks for Beeminding.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Open now", style: .default, handler: { (alertAction) -> Void in
-                    self.settingsButtonPressed()
-                }))
-                alert.addAction(UIAlertAction(title: "Later", style: .default, handler: { (alertAction) -> Void in
-                    // do nothing, just dismiss
-                }))
-                self.present(alert, animated: true, completion: nil)
-            }
-            UserDefaults.standard.set(true, forKey: "42notificationreset")
-            UserDefaults.standard.synchronize()
-        }
-        // end 4.2 shim
         if !CurrentUserManager.sharedManager.signedIn() {
             self.present(SignInViewController(), animated: true, completion: nil)
         }
