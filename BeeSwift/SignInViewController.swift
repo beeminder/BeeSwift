@@ -9,6 +9,7 @@
 import Foundation
 import TwitterKit
 import FBSDKLoginKit
+import MBProgressHUD
 
 class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSignInUIDelegate, UITextFieldDelegate, UIAlertViewDelegate {
     
@@ -37,8 +38,9 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
             make.edges.equalTo(self.view)
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.handleFailedSignUp(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignUp(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignedIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
         self.view.backgroundColor = UIColor.white
         
         scrollView.addSubview(self.chooseSignInButton)
@@ -241,6 +243,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     }
     
     func signUpButtonPressed() {
+        MBProgressHUD.showAdded(to: self.view, animated: true)
         CurrentUserManager.sharedManager.signUpWith(email: self.newEmailTextField.text!, password: self.newPasswordTextField.text!, username: self.newUsernameTextField.text!)
     }
     
@@ -323,7 +326,12 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         UIAlertView(title: "Could not sign up", message: "Username or email is already taken", delegate: self, cancelButtonTitle: "OK").show()
     }
     
+    func handleSignedIn(_ notification : Notification) {
+        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+    }
+    
     func signInButtonPressed() {
+        MBProgressHUD.showAdded(to: self.view, animated: true)
         CurrentUserManager.sharedManager.signInWithEmail(self.emailTextField.text!, password: self.passwordTextField.text!)
     }
     
