@@ -144,7 +144,7 @@ class EditNotificationsViewController: UIViewController {
     func leadTimeStepperValueChanged() {
         self.updateLeadTimeLabel()
         self.leadTimeDelayTimer?.invalidate()
-        self.leadTimeDelayTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(EditNotificationsViewController.sendLeadTimeToServer(_:)), userInfo: [ "leadtime" : NSNumber(value: self.leadTimeStepper.value as Double)], repeats: false)
+        self.leadTimeDelayTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.sendLeadTimeToServer(_:)), userInfo: [ "leadtime" : NSNumber(value: self.leadTimeStepper.value as Double)], repeats: false)
     }
     
     func sendLeadTimeToServer(_ timer : Timer) {
