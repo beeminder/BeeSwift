@@ -51,7 +51,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.view.addSubview(self.lastUpdatedView)
         self.lastUpdatedView.backgroundColor = UIColor.beeGrayColor()
         self.lastUpdatedView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(40)
+            make.top.equalTo(self.topLayoutGuide.snp.bottom)
             make.left.equalTo(0)
             make.right.equalTo(0)
         }
@@ -182,12 +182,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func fetchData(_ refreshControl: UIRefreshControl?) {
+        if self.goals.count == 0 {
+            MBProgressHUD.showAdded(to: self.view, animated: true)
+        }
         DataSyncManager.sharedManager.fetchData({ () -> Void in
             self.loadGoalsFromDatabase()
             self.collectionView!.reloadData()
             self.updateLastUpdatedLabel()
             self.updateDeadbeatHeight()
             self.hasFetchedData = true
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             if refreshControl != nil {
                 refreshControl!.endRefreshing()
             }
