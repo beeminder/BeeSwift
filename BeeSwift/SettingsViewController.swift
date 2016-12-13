@@ -179,5 +179,6 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             let goal = (indexPath as NSIndexPath).section == 1 ? self.frontburnerGoals[(indexPath as NSIndexPath).row] : self.backburnerGoals[(indexPath as NSIndexPath).row]
             self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
         }
+        self.tableView.deselectRow(at: indexPath, animated: true)
     }
 }

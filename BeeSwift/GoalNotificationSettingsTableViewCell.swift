@@ -27,7 +27,7 @@ class GoalNotificationSettingsTableViewCell: UITableViewCell {
     }
     
     func configure() {
-        self.selectionStyle = .none
+        self.selectionStyle = .default
         self.backgroundColor = UIColor.clear
         self.accessoryType = .disclosureIndicator
         

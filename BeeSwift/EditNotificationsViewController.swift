@@ -215,7 +215,7 @@ extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerView
             make.top.equalTo(0)
             make.bottom.equalTo(0)
             make.left.equalTo(10)
-            make.right.equalTo(-10)
+            make.right.equalTo(-20)
         }
         label.font = UIFont(name: "Avenir", size: 17)
         
