@@ -320,6 +320,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     
     func handleFailedSignIn(_ notification : Notification) {
         UIAlertView(title: "Could not sign in", message: "Invalid credentials", delegate: self, cancelButtonTitle: "OK").show()
+        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
     }
     
     func handleFailedSignUp(_ notification : Notification) {
