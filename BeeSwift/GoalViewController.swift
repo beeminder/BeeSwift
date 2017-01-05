@@ -364,16 +364,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US")
-        var dateFormat = "d"
-        if (calendar as NSCalendar?)?.component(.month, from: newDate!) !=
-            (calendar as NSCalendar?)?.component(.month, from: Date()) {
-                dateFormat = "M d"
-        }
-        if (calendar as NSCalendar?)?.component(.year, from: newDate!) !=
-            (calendar as NSCalendar?)?.component(.year, from: Date()) {
-            dateFormat = "Y M d"
-        }
-        formatter.dateFormat = dateFormat
+        formatter.dateFormat = "d"
         self.dateTextField.text = formatter.string(from: newDate!)
     }
     
