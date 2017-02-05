@@ -101,7 +101,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.view.addSubview(self.collectionView!)
         
         self.refreshControl = UIRefreshControl()
-        self.refreshControl.addTarget(self, action: #selector(GalleryViewController.fetchData(_:)), for: UIControlEvents.valueChanged)
+        self.refreshControl.addTarget(self, action: #selector(self.fetchData(_:)), for: UIControlEvents.valueChanged)
         self.collectionView!.addSubview(self.refreshControl)
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
