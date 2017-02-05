@@ -56,32 +56,11 @@ class RemoteNotificationsManager :NSObject {
     }
     
     func didFailToRegisterForRemoteNotificationsWithError(_ error: Error) {
-        let alert = UIAlertController(title: "Sorry!", message: "There was a problem turning on notifications. Please email support@beeminder.com.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Email support", style: .default, handler: { (alertAction) -> Void in
-            UIApplication.shared.openURL(URL(string: "mailto:support@beeminder.com?subject=iOS%20notifications%20error")!)
-        }))
-        alert.addAction(UIAlertAction(title: "Skip", style: .cancel, handler: { (alertAction) -> Void in
-            // do nothing, just cancel
-        }))
-        UIApplication.shared.windows.first?.rootViewController?.present(alert, animated: true, completion: nil)
-        self.turnNotificationsOff()
+        // nothing to do
     }
     
     func didRegisterUserNotificationSettings(_ notificationSettings: UIUserNotificationSettings) {
-        if notificationSettings.types != UIUserNotificationType() { return }
-        
-        let alert = UIAlertController(title: "Sorry!", message: "It looks like Beeminder isn't allowed to send you notifications. Please open settings and make sure that you've allowed Beeminder to send you notifications, or email support@beeminder.com if have and you're still seeing this message.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Open Settings", style: .default, handler: { (alertAction) -> Void in
-            UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
-        }))
-        alert.addAction(UIAlertAction(title: "Email support", style: .default, handler: { (alertAction) -> Void in
-            UIApplication.shared.openURL(URL(string: "mailto:support@beeminder.com?subject=iOS%20notifications%20problem")!)
-        }))
-        alert.addAction(UIAlertAction(title: "Skip", style: .cancel, handler: { (alertAction) -> Void in
-            // do nothing, just cancel
-        }))
-        UIApplication.shared.windows.first?.rootViewController?.present(alert, animated: true, completion: nil)
-        self.turnNotificationsOff()
+        // nothing to do
     }
 
 }
