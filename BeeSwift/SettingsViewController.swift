@@ -8,6 +8,7 @@
 
 import Foundation
 import MBProgressHUD
+import HealthKit
 
 class SettingsViewController: UIViewController {
     
@@ -38,7 +39,7 @@ class SettingsViewController: UIViewController {
         self.numberOfTodayGoalsLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(15)
             make.width.lessThanOrEqualTo(self.view).multipliedBy(0.7).offset(-20)
-            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
+            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
         }
         
         self.view.addSubview(self.numberOfTodayGoalsStepper)
@@ -51,11 +52,47 @@ class SettingsViewController: UIViewController {
         self.numberOfTodayGoalsStepper.addTarget(self, action: #selector(SettingsViewController.numberOfTodayGoalsStepperValueChanged), for: .valueChanged)
         self.numberOfTodayGoalsStepper.value = Double(numberOfTodayGoals!)
         
+        var lastView : UIView = self.numberOfTodayGoalsStepper
+        if HKHealthStore.isHealthDataAvailable() {
+            let healthKitCell = UIView()
+            lastView = healthKitCell
+            
+            self.view.addSubview(healthKitCell)
+            healthKitCell.snp.makeConstraints({ (make) in
+                make.left.equalTo(self.numberOfTodayGoalsLabel)
+                make.right.equalTo(self.numberOfTodayGoalsStepper)
+                make.top.equalTo(self.numberOfTodayGoalsLabel).offset(40)
+                make.height.equalTo(Constants.defaultTextFieldHeight)
+            })
+            
+            let tapGR = UITapGestureRecognizer()
+            healthKitCell.addGestureRecognizer(tapGR)
+            tapGR.addTarget(self, action: #selector(self.showHealthKitConfig))
+            
+            let label = BSLabel()
+            label.text = "Health app integration"
+            healthKitCell.addSubview(label)
+            label.snp.makeConstraints({ (make) in
+                make.left.equalTo(0)
+                make.centerY.equalTo(0)
+            })
+            
+            let disclosure = UITableViewCell()
+            healthKitCell.addSubview(disclosure)
+            disclosure.snp.makeConstraints({ (make) in
+                make.right.equalTo(0)
+                make.centerY.equalTo(0)
+            })
+            disclosure.accessoryType = .disclosureIndicator
+            disclosure.isUserInteractionEnabled = false
+            
+        }
+        
         self.view.addSubview(self.emergencyRemindersSwitch)
         self.emergencyRemindersSwitch.addTarget(self, action: #selector(SettingsViewController.emergencyRemindersSwitchChanged), for: .valueChanged)
         self.updateEmergencyRemindersSwitch()
         self.emergencyRemindersSwitch.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.numberOfTodayGoalsStepper.snp.bottom).offset(20)
+            make.top.equalTo(lastView.snp.bottom).offset(20)
             make.right.equalTo(self.numberOfTodayGoalsStepper)
         }
         
@@ -99,12 +136,17 @@ class SettingsViewController: UIViewController {
             make.top.equalTo(emergencyRemindersSwitch.snp.bottom).offset(5)
             make.bottom.equalTo(resetButton.snp.top)
         }
+        
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(GoalNotificationSettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.loadGoalsFromDatabase()
+    }
+    
+    func showHealthKitConfig() {
+        self.navigationController?.pushViewController(HealthKitConfigViewController(), animated: true)
     }
     
     func userDefaultsDidChange() {
