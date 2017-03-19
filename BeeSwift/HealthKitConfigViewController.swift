@@ -10,14 +10,24 @@ import UIKit
 
 class HealthKitConfigViewController: UIViewController {
     
+    struct HealthKitConfig {
+        let pickerText : String
+        let databaseString : String?
+    }
+    
     var tableView = UITableView()
+    var pickerView = UIPickerView()
     var goals : [Goal] = []
+    var configOptions : [HealthKitConfig] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
         self.title = "Health app integration"
+        
+        self.configOptions.append(HealthKitConfig(pickerText: "None", databaseString: nil))
+        self.configOptions.append(HealthKitConfig(pickerText: "Steps", databaseString: "steps"))
         
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
@@ -33,6 +43,16 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.loadGoalsFromDatabase()
+        
+        self.pickerView.delegate = self
+        self.pickerView.dataSource = self
+        self.view.addSubview(self.pickerView)
+        self.pickerView.snp.makeConstraints { (make) in
+            make.bottom.equalTo(self.bottomLayoutGuide.snp.bottom)
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+        }
+        self.pickerView.layer.opacity = 0
     }
 
     override func didReceiveMemoryWarning() {
@@ -43,7 +63,66 @@ class HealthKitConfigViewController: UIViewController {
     func loadGoalsFromDatabase() {
         self.goals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
     }
+    
+    func showPicker() {
+        UIView.animate(withDuration: 0.25) {
+            self.pickerView.layer.opacity = 1.0
+        }
+    }
+    
+    func hidePicker() {
+        UIView.animate(withDuration: 0.25) {
+            self.pickerView.layer.opacity = 0.0
+        }
+    }
+}
 
+extension HealthKitConfigViewController : UIPickerViewDelegate, UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        let goal = self.goals[(self.tableView.indexPathForSelectedRow?.row)!]
+        
+        
+        goal.healthKitMetric = (self.configOptions[row].databaseString ?? nil)!
+        
+        do {
+            try NSManagedObjectContext.mr_default().save()
+        } catch {
+            //foo
+        }
+        
+        self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
+        self.hidePicker()
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.configOptions.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        let view = UIView()
+        let label = BSLabel()
+        view.addSubview(label)
+        label.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(0)
+            make.bottom.equalTo(0)
+            make.left.equalTo(10)
+            make.right.equalTo(-20)
+        }
+        label.font = UIFont(name: "Avenir", size: 17)
+        
+        if row == 0 {
+            label.text = "None"
+        } else {
+            label.text = self.configOptions[row].pickerText
+        }
+        label.textAlignment = .center
+        
+        return view
+    }
 }
 
 extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSource {
@@ -67,7 +146,9 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let goal = self.goals[(indexPath as NSIndexPath).row]
         
-        
+        self.showPicker()
+        guard let row = self.configOptions.index(where: { $0.databaseString == goal.healthKitMetric }) else { return }
+        self.pickerView.selectRow(row, inComponent: 1, animated: false)
     }
     
     

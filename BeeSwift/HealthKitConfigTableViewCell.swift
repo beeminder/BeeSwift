@@ -35,7 +35,7 @@ class HealthKitConfigTableViewCell: UITableViewCell {
     }
     
     func configure() {
-        self.selectionStyle = .none
+        self.selectionStyle = .gray
         self.backgroundColor = UIColor.clear
         self.accessoryType = .none
         
