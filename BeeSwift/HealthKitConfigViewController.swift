@@ -26,7 +26,7 @@ class HealthKitConfigViewController: UIViewController {
         self.view.backgroundColor = .white
         self.title = "Health app integration"
         
-        self.configOptions.append(HealthKitConfig(pickerText: "None", databaseString: nil))
+        self.configOptions.append(HealthKitConfig(pickerText: "None", databaseString: ""))
         self.configOptions.append(HealthKitConfig(pickerText: "Steps", databaseString: "steps"))
         
         self.view.addSubview(self.tableView)
@@ -88,14 +88,11 @@ extension HealthKitConfigViewController : UIPickerViewDelegate, UIPickerViewData
         
         goal.healthKitMetric = (self.configOptions[row].databaseString ?? nil)!
         
-        do {
-            try NSManagedObjectContext.mr_default().save()
-        } catch {
-            //foo
-        }
+        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
         
         self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
         self.hidePicker()
+        self.tableView.reloadData()
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -139,7 +136,8 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
 
         let goal = self.goals[(indexPath as NSIndexPath).row]
         cell!.goalname = goal.slug
-        cell!.goalMetric = goal.healthKitMetric
+        let config = self.configOptions.first(where: { $0.databaseString == goal.healthKitMetric })
+        cell!.goalMetric = config?.pickerText
         return cell!
     }
     
@@ -148,8 +146,6 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
         
         self.showPicker()
         guard let row = self.configOptions.index(where: { $0.databaseString == goal.healthKitMetric }) else { return }
-        self.pickerView.selectRow(row, inComponent: 1, animated: false)
+        self.pickerView.selectRow(row, inComponent: 0, animated: false)
     }
-    
-    
 }
