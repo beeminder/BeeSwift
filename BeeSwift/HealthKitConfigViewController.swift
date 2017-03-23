@@ -7,12 +7,14 @@
 //
 
 import UIKit
+import HealthKit
 
 class HealthKitConfigViewController: UIViewController {
     
     struct HealthKitConfig {
         let pickerText : String
         let databaseString : String?
+        let metric : HKQuantityTypeIdentifier?
     }
     
     var tableView = UITableView()
@@ -26,8 +28,8 @@ class HealthKitConfigViewController: UIViewController {
         self.view.backgroundColor = .white
         self.title = "Health app integration"
         
-        self.configOptions.append(HealthKitConfig(pickerText: "None", databaseString: ""))
-        self.configOptions.append(HealthKitConfig(pickerText: "Steps", databaseString: "steps"))
+        self.configOptions.append(HealthKitConfig(pickerText: "None", databaseString: nil, metric: nil))
+        self.configOptions.append(HealthKitConfig(pickerText: "Steps", databaseString: "steps", metric: HKQuantityTypeIdentifier.stepCount))
         
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
@@ -75,6 +77,19 @@ class HealthKitConfigViewController: UIViewController {
             self.pickerView.layer.opacity = 0.0
         }
     }
+    
+    func savePickerChoice() {
+        let goal = self.goals[(self.tableView.indexPathForSelectedRow?.row)!]
+        goal.healthKitMetric = self.configOptions[self.pickerView.selectedRow(inComponent: 0)].databaseString
+        
+        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+        
+        DispatchQueue.main.async {
+            self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
+            self.hidePicker()
+            self.tableView.reloadData()
+        }
+    }
 }
 
 extension HealthKitConfigViewController : UIPickerViewDelegate, UIPickerViewDataSource {
@@ -83,17 +98,39 @@ extension HealthKitConfigViewController : UIPickerViewDelegate, UIPickerViewData
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        let goal = self.goals[(self.tableView.indexPathForSelectedRow?.row)!]
-        
-        
-        goal.healthKitMetric = (self.configOptions[row].databaseString ?? nil)!
-        
-        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-        
-        self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
-        self.hidePicker()
-        self.tableView.reloadData()
+        let delegate = UIApplication.shared.delegate as? AppDelegate
+        if let metric = self.configOptions[row].metric {
+            let metricType = HKObjectType.quantityType(forIdentifier: metric)!
+            delegate?.healthStore?.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
+                self.savePickerChoice()
+            })
+        } else {
+            self.savePickerChoice()
+        }
     }
+//            if delegate!.healthStore!.authorizationStatus(for: stepCountType) == HKAuthorizationStatus. {
+//                self.savePickerChoice()
+//            } else {
+//                let alert = UIAlertController(title: "Not authorized", message: "Beeminder is not authorized to read this data from the Health app. You can change this setting in the Health app.", preferredStyle: .alert)
+//                
+//                var laterButton = UIAlertAction(title: "Okay", style: .default, handler: { (action) in
+//                    // dismiss
+//                })
+//                
+//                if #available(iOS 10.0, *) {
+//                    laterButton = UIAlertAction(title: "Later", style: .cancel, handler: { (action) in
+//                        // dismiss
+//                    })
+//                    let healthAppButton = UIAlertAction(title: "Open Health app", style: .default, handler: { (alert) in
+//                        UIApplication.shared.open(URL(string: "x-apple-health://")!)
+//                    })
+//                    alert.addAction(laterButton)
+//                    alert.addAction(healthAppButton)
+//                } else {
+//                    alert.addAction(laterButton)
+//                }
+//                self.present(alert, animated: true, completion: nil)
+//            }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return self.configOptions.count

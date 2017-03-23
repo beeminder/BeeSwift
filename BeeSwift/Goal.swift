@@ -16,7 +16,7 @@ class Goal: NSManagedObject {
     @NSManaged var burner: String
     @NSManaged var delta_text: String
     @NSManaged var graph_url: String
-    @NSManaged var healthKitMetric: String
+    @NSManaged var healthKitMetric: String?
     @NSManaged var id: String
     @NSManaged var lane: NSNumber
     @NSManaged var losedate: NSNumber
