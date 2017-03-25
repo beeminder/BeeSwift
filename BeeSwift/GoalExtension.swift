@@ -246,30 +246,28 @@ extension Goal {
     
     func setupHealthKit() {
         guard let metric = self.healthKitMetric else { return }
+        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
         let delegate = UIApplication.shared.delegate as! AppDelegate
         
         guard let healthStore = delegate.healthStore else { return }
         
         let calendar = Calendar.current
-        
         var interval = DateComponents()
         interval.day = 7
         
         var anchorComponents = calendar.dateComponents([.day, .month, .year, .weekday], from: Date())
         anchorComponents.hour = 0
         anchorComponents.minute = 0
+        anchorComponents.second = 0
         
-        guard var anchorDate = calendar.date(from: anchorComponents) else {
+        guard let midnight = calendar.date(from: anchorComponents) else {
             fatalError("*** unable to create a valid date from the given components ***")
         }
+        let anchorDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: midnight)!
         
-        anchorDate = calendar.date(byAdding: .second, value: self.deadline, to: anchorDate)
-        
-        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
             fatalError("*** Unable to create a quantity type ***")
         }
-        
         
         let query = HKStatisticsCollectionQuery(quantityType: quantityType,
                                                 quantitySamplePredicate: nil,
@@ -308,7 +306,7 @@ extension Goal {
             }
         }
         
-        self.healthStore!.execute(query)
+        healthStore.execute(query)
     }
     
 }
