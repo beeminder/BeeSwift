@@ -11,25 +11,15 @@ import HealthKit
 
 class HealthKitConfigViewController: UIViewController {
     
-    struct HealthKitConfig {
-        let pickerText : String
-        let databaseString : String?
-        let metric : HKQuantityTypeIdentifier?
-    }
-    
     var tableView = UITableView()
     var pickerView = UIPickerView()
     var goals : [Goal] = []
-    var configOptions : [HealthKitConfig] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
         self.title = "Health app integration"
-        
-        self.configOptions.append(HealthKitConfig(pickerText: "None", databaseString: nil, metric: nil))
-        self.configOptions.append(HealthKitConfig(pickerText: "Steps", databaseString: "steps", metric: HKQuantityTypeIdentifier.stepCount))
         
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
@@ -80,7 +70,7 @@ class HealthKitConfigViewController: UIViewController {
     
     func savePickerChoice() {
         let goal = self.goals[(self.tableView.indexPathForSelectedRow?.row)!]
-        goal.healthKitMetric = self.configOptions[self.pickerView.selectedRow(inComponent: 0)].databaseString
+        goal.healthKitMetric = HealthKitConfig.metrics[self.pickerView.selectedRow(inComponent: 0)].databaseString
         
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
         
@@ -99,7 +89,7 @@ extension HealthKitConfigViewController : UIPickerViewDelegate, UIPickerViewData
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let delegate = UIApplication.shared.delegate as? AppDelegate
-        if let metric = self.configOptions[row].metric {
+        if let metric = HealthKitConfig.metrics[row].metric {
             let metricType = HKObjectType.quantityType(forIdentifier: metric)!
             delegate?.healthStore?.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
                 self.savePickerChoice()
@@ -133,7 +123,7 @@ extension HealthKitConfigViewController : UIPickerViewDelegate, UIPickerViewData
 //            }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return self.configOptions.count
+        return HealthKitConfig.metrics.count
     }
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
@@ -151,7 +141,7 @@ extension HealthKitConfigViewController : UIPickerViewDelegate, UIPickerViewData
         if row == 0 {
             label.text = "None"
         } else {
-            label.text = self.configOptions[row].pickerText
+            label.text = HealthKitConfig.metrics[row].pickerText
         }
         label.textAlignment = .center
         
@@ -173,7 +163,7 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
 
         let goal = self.goals[(indexPath as NSIndexPath).row]
         cell!.goalname = goal.slug
-        let config = self.configOptions.first(where: { $0.databaseString == goal.healthKitMetric })
+        let config = HealthKitConfig.metrics.first(where: { $0.databaseString == goal.healthKitMetric })
         cell!.goalMetric = config?.pickerText
         return cell!
     }
@@ -182,7 +172,7 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
         let goal = self.goals[(indexPath as NSIndexPath).row]
         
         self.showPicker()
-        guard let row = self.configOptions.index(where: { $0.databaseString == goal.healthKitMetric }) else { return }
+        guard let row = HealthKitConfig.metrics.index(where: { $0.databaseString == goal.healthKitMetric }) else { return }
         self.pickerView.selectRow(row, inComponent: 0, animated: false)
     }
 }

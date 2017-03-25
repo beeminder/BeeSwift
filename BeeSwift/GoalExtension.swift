@@ -9,6 +9,7 @@
 import Foundation
 import SwiftyJSON
 import MagicalRecord
+import HealthKit
 
 extension Goal {
     
@@ -235,6 +236,79 @@ extension Goal {
         }
         
         return Array(allDatapoints[(allDatapoints.count - 5)...(allDatapoints.count - 1)])
+    }
+    
+    func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
+        return HealthKitConfig.metrics.first { (metric) -> Bool in
+            metric.databaseString == self.healthKitMetric
+        }?.metric
+    }
+    
+    func setupHealthKit() {
+        guard let metric = self.healthKitMetric else { return }
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        
+        guard let healthStore = delegate.healthStore else { return }
+        
+        let calendar = Calendar.current
+        
+        var interval = DateComponents()
+        interval.day = 7
+        
+        var anchorComponents = calendar.dateComponents([.day, .month, .year, .weekday], from: Date())
+        anchorComponents.hour = 0
+        anchorComponents.minute = 0
+        
+        guard var anchorDate = calendar.date(from: anchorComponents) else {
+            fatalError("*** unable to create a valid date from the given components ***")
+        }
+        
+        anchorDate = calendar.date(byAdding: .second, value: self.deadline, to: anchorDate)
+        
+        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+            fatalError("*** Unable to create a quantity type ***")
+        }
+        
+        
+        let query = HKStatisticsCollectionQuery(quantityType: quantityType,
+                                                quantitySamplePredicate: nil,
+                                                options: .cumulativeSum,
+                                                anchorDate: anchorDate,
+                                                intervalComponents: interval)
+        
+        query.statisticsUpdateHandler = {
+            query, statistics, collection, error in
+            
+        }
+        
+        query.initialResultsHandler = {
+            query, results, error in
+            
+            guard let statsCollection = results else {
+                // Perform proper error handling here
+                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+            }
+            
+            let endDate = Date()
+            
+            guard let startDate = calendar.date(byAdding: .month, value: -3, to: endDate) else {
+                fatalError("foo")
+            }
+            
+            // Plot the weekly step counts over the past 3 months
+            statsCollection.enumerateStatistics(from: startDate, to: endDate) { [unowned self] statistics, stop in
+                
+                if let quantity = statistics.sumQuantity() {
+                    let date = statistics.startDate
+                    let value = quantity.doubleValue(for: HKUnit.count())
+                    
+                    // Call a custom method to plot each data point.
+                }
+            }
+        }
+        
+        self.healthStore!.execute(query)
     }
     
 }
