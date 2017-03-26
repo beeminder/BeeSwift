@@ -72,12 +72,26 @@ class HealthKitConfigViewController: UIViewController {
         let goal = self.goals[(self.tableView.indexPathForSelectedRow?.row)!]
         goal.healthKitMetric = HealthKitConfig.metrics[self.pickerView.selectedRow(inComponent: 0)].databaseString
         
-        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-        
-        DispatchQueue.main.async {
-            self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
-            self.hidePicker()
-            self.tableView.reloadData()
+        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) in
+            var params : [String : [String : String]] = [:]
+            if goal.healthKitMetric == nil {
+                params = ["ii_params" : ["" : ""]]
+            } else {
+                params = ["ii_params" : ["name" : "apple", "metric" : goal.healthKitMetric!]]
+            }
+            
+            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(goal.slug).json", parameters: params,
+               success: { (task, responseObject) -> Void in
+                // foo
+            }) { (task, error) -> Void in
+                // bar
+            }
+            
+            DispatchQueue.main.async {
+                self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
+                self.hidePicker()
+                self.tableView.reloadData()
+            }
         }
     }
 }
@@ -98,29 +112,6 @@ extension HealthKitConfigViewController : UIPickerViewDelegate, UIPickerViewData
             self.savePickerChoice()
         }
     }
-//            if delegate!.healthStore!.authorizationStatus(for: stepCountType) == HKAuthorizationStatus. {
-//                self.savePickerChoice()
-//            } else {
-//                let alert = UIAlertController(title: "Not authorized", message: "Beeminder is not authorized to read this data from the Health app. You can change this setting in the Health app.", preferredStyle: .alert)
-//                
-//                var laterButton = UIAlertAction(title: "Okay", style: .default, handler: { (action) in
-//                    // dismiss
-//                })
-//                
-//                if #available(iOS 10.0, *) {
-//                    laterButton = UIAlertAction(title: "Later", style: .cancel, handler: { (action) in
-//                        // dismiss
-//                    })
-//                    let healthAppButton = UIAlertAction(title: "Open Health app", style: .default, handler: { (alert) in
-//                        UIApplication.shared.open(URL(string: "x-apple-health://")!)
-//                    })
-//                    alert.addAction(laterButton)
-//                    alert.addAction(healthAppButton)
-//                } else {
-//                    alert.addAction(laterButton)
-//                }
-//                self.present(alert, animated: true, completion: nil)
-//            }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return HealthKitConfig.metrics.count

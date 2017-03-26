@@ -324,10 +324,9 @@ extension Goal {
                         "access_token": CurrentUserManager.sharedManager.accessToken!,
                         "timestamp": "\(Date().timeIntervalSince1970)",
                         "value": "\(value)",
-                        "_method": "PUT",
                         "comment": "Automatically entered via iOS Health app"
                     ]
-                    BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id).json", parameters: params, progress: nil, success: { (dataTask, responseObject) in
+                    BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id).json", parameters: params, success: { (dataTask, responseObject) in
                         //foo
                     }, failure: { (dataTask, error) in
                         ///bar
