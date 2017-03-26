@@ -312,7 +312,7 @@ extension Goal {
                 let date = statistics.startDate
                 let value = quantity.doubleValue(for: HKUnit.count())
                 let formatter = DateFormatter()
-                formatter.dateFormat = "yyyymmdd"
+                formatter.dateFormat = "yyyyMMdd"
                 let daystamp = formatter.string(from: date)
                 
                 formatter.dateFormat = "d"
@@ -324,21 +324,20 @@ extension Goal {
                         "access_token": CurrentUserManager.sharedManager.accessToken!,
                         "timestamp": "\(Date().timeIntervalSince1970)",
                         "value": "\(value)",
-                        "comment": "Automatically entered via iOS Health app\""
+                        "_method": "PUT",
+                        "comment": "Automatically entered via iOS Health app"
                     ]
-                    BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id)", parameters: params, success: { (dataTask, responseObject) -> Void in
+                    BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id).json", parameters: params, progress: nil, success: { (dataTask, responseObject) in
                         //foo
-                    }) { (dataTask, error) -> Void in
-                        print(error)
-                    }
+                    }, failure: { (dataTask, error) in
+                        ///bar
+                    })
                 } else {
                     let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: date)) \(value) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
                     BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
                         let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                         datapoint.goal = self
-                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
-                            //
-                        }
+                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
                     }) { (dataTask, error) -> Void in
                         print(error)
                     }
