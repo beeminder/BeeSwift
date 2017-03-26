@@ -31,6 +31,7 @@ extension Datapoint {
         datapoint.updated_at = json["updated_at"].number!
         datapoint.canonical = json["canonical"].string!
         datapoint.id = json["id"].string!
+        datapoint.daystamp = json["daystamp"].number!
         if json["requestid"].string != nil {
             datapoint.requestid = json["requestid"].string!
         }

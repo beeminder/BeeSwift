@@ -245,7 +245,6 @@ extension Goal {
     }
     
     func setupHealthKit() {
-        guard let metric = self.healthKitMetric else { return }
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
         let delegate = UIApplication.shared.delegate as! AppDelegate
         
@@ -253,7 +252,7 @@ extension Goal {
         
         let calendar = Calendar.current
         var interval = DateComponents()
-        interval.day = 7
+        interval.day = 1
         
         var anchorComponents = calendar.dateComponents([.day, .month, .year, .weekday], from: Date())
         anchorComponents.hour = 0
@@ -278,35 +277,76 @@ extension Goal {
         query.statisticsUpdateHandler = {
             query, statistics, collection, error in
             
-        }
-        
-        query.initialResultsHandler = {
-            query, results, error in
-            
-            guard let statsCollection = results else {
+            guard let statsCollection = collection else {
                 // Perform proper error handling here
                 fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
             }
             
-            let endDate = Date()
+            self.updateBeeminder(collection: statsCollection)
+        }
+        
+        query.initialResultsHandler = {
+            query, collection, error in
             
-            guard let startDate = calendar.date(byAdding: .month, value: -3, to: endDate) else {
-                fatalError("foo")
+            guard let statsCollection = collection else {
+                // Perform proper error handling here
+                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
             }
             
-            // Plot the weekly step counts over the past 3 months
-            statsCollection.enumerateStatistics(from: startDate, to: endDate) { [unowned self] statistics, stop in
+            self.updateBeeminder(collection: statsCollection)
+        }
+
+        healthStore.execute(query)
+    }
+    
+    func updateBeeminder(collection : HKStatisticsCollection) {
+        let endDate = Date()
+        let calendar = Calendar.current
+        
+        guard let startDate = calendar.date(byAdding: .day, value: -1, to: endDate) else {
+            fatalError("foo")
+        }
+        
+        collection.enumerateStatistics(from: startDate, to: endDate) { [unowned self] statistics, stop in
+            if let quantity = statistics.sumQuantity() {
+                let date = statistics.startDate
+                let value = quantity.doubleValue(for: HKUnit.count())
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyymmdd"
                 
-                if let quantity = statistics.sumQuantity() {
-                    let date = statistics.startDate
-                    let value = quantity.doubleValue(for: HKUnit.count())
-                    
-                    // Call a custom method to plot each data point.
+                guard let daystampInt = Int(formatter.string(from: date)) else { return }
+                let daystamp = NSNumber(value: daystampInt)
+                
+                formatter.dateFormat = "d"
+                
+                let datapoint = self.datapoints.first(where: { ($0 as! Datapoint).daystamp == daystamp }) as? Datapoint
+                
+                if datapoint != nil {
+                    let params = [
+                        "access_token": CurrentUserManager.sharedManager.accessToken!,
+                        "timestamp": "\(Date().timeIntervalSince1970)",
+                        "value": "\(value)",
+                        "comment": "Automatically entered via iOS Health app\""
+                    ]
+                    BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id)", parameters: params, success: { (dataTask, responseObject) -> Void in
+                        //foo
+                    }) { (dataTask, error) -> Void in
+                        print(error)
+                    }
+                } else {
+                    let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: date)) \(value) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
+                    BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
+                        let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
+                        datapoint.goal = self
+                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
+                            //
+                        }
+                    }) { (dataTask, error) -> Void in
+                        print(error)
+                    }
                 }
             }
         }
-        
-        healthStore.execute(query)
     }
     
 }
