@@ -313,9 +313,7 @@ extension Goal {
                 let value = quantity.doubleValue(for: HKUnit.count())
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyymmdd"
-                
-                guard let daystampInt = Int(formatter.string(from: date)) else { return }
-                let daystamp = NSNumber(value: daystampInt)
+                let daystamp = formatter.string(from: date)
                 
                 formatter.dateFormat = "d"
                 

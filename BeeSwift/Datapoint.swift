@@ -18,7 +18,7 @@ class Datapoint: NSManagedObject {
     @NSManaged var timestamp: NSNumber
     @NSManaged var updated_at: NSNumber
     @NSManaged var value: NSNumber
-    @NSManaged var daystamp: NSNumber
+    @NSManaged var daystamp: String
     @NSManaged var canonical: String
     @NSManaged var goal: Goal
 
