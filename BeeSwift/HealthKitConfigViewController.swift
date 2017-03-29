@@ -14,11 +14,14 @@ class HealthKitConfigViewController: UIViewController {
     var tableView = UITableView()
     var goals : [Goal] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
         self.title = "Health app integration"
+        let backItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
+        self.navigationItem.backBarButtonItem = backItem
         
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in

@@ -17,25 +17,17 @@ class ChooseHKMetricViewController: UIViewController {
         super.viewDidLoad()
 
         self.view.backgroundColor = .white
-        
-        let headerLabel = BSLabel()
-        self.view.addSubview(headerLabel)
-        headerLabel.snp.makeConstraints { (make) in
-            make.centerX.equalTo(0)
-            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
-        }
-        
-        headerLabel.text = "Choose metric"
+        self.title = "Choose metric"
         
         let warningLabel = BSLabel()
         self.view.addSubview(warningLabel)
         warningLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(headerLabel.snp.bottom).offset(20)
-            make.centerX.equalTo(headerLabel)
+            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
+            make.centerX.equalTo(self.view)
             make.left.equalTo(20)
             make.right.equalTo(-20)
         }
-        warningLabel.text = "Choose wisely! Once you add a metric to a goal, they're paired for life, much like albatross. You can email support@beeminder.com if you need to undo anything, though."
+        warningLabel.text = "Choose wisely! Once you add a metric to a goal, they're paired for life, much like albatross. \n\nYou can email support@beeminder.com if you need to undo anything, though."
         warningLabel.numberOfLines = 0
         
         let saveButton = BSButton()
@@ -59,6 +51,7 @@ class ChooseHKMetricViewController: UIViewController {
             make.right.equalTo(0)
             make.bottom.equalTo(saveButton.snp.top).offset(-20)
         }
+        self.tableView.tableFooterView = UIView()
         self.tableView.register(HealthKitMetricTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
     }
     
