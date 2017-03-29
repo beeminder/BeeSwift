@@ -10,19 +10,23 @@ import UIKit
 
 class HealthKitConfigTableViewCell: UITableViewCell {
 
-    var goalname : String? {
+    var goal : Goal? {
         didSet {
-            self.goalnameLabel.text = self.goalname
-        }
-    }
-    var goalMetric : String? {
-        didSet {
-            self.metricLabel.text = self.goalMetric ?? "None"
+            self.goalnameLabel.text = self.goal?.slug
+            self.autodataNameLabel.text = self.goal?.humanizedAutodata()
+            if self.goal!.autodata.characters.count > 0 {
+                self.autodataNameLabel.layer.opacity = 0.5
+                self.addMetricLabel.isHidden = true
+            } else {
+                self.addMetricLabel.isHidden = false
+                self.autodataNameLabel.layer.opacity = 1.0
+            }
         }
     }
     
     fileprivate var goalnameLabel = BSLabel()
-    fileprivate var metricLabel = BSLabel()
+    fileprivate var autodataNameLabel = BSLabel()
+    fileprivate var addMetricLabel = BSLabel()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -35,9 +39,9 @@ class HealthKitConfigTableViewCell: UITableViewCell {
     }
     
     func configure() {
-        self.selectionStyle = .gray
         self.backgroundColor = UIColor.clear
         self.accessoryType = .none
+        self.selectionStyle = .none
         
         self.contentView.addSubview(self.goalnameLabel)
         self.goalnameLabel.snp.makeConstraints { (make) -> Void in
@@ -46,11 +50,17 @@ class HealthKitConfigTableViewCell: UITableViewCell {
             make.width.equalTo(self.contentView).multipliedBy(0.75)
         }
         
-        self.contentView.addSubview(self.metricLabel)
-        self.metricLabel.snp.makeConstraints { (make) -> Void in
+        self.contentView.addSubview(self.autodataNameLabel)
+        self.autodataNameLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(0)
             make.right.equalTo(-15)
             make.width.equalTo(self.contentView).multipliedBy(0.25)
         }
+        
+        self.contentView.addSubview(self.addMetricLabel)
+        self.addMetricLabel.snp.makeConstraints { (make) in
+            make.edges.equalTo(self.autodataNameLabel)
+        }
+        self.addMetricLabel.text = "Add source..."
     }
 }

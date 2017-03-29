@@ -12,7 +12,6 @@ import HealthKit
 class HealthKitConfigViewController: UIViewController {
     
     var tableView = UITableView()
-    var pickerView = UIPickerView()
     var goals : [Goal] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
 
@@ -35,16 +34,6 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.loadGoalsFromDatabase()
-        
-        self.pickerView.delegate = self
-        self.pickerView.dataSource = self
-        self.view.addSubview(self.pickerView)
-        self.pickerView.snp.makeConstraints { (make) in
-            make.bottom.equalTo(self.bottomLayoutGuide.snp.bottom)
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-        }
-        self.pickerView.layer.opacity = 0
     }
 
     override func didReceiveMemoryWarning() {
@@ -56,21 +45,9 @@ class HealthKitConfigViewController: UIViewController {
         self.goals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
     }
     
-    func showPicker() {
-        UIView.animate(withDuration: 0.25) {
-            self.pickerView.layer.opacity = 1.0
-        }
-    }
-    
-    func hidePicker() {
-        UIView.animate(withDuration: 0.25) {
-            self.pickerView.layer.opacity = 0.0
-        }
-    }
-    
-    func savePickerChoice() {
+    func saveMetric(metric : String) {
         let goal = self.goals[(self.tableView.indexPathForSelectedRow?.row)!]
-        goal.healthKitMetric = HealthKitConfig.metrics[self.pickerView.selectedRow(inComponent: 0)].databaseString
+        goal.healthKitMetric = metric //HealthKitConfig.metrics[self.pickerView.selectedRow(inComponent: 0)].databaseString
         
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) in
             var params : [String : [String : String]] = [:]
@@ -89,54 +66,9 @@ class HealthKitConfigViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
-                self.hidePicker()
                 self.tableView.reloadData()
             }
         }
-    }
-}
-
-extension HealthKitConfigViewController : UIPickerViewDelegate, UIPickerViewDataSource {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        let delegate = UIApplication.shared.delegate as? AppDelegate
-        if let metric = HealthKitConfig.metrics[row].metric {
-            let metricType = HKObjectType.quantityType(forIdentifier: metric)!
-            delegate?.healthStore?.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
-                self.savePickerChoice()
-            })
-        } else {
-            self.savePickerChoice()
-        }
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return HealthKitConfig.metrics.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-        let view = UIView()
-        let label = BSLabel()
-        view.addSubview(label)
-        label.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(0)
-            make.bottom.equalTo(0)
-            make.left.equalTo(10)
-            make.right.equalTo(-20)
-        }
-        label.font = UIFont(name: "Avenir", size: 17)
-        
-        if row == 0 {
-            label.text = "None"
-        } else {
-            label.text = HealthKitConfig.metrics[row].pickerText
-        }
-        label.textAlignment = .center
-        
-        return view
     }
 }
 
@@ -153,17 +85,16 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitConfigTableViewCell!
 
         let goal = self.goals[(indexPath as NSIndexPath).row]
-        cell!.goalname = goal.slug
-        let config = HealthKitConfig.metrics.first(where: { $0.databaseString == goal.healthKitMetric })
-        cell!.goalMetric = config?.pickerText
+        cell!.goal = goal
+        
         return cell!
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let goal = self.goals[(indexPath as NSIndexPath).row]
         
-        self.showPicker()
-        guard let row = HealthKitConfig.metrics.index(where: { $0.databaseString == goal.healthKitMetric }) else { return }
-        self.pickerView.selectRow(row, inComponent: 0, animated: false)
+        if goal.autodata.characters.count == 0 {
+            self.present(ChooseHKMetricViewController(), animated: true, completion: nil)
+        }
     }
 }
