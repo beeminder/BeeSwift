@@ -34,6 +34,8 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.loadGoalsFromDatabase()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricSavedNotification(notification:)), name: NSNotification.Name(rawValue: Constants.savedMetricNotificationName), object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -45,9 +47,14 @@ class HealthKitConfigViewController: UIViewController {
         self.goals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
     }
     
+    func handleMetricSavedNotification(notification : Notification) {
+        let metric = notification.userInfo?["metric"]
+        self.saveMetric(metric: metric as! String)
+    }
+    
     func saveMetric(metric : String) {
         let goal = self.goals[(self.tableView.indexPathForSelectedRow?.row)!]
-        goal.healthKitMetric = metric //HealthKitConfig.metrics[self.pickerView.selectedRow(inComponent: 0)].databaseString
+        goal.healthKitMetric = metric
         
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) in
             var params : [String : [String : String]] = [:]
@@ -67,6 +74,7 @@ class HealthKitConfigViewController: UIViewController {
             DispatchQueue.main.async {
                 self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
                 self.tableView.reloadData()
+                self.navigationController?.popViewController(animated: true)
             }
         }
     }
@@ -94,7 +102,7 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
         let goal = self.goals[(indexPath as NSIndexPath).row]
         
         if goal.autodata.characters.count == 0 {
-            self.present(ChooseHKMetricViewController(), animated: true, completion: nil)
+            self.navigationController?.pushViewController(ChooseHKMetricViewController(), animated: true)
         }
     }
 }

@@ -15,5 +15,6 @@ struct Constants {
     static let graphHeight = 453
     static let defaultFontSize = UIDevice.current.userInterfaceIdiom == .pad ? CGFloat(18) : CGFloat(14)
     static let defaultTextFieldHeight = 44
+    static let savedMetricNotificationName = "hkMetricSaved"
 }
 

@@ -17,7 +17,6 @@ struct HealthKitMetric {
 
 struct HealthKitConfig {
     static let metrics : [HealthKitMetric] = [
-        HealthKitMetric.init(humanText: "None", databaseString: nil, metric: nil),
         HealthKitMetric.init(humanText: "Steps", databaseString: "steps", metric: HKQuantityTypeIdentifier.stepCount),
         HealthKitMetric.init(humanText: "Active energy", databaseString: "activeEnergy", metric: HKQuantityTypeIdentifier.activeEnergyBurned)
     ]

@@ -43,7 +43,7 @@ class ChooseHKMetricViewController: UIViewController {
         saveButton.snp.makeConstraints { (make) in
             make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-20)
             make.centerX.equalTo(0)
-            make.width.equalTo(self.view).multipliedBy(0.25)
+            make.width.equalTo(self.view).multipliedBy(0.5)
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         saveButton.setTitle("Save", for: .normal)
@@ -63,15 +63,9 @@ class ChooseHKMetricViewController: UIViewController {
     }
     
     func saveButtonPressed() {
-        guard let parentController = self.presentingViewController as? HealthKitConfigViewController else { return }
         guard let selectedRow = self.tableView.indexPathForSelectedRow?.row else { return }
         let metric = HealthKitConfig.metrics[selectedRow].humanText
-        parentController.dismiss(animated: true) {
-            parentController.saveMetric(metric: metric)
-        }
-        self.presentingViewController?.dismiss(animated: true, completion: { 
-            //fo
-        })
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: Constants.savedMetricNotificationName), object: self, userInfo: ["metric" : metric])
     }
 
     override func didReceiveMemoryWarning() {
@@ -98,6 +92,10 @@ extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
+        tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+    }
+    
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        tableView.cellForRow(at: indexPath)?.accessoryType = .none
     }
 }

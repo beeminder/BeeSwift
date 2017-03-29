@@ -30,7 +30,7 @@ class HealthKitMetricTableViewCell: UITableViewCell {
     
     func configure() {
         self.backgroundColor = UIColor.clear
-        self.accessoryType = .checkmark
+        self.accessoryType = .none
         self.selectionStyle = .none
         
         self.contentView.addSubview(self.metricLabel)
