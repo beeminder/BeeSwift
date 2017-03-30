@@ -242,7 +242,7 @@ extension Goal {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
         if self.autodata == "apple" {
-            let metric = HealthKitConfig.metrics.first(where: { (metric) -> Bool in
+            let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
                 metric.databaseString == self.healthKitMetric
             })
             return self.healthKitMetric == nil ? "Apple" : metric?.humanText
@@ -252,7 +252,7 @@ extension Goal {
     }
     
     func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
-        return HealthKitConfig.metrics.first { (metric) -> Bool in
+        return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
             metric.databaseString == self.healthKitMetric
         }?.hkIdentifier
     }

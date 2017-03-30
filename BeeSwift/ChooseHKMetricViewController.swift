@@ -58,7 +58,7 @@ class ChooseHKMetricViewController: UIViewController {
     func saveButtonPressed() {
         guard let selectedRow = self.tableView.indexPathForSelectedRow?.row else { return }
         guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        let metric = HealthKitConfig.metrics[selectedRow]
+        let metric = HealthKitConfig.shared.metrics[selectedRow]
         let metricType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
         delegate.healthStore?.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: Constants.savedMetricNotificationName), object: self, userInfo: ["metric" : metric.databaseString!])
@@ -77,13 +77,13 @@ extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return HealthKitConfig.metrics.count
+        return HealthKitConfig.shared.metrics.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitMetricTableViewCell!
         
-        cell!.metric = HealthKitConfig.metrics[indexPath.row].humanText
+        cell!.metric = HealthKitConfig.shared.metrics[indexPath.row].humanText
         
         return cell!
     }

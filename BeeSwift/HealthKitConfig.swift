@@ -15,9 +15,23 @@ struct HealthKitMetric {
     let hkIdentifier : HKQuantityTypeIdentifier?
 }
 
-struct HealthKitConfig {
-    static let metrics : [HealthKitMetric] = [
-        HealthKitMetric.init(humanText: "Steps", databaseString: "steps", hkIdentifier: HKQuantityTypeIdentifier.stepCount),
-        HealthKitMetric.init(humanText: "Active energy", databaseString: "activeEnergy", hkIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)
-    ]
+class HealthKitConfig : NSObject {
+    static let shared = HealthKitConfig()
+    
+    var metrics : [HealthKitMetric] {
+        var mets = [
+            HealthKitMetric.init(humanText: "Steps", databaseString: "steps", hkIdentifier: HKQuantityTypeIdentifier.stepCount),
+            HealthKitMetric.init(humanText: "Active energy", databaseString: "activeEnergy", hkIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned),
+            HealthKitMetric.init(humanText: "Exercise time", databaseString: "exerciseTime", hkIdentifier: HKQuantityTypeIdentifier.appleExerciseTime),
+            HealthKitMetric.init(humanText: "Weight", databaseString: "weight", hkIdentifier: HKQuantityTypeIdentifier.bodyMass),
+            HealthKitMetric.init(humanText: "Cycling distance", databaseString: "cyclingDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceCycling),
+            HealthKitMetric.init(humanText: "Walking/running distance", databaseString: "walkRunDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceWalkingRunning),
+            HealthKitMetric.init(humanText: "Nike Fuel", databaseString: "nikeFuel", hkIdentifier: HKQuantityTypeIdentifier.nikeFuel)
+        ]
+        if #available(iOS 10.0, *) {
+            mets.append(HealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", hkIdentifier: HKQuantityTypeIdentifier.swimmingStrokeCount))
+            mets.append(HealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceSwimming))
+        }
+        return mets
+    }
 }

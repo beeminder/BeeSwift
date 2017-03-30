@@ -27,7 +27,7 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
-            make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            make.top.equalTo(self.topLayoutGuide.snp.top)
             make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
         }
         
@@ -52,20 +52,17 @@ class HealthKitConfigViewController: UIViewController {
     
     func handleMetricSavedNotification(notification : Notification) {
         let metric = notification.userInfo?["metric"]
-        self.saveMetric(metric: metric as! String)
+        self.saveMetric(databaseString: metric as! String)
     }
     
-    func saveMetric(metric : String) {
+    func saveMetric(databaseString : String) {
         let goal = self.goals[(self.tableView.indexPathForSelectedRow?.row)!]
-        goal.healthKitMetric = metric
+        goal.healthKitMetric = databaseString
+        goal.autodata = "apple"
         
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) in
             var params : [String : [String : String]] = [:]
-            if goal.healthKitMetric == nil {
-                params = ["ii_params" : ["" : ""]]
-            } else {
-                params = ["ii_params" : ["name" : "apple", "metric" : goal.healthKitMetric!]]
-            }
+            params = ["ii_params" : ["name" : "apple", "metric" : goal.healthKitMetric!]]
             
             BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(goal.slug).json", parameters: params,
                success: { (task, responseObject) -> Void in
