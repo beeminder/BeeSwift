@@ -12,12 +12,12 @@ import HealthKit
 struct HealthKitMetric {
     let humanText : String
     let databaseString : String?
-    let metric : HKQuantityTypeIdentifier?
+    let hkIdentifier : HKQuantityTypeIdentifier?
 }
 
 struct HealthKitConfig {
     static let metrics : [HealthKitMetric] = [
-        HealthKitMetric.init(humanText: "Steps", databaseString: "steps", metric: HKQuantityTypeIdentifier.stepCount),
-        HealthKitMetric.init(humanText: "Active energy", databaseString: "activeEnergy", metric: HKQuantityTypeIdentifier.activeEnergyBurned)
+        HealthKitMetric.init(humanText: "Steps", databaseString: "steps", hkIdentifier: HKQuantityTypeIdentifier.stepCount),
+        HealthKitMetric.init(humanText: "Active energy", databaseString: "activeEnergy", hkIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)
     ]
 }

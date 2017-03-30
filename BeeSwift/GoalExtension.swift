@@ -254,7 +254,7 @@ extension Goal {
     func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
         return HealthKitConfig.metrics.first { (metric) -> Bool in
             metric.databaseString == self.healthKitMetric
-        }?.metric
+        }?.hkIdentifier
     }
     
     func setupHealthKit() {

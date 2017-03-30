@@ -76,6 +76,7 @@ class HealthKitConfigViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
+                self.loadGoalsFromDatabase()
                 self.tableView.reloadData()
                 self.navigationController?.popViewController(animated: true)
             }
