@@ -280,10 +280,16 @@ extension Goal {
         guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
             fatalError("*** Unable to create a quantity type ***")
         }
-        
+        var options : HKStatisticsOptions
+        if quantityType.aggregationStyle == .cumulative {
+            options = .cumulativeSum
+        } else {
+            options = .discreteMin
+        }
+
         let query = HKStatisticsCollectionQuery(quantityType: quantityType,
                                                 quantitySamplePredicate: nil,
-                                                options: .cumulativeSum,
+                                                options: options,
                                                 anchorDate: anchorDate,
                                                 intervalComponents: interval)
         
@@ -320,40 +326,47 @@ extension Goal {
             fatalError("foo")
         }
         
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        
+        guard let healthStore = delegate.healthStore else { return }
+        
         collection.enumerateStatistics(from: startDate, to: endDate) { [unowned self] statistics, stop in
             if let quantity = statistics.sumQuantity() {
                 let date = statistics.startDate
-                let value = quantity.doubleValue(for: HKUnit.count())
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyyMMdd"
-                let daystamp = formatter.string(from: date)
-                
-                formatter.dateFormat = "d"
-                
-                let datapoint = self.datapoints.first(where: { ($0 as! Datapoint).daystamp == daystamp }) as? Datapoint
-                
-                if datapoint != nil {
-                    let params = [
-                        "access_token": CurrentUserManager.sharedManager.accessToken!,
-                        "timestamp": "\(Date().timeIntervalSince1970)",
-                        "value": "\(value)",
-                        "comment": "Automatically entered via iOS Health app"
-                    ]
-                    BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id).json", parameters: params, success: { (dataTask, responseObject) in
-                        //foo
-                    }, failure: { (dataTask, error) in
-                        ///bar
-                    })
-                } else {
-                    let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: date)) \(value) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
-                    BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
-                        let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                        datapoint.goal = self
-                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                    }) { (dataTask, error) -> Void in
-                        print(error)
+                healthStore.preferredUnits(for: [statistics.quantityType], completion: { (units, error) in
+                    guard let unit = units.first?.value else { return }
+                    let value = quantity.doubleValue(for: unit)
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "yyyyMMdd"
+                    let daystamp = formatter.string(from: date)
+                    
+                    formatter.dateFormat = "d"
+                    
+                    let datapoint = self.datapoints.first(where: { ($0 as! Datapoint).daystamp == daystamp }) as? Datapoint
+                    
+                    if datapoint != nil {
+                        let params = [
+                            "access_token": CurrentUserManager.sharedManager.accessToken!,
+                            "timestamp": "\(Date().timeIntervalSince1970)",
+                            "value": "\(value)",
+                            "comment": "Automatically entered via iOS Health app"
+                        ]
+                        BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id).json", parameters: params, success: { (dataTask, responseObject) in
+                            //foo
+                        }, failure: { (dataTask, error) in
+                            ///bar
+                        })
+                    } else {
+                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: date)) \(value) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
+                        BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
+                            let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
+                            datapoint.goal = self
+                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+                        }) { (dataTask, error) -> Void in
+                            print(error)
+                        }
                     }
-                }
+                })
             }
         }
     }
