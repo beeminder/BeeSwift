@@ -52,7 +52,7 @@ PODS:
   - GoogleSymbolUtilities (1.1.0)
   - GoogleUtilities (1.3.0):
     - GoogleSymbolUtilities (~> 1.0)
-  - IDZSwiftCommonCrypto (0.9.0)
+  - IDZSwiftCommonCrypto (0.9.1)
   - IQKeyboardManager (4.0.2)
   - MagicalRecord (2.3.2):
     - MagicalRecord/Core (= 2.3.2)
@@ -68,7 +68,7 @@ DEPENDENCIES:
   - FBSDKCoreKit
   - FBSDKLoginKit
   - Google/SignIn
-  - IDZSwiftCommonCrypto (~> 0.9.0)
+  - IDZSwiftCommonCrypto (~> 0.9.1)
   - IQKeyboardManager
   - MagicalRecord
   - MBProgressHUD
@@ -90,13 +90,13 @@ SPEC CHECKSUMS:
   GoogleSignIn: 3d571172b8603be39dcb1705d8217146bb76fe62
   GoogleSymbolUtilities: eb3965ea12710569c7b80db198a39e39b18613f7
   GoogleUtilities: 5c653f7df2eedf0ce0efdfe5afe4f831f375fd7a
-  IDZSwiftCommonCrypto: 60f14492730da20117ce5875b890c7a6fc38ab8c
+  IDZSwiftCommonCrypto: c44fe5c0219a219846b56b4c148615dd06e58591
   IQKeyboardManager: 2341089c4ae25fa2fa82ce356a259fcd267dc6b6
   MagicalRecord: 53bed74b4323b930992a725be713e53b37d19755
   MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
   SnapKit: f818b8326d45b4e1c777d0ab27b5c0a3624bfdeb
   SwiftyJSON: 29b9f2a64f118c07e691667c2ba1efe536acfe0b
 
-PODFILE CHECKSUM: 2be81d8381b517a100622ee82298ad659c0adb1e
+PODFILE CHECKSUM: bc83f2f622db96fff94b8246f0450e6dcdf05828
 
 COCOAPODS: 1.1.1

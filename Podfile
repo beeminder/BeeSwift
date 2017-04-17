@@ -3,6 +3,7 @@ platform :ios, '10.0'
 use_frameworks!
 inhibit_all_warnings!
 target 'BeeSwift' do
+	pod "IDZSwiftCommonCrypto", '~> 0.9.1'
 	pod "AFNetworking", '~> 3.0'
 	pod "Alamofire", '~> 4.0'
 	pod "AlamofireImage", '~> 3.0'
@@ -14,7 +15,6 @@ target 'BeeSwift' do
 	pod "MBProgressHUD"
 	pod 'IQKeyboardManager'
 	pod 'Google/SignIn'
-	pod 'IDZSwiftCommonCrypto', '~> 0.9.0'
 end
 target 'BeeSwiftToday' do
 	pod 'AFNetworking', '~>3.0'
@@ -26,13 +26,13 @@ target 'BeeSwiftToday' do
 	
 end
 target 'BeeSwiftTests' do
+	pod "IDZSwiftCommonCrypto", '~> 0.9.1'
 	pod "AFNetworking", '~> 3.0'
 	pod "Alamofire", '~> 4.0'
 	pod "AlamofireImage", '~> 3.0'
 	pod "SnapKit"	
 	pod "MagicalRecord"
 	pod "SwiftyJSON"
-	pod "IDZSwiftCommonCrypto", '~> 0.9.0'	
 end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
