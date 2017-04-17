@@ -59,6 +59,7 @@ class HealthKitConfigViewController: UIViewController {
         let goal = self.goals[(self.tableView.indexPathForSelectedRow?.row)!]
         goal.healthKitMetric = databaseString
         goal.autodata = "apple"
+        goal.setupHealthKit()
         
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) in
             var params : [String : [String : String]] = [:]
