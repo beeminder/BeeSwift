@@ -301,7 +301,7 @@ extension Goal {
                 fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
             }
             
-            self.updateBeeminder(collection: statsCollection)
+            self.updateBeeminder(collection: statsCollection, initial: false)
         }
         
         query.initialResultsHandler = {
@@ -312,25 +312,18 @@ extension Goal {
                 fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
             }
             
-            self.updateBeeminder(collection: statsCollection)
+            self.updateBeeminder(collection: statsCollection, initial: true)
         }
 
         healthStore.execute(query)
     }
     
-    func updateBeeminder(collection : HKStatisticsCollection) {
-        let endDate = Date()
-        let calendar = Calendar.current
-        
-        guard let startDate = calendar.date(byAdding: .day, value: -1, to: endDate) else {
-            fatalError("foo")
-        }
-        
+    func updateBeeminder(collection : HKStatisticsCollection, initial : Bool) {
         let delegate = UIApplication.shared.delegate as! AppDelegate
         
         guard let healthStore = delegate.healthStore else { return }
         
-        collection.enumerateStatistics(from: startDate, to: endDate) { [unowned self] statistics, stop in
+        collection.enumerateStatistics(from: Date(), to: Date()) { [unowned self] statistics, stop in
             if let quantity = statistics.sumQuantity() {
                 let date = statistics.startDate
                 healthStore.preferredUnits(for: [statistics.quantityType], completion: { (units, error) in
@@ -345,11 +338,12 @@ extension Goal {
                     let datapoint = self.datapoints.first(where: { ($0 as! Datapoint).daystamp == daystamp }) as? Datapoint
                     
                     if datapoint != nil {
+                        formatter.dateFormat = "hh:mm"
                         let params = [
                             "access_token": CurrentUserManager.sharedManager.accessToken!,
                             "timestamp": "\(Date().timeIntervalSince1970)",
                             "value": "\(value)",
-                            "comment": "Automatically entered via iOS Health app"
+                            "comment": "Automatically updated via iOS Health app. Initial: \(initial). Time: \(formatter.string(from: Date()))"
                         ]
                         BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id).json", parameters: params, success: { (dataTask, responseObject) in
                             //foo
@@ -357,7 +351,7 @@ extension Goal {
                             ///bar
                         })
                     } else {
-                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: date)) \(value) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
+                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: date)) \(value) \"Automatically entered via iOS Health app. Initial: \(initial)\"", "requestid": UUID().uuidString]
                         BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
                             let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                             datapoint.goal = self
