@@ -259,9 +259,16 @@ extension Goal {
     
     func setupHealthKit() {
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+            fatalError("*** Unable to create a quantity type ***")
+        }
         let delegate = UIApplication.shared.delegate as! AppDelegate
         
         guard let healthStore = delegate.healthStore else { return }
+        
+        healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
+            //
+        })
         
         let calendar = Calendar.current
         var interval = DateComponents()
@@ -277,9 +284,7 @@ extension Goal {
         }
         let anchorDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: midnight)!
         
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-            fatalError("*** Unable to create a quantity type ***")
-        }
+        
         var options : HKStatisticsOptions
         if quantityType.aggregationStyle == .cumulative {
             options = .cumulativeSum
