@@ -257,7 +257,7 @@ extension Goal {
         }?.hkIdentifier
     }
     
-    func setupHealthKit() {
+    func runStatisticsQuery() {
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
             fatalError("*** Unable to create a quantity type ***")
@@ -265,10 +265,6 @@ extension Goal {
         let delegate = UIApplication.shared.delegate as! AppDelegate
         
         guard let healthStore = delegate.healthStore else { return }
-        
-        healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
-            //
-        })
         
         let calendar = Calendar.current
         var interval = DateComponents()
@@ -291,24 +287,12 @@ extension Goal {
         } else {
             options = .discreteMin
         }
-
+        
         let query = HKStatisticsCollectionQuery(quantityType: quantityType,
                                                 quantitySamplePredicate: nil,
                                                 options: options,
                                                 anchorDate: anchorDate,
                                                 intervalComponents: interval)
-        
-        query.statisticsUpdateHandler = {
-            query, statistics, collection, error in
-            
-            guard let statsCollection = collection else {
-                // Perform proper error handling here
-                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
-            }
-            
-            self.updateBeeminder(collection: statsCollection, initial: false)
-        }
-        
         query.initialResultsHandler = {
             query, collection, error in
             
@@ -319,8 +303,30 @@ extension Goal {
             
             self.updateBeeminder(collection: statsCollection, initial: true)
         }
-
+        
         healthStore.execute(query)
+    }
+    
+    func setupHealthKit() {
+        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+            fatalError("*** Unable to create a quantity type ***")
+        }
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        
+        guard let healthStore = delegate.healthStore else { return }
+        
+        healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
+            //
+        })
+        
+        self.runStatisticsQuery()
+
+        let observerQuery = HKObserverQuery(sampleType: quantityType, predicate: nil) { (query, completionHandler, error) in
+            self.runStatisticsQuery()
+            completionHandler()
+        }
+        healthStore.execute(observerQuery)
     }
     
     func updateBeeminder(collection : HKStatisticsCollection, initial : Bool) {
