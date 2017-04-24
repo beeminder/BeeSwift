@@ -319,8 +319,6 @@ extension Goal {
         healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
             //
         })
-        
-        self.runStatisticsQuery()
 
         let observerQuery = HKObserverQuery(sampleType: quantityType, predicate: nil) { (query, completionHandler, error) in
             self.runStatisticsQuery()
