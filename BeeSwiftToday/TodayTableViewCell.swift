@@ -28,17 +28,16 @@ class TodayTableViewCell: UITableViewCell {
             make.width.equalTo(Constants.thumbnailWidth)
             make.height.equalTo(Constants.thumbnailHeight)
             make.left.equalTo(16)
-            make.top.equalTo(10)
-            make.bottom.equalTo(-10)
+            make.top.equalTo(20)
+            make.bottom.equalTo(-20)
         })
         graph.af_setImage(withURL: URL(string: self.goalDictionary["thumbUrl"] as! String)!)
         
-        let textLabel = UILabel()
+        let textLabel = BSLabel()
         self.addSubview(textLabel)
         textLabel.numberOfLines = 0
         textLabel.text = self.goalDictionary["limSum"] as? String
         textLabel.font = UIFont.systemFont(ofSize: 14)
-        textLabel.textColor = UIColor.white
         
         textLabel.snp.makeConstraints({ (make) -> Void in
             make.left.equalTo(graph.snp.right).offset(10)
