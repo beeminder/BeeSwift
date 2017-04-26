@@ -23,18 +23,18 @@ class TodayTableViewCell: UITableViewCell {
     func configureCell() {
         self.selectionStyle = .none
         let graph = UIImageView()
-        self.contentView.addSubview(graph)
+        self.addSubview(graph)
         graph.snp.makeConstraints({ (make) -> Void in
-            make.width.equalTo(self.contentView).multipliedBy(0.4)
-            make.height.equalTo(graph.snp.width).multipliedBy(122.0/200.0).priorityHigh()
-            make.left.equalTo(0)
-            make.top.equalTo(5)
-            make.bottom.equalTo(-5)
+            make.width.equalTo(Constants.thumbnailWidth)
+            make.height.equalTo(Constants.thumbnailHeight)
+            make.left.equalTo(16)
+            make.top.equalTo(10)
+            make.bottom.equalTo(-10)
         })
         graph.af_setImage(withURL: URL(string: self.goalDictionary["thumbUrl"] as! String)!)
         
         let textLabel = UILabel()
-        self.contentView.addSubview(textLabel)
+        self.addSubview(textLabel)
         textLabel.numberOfLines = 0
         textLabel.text = self.goalDictionary["limSum"] as? String
         textLabel.font = UIFont.systemFont(ofSize: 14)

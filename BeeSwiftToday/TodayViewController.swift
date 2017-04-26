@@ -9,31 +9,69 @@
 import Foundation
 import UIKit
 import SnapKit
+import NotificationCenter
 
-class TodayViewControler: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class TodayViewController: UIViewController {
     
-    var tableView = UITableView()
     var goalDictionaries : Array<NSDictionary> = []
+    var tableView = UITableView()
+    
+    fileprivate let rowHeight = Constants.thumbnailHeight + 40
+    fileprivate let cellReuseIdentifier = "todayTableViewCell"
     
     override func viewDidLoad() {
-        NotificationCenter.default.addObserver(self, selector: #selector(TodayViewControler.updateDataSource), name: UserDefaults.didChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateDataSource), name: UserDefaults.didChangeNotification, object: nil)
         
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
-        self.tableView.tableFooterView = UIView()
-        self.tableView.separatorStyle = .none
-        self.tableView.register(TodayTableViewCell.self, forCellReuseIdentifier: "todayCell")
+        self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight)
+        
+        if #available(iOSApplicationExtension 10.0, *) {
+            self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
+        } else {
+            
+        }
+        
+        self.updateDataSource()
+        
         self.view.addSubview(self.tableView)
-        self.tableView.snp.makeConstraints { (make) -> Void in
+        self.tableView.dataSource = self
+        self.tableView.delegate = self
+        self.tableView.tableFooterView = UIView()
+        self.tableView.backgroundColor = UIColor.clear
+        self.tableView.snp.makeConstraints { (make) in
             make.left.equalTo(0)
+            make.right.equalTo(0)
             make.top.equalTo(0)
-            make.width.equalTo(self.view)
             make.bottom.equalTo(0)
         }
-        self.updateDataSource()
-        self.preferredContentSize = CGSize(width: 0, height: CGFloat(Double(self.goalDictionaries.count)*(122.0/200.0)*0.4*Double(self.view.frame.size.width)))
+        self.tableView.register(TodayTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
     }
     
+    func updateDataSource() {
+        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
+        self.goalDictionaries = defaults?.object(forKey: "todayGoalDictionaries") as! Array<NSDictionary>
+    }
+}
+
+extension TodayViewController : NCWidgetProviding {
+    @available(iOSApplicationExtension 10.0, *)
+    func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
+        if activeDisplayMode == .expanded {
+            self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight * 3)
+        }
+        else if activeDisplayMode == .compact {
+            self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight)
+        }
+    }
+}
+
+extension TodayViewController : UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let slug = self.goalDictionaries[indexPath.row]["slug"] as? String else { return }
+        self.extensionContext?.open(URL(string: "beeminder://?slug=\(slug)")!, completionHandler: nil)
+    }
+}
+
+extension TodayViewController : UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -42,24 +80,15 @@ class TodayViewControler: UIViewController, UITableViewDataSource, UITableViewDe
         return self.goalDictionaries.count
     }
     
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let slug = self.goalDictionaries[(indexPath as NSIndexPath).row]["slug"] as! String
-        
-        self.extensionContext?.open(URL(string: "beeminder://?slug=\(slug)")!, completionHandler: nil)
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return CGFloat(self.rowHeight)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "todayCell") as! TodayTableViewCell
-        cell.goalDictionary = self.goalDictionaries[(indexPath as NSIndexPath).row]
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier, for: indexPath) as! TodayTableViewCell
+        
+        cell.goalDictionary = self.goalDictionaries[indexPath.row]
+        
         return cell
-    }
-    
-    func updateDataSource() {
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        self.goalDictionaries = defaults?.object(forKey: "todayGoalDictionaries") as! Array<NSDictionary>
     }
 }
