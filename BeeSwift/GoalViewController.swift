@@ -461,7 +461,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let hud = MBProgressHUD.showAdded(to: self.goalImageScrollView, animated: true)
         hud?.mode = .indeterminate
         hud?.show(true)
-        self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(GoalViewController.refreshGoal), userInfo: nil, repeats: true)
+        self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.refreshGoal), userInfo: nil, repeats: true)
     }
     
     func refreshGoal() {

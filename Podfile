@@ -18,12 +18,13 @@ target 'BeeSwift' do
 end
 target 'BeeSwiftToday' do
 	pod 'AFNetworking', '~>3.0'
+	pod "IDZSwiftCommonCrypto", '~> 0.9.1'
 	pod 'Alamofire', '~>4.0'
 	pod 'AlamofireImage', '~>3.0'
 	pod "SnapKit"
 	pod "MagicalRecord" 
 	pod "SwiftyJSON"
-	
+	pod "MBProgressHUD"	
 end
 target 'BeeSwiftTests' do
 	pod "IDZSwiftCommonCrypto", '~> 0.9.1'
