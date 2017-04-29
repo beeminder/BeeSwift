@@ -317,13 +317,12 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func refreshButtonPressed() {
-        BSHTTPSessionManager.sharedManager.get("api/v1/users/me/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success:
-            { (task, responseObject) -> Void in
-                self.pollUntilGraphUpdates()
-            }) { (task, error) -> Void in
-                let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+        BSHTTPSessionManager.sharedManager.get("api/v1/users/me/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, progress: nil, success: { (dataTask, responseObject) in
+            self.pollUntilGraphUpdates()
+        }) { (dataTask, error) in
+            let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
@@ -428,12 +427,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.submitButton.isUserInteractionEnabled = false
         self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
         let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": UUID().uuidString]
-        BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
+        
+        BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.goal.slug)/datapoints.json", parameters: params, progress: nil, success: { (dataTask, responseObject) in
             self.successfullyAddedDatapointWithResponse(responseObject! as AnyObject)
             self.commentTextField.text = ""
             MBProgressHUD.hideAllHUDs(for: self.datapointsTableView, animated: true)
             self.submitButton.isUserInteractionEnabled = true
-        }) { (dataTask, error) -> Void in
+        }) { (dataTask, error) in
             self.submitButton.isUserInteractionEnabled = true
             MBProgressHUD.hideAllHUDs(for: self.datapointsTableView, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
@@ -465,7 +465,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func refreshGoal() {
-        BSHTTPSessionManager.sharedManager.get("/api/v1/users/me/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)", parameters: nil, success: { (dataTask, responseObject) -> Void in
+        BSHTTPSessionManager.sharedManager.get("/api/v1/users/me/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)", parameters: nil, progress: nil, success: { (dataTask, responseObject) in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
                 MBProgressHUD.hideAllHUDs(for: self.goalImageScrollView, animated: true)
@@ -476,8 +476,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 delegate.updateBadgeCount()
                 delegate.updateTodayWidget()
             }
-        }) { (dataTask, responseError) -> Void in
-            //foo
+        }) { (dataTask, error) in
+            // foo
         }
     }
     
