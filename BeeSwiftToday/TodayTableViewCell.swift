@@ -54,6 +54,15 @@ class TodayTableViewCell: UITableViewCell {
             make.right.equalTo(-10)
         })
         
+        if self.goalDictionary["hideDataEntry"] as! Bool {
+            self.limitLabel.snp.remakeConstraints({ (make) in
+                make.left.equalTo(self.graphImageView.snp.right).offset(10)
+                make.centerY.equalTo(self.graphImageView)
+                make.right.equalTo(-10)
+            })
+            return
+        }
+        
         self.addSubview(self.addDataButton)
         self.addDataButton.snp.makeConstraints { (make) in
             make.bottom.equalTo(self.graphImageView)
