@@ -121,9 +121,7 @@ class TodayTableViewCell: UITableViewCell {
         
         let manager = AFHTTPSessionManager.init(baseURL: URL.init(string: "https://www.beeminder.com"), sessionConfiguration: nil)
         
-        
-        
-        manager.get("/api/v1/users/me/goals/\(slug)?access_token=\(token)", parameters: nil, success: { (dataTask, responseObject) -> Void in
+        manager.get("/api/v1/users/me/goals/\(slug)?access_token=\(token)", parameters: nil, progress: nil, success: { (dataTask, responseObject) in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
                 self.pollTimer?.invalidate()
@@ -139,8 +137,8 @@ class TodayTableViewCell: UITableViewCell {
                 let urlString = "\(goalJSON["thumb_url"])"
                 self.graphImageView.af_setImage(withURL: URL(string: urlString)!)
             }
-        }) { (dataTask, responseError) -> Void in
-            //foo
+        }) { (dataTask, error) in
+            //
         }
     }
 }
