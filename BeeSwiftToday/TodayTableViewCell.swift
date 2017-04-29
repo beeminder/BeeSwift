@@ -26,21 +26,22 @@ class TodayTableViewCell: UITableViewCell {
     let limitLabel = BSLabel()
     var addDataButton = BSButton()
     var pollTimer : Timer?
+    let graphImageView = UIImageView()
     
     fileprivate
     
     func configureCell() {
         self.selectionStyle = .none
-        let graph = UIImageView()
-        self.addSubview(graph)
-        graph.snp.makeConstraints({ (make) -> Void in
+        
+        self.addSubview(self.graphImageView)
+        self.graphImageView.snp.makeConstraints({ (make) -> Void in
             make.width.equalTo(Constants.thumbnailWidth)
             make.height.equalTo(Constants.thumbnailHeight)
             make.left.equalTo(16)
             make.top.equalTo(20)
             make.bottom.equalTo(-20)
         })
-        graph.af_setImage(withURL: URL(string: self.goalDictionary["thumbUrl"] as! String)!)
+        self.graphImageView.af_setImage(withURL: URL(string: self.goalDictionary["thumbUrl"] as! String)!)
         
         self.addSubview(self.limitLabel)
         self.limitLabel.numberOfLines = 0
@@ -48,14 +49,14 @@ class TodayTableViewCell: UITableViewCell {
         self.limitLabel.font = UIFont.systemFont(ofSize: 14)
         
         self.limitLabel.snp.makeConstraints({ (make) -> Void in
-            make.left.equalTo(graph.snp.right).offset(10)
-            make.top.equalTo(graph).offset(5)
+            make.left.equalTo(self.graphImageView.snp.right).offset(10)
+            make.top.equalTo(self.graphImageView).offset(5)
             make.right.equalTo(-10)
         })
         
         self.addSubview(self.addDataButton)
         self.addDataButton.snp.makeConstraints { (make) in
-            make.bottom.equalTo(graph)
+            make.bottom.equalTo(self.graphImageView)
             make.right.equalTo(-10)
         }
         self.addDataButton.setTitle("Add data", for: .normal)
@@ -135,6 +136,8 @@ class TodayTableViewCell: UITableViewCell {
                 self.valueLabel.text = "0"
                 self.addDataButton.isUserInteractionEnabled = true
                 self.limitLabel.text = "\(slug): \(goalJSON["limsum"])"
+                let urlString = "\(goalJSON["thumb_url"])"
+                self.graphImageView.af_setImage(withURL: URL(string: urlString)!)
             }
         }) { (dataTask, responseError) -> Void in
             //foo
