@@ -307,6 +307,10 @@ extension Goal {
         healthStore.execute(query)
     }
     
+    func hideDataEntry() -> Bool {
+        return self.autodata.characters.count > 0 || self.won.boolValue
+    }
+    
     func setupHealthKit() {
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {

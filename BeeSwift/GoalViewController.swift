@@ -145,7 +145,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         let dataEntryView = UIView()
-        if (self.goal.autodata.characters.count > 0 || self.goal.won.boolValue) {
+        if (self.goal.hideDataEntry) {
             dataEntryView.isHidden = true
         }
 
