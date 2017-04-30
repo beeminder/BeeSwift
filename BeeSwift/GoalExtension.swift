@@ -266,6 +266,26 @@ extension Goal {
         
         guard let healthStore = delegate.healthStore else { return }
         
+        
+    }
+    
+    func hideDataEntry() -> Bool {
+        return self.autodata.characters.count > 0 || self.won.boolValue
+    }
+    
+    func setupHealthKit() {
+        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+            fatalError("*** Unable to create a quantity type ***")
+        }
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        
+        guard let healthStore = delegate.healthStore else { return }
+        
+        healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
+            //
+        })
+        
         let calendar = Calendar.current
         var interval = DateComponents()
         interval.day = 1
@@ -304,31 +324,18 @@ extension Goal {
             self.updateBeeminder(collection: statsCollection, initial: true)
         }
         
+        query.statisticsUpdateHandler = {
+            query, statistics, collection, error in
+            
+            guard let statsCollection = collection else {
+                // Perform proper error handling here
+                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+            }
+            
+            self.updateBeeminder(collection: statsCollection, initial: true)
+        }
+        
         healthStore.execute(query)
-    }
-    
-    func hideDataEntry() -> Bool {
-        return self.autodata.characters.count > 0 || self.won.boolValue
-    }
-    
-    func setupHealthKit() {
-        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-            fatalError("*** Unable to create a quantity type ***")
-        }
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        
-        guard let healthStore = delegate.healthStore else { return }
-        
-        healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
-            //
-        })
-
-        let observerQuery = HKObserverQuery(sampleType: quantityType, predicate: nil) { (query, completionHandler, error) in
-            self.runStatisticsQuery()
-            completionHandler()
-        }
-        healthStore.execute(observerQuery)
     }
     
     func updateBeeminder(collection : HKStatisticsCollection, initial : Bool) {
@@ -338,7 +345,7 @@ extension Goal {
         
         collection.enumerateStatistics(from: Date(), to: Date()) { [unowned self] statistics, stop in
             if let quantity = statistics.sumQuantity() {
-                let date = statistics.startDate
+                let date = statistics.endDate
                 healthStore.preferredUnits(for: [statistics.quantityType], completion: { (units, error) in
                     guard let unit = units.first?.value else { return }
                     let value = quantity.doubleValue(for: unit)
