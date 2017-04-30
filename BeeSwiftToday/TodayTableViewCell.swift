@@ -68,7 +68,14 @@ class TodayTableViewCell: UITableViewCell {
             make.bottom.equalTo(self.graphImageView)
             make.right.equalTo(-10)
         }
-        self.addDataButton.setTitle("Add data", for: .normal)
+        
+        var addTitle = "Add"
+        // small screen hack
+        if (UIDevice.current.orientation == .landscapeRight || UIDevice.current.orientation == .landscapeLeft && UIScreen.main.bounds.height >= 375) ||
+           (UIScreen.main.bounds.width >= 375) {
+            addTitle = "Add data"
+        }
+        self.addDataButton.setTitle(addTitle, for: .normal)
         self.addDataButton.setTitleColor(UIColor.black, for: .normal)
         self.addDataButton.addTarget(self, action: #selector(self.addDataButtonPressed), for: .touchUpInside)
         
