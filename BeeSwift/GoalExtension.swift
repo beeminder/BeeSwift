@@ -343,15 +343,20 @@ extension Goal {
         
         guard let healthStore = delegate.healthStore else { return }
         
-        collection.enumerateStatistics(from: Date(), to: Date()) { [unowned self] statistics, stop in
+        let endDate = Date()
+        let calendar = Calendar.current
+        guard let startDate = calendar.date(byAdding: .day, value: -7, to: endDate) else {
+            return
+        }
+        
+        collection.enumerateStatistics(from: startDate, to: endDate) { [unowned self] statistics, stop in
             if let quantity = statistics.sumQuantity() {
-                let date = statistics.endDate
                 healthStore.preferredUnits(for: [statistics.quantityType], completion: { (units, error) in
                     guard let unit = units.first?.value else { return }
                     let value = quantity.doubleValue(for: unit)
                     let formatter = DateFormatter()
                     formatter.dateFormat = "yyyyMMdd"
-                    let daystamp = formatter.string(from: date)
+                    let daystamp = formatter.string(from: statistics.startDate)
                     
                     formatter.dateFormat = "d"
                     
@@ -361,9 +366,9 @@ extension Goal {
                         formatter.dateFormat = "hh:mm"
                         let params = [
                             "access_token": CurrentUserManager.sharedManager.accessToken!,
-                            "timestamp": "\(Date().timeIntervalSince1970)",
+                            "timestamp": "\(statistics.startDate)",
                             "value": "\(value)",
-                            "comment": "Automatically updated via iOS Health app. Initial: \(initial). Time: \(formatter.string(from: Date()))"
+                            "comment": "Automatically updated via iOS Health app. Initial: \(initial). Time: \(formatter.string(from: statistics.endDate))"
                         ]
                         BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id).json", parameters: params, success: { (dataTask, responseObject) in
                             //foo
@@ -371,7 +376,7 @@ extension Goal {
                             ///bar
                         })
                     } else {
-                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: date)) \(value) \"Automatically entered via iOS Health app. Initial: \(initial)\"", "requestid": UUID().uuidString]
+                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: statistics.startDate)) \(value) \"Automatically entered via iOS Health app. Initial: \(initial)\"", "requestid": UUID().uuidString]
                         BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
                             let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                             datapoint.goal = self
