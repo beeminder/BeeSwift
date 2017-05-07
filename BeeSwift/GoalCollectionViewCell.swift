@@ -9,6 +9,7 @@
 import Foundation
 
 class GoalCollectionViewCell: UICollectionViewCell {
+    var slugLabel :BSLabel = BSLabel()
     var titleLabel :BSLabel = BSLabel()
     var thumbnailImageView :UIImageView = UIImageView()
     var rateLabel :BSLabel = BSLabel()
@@ -20,6 +21,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        self.contentView.addSubview(self.slugLabel)
         self.contentView.addSubview(self.titleLabel)
         self.contentView.addSubview(self.rateLabel)
         self.contentView.addSubview(self.thumbnailImageView)
@@ -27,10 +29,16 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(self.countdownView)
         self.countdownView.addSubview(self.countdownLabel)
         
-        self.titleLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
-        self.titleLabel.snp.makeConstraints { (make) -> Void in
+        self.slugLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
+        self.slugLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.margin)
             make.top.equalTo(10)
+        }
+        
+        self.titleLabel.font = UIFont(name: "Avenir-Light", size: 18)
+        self.titleLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.slugLabel.snp.right).offset(10)
+            make.bottom.equalTo(self.slugLabel)
             make.right.equalTo(-self.margin)
         }
         
@@ -157,6 +165,10 @@ class GoalCollectionViewCell: UICollectionViewCell {
             }
 
             self.titleLabel.text = goal?.title
+            self.slugLabel.text = goal?.slug
+            if goal?.title == goal?.slug {
+                self.titleLabel.isHidden = true
+            }
             self.rateLabel.text = goal?.rateString
             self.deltasLabel.attributedText = goal?.attributedDeltaText
         }

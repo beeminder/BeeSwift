@@ -43,7 +43,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.white
-        self.title = self.goal.title
+        self.title = self.goal.slug
         
         // have to set these before the datapoints since setting the most recent datapoint updates the text field,
         // which in turn updates the stepper
