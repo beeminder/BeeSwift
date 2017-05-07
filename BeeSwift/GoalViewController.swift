@@ -296,8 +296,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.top.equalTo(self.valueStepper.snp.bottom).offset(10)
             make.bottom.equalTo(self.submitButton)
         }
-        
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(GoalViewController.refreshButtonPressed))
+        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(GoalViewController.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(GoalViewController.safariButtonPressed))]
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -314,6 +313,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.refreshCountdown()
         self.pledgeLabel.text = "$\(self.goal.pledge)"
         self.deltasLabel.attributedText = self.goal.attributedDeltaText
+    }
+    
+    func safariButtonPressed() {
+        let url = "\(BSHTTPSessionManager.sharedManager.baseURLString)/api/v1/users/me.json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(BSHTTPSessionManager.sharedManager.baseURLString)/\(CurrentUserManager.sharedManager.username!)/\(self.goal!.slug)"
+        UIApplication.shared.openURL(URL(string: url)!)
     }
     
     func refreshButtonPressed() {
