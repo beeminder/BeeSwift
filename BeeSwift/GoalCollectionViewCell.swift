@@ -33,14 +33,16 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.slugLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.margin)
             make.top.equalTo(10)
+            make.width.lessThanOrEqualTo(self.contentView).multipliedBy(0.35)
         }
         
         self.titleLabel.font = UIFont(name: "Avenir-Light", size: 18)
         self.titleLabel.snp.makeConstraints { (make) -> Void in
+            make.centerY.equalTo(self.slugLabel)
             make.left.equalTo(self.slugLabel.snp.right).offset(10)
-            make.bottom.equalTo(self.slugLabel)
-            make.right.equalTo(-self.margin)
+            make.width.lessThanOrEqualTo(self.contentView).multipliedBy(0.6)
         }
+        self.titleLabel.textAlignment = .right
         
         self.countdownView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(8)
@@ -166,9 +168,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
 
             self.titleLabel.text = goal?.title
             self.slugLabel.text = goal?.slug
-            if goal?.title == goal?.slug {
-                self.titleLabel.isHidden = true
-            }
+            self.titleLabel.isHidden = goal?.title == goal?.slug
             self.rateLabel.text = goal?.rateString
             self.deltasLabel.attributedText = goal?.attributedDeltaText
         }
