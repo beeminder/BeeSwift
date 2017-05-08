@@ -367,9 +367,9 @@ extension Goal {
                         formatter.dateFormat = "hh:mm"
                         let params = [
                             "access_token": CurrentUserManager.sharedManager.accessToken!,
-                            "timestamp": "\(statistics.startDate)",
+                            "timestamp": "\(datapointDate)",
                             "value": "\(value)",
-                            "comment": "Automatically updated via iOS Health app."
+                            "comment": "Automatically updated via iOS Health app"
                         ]
                         BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id).json", parameters: params, success: { (dataTask, responseObject) in
                             //foo
@@ -377,7 +377,7 @@ extension Goal {
                             ///bar
                         })
                     } else {
-                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(value) \"Automatically entered via iOS Health app.", "requestid": UUID().uuidString]
+                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(value) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
                         BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
                             let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                             datapoint.goal = self
