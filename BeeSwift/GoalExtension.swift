@@ -183,11 +183,15 @@ extension Goal {
 
         let attString :NSMutableAttributedString = NSMutableAttributedString(string: self.delta_text)
         
-        for i in 0...spaceIndices.count {
+        for i in 0..<spaceIndices.count {
             if i + 1 >= spaceIndices.count {
                 continue
             }
-            attString.addAttribute(NSForegroundColorAttributeName, value: self.deltaColors[i], range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
+            var color = self.deltaColors.first
+            if i < self.deltaColors.count {
+                color = self.deltaColors[i]
+            }
+            attString.addAttribute(NSForegroundColorAttributeName, value: color, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
         }
         
         attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.characters.count))
