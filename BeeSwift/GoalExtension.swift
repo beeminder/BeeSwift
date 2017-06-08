@@ -162,7 +162,11 @@ extension Goal {
     }
     
     var attributedDeltaText :NSAttributedString {
-        if self.delta_text.characters.count == 0 { return NSAttributedString.init(string: self.delta_text) }
+        if self.delta_text.characters.count == 0 { return NSAttributedString.init(string: "") }
+        let modelName = UIDevice.current.modelName
+        if modelName.contains("iPhone 5") || modelName.contains("iPad Mini") {
+            return NSAttributedString(string: self.delta_text)
+        }
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump.doubleValue - self.curval.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump.doubleValue - self.curval.doubleValue))
