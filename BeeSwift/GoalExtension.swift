@@ -164,7 +164,7 @@ extension Goal {
     var attributedDeltaText :NSAttributedString {
         if self.delta_text.characters.count == 0 { return NSAttributedString.init(string: "") }
         let modelName = UIDevice.current.modelName
-        if modelName.contains("iPhone 5") || modelName.contains("iPad Mini") {
+        if modelName.contains("iPhone 5") || modelName.contains("iPad Mini") || modelName.contains("iPad 4") {
             return NSAttributedString(string: self.delta_text)
         }
         if self.delta_text.components(separatedBy: "✔").count == 4 {
@@ -195,7 +195,7 @@ extension Goal {
             if i < self.deltaColors.count {
                 color = self.deltaColors[i]
             }
-            attString.addAttribute(NSForegroundColorAttributeName, value: color, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
+            attString.addAttribute(NSForegroundColorAttributeName, value: color as Any, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
         }
         
         attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.characters.count))
@@ -265,25 +265,34 @@ extension Goal {
         }?.hkIdentifier
     }
     
-    func runStatisticsQuery() {
-        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-            fatalError("*** Unable to create a quantity type ***")
-        }
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        
-        guard let healthStore = delegate.healthStore else { return }
-        
-        
+    func hkCategoryTypeIdentifier() -> HKCategoryTypeIdentifier? {
+        return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
+            metric.databaseString == self.healthKitMetric
+        }?.hkCategoryTypeIdentifier
     }
     
     func hideDataEntry() -> Bool {
         return self.autodata.characters.count > 0 || self.won.boolValue
     }
     
+    func setupHealthKitSession() {
+        guard let categoryTypeIdentifier = self.hkCategoryTypeIdentifier() else { return }
+        
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        
+        guard let healthStore = delegate.healthStore else { return }
+        
+        healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
+            //
+        })
+    }
+    
     func setupHealthKit() {
         
-        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
+        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
+            self.setupHealthKitSession()
+            return
+        }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
             fatalError("*** Unable to create a quantity type ***")
         }
