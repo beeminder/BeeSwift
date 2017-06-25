@@ -275,22 +275,88 @@ extension Goal {
         return self.autodata.characters.count > 0 || self.won.boolValue
     }
     
-    func setupHealthKitSession() {
+    func setupHealthKitForSessions() {
         guard let categoryTypeIdentifier = self.hkCategoryTypeIdentifier() else { return }
         
         let delegate = UIApplication.shared.delegate as! AppDelegate
         
         guard let healthStore = delegate.healthStore else { return }
         
-        healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
-            //
+        guard let categoryType = HKObjectType.categoryType(forIdentifier: categoryTypeIdentifier) else { return }
+        
+        healthStore.enableBackgroundDelivery(for: categoryType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
+            
+            let endDate = Date()
+            let calendar = Calendar.current
+            
+            guard let observerStartDate = calendar.date(byAdding: .day, value: -7, to: endDate) else {
+                return
+            }
+            
+            let observerPredicate = HKQuery.predicateForSamples(withStart: observerStartDate, end: endDate, options: .strictEndDate)
+            
+            let observerQuery = HKObserverQuery.init(sampleType: categoryType, predicate: observerPredicate, updateHandler: { (query, completionHandler, error) in
+                (-7...0).forEach({ (offset) in
+                    guard let startDate = calendar.date(byAdding: .day, value: offset, to: endDate) else {
+                        return
+                    }
+                    
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "yyyyMMdd"
+                    let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
+                    let daystamp = formatter.string(from: datapointDate)
+                    
+                    formatter.dateFormat = "d"
+                    
+                    let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id))
+                    
+                    let predicate = HKQuery.predicateForSamples(withStart: startDate, end: calendar.date(byAdding: .day, value: 1, to: startDate), options: .strictEndDate)
+                
+                    let query = HKSampleQuery.init(sampleType: categoryType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
+                        var totalDuration : Double = 0
+                        samples?.forEach({ (sample) in
+                            let duration = sample.endDate.timeIntervalSince(sample.startDate)
+                            totalDuration += duration
+                        })
+                        
+                        if datapoints == nil || datapoints?.count == 0 {
+                            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(totalDuration/60) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
+                            self.postDatapoint(params: params, success: { (dataTask, responseObject) in
+                                let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
+                                datapoint.goal = self
+                                NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+                            }, failure: { (dataTask, error) in
+                                print(error)
+                            })
+                        } else if datapoints?.count == 1 {
+                            let datapoint = datapoints?.first as! Datapoint
+                            formatter.dateFormat = "hh:mm"
+                            let params = [
+                                "access_token": CurrentUserManager.sharedManager.accessToken!,
+                                "timestamp": "\(datapointDate)",
+                                "value": "\(totalDuration/60)",
+                                "comment": "Automatically updated via iOS Health app"
+                            ]
+                            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (dataTask, responseObject) in
+                                //foo
+                            }, failure: { (dataTask, error) in
+                                ///bar
+                            })
+                        }
+                    })
+                    healthStore.execute(query)
+                    completionHandler()
+                })
+            })
+            
+            healthStore.execute(observerQuery)
         })
     }
     
     func setupHealthKit() {
         
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
-            self.setupHealthKitSession()
+            self.setupHealthKitForSessions()
             return
         }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
@@ -356,6 +422,10 @@ extension Goal {
         healthStore.execute(query)
     }
     
+    func postDatapoint(params : [String : String], success : ((URLSessionDataTask, Any?) -> Void)?, failure : ((URLSessionDataTask?, Error) -> Void)?) {
+        BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: success, failure: failure)
+    }
+    
     func updateBeeminder(collection : HKStatisticsCollection) {
         let delegate = UIApplication.shared.delegate as! AppDelegate
         
@@ -383,8 +453,6 @@ extension Goal {
                         let daystamp = formatter.string(from: datapointDate)
                         
                         formatter.dateFormat = "d"
-                        
-                        let datapoint = self.datapoints.first(where: { ($0 as! Datapoint).daystamp == daystamp }) as? Datapoint
 
                         let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id))
                         
@@ -398,6 +466,7 @@ extension Goal {
                                 print(error)
                             }
                         } else if datapoints?.count == 1 {
+                            let datapoint = datapoints?.first as! Datapoint
                             formatter.dateFormat = "hh:mm"
                             let params = [
                                 "access_token": CurrentUserManager.sharedManager.accessToken!,
@@ -405,7 +474,7 @@ extension Goal {
                                 "value": "\(value)",
                                 "comment": "Automatically updated via iOS Health app"
                             ]
-                            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint!.id).json", parameters: params, success: { (dataTask, responseObject) in
+                            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (dataTask, responseObject) in
                                 //foo
                             }, failure: { (dataTask, error) in
                                 ///bar
