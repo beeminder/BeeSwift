@@ -59,10 +59,18 @@ class ChooseHKMetricViewController: UIViewController {
         guard let selectedRow = self.tableView.indexPathForSelectedRow?.row else { return }
         guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
         let metric = HealthKitConfig.shared.metrics[selectedRow]
-        let metricType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
-        delegate.healthStore?.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: Constants.savedMetricNotificationName), object: self, userInfo: ["metric" : metric.databaseString!])
-        })
+        if metric.hkIdentifier != nil {
+            let metricType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
+            delegate.healthStore?.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: Constants.savedMetricNotificationName), object: self, userInfo: ["metric" : metric.databaseString!])
+            })
+        } else if metric.hkCategoryTypeIdentifier != nil {
+            let categoryType = HKObjectType.categoryType(forIdentifier: metric.hkCategoryTypeIdentifier!)
+            delegate.healthStore?.requestAuthorization(toShare: nil, read: [categoryType!], completion: { (success, error) in
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: Constants.savedMetricNotificationName), object: self, userInfo: ["metric" : metric.databaseString!])
+            })
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
