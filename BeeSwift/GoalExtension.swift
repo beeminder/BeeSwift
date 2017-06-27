@@ -314,13 +314,27 @@ extension Goal {
                 
                     let query = HKSampleQuery.init(sampleType: categoryType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
                         var totalDuration : Double = 0
-                        samples?.forEach({ (sample) in
-                            let duration = sample.endDate.timeIntervalSince(sample.startDate)
-                            totalDuration += duration
-                        })
+                        for sample in samples! {
+                            if let s = sample as? HKCategorySample {
+                                if categoryTypeIdentifier != .sleepAnalysis ||
+                                   (self.healthKitMetric == "timeAsleep" && s.value == HKCategoryValueSleepAnalysis.asleep.rawValue) ||
+                                   (self.healthKitMetric == "timeInBed" && s.value == HKCategoryValueSleepAnalysis.inBed.rawValue) {
+                                        let duration = s.endDate.timeIntervalSince(s.startDate)
+                                        totalDuration += duration
+                                }
+                            }
+                        }
+                        
+                        var datapointValue : Double
+                        
+                        if #available(iOS 10.0, *) {
+                            datapointValue = self.hkCategoryTypeIdentifier() == .mindfulSession ? totalDuration/60 : totalDuration / 3600
+                        } else {
+                            datapointValue = totalDuration / 3600
+                        }
                         
                         if datapoints == nil || datapoints?.count == 0 {
-                            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(totalDuration/60) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
+                            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
                             self.postDatapoint(params: params, success: { (dataTask, responseObject) in
                                 let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                                 datapoint.goal = self
@@ -334,7 +348,7 @@ extension Goal {
                             let params = [
                                 "access_token": CurrentUserManager.sharedManager.accessToken!,
                                 "timestamp": "\(datapointDate)",
-                                "value": "\(totalDuration/60)",
+                                "value": "\(datapointValue)",
                                 "comment": "Automatically updated via iOS Health app"
                             ]
                             BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (dataTask, responseObject) in
