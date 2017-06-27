@@ -28,6 +28,7 @@ class HealthKitConfig : NSObject {
             HealthKitMetric.init(humanText: "Cycling distance", databaseString: "cyclingDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceCycling, hkCategoryTypeIdentifier: nil),
             HealthKitMetric.init(humanText: "Walking/running distance", databaseString: "walkRunDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceWalkingRunning, hkCategoryTypeIdentifier: nil),
             HealthKitMetric.init(humanText: "Nike Fuel", databaseString: "nikeFuel", hkIdentifier: HKQuantityTypeIdentifier.nikeFuel, hkCategoryTypeIdentifier: nil),
+            HealthKitMetric.init(humanText: "Water", databaseString: "water", hkIdentifier: HKQuantityTypeIdentifier.dietaryWater, hkCategoryTypeIdentifier: nil),
             HealthKitMetric.init(humanText: "Time in bed", databaseString: "timeInBed", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.sleepAnalysis),
             HealthKitMetric.init(humanText: "Time asleep", databaseString: "timeAsleep", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.sleepAnalysis)
         ]
