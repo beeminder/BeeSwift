@@ -445,7 +445,7 @@ extension Goal {
         
         guard let healthStore = delegate.healthStore else { return }
         
-        guard self.isUpdatingHealth == false else { return }
+        if self.isUpdatingHealth { return }
         
         let endDate = Date()
         let calendar = Calendar.current
@@ -530,5 +530,4 @@ extension Goal {
             NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
         }
     }
-    
 }
