@@ -30,8 +30,7 @@ class NewGoalCollectionViewCell: UICollectionViewCell {
     }
     
     func newGoalButtonPressed() {
-        let url = "\(BSHTTPSessionManager.sharedManager.baseURLString)/api/v1/users/me.json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(BSHTTPSessionManager.sharedManager.baseURLString)/new"
-        UIApplication.shared.openURL(URL(string: url)!)
+        NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "createGoalButtonPressed")))
     }
     
 }
