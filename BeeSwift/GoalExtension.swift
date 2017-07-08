@@ -284,86 +284,88 @@ extension Goal {
         
         guard let categoryType = HKObjectType.categoryType(forIdentifier: categoryTypeIdentifier) else { return }
         
-        healthStore.enableBackgroundDelivery(for: categoryType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
-            
-            let endDate = Date()
-            let calendar = Calendar.current
-            
-            guard let observerStartDate = calendar.date(byAdding: .day, value: -7, to: endDate) else {
-                return
-            }
-            
-            let observerPredicate = HKQuery.predicateForSamples(withStart: observerStartDate, end: endDate, options: .strictEndDate)
-            
-            let observerQuery = HKObserverQuery.init(sampleType: categoryType, predicate: observerPredicate, updateHandler: { (query, completionHandler, error) in
-                (-7...0).forEach({ (offset) in
-                    guard let startDate = calendar.date(byAdding: .day, value: offset, to: endDate) else {
-                        return
-                    }
-                    
-                    let formatter = DateFormatter()
-                    formatter.dateFormat = "yyyyMMdd"
-                    let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
-                    let daystamp = formatter.string(from: datapointDate)
-                    
-                    formatter.dateFormat = "d"
-                    
-                    let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id))
-                    
-                    let predicate = HKQuery.predicateForSamples(withStart: startDate, end: calendar.date(byAdding: .day, value: 1, to: startDate), options: .strictEndDate)
+        delegate.healthStore?.requestAuthorization(toShare: nil, read: [categoryType], completion: { (success, error) in
+            healthStore.enableBackgroundDelivery(for: categoryType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
                 
-                    let query = HKSampleQuery.init(sampleType: categoryType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
-                        var totalDuration : Double = 0
-                        for sample in samples! {
-                            if let s = sample as? HKCategorySample {
-                                if categoryTypeIdentifier != .sleepAnalysis ||
-                                   (self.healthKitMetric == "timeAsleep" && s.value == HKCategoryValueSleepAnalysis.asleep.rawValue) ||
-                                   (self.healthKitMetric == "timeInBed" && s.value == HKCategoryValueSleepAnalysis.inBed.rawValue) {
+                let endDate = Date()
+                let calendar = Calendar.current
+                
+                guard let observerStartDate = calendar.date(byAdding: .day, value: -7, to: endDate) else {
+                    return
+                }
+                
+                let observerPredicate = HKQuery.predicateForSamples(withStart: observerStartDate, end: endDate, options: .strictEndDate)
+                
+                let observerQuery = HKObserverQuery.init(sampleType: categoryType, predicate: observerPredicate, updateHandler: { (query, completionHandler, error) in
+                    (-7...0).forEach({ (offset) in
+                        guard let startDate = calendar.date(byAdding: .day, value: offset, to: endDate) else {
+                            return
+                        }
+                        
+                        let formatter = DateFormatter()
+                        formatter.dateFormat = "yyyyMMdd"
+                        let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
+                        let daystamp = formatter.string(from: datapointDate)
+                        
+                        formatter.dateFormat = "d"
+                        
+                        let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id))
+                        
+                        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: calendar.date(byAdding: .day, value: 1, to: startDate), options: .strictEndDate)
+                        
+                        let query = HKSampleQuery.init(sampleType: categoryType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
+                            var totalDuration : Double = 0
+                            for sample in samples! {
+                                if let s = sample as? HKCategorySample {
+                                    if categoryTypeIdentifier != .sleepAnalysis ||
+                                        (self.healthKitMetric == "timeAsleep" && s.value == HKCategoryValueSleepAnalysis.asleep.rawValue) ||
+                                        (self.healthKitMetric == "timeInBed" && s.value == HKCategoryValueSleepAnalysis.inBed.rawValue) {
                                         let duration = s.endDate.timeIntervalSince(s.startDate)
                                         totalDuration += duration
+                                    }
                                 }
                             }
-                        }
-                        
-                        var datapointValue : Double
-                        
-                        if #available(iOS 10.0, *) {
-                            datapointValue = self.hkCategoryTypeIdentifier() == .mindfulSession ? totalDuration/60 : totalDuration / 3600
-                        } else {
-                            datapointValue = totalDuration / 3600
-                        }
-                        
-                        if datapoints == nil || datapoints?.count == 0 {
-                            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
-                            self.postDatapoint(params: params, success: { (dataTask, responseObject) in
-                                let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                                datapoint.goal = self
-                                NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                            }, failure: { (dataTask, error) in
-                                print(error)
-                            })
-                        } else if datapoints?.count == 1 {
-                            let datapoint = datapoints?.first as! Datapoint
-                            formatter.dateFormat = "hh:mm"
-                            let params = [
-                                "access_token": CurrentUserManager.sharedManager.accessToken!,
-                                "timestamp": "\(datapointDate)",
-                                "value": "\(datapointValue)",
-                                "comment": "Automatically updated via iOS Health app"
-                            ]
-                            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (dataTask, responseObject) in
-                                //foo
-                            }, failure: { (dataTask, error) in
-                                ///bar
-                            })
-                        }
+                            
+                            var datapointValue : Double
+                            
+                            if #available(iOS 10.0, *) {
+                                datapointValue = self.hkCategoryTypeIdentifier() == .mindfulSession ? totalDuration/60 : totalDuration / 3600
+                            } else {
+                                datapointValue = totalDuration / 3600
+                            }
+                            
+                            if datapoints == nil || datapoints?.count == 0 {
+                                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
+                                self.postDatapoint(params: params, success: { (dataTask, responseObject) in
+                                    let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
+                                    datapoint.goal = self
+                                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+                                }, failure: { (dataTask, error) in
+                                    print(error)
+                                })
+                            } else if datapoints?.count == 1 {
+                                let datapoint = datapoints?.first as! Datapoint
+                                formatter.dateFormat = "hh:mm"
+                                let params = [
+                                    "access_token": CurrentUserManager.sharedManager.accessToken!,
+                                    "timestamp": "\(datapointDate)",
+                                    "value": "\(datapointValue)",
+                                    "comment": "Automatically updated via iOS Health app"
+                                ]
+                                BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (dataTask, responseObject) in
+                                    //foo
+                                }, failure: { (dataTask, error) in
+                                    ///bar
+                                })
+                            }
+                        })
+                        healthStore.execute(query)
+                        completionHandler()
                     })
-                    healthStore.execute(query)
-                    completionHandler()
                 })
+                
+                healthStore.execute(observerQuery)
             })
-            
-            healthStore.execute(observerQuery)
         })
     }
     
@@ -380,60 +382,62 @@ extension Goal {
         
         guard let healthStore = delegate.healthStore else { return }
         
-        healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
-            //
+
+        let metricType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier)!
+        delegate.healthStore?.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
+            healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
+                let calendar = Calendar.current
+                var interval = DateComponents()
+                interval.day = 1
+                
+                var anchorComponents = calendar.dateComponents([.day, .month, .year, .weekday], from: Date())
+                anchorComponents.hour = 0
+                anchorComponents.minute = 0
+                anchorComponents.second = 0
+                
+                guard let midnight = calendar.date(from: anchorComponents) else {
+                    fatalError("*** unable to create a valid date from the given components ***")
+                }
+                let anchorDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: midnight)!
+                
+                
+                var options : HKStatisticsOptions
+                if quantityType.aggregationStyle == .cumulative {
+                    options = .cumulativeSum
+                } else {
+                    options = .discreteMin
+                }
+                
+                let query = HKStatisticsCollectionQuery(quantityType: quantityType,
+                                                        quantitySamplePredicate: nil,
+                                                        options: options,
+                                                        anchorDate: anchorDate,
+                                                        intervalComponents: interval)
+                query.initialResultsHandler = {
+                    query, collection, error in
+                    
+                    guard let statsCollection = collection else {
+                        // Perform proper error handling here
+                        fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+                    }
+                    
+                    self.updateBeeminder(collection: statsCollection)
+                }
+                
+                query.statisticsUpdateHandler = {
+                    query, statistics, collection, error in
+                    
+                    guard let statsCollection = collection else {
+                        // Perform proper error handling here
+                        fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+                    }
+                    
+                    self.updateBeeminder(collection: statsCollection)
+                }
+                
+                healthStore.execute(query)
+            })
         })
-        
-        let calendar = Calendar.current
-        var interval = DateComponents()
-        interval.day = 1
-        
-        var anchorComponents = calendar.dateComponents([.day, .month, .year, .weekday], from: Date())
-        anchorComponents.hour = 0
-        anchorComponents.minute = 0
-        anchorComponents.second = 0
-        
-        guard let midnight = calendar.date(from: anchorComponents) else {
-            fatalError("*** unable to create a valid date from the given components ***")
-        }
-        let anchorDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: midnight)!
-        
-        
-        var options : HKStatisticsOptions
-        if quantityType.aggregationStyle == .cumulative {
-            options = .cumulativeSum
-        } else {
-            options = .discreteMin
-        }
-        
-        let query = HKStatisticsCollectionQuery(quantityType: quantityType,
-                                                quantitySamplePredicate: nil,
-                                                options: options,
-                                                anchorDate: anchorDate,
-                                                intervalComponents: interval)
-        query.initialResultsHandler = {
-            query, collection, error in
-            
-            guard let statsCollection = collection else {
-                // Perform proper error handling here
-                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
-            }
-            
-            self.updateBeeminder(collection: statsCollection)
-        }
-        
-        query.statisticsUpdateHandler = {
-            query, statistics, collection, error in
-            
-            guard let statsCollection = collection else {
-                // Perform proper error handling here
-                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
-            }
-            
-            self.updateBeeminder(collection: statsCollection)
-        }
-        
-        healthStore.execute(query)
     }
     
     func postDatapoint(params : [String : String], success : ((URLSessionDataTask, Any?) -> Void)?, failure : ((URLSessionDataTask?, Error) -> Void)?) {
