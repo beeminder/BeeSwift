@@ -44,6 +44,11 @@ extension Goal {
         if let safebump = json["safebump"].number {
             goal.safebump = safebump
         }
+        if let hkMetric = json["healthkitmetric"].string {
+            if hkMetric.characters.count > 0 {
+                goal.healthKitMetric = hkMetric
+            }
+        }
         if let curval = json["curval"].number {
             goal.curval = curval
         }
