@@ -47,6 +47,7 @@ extension Goal {
         if let hkMetric = json["healthkitmetric"].string {
             if hkMetric.characters.count > 0 {
                 goal.healthKitMetric = hkMetric
+                goal.setupHealthKit()
             }
         }
         if let curval = json["curval"].number {
