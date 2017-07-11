@@ -222,7 +222,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.goals.count + 1
+        return self.goals.count
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
