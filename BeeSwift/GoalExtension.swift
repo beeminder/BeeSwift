@@ -387,7 +387,6 @@ extension Goal {
         let delegate = UIApplication.shared.delegate as! AppDelegate
         
         guard let healthStore = delegate.healthStore else { return }
-        
 
         let metricType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier)!
         delegate.healthStore?.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
@@ -405,7 +404,6 @@ extension Goal {
                     fatalError("*** unable to create a valid date from the given components ***")
                 }
                 let anchorDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: midnight)!
-                
                 
                 var options : HKStatisticsOptions
                 if quantityType.aggregationStyle == .cumulative {
