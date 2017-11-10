@@ -19,7 +19,6 @@ class Goal: NSManagedObject {
     @NSManaged var healthKitMetric: String?
     @NSManaged var id: String
     @NSManaged var lane: NSNumber
-    @NSManaged var isUpdatingHealth: Bool
     @NSManaged var losedate: NSNumber
     @NSManaged var panic: NSNumber
     @NSManaged var pledge: NSNumber
