@@ -281,6 +281,12 @@ extension Goal {
         return self.autodata.characters.count > 0 || self.won.boolValue
     }
     
+    func hkRequestId() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYYMMddHHmm"
+        return formatter.string(from: Date())
+    }
+    
     func setupHealthKitForSessions() {
         guard let categoryTypeIdentifier = self.hkCategoryTypeIdentifier() else { return }
         
@@ -341,7 +347,7 @@ extension Goal {
                             }
                             
                             if datapoints == nil || datapoints?.count == 0 {
-                                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
+                                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
                                 self.postDatapoint(params: params, success: { (dataTask, responseObject) in
                                     let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                                     datapoint.goal = self
@@ -492,7 +498,7 @@ extension Goal {
                 let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id))
                 
                 if datapoints == nil || datapoints?.count == 0 {
-                    let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue!) \"Automatically entered via iOS Health app\"", "requestid": UUID().uuidString]
+                    let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue!) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
                     BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
                         let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                         datapoint.goal = self
