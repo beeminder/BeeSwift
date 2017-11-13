@@ -346,6 +346,8 @@ extension Goal {
                                 datapointValue = totalDuration / 3600
                             }
                             
+                            if totalDuration == 0 { return }
+                            
                             if datapoints == nil || datapoints?.count == 0 {
                                 let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
                                 self.postDatapoint(params: params, success: { (dataTask, responseObject) in
