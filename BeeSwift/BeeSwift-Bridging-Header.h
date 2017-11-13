@@ -10,6 +10,7 @@
 #import <AFNetworking/AFNetworking.h>
 #import <MagicalRecord/MagicalRecord.h>
 #import <CommonCrypto/CommonCrypto.h>
+#import <CommonCrypto/CommonHMAC.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <Google/SignIn.h>

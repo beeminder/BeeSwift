@@ -3,7 +3,6 @@ platform :ios, '10.0'
 use_frameworks!
 inhibit_all_warnings!
 target 'BeeSwift' do
-	pod "IDZSwiftCommonCrypto", '~> 0.9.1'
 	pod "AFNetworking", '~> 3.0'
 	pod "Alamofire", '~> 4.0'
 	pod "AlamofireImage", '~> 3.0'
@@ -18,7 +17,6 @@ target 'BeeSwift' do
 end
 target 'BeeSwiftToday' do
 	pod 'AFNetworking', '~>3.0'
-	pod "IDZSwiftCommonCrypto", '~> 0.9.1'
 	pod 'Alamofire', '~>4.0'
 	pod 'AlamofireImage', '~>3.0'
 	pod "SnapKit"
@@ -27,7 +25,6 @@ target 'BeeSwiftToday' do
 	pod "MBProgressHUD"	
 end
 target 'BeeSwiftTests' do
-	pod "IDZSwiftCommonCrypto", '~> 0.9.1'
 	pod "AFNetworking", '~> 3.0'
 	pod "Alamofire", '~> 4.0'
 	pod "AlamofireImage", '~> 3.0'
