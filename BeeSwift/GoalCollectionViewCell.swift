@@ -46,7 +46,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         
         self.countdownView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(8)
-            make.top.equalTo(self.titleLabel.snp.bottom).offset(5)
+            make.top.equalTo(self.slugLabel.snp.bottom).offset(5)
             make.bottom.equalTo(self.thumbnailImageView)
             make.width.equalTo(75)
         }
