@@ -326,6 +326,7 @@ extension Goal {
                         let predicate = HKQuery.predicateForSamples(withStart: startDate, end: calendar.date(byAdding: .day, value: 1, to: startDate), options: .strictEndDate)
                         
                         let query = HKSampleQuery.init(sampleType: categoryType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
+                            if error != nil || samples == nil { return }
                             var totalDuration : Double = 0
                             for sample in samples! {
                                 if let s = sample as? HKCategorySample {
