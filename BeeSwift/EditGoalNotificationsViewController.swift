@@ -106,7 +106,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         }
     }
     
-    func useDefaultsSwitchValueChanged() {
+    @objc func useDefaultsSwitchValueChanged() {
         if self.useDefaultsSwitch.isOn {
             let alertController = UIAlertController(title: "Confirm", message: "This will wipe out your current settings for this goal. Are you sure?", preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in

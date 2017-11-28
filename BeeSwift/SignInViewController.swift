@@ -242,12 +242,12 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         self.backToSignInButton.addTarget(self, action: #selector(SignInViewController.chooseSignInButtonPressed), for: .touchUpInside)
     }
     
-    func signUpButtonPressed() {
+    @objc func signUpButtonPressed() {
         MBProgressHUD.showAdded(to: self.view, animated: true)
         CurrentUserManager.sharedManager.signUpWith(email: self.newEmailTextField.text!, password: self.newPasswordTextField.text!, username: self.newUsernameTextField.text!)
     }
     
-    func chooseSignInButtonPressed() {
+    @objc func chooseSignInButtonPressed() {
         CurrentUserManager.sharedManager.signingUp = false
         self.beeImageView.isHidden = true
         self.divider.isHidden = false
@@ -275,7 +275,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         }
     }
     
-    func chooseSignUpButtonPressed() {
+    @objc func chooseSignUpButtonPressed() {
         CurrentUserManager.sharedManager.signingUp = true
         self.beeImageView.isHidden = true
         self.divider.isHidden = false
@@ -318,20 +318,20 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         CurrentUserManager.sharedManager.loginButtonDidLogOut(loginButton)
     }
     
-    func handleFailedSignIn(_ notification : Notification) {
+    @objc func handleFailedSignIn(_ notification : Notification) {
         UIAlertView(title: "Could not sign in", message: "Invalid credentials", delegate: self, cancelButtonTitle: "OK").show()
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
     }
     
-    func handleFailedSignUp(_ notification : Notification) {
+    @objc func handleFailedSignUp(_ notification : Notification) {
         UIAlertView(title: "Could not sign up", message: "Username or email is already taken", delegate: self, cancelButtonTitle: "OK").show()
     }
     
-    func handleSignedIn(_ notification : Notification) {
+    @objc func handleSignedIn(_ notification : Notification) {
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
     }
     
-    func signInButtonPressed() {
+    @objc func signInButtonPressed() {
         MBProgressHUD.showAdded(to: self.view, animated: true)
         CurrentUserManager.sharedManager.signInWithEmail(self.emailTextField.text!, password: self.passwordTextField.text!)
     }

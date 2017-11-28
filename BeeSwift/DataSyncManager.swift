@@ -23,7 +23,7 @@ class DataSyncManager :NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(DataSyncManager.handleUserSignoutNotification), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
     }
     
-    func handleUserSignoutNotification() {
+    @objc func handleUserSignoutNotification() {
         self.setLastSynced(nil)
     }
     

@@ -55,7 +55,7 @@ class ChooseHKMetricViewController: UIViewController {
         self.tableView.register(HealthKitMetricTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
     }
     
-    func saveButtonPressed() {
+    @objc func saveButtonPressed() {
         guard let selectedRow = self.tableView.indexPathForSelectedRow?.row else { return }
         guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
         let metric = HealthKitConfig.shared.metrics[selectedRow]

@@ -176,7 +176,7 @@ extension Goal {
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump.doubleValue - self.curval.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump.doubleValue - self.curval.doubleValue))
-                attString.addAttribute(NSForegroundColorAttributeName, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.characters.count))
+                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.characters.count))
                 return attString
             }
             return NSMutableAttributedString(string: "")
@@ -201,7 +201,7 @@ extension Goal {
             if i < self.deltaColors.count {
                 color = self.deltaColors[i]
             }
-            attString.addAttribute(NSForegroundColorAttributeName, value: color as Any, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
+            attString.addAttribute(NSAttributedStringKey.foregroundColor, value: color as Any, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
         }
         
         attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.characters.count))

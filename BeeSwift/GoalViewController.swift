@@ -315,12 +315,12 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.deltasLabel.attributedText = self.goal.attributedDeltaText
     }
     
-    func safariButtonPressed() {
+    @objc func safariButtonPressed() {
         let url = "\(BSHTTPSessionManager.sharedManager.baseURLString)/api/v1/users/me.json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(BSHTTPSessionManager.sharedManager.baseURLString)/\(CurrentUserManager.sharedManager.username!)/\(self.goal!.slug)"
         UIApplication.shared.openURL(URL(string: url)!)
     }
     
-    func refreshButtonPressed() {
+    @objc func refreshButtonPressed() {
         BSHTTPSessionManager.sharedManager.get("api/v1/users/me/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, progress: nil, success: { (dataTask, responseObject) in
             self.pollUntilGraphUpdates()
         }) { (dataTask, error) in
@@ -330,11 +330,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func colonButtonPressed() {
+    @objc func colonButtonPressed() {
         self.valueTextField.text = "\(self.valueTextField.text!):"
     }
     
-    func refreshCountdown() {
+    @objc func refreshCountdown() {
         self.countdownLabel.textColor = self.goal.countdownColor
         self.countdownLabel.text = self.goal.countdownText as String
     }
@@ -354,11 +354,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func goalImageTapped() {
+    @objc func goalImageTapped() {
         self.goalImageScrollView.setZoomScale(self.goalImageScrollView.zoomScale == 1.0 ? 2.0 : 1.0, animated: true)
     }
     
-    func dateStepperValueChanged() {
+    @objc func dateStepperValueChanged() {
         let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
         var components = DateComponents()
         components.day = Int(self.dateStepper.value)
@@ -371,7 +371,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.dateTextField.text = formatter.string(from: newDate!)
     }
     
-    func valueStepperValueChanged() {
+    @objc func valueStepperValueChanged() {
         var valueString = ""
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US")
@@ -395,7 +395,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         return true
     }
     
-    func valueTextFieldValueChanged() {
+    @objc func valueTextFieldValueChanged() {
         var intPart : Double = 0;
         let fractPart : Double = modf((self.valueTextField.text! as NSString).doubleValue, &intPart);
         
@@ -424,7 +424,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         return "\(self.dateTextField.text!) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
     }
     
-    func submitDatapoint() {
+    @objc func submitDatapoint() {
         self.view.endEditing(true)
         let hud = MBProgressHUD.showAdded(to: self.datapointsTableView, animated: true)
         hud?.mode = .indeterminate
@@ -468,7 +468,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.refreshGoal), userInfo: nil, repeats: true)
     }
     
-    func refreshGoal() {
+    @objc func refreshGoal() {
         BSHTTPSessionManager.sharedManager.get("/api/v1/users/me/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)", parameters: nil, progress: nil, success: { (dataTask, responseObject) in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {

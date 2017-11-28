@@ -50,7 +50,7 @@ class HealthKitConfigViewController: UIViewController {
         self.goals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
     }
     
-    func handleMetricSavedNotification(notification : Notification) {
+    @objc func handleMetricSavedNotification(notification : Notification) {
         let metric = notification.userInfo?["metric"]
         self.saveMetric(databaseString: metric as! String)
     }

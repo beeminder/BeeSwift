@@ -108,11 +108,11 @@ class EditNotificationsViewController: UIViewController {
         }
     }
     
-    func alertstartLabelTapped() {
+    @objc func alertstartLabelTapped() {
         self.timePickerEditingMode = .alertstart
     }
     
-    func deadlineLabelTapped() {
+    @objc func deadlineLabelTapped() {
         self.timePickerEditingMode = .deadline
     }
     
@@ -141,13 +141,13 @@ class EditNotificationsViewController: UIViewController {
         }
     }
     
-    func leadTimeStepperValueChanged() {
+    @objc func leadTimeStepperValueChanged() {
         self.updateLeadTimeLabel()
         self.leadTimeDelayTimer?.invalidate()
         self.leadTimeDelayTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.sendLeadTimeToServer(_:)), userInfo: [ "leadtime" : NSNumber(value: self.leadTimeStepper.value as Double)], repeats: false)
     }
     
-    func sendLeadTimeToServer(_ timer : Timer) {
+    @objc func sendLeadTimeToServer(_ timer : Timer) {
         assertionFailure("this method must be overridden by a subclass")
     }
     

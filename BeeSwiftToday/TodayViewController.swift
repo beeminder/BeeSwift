@@ -48,7 +48,7 @@ class TodayViewController: UIViewController {
         self.tableView.register(TodayTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
     }
     
-    func updateDataSource() {
+    @objc func updateDataSource() {
         let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
         self.goalDictionaries = defaults?.object(forKey: "todayGoalDictionaries") as! Array<NSDictionary>
     }

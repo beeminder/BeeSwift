@@ -99,11 +99,11 @@ class TodayTableViewCell: UITableViewCell {
         self.valueLabel.textAlignment = .center
     }
     
-    func valueStepperChanged() {
+    @objc func valueStepperChanged() {
         self.valueLabel.text = "\(Int(self.valueStepper.value))"
     }
     
-    func addDataButtonPressed() {
+    @objc func addDataButtonPressed() {
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
         hud?.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
@@ -130,7 +130,7 @@ class TodayTableViewCell: UITableViewCell {
         self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.refreshGoal), userInfo: nil, repeats: true)
     }
     
-    func refreshGoal() {
+    @objc func refreshGoal() {
         let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
         guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
         guard let slug = self.goalDictionary["slug"] as? String else { return }

@@ -123,11 +123,11 @@ class SettingsViewController: UIViewController {
         self.loadGoalsFromDatabase()
     }
     
-    func showHealthKitConfig() {
+    @objc func showHealthKitConfig() {
         self.navigationController?.pushViewController(HealthKitConfigViewController(), animated: true)
     }
     
-    func userDefaultsDidChange() {
+    @objc func userDefaultsDidChange() {
         self.updateEmergencyRemindersSwitch()
     }
     
@@ -136,17 +136,17 @@ class SettingsViewController: UIViewController {
         self.tableView.isHidden = !self.emergencyRemindersSwitch.isOn        
     }
     
-    func resetButtonPressed() {
+    @objc func resetButtonPressed() {
         CurrentUserManager.sharedManager.reset()
         self.navigationController?.popViewController(animated: true)
     }
     
-    func signOutButtonPressed() {
+    @objc func signOutButtonPressed() {
         CurrentUserManager.sharedManager.signOut()
         self.navigationController?.popViewController(animated: true)
     }
     
-    func emergencyRemindersSwitchChanged() {
+    @objc func emergencyRemindersSwitchChanged() {
         self.tableView.isHidden = !self.emergencyRemindersSwitch.isOn
         if self.emergencyRemindersSwitch.isOn {
             RemoteNotificationsManager.sharedManager.turnNotificationsOn()

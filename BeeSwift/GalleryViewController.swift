@@ -124,26 +124,26 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
-    func settingsButtonPressed() {
+    @objc func settingsButtonPressed() {
         self.navigationController?.pushViewController(SettingsViewController(), animated: true)
     }
     
-    func handleSignIn() {
+    @objc func handleSignIn() {
         self.dismiss(animated: true, completion: nil)
     }
     
-    func handleSignOut() {
+    @objc func handleSignOut() {
         self.goals = []
         self.collectionView?.reloadData()
         self.hasFetchedData = false
     }
     
-    func handleWillReset() {
+    @objc func handleWillReset() {
         self.goals = []
         self.collectionView?.reloadData()
     }
     
-    func handleReset() {
+    @objc func handleReset() {
         self.fetchData(nil)
     }
     
@@ -158,15 +158,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
-    func handleCreateGoalButtonPressed() {
+    @objc func handleCreateGoalButtonPressed() {
         self.navigationController?.pushViewController(CreateGoalViewController(), animated: true)
     }
     
-    func updateLastUpdatedLabel() {
+    @objc func updateLastUpdatedLabel() {
         if let lastSynced = DataSyncManager.sharedManager.lastSynced {
             if lastSynced.timeIntervalSinceNow < -3600 {
                 let lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: more than an hour ago")
-                lastText.addAttribute(NSForegroundColorAttributeName, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.characters.count))
+                lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.characters.count))
                 self.lastUpdatedLabel.attributedText = lastText
             }
             else if lastSynced.timeIntervalSinceNow < -120 {
@@ -181,12 +181,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         else {
             let lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: a long time ago...")
-            lastText.addAttribute(NSForegroundColorAttributeName, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.characters.count))
+            lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.characters.count))
             self.lastUpdatedLabel.attributedText = lastText
         }
     }
     
-    func fetchData(_ refreshControl: UIRefreshControl?) {
+    @objc func fetchData(_ refreshControl: UIRefreshControl?) {
         if self.goals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
@@ -255,7 +255,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.openGoal(self.goals[(indexPath as NSIndexPath).row])
     }
 
-    func openGoalFromNotification(_ notification: Notification) {
+    @objc func openGoalFromNotification(_ notification: Notification) {
         let slug = (notification as NSNotification).userInfo!["slug"] as! String
         guard let goal = Goal.mr_findFirst(byAttribute: "slug", withValue: slug) else {
             return

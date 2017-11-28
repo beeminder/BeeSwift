@@ -25,7 +25,7 @@ class RemoteNotificationsManager :NSObject {
         return "remoteNotificationsOn"
     }
     
-    func handleUserSignoutNotification() {
+    @objc func handleUserSignoutNotification() {
         turnNotificationsOff()
     }
     

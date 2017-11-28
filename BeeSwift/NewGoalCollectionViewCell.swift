@@ -29,7 +29,7 @@ class NewGoalCollectionViewCell: UICollectionViewCell {
         super.init(coder: aDecoder)
     }
     
-    func newGoalButtonPressed() {
+    @objc func newGoalButtonPressed() {
         NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "createGoalButtonPressed")))
     }
     
