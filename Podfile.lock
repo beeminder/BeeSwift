@@ -70,6 +70,9 @@ PODS:
     - KSCrash/Core (~> 1.15.12)
   - SnapKit (3.2.0)
   - SwiftyJSON (3.1.0)
+  - TwitterCore (3.0.2)
+  - TwitterKit (3.2.1):
+    - TwitterCore (>= 3.0.2)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
@@ -84,6 +87,7 @@ DEPENDENCIES:
   - Sentry (from `https://github.com/getsentry/sentry-cocoa.git`, tag `3.9.1`)
   - SnapKit (~> 3.2.0)
   - SwiftyJSON
+  - TwitterKit
 
 EXTERNAL SOURCES:
   Sentry:
@@ -113,7 +117,9 @@ SPEC CHECKSUMS:
   Sentry: e2707f9a6b498277d9620a48fcb1bd3b655c8473
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
   SwiftyJSON: 29b9f2a64f118c07e691667c2ba1efe536acfe0b
+  TwitterCore: e0420b01e02e7d20e94690e37f43e75de219ab8d
+  TwitterKit: 205ac89824bbfe9e85a16c420d30bb7bcbedac45
 
-PODFILE CHECKSUM: 291c9c3d3164a07d9679b67bab06ba6ee71177f1
+PODFILE CHECKSUM: a624e68f5a53863c363f81b19bf93eef9ee0a036
 
 COCOAPODS: 1.3.1

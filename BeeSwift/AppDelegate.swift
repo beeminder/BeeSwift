@@ -112,6 +112,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
             }
+        } else if url.scheme == Config.twitterUrlScheme {
+            return Twitter.sharedInstance().application(app, open: url, options: options)
         }
         DataSyncManager.sharedManager.fetchData(nil, error: nil)
         return true

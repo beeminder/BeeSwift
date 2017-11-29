@@ -14,8 +14,8 @@ import Foundation
 //    static let sentryClientDSN = ""
 //    static let twitterConsumerKey = ""
 //    static let twitterConsumerSecret = ""
+//    static let twitterUrlScheme = ""
 //    static let facebookUrlScheme = ""
 //    static let googleClientId = ""
 //    static let googleReversedClientId = ""
 //}
-

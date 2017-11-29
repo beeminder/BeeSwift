@@ -57,9 +57,6 @@
 		A1BEEB511AFDC0DE00E7081F /* RemoteNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEEB501AFDC0DE00E7081F /* RemoteNotificationsManager.swift */; };
 		A1C11B481B06F5D100D22871 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
 		A1C170E01BEEB3110018D32B /* UIFontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */; };
-		A1D24C9A1AFDD0A7009DAFAB /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1D24C991AFDD0A7009DAFAB /* Twitter.framework */; };
-		A1D24CA01AFDD112009DAFAB /* TwitterKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1D24C9D1AFDD112009DAFAB /* TwitterKit.framework */; };
-		A1D24CA11AFDD112009DAFAB /* TwitterKitResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A1D24C9E1AFDD112009DAFAB /* TwitterKitResources.bundle */; };
 		A1D853261EB0332D00FC75DE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
 		A1D853281EB0DE0700FC75DE /* TodayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1D853271EB0DE0700FC75DE /* TodayTableViewCell.swift */; };
 		A1D853291EB0EA2400FC75DE /* BSLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B381AEDA71D006F48DA /* BSLabel.swift */; };
@@ -177,9 +174,6 @@
 		A1BEEB501AFDC0DE00E7081F /* RemoteNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteNotificationsManager.swift; sourceTree = "<group>"; };
 		A1C11B471B06F5D100D22871 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFontExtension.swift; sourceTree = "<group>"; };
-		A1D24C991AFDD0A7009DAFAB /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
-		A1D24C9D1AFDD112009DAFAB /* TwitterKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TwitterKit.framework; sourceTree = "<group>"; };
-		A1D24C9E1AFDD112009DAFAB /* TwitterKitResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = TwitterKitResources.bundle; path = TwitterKit.framework/Versions/A/Resources/TwitterKitResources.bundle; sourceTree = "<group>"; };
 		A1D853271EB0DE0700FC75DE /* TodayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodayTableViewCell.swift; sourceTree = "<group>"; };
 		A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfigViewController.swift; sourceTree = "<group>"; };
 		A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfigTableViewCell.swift; sourceTree = "<group>"; };
@@ -215,8 +209,6 @@
 				A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */,
 				A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */,
 				A12BA94C1AFF201B00AFEF32 /* AddressBook.framework in Frameworks */,
-				A1D24C9A1AFDD0A7009DAFAB /* Twitter.framework in Frameworks */,
-				A1D24CA01AFDD112009DAFAB /* TwitterKit.framework in Frameworks */,
 				A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */,
 				D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */,
 			);
@@ -410,9 +402,6 @@
 				A17E930B1B09032F0098FCA0 /* QuartzCore.framework */,
 				A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */,
 				A12BA94B1AFF201B00AFEF32 /* AddressBook.framework */,
-				A1D24C9D1AFDD112009DAFAB /* TwitterKit.framework */,
-				A1D24C9E1AFDD112009DAFAB /* TwitterKitResources.bundle */,
-				A1D24C991AFDD0A7009DAFAB /* Twitter.framework */,
 				A1B53C301B2D04EA00AF266F /* NotificationCenter.framework */,
 				DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */,
 				20121F7A17F740656ADD55D0 /* Pods_BeeSwiftTests.framework */,
@@ -578,7 +567,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1D24CA11AFDD112009DAFAB /* TwitterKitResources.bundle in Resources */,
 				A196CB221AE4142F00B90A3E /* Main.storyboard in Resources */,
 				A196CB271AE4142F00B90A3E /* LaunchScreen.xib in Resources */,
 				A12B7B271B3BBC1300453CFC /* GoogleSignIn.bundle in Resources */,
@@ -714,6 +702,8 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-BeeSwift/Pods-BeeSwift-resources.sh",
 				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterKitResources.bundle",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterShareExtensionUIResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
