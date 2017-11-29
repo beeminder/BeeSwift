@@ -18,3 +18,4 @@ xcuserdata/
 *.xcbkptlist
 /build
 BeeSwift/Config.swift
+BeeSwift/GoogleService-Info.plist
