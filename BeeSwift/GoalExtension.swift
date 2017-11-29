@@ -290,13 +290,11 @@ extension Goal {
     func setupHealthKitForSessions() {
         guard let categoryTypeIdentifier = self.hkCategoryTypeIdentifier() else { return }
         
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        
-        guard let healthStore = delegate.healthStore else { return }
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         
         guard let categoryType = HKObjectType.categoryType(forIdentifier: categoryTypeIdentifier) else { return }
         
-        delegate.healthStore?.requestAuthorization(toShare: nil, read: [categoryType], completion: { (success, error) in
+        HealthStoreManager.sharedManager.healthStore?.requestAuthorization(toShare: nil, read: [categoryType], completion: { (success, error) in
             healthStore.enableBackgroundDelivery(for: categoryType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
                 
                 let endDate = Date()
@@ -393,12 +391,11 @@ extension Goal {
         guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
             fatalError("*** Unable to create a quantity type ***")
         }
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        
-        guard let healthStore = delegate.healthStore else { return }
+
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
 
         let metricType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier)!
-        delegate.healthStore?.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
+        healthStore.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
             healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
                 let calendar = Calendar.current
                 var interval = DateComponents()
@@ -458,9 +455,7 @@ extension Goal {
     }
     
     func updateBeeminder(collection : HKStatisticsCollection) {
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        
-        guard let healthStore = delegate.healthStore else { return }
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         
         let endDate = Date()
         let calendar = Calendar.current
