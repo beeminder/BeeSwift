@@ -37,9 +37,6 @@
 		A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */; };
 		A1619EA61BEECC6700E14B3A /* EditGoalNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */; };
 		A1781AB31DE50F59000B96C5 /* BSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1781AB21DE50F59000B96C5 /* BSTextField.swift */; };
-		A179A9D81BFB002D00DB13AA /* SnapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A179A9D71BFB002D00DB13AA /* SnapKit.framework */; };
-		A179A9DA1BFB007C00DB13AA /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A179A9D91BFB007C00DB13AA /* Alamofire.framework */; };
-		A179A9DC1BFB007F00DB13AA /* AlamofireImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A179A9DB1BFB007F00DB13AA /* AlamofireImage.framework */; };
 		A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17E930B1B09032F0098FCA0 /* QuartzCore.framework */; };
 		A196CB1A1AE4142E00B90A3E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB191AE4142E00B90A3E /* AppDelegate.swift */; };
 		A196CB1D1AE4142F00B90A3E /* BeeSwift.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A196CB1B1AE4142E00B90A3E /* BeeSwift.xcdatamodeld */; };
@@ -152,12 +149,6 @@
 		A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDefaultNotificationsViewController.swift; sourceTree = "<group>"; };
 		A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditGoalNotificationsViewController.swift; sourceTree = "<group>"; };
 		A1781AB21DE50F59000B96C5 /* BSTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSTextField.swift; sourceTree = "<group>"; };
-		A179A9D71BFB002D00DB13AA /* SnapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SnapKit.framework; path = "Pods/../build/Debug-iphoneos/SnapKit.framework"; sourceTree = "<group>"; };
-		A179A9D91BFB007C00DB13AA /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "Pods/../build/Debug-iphoneos/Alamofire.framework"; sourceTree = "<group>"; };
-		A179A9DB1BFB007F00DB13AA /* AlamofireImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AlamofireImage.framework; path = "Pods/../build/Debug-iphoneos/AlamofireImage.framework"; sourceTree = "<group>"; };
-		A179A9DD1BFB008400DB13AA /* MagicalRecord.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MagicalRecord.framework; path = "Pods/../build/Debug-iphoneos/MagicalRecord.framework"; sourceTree = "<group>"; };
-		A179A9DF1BFB008900DB13AA /* AFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AFNetworking.framework; path = "Pods/../build/Debug-iphoneos/AFNetworking.framework"; sourceTree = "<group>"; };
-		A179A9E11BFB008D00DB13AA /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = "Pods/../build/Debug-iphoneos/Bolts.framework"; sourceTree = "<group>"; };
 		A17E930B1B09032F0098FCA0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A196CB141AE4142E00B90A3E /* BeeSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeeSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A196CB181AE4142E00B90A3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -209,9 +200,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A179A9DC1BFB007F00DB13AA /* AlamofireImage.framework in Frameworks */,
-				A179A9DA1BFB007C00DB13AA /* Alamofire.framework in Frameworks */,
-				A179A9D81BFB002D00DB13AA /* SnapKit.framework in Frameworks */,
 				A12E694E1BD3EF0200AB94C2 /* NotificationCenter.framework in Frameworks */,
 				1B8454411999895F722BAE80 /* Pods_BeeSwiftToday.framework in Frameworks */,
 			);
@@ -416,12 +404,6 @@
 			isa = PBXGroup;
 			children = (
 				A158DDB51E46EEA10031BD4F /* HealthKit.framework */,
-				A179A9E11BFB008D00DB13AA /* Bolts.framework */,
-				A179A9DF1BFB008900DB13AA /* AFNetworking.framework */,
-				A179A9DD1BFB008400DB13AA /* MagicalRecord.framework */,
-				A179A9DB1BFB007F00DB13AA /* AlamofireImage.framework */,
-				A179A9D91BFB007C00DB13AA /* Alamofire.framework */,
-				A179A9D71BFB002D00DB13AA /* SnapKit.framework */,
 				A1B672411B0989ED00584782 /* CoreGraphics.framework */,
 				A1B6723F1B0989E800584782 /* UIKit.framework */,
 				A1B6723D1B0989DF00584782 /* Foundation.framework */,
