@@ -169,8 +169,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if goals.count < 3 {
             return goals.map { (goal: Goal) -> NSDictionary in
                 var shortSlug = goal.slug
-                if shortSlug.characters.count > 20 {
-                    shortSlug = "\(shortSlug.substring(with: (shortSlug.startIndex ..< shortSlug.characters.index(shortSlug.endIndex, offsetBy: -1)))))"
+                if shortSlug.count > 20 {
+                    shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
                 }
                 return [ "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
             }
@@ -178,8 +178,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         return goals[0..<3].map { (goal: Goal) -> NSDictionary in
             var shortSlug = goal.slug
-            if shortSlug.characters.count > 20 {
-                shortSlug = "\(shortSlug.substring(with: (shortSlug.startIndex ..< shortSlug.characters.index(shortSlug.endIndex, offsetBy: -1)))))"
+            if shortSlug.count > 20 {
+                shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
             }
             return [ "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
         }
