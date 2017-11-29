@@ -34,7 +34,7 @@ class HealthKitMetricTableViewCell: UITableViewCell {
         
         self.contentView.addSubview(self.metricLabel)
         self.metricLabel.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(0)
+            make.centerY.equalTo(self.contentView)
             make.left.equalTo(25)
             make.width.equalTo(self.contentView)
         }

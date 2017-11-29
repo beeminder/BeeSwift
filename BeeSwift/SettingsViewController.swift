@@ -45,14 +45,14 @@ class SettingsViewController: UIViewController {
             healthKitCell!.addSubview(label)
             label.snp.makeConstraints({ (make) in
                 make.left.equalTo(0)
-                make.centerY.equalTo(0)
+                make.centerY.equalTo(healthKitCell!)
             })
             
             let disclosure = UITableViewCell()
             healthKitCell!.addSubview(disclosure)
             disclosure.snp.makeConstraints({ (make) in
                 make.right.equalTo(0)
-                make.centerY.equalTo(0)
+                make.centerY.equalTo(healthKitCell!)
             })
             disclosure.accessoryType = .disclosureIndicator
             disclosure.isUserInteractionEnabled = false

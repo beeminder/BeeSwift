@@ -76,7 +76,11 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         self.headerLabel.isHidden = true
         self.headerLabel.textAlignment = NSTextAlignment.center
         self.headerLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(30)
+            if #available(iOS 11.0, *) {
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
+            } else {
+                make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            }
             make.centerX.equalTo(scrollView)
         }
         
@@ -90,7 +94,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         self.emailTextField.delegate = self
         self.emailTextField.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.headerLabel.snp.bottom).offset(15)
-            make.centerX.equalTo(0)
+            make.centerX.equalTo(scrollView)
             make.width.equalTo(scrollView).multipliedBy(0.75)
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }

@@ -34,7 +34,7 @@ class ChooseHKMetricViewController: UIViewController {
         self.view.addSubview(saveButton)
         saveButton.snp.makeConstraints { (make) in
             make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-20)
-            make.centerX.equalTo(0)
+            make.centerX.equalTo(self.view)
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }

@@ -37,7 +37,7 @@ class DatapointTableViewCell : UITableViewCell {
         self.datapointLabel.snp.makeConstraints({ (make) -> Void in
             make.left.equalTo(5)
             make.right.equalTo(-5)
-            make.centerY.equalTo(0)
+            make.centerY.equalTo(self.contentView)
         })
     }
 }

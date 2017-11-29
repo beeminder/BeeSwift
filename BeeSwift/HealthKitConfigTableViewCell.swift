@@ -45,14 +45,14 @@ class HealthKitConfigTableViewCell: UITableViewCell {
         
         self.contentView.addSubview(self.goalnameLabel)
         self.goalnameLabel.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(0)
+            make.centerY.equalTo(self.contentView)
             make.left.equalTo(15)
             make.width.equalTo(self.contentView).multipliedBy(0.55)
         }
         
         self.contentView.addSubview(self.autodataNameLabel)
         self.autodataNameLabel.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(0)
+            make.centerY.equalTo(self.contentView)
             make.right.equalTo(-15)
             make.width.equalTo(self.contentView).multipliedBy(0.45)
         }

@@ -33,7 +33,7 @@ class GoalNotificationSettingsTableViewCell: UITableViewCell {
         
         self.contentView.addSubview(self.titleLabel)
         self.titleLabel.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(0)
+            make.centerY.equalTo(self.contentView)
             make.left.equalTo(15)
         }
     }
