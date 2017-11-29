@@ -13,7 +13,7 @@ target 'BeeSwift' do
 	pod "FBSDKLoginKit"
 	pod "MBProgressHUD"
 	pod 'IQKeyboardManager'
-	pod 'Google/SignIn'
+	pod 'GoogleSignIn'
 	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '3.9.1'
 end
 target 'BeeSwiftToday' do
