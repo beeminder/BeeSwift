@@ -17,3 +17,4 @@ xcuserdata/
 *.xcscmblueprint
 *.xcbkptlist
 /build
+BeeSwift/Config.swift
