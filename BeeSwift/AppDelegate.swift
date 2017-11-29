@@ -13,6 +13,7 @@ import TwitterKit
 import IQKeyboardManager
 import HealthKit
 import Sentry
+import AlamofireNetworkActivityIndicator
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -44,6 +45,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
+        
+        NetworkActivityIndicatorManager.shared.isEnabled = true
 
         return true
     }

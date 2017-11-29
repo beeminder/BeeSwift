@@ -4,8 +4,9 @@ use_frameworks!
 inhibit_all_warnings!
 target 'BeeSwift' do
 	pod "AFNetworking", '~> 3.0'
-	pod "Alamofire", '~> 4.0'
-	pod "AlamofireImage", '~> 3.0'
+	pod "Alamofire", '~> 4.5'
+	pod "AlamofireImage", '~> 3.3'
+	pod 'AlamofireNetworkActivityIndicator', '~> 2.2'
 	pod 'SnapKit', '~> 3.2.0'
 	pod "MagicalRecord"
 	pod "SwiftyJSON"	
@@ -19,8 +20,8 @@ target 'BeeSwift' do
 end
 target 'BeeSwiftToday' do
 	pod 'AFNetworking', '~>3.0'
-	pod 'Alamofire', '~>4.0'
-	pod 'AlamofireImage', '~>3.0'
+	pod 'Alamofire', '~>4.5'
+	pod 'AlamofireImage', '~>3.3'
 	pod 'SnapKit', '~> 3.2.0'
 	pod "MagicalRecord" 
 	pod "SwiftyJSON"
@@ -29,8 +30,9 @@ target 'BeeSwiftToday' do
 end
 target 'BeeSwiftTests' do
 	pod "AFNetworking", '~> 3.0'
-	pod "Alamofire", '~> 4.0'
-	pod "AlamofireImage", '~> 3.0'
+	pod "Alamofire", '~> 4.5'
+	pod "AlamofireImage", '~> 3.3'
+	pod 'AlamofireNetworkActivityIndicator', '~> 2.2'
 	pod 'SnapKit', '~> 3.2.0'
 	pod "MagicalRecord"
 	pod "SwiftyJSON"

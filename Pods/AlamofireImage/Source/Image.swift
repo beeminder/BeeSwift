@@ -1,7 +1,7 @@
 //
 //  Image.swift
 //
-//  Copyright (c) 2015-2016 Alamofire Software Foundation (http://alamofire.org/)
+//  Copyright (c) 2015-2017 Alamofire Software Foundation (http://alamofire.org/)
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ import Foundation
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
 public typealias Image = UIImage
-#elseif os(OSX)
+#elseif os(macOS)
 import Cocoa
 public typealias Image = NSImage
 #endif
