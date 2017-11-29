@@ -12,7 +12,7 @@ If it complains about `GoogleService-Info.plist`, try copying `GoogleService-Inf
 
 Code signing/provisioning profiles settings.
 
-If it's still not building, or if you find other noteworthy dependencies not listed here, please create a new issue! Or a pull request with a modified Readme. 
+If it's still not building, or if you find other noteworthy dependencies not listed here, please create a new issue! Or a pull request with a modified Readme.
 
 ### Testing
 
@@ -20,4 +20,4 @@ Since the Beeminder backend/web application isn't open source (yet), you'll need
 
 ### Contributing
 
-Make a branch off of master and send a pull request!
+Read and sign [beeminder.com/cla](beeminder.com/cla). Then make a branch off of master and send a pull request!
