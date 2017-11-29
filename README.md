@@ -12,4 +12,12 @@ If it complains about `GoogleService-Info.plist`, try copying `GoogleService-Inf
 
 Code signing/provisioning profiles settings.
 
-If it's still not building, please create a new issue!
+If it's still not building, or if you find other noteworthy dependencies not listed here, please create a new issue! Or a pull request with a modified Readme. 
+
+### Testing
+
+Since the Beeminder backend/web application isn't open source (yet), you'll need to ask us to be added to the private repo if you want to be able to point the iOS app at `localhost:3000`. You can also create a test account/goal on beeminder.com to test against.
+
+### Contributing
+
+Make a branch off of master and send a pull request!
