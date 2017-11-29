@@ -6,7 +6,7 @@ target 'BeeSwift' do
 	pod "AFNetworking", '~> 3.0'
 	pod "Alamofire", '~> 4.0'
 	pod "AlamofireImage", '~> 3.0'
-	pod "SnapKit"
+	pod 'SnapKit', '~> 3.2.0'
 	pod "MagicalRecord"
 	pod "SwiftyJSON"	
 	pod "FBSDKCoreKit"
@@ -20,7 +20,7 @@ target 'BeeSwiftToday' do
 	pod 'AFNetworking', '~>3.0'
 	pod 'Alamofire', '~>4.0'
 	pod 'AlamofireImage', '~>3.0'
-	pod "SnapKit"
+	pod 'SnapKit', '~> 3.2.0'
 	pod "MagicalRecord" 
 	pod "SwiftyJSON"
 	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '3.9.1'
@@ -30,7 +30,7 @@ target 'BeeSwiftTests' do
 	pod "AFNetworking", '~> 3.0'
 	pod "Alamofire", '~> 4.0'
 	pod "AlamofireImage", '~> 3.0'
-	pod "SnapKit"	
+	pod 'SnapKit', '~> 3.2.0'
 	pod "MagicalRecord"
 	pod "SwiftyJSON"
 end
