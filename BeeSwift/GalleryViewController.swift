@@ -166,7 +166,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if let lastSynced = DataSyncManager.sharedManager.lastSynced {
             if lastSynced.timeIntervalSinceNow < -3600 {
                 let lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: more than an hour ago")
-                lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.characters.count))
+                lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.count))
                 self.lastUpdatedLabel.attributedText = lastText
             }
             else if lastSynced.timeIntervalSinceNow < -120 {
@@ -181,7 +181,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         else {
             let lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: a long time ago...")
-            lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.characters.count))
+            lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.count))
             self.lastUpdatedLabel.attributedText = lastText
         }
     }

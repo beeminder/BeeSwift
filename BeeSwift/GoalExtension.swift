@@ -45,7 +45,7 @@ extension Goal {
             goal.safebump = safebump
         }
         if let hkMetric = json["healthkitmetric"].string {
-            if hkMetric.characters.count > 0 {
+            if hkMetric.count > 0 {
                 goal.healthKitMetric = hkMetric
                 goal.setupHealthKit()
             }
@@ -168,7 +168,7 @@ extension Goal {
     }
     
     var attributedDeltaText :NSAttributedString {
-        if self.delta_text.characters.count == 0 { return NSAttributedString.init(string: "") }
+        if self.delta_text.count == 0 { return NSAttributedString.init(string: "") }
         let modelName = UIDevice.current.modelName
         if modelName.contains("iPhone 5") || modelName.contains("iPad Mini") || modelName.contains("iPad 4") {
             return NSAttributedString(string: self.delta_text)
@@ -176,20 +176,20 @@ extension Goal {
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump.doubleValue - self.curval.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump.doubleValue - self.curval.doubleValue))
-                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.characters.count))
+                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.count))
                 return attString
             }
             return NSMutableAttributedString(string: "")
         }
         var spaceIndices :Array<Int> = [0]
         
-        for i in 0...self.delta_text.characters.count - 1 {
-            if Array(self.delta_text.characters)[i] == " " {
+        for i in 0...self.delta_text.count - 1 {
+            if self.delta_text[delta_text.index(delta_text.startIndex, offsetBy: i)] == " " {
                 spaceIndices.append(i)
             }
         }
         
-        spaceIndices.append(self.delta_text.characters.count)
+        spaceIndices.append(self.delta_text.count)
 
         let attString :NSMutableAttributedString = NSMutableAttributedString(string: self.delta_text)
         
@@ -204,7 +204,7 @@ extension Goal {
             attString.addAttribute(NSAttributedStringKey.foregroundColor, value: color as Any, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
         }
         
-        attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.characters.count))
+        attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.count))
 
         return attString
     }
@@ -261,7 +261,7 @@ extension Goal {
             })
             return self.healthKitMetric == nil ? "Apple" : metric?.humanText
         }
-        if self.autodata.characters.count > 0 { return self.autodata.capitalized }
+        if self.autodata.count > 0 { return self.autodata.capitalized }
         return nil
     }
     
@@ -278,7 +278,7 @@ extension Goal {
     }
     
     func hideDataEntry() -> Bool {
-        return self.autodata.characters.count > 0 || self.won.boolValue
+        return self.autodata.count > 0 || self.won.boolValue
     }
     
     func hkRequestId() -> String {

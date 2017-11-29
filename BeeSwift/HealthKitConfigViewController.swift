@@ -102,7 +102,7 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let goal = self.goals[(indexPath as NSIndexPath).row]
         
-        if goal.autodata.characters.count == 0 {
+        if goal.autodata.count == 0 {
             self.navigationController?.pushViewController(ChooseHKMetricViewController(), animated: true)
         }
     }
