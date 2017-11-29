@@ -218,7 +218,7 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
         self.signInWithOAuthUserId(user.userID, provider: "google_oauth2")
     }
     
-    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: NSError!) {
+    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
         // never called
     }
 }
