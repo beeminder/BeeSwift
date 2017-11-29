@@ -59,7 +59,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         }
 
         self.thumbnailImageView.snp.makeConstraints { (make) -> Void in
-            make.centerX.equalTo(0)
+            make.left.equalTo(self.countdownView.snp.right).offset(self.margin)
             make.top.equalTo(self.countdownView)
             make.height.equalTo(Constants.thumbnailHeight)
             make.width.equalTo(Constants.thumbnailWidth)
