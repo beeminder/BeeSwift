@@ -14,6 +14,7 @@ target 'BeeSwift' do
 	pod "MBProgressHUD"
 	pod 'IQKeyboardManager'
 	pod 'Google/SignIn'
+	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '3.9.1'
 end
 target 'BeeSwiftToday' do
 	pod 'AFNetworking', '~>3.0'
@@ -22,6 +23,7 @@ target 'BeeSwiftToday' do
 	pod "SnapKit"
 	pod "MagicalRecord" 
 	pod "SwiftyJSON"
+	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '3.9.1'
 	pod "MBProgressHUD"	
 end
 target 'BeeSwiftTests' do
