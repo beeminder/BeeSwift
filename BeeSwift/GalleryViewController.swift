@@ -107,9 +107,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.deadbeatView.snp.bottom)
-            make.left.equalTo(0)
+            if #available(iOS 11.0, *) {
+                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
+                make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
+            } else {
+                make.left.equalTo(0)
+                make.right.equalTo(0)
+            }
             make.bottom.equalTo(0)
-            make.right.equalTo(0)
         }
         
         self.fetchData(self.refreshControl)

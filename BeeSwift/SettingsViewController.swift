@@ -30,9 +30,19 @@ class SettingsViewController: UIViewController {
             
             self.view.addSubview(healthKitCell!)
             healthKitCell!.snp.makeConstraints({ (make) in
-                make.left.equalTo(15)
-                make.right.equalTo(-15)
-                make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
+                if #available(iOS 11.0, *) {
+                    make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(15)
+                    make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-15)
+                } else {
+                    make.left.equalTo(15)
+                    make.right.equalTo(-15)
+                }
+                if #available(iOS 11.0, *) {
+                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(10)
+                } else {
+                    make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
+                }
+                
                 make.height.equalTo(Constants.defaultTextFieldHeight)
             })
             
@@ -44,14 +54,14 @@ class SettingsViewController: UIViewController {
             label.text = "Health app integration"
             healthKitCell!.addSubview(label)
             label.snp.makeConstraints({ (make) in
-                make.left.equalTo(0)
+                make.left.equalTo(healthKitCell!)
                 make.centerY.equalTo(healthKitCell!)
             })
             
             let disclosure = UITableViewCell()
             healthKitCell!.addSubview(disclosure)
             disclosure.snp.makeConstraints({ (make) in
-                make.right.equalTo(0)
+                make.right.equalTo(healthKitCell!)
                 make.centerY.equalTo(healthKitCell!)
             })
             disclosure.accessoryType = .disclosureIndicator
@@ -65,13 +75,22 @@ class SettingsViewController: UIViewController {
         
         if healthKitCell == nil {
             self.emergencyRemindersSwitch.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
-                make.right.equalTo(-15)
+                if #available(iOS 11.0, *) {
+                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(10)
+                    make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-15)
+                } else {
+                    make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
+                    make.right.equalTo(-15)
+                }
             }
         } else {
             self.emergencyRemindersSwitch.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(healthKitCell!.snp.bottom).offset(10)
-                make.right.equalTo(-15)
+                if #available(iOS 11.0, *) {
+                    make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-15)
+                } else {
+                    make.right.equalTo(-15)
+                }
             }
         }
         
@@ -80,7 +99,11 @@ class SettingsViewController: UIViewController {
         emergencyRemindersLabel.text = "Goal emergency notifications"
         emergencyRemindersLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.emergencyRemindersSwitch)
-            make.left.equalTo(15)
+            if #available(iOS 11.0, *) {
+                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(15)
+            } else {
+                make.left.equalTo(self.view).offset(15)
+            }
         }
         
         let signOutButton = BSButton()
@@ -89,7 +112,11 @@ class SettingsViewController: UIViewController {
         self.view.addSubview(signOutButton)
         signOutButton.setTitle("Sign Out", for: .normal)
         signOutButton.snp.makeConstraints { (make) -> Void in
-            make.bottom.equalTo(-30)
+            if #available(iOS 11.0, *) {
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-30)
+            } else {
+                make.bottom.equalTo(-30)
+            }
             make.width.equalTo(self.view).multipliedBy(0.75)
             make.centerX.equalTo(self.view)
             make.height.equalTo(Constants.defaultTextFieldHeight)

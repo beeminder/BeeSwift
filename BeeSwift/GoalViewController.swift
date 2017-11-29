@@ -112,8 +112,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.goalImageScrollView.delegate = self
         self.goalImageScrollView.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.view)
-            make.left.greaterThanOrEqualTo(0)
-            make.right.lessThanOrEqualTo(0)
+            if #available(iOS 11.0, *) {
+                make.left.greaterThanOrEqualTo(self.scrollView.safeAreaLayoutGuide.snp.leftMargin)
+                make.right.lessThanOrEqualTo(self.scrollView.safeAreaLayoutGuide.snp.rightMargin)
+            } else {
+                make.left.greaterThanOrEqualTo(0)
+                make.right.lessThanOrEqualTo(0)
+            }
+            
             make.top.equalTo(deltasView.snp.bottom)
             make.width.equalTo(self.scrollView)
             make.height.equalTo(self.goalImageScrollView.snp.width).multipliedBy(Float(Constants.graphHeight)/Float(Constants.graphWidth))
@@ -128,8 +134,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.bottom.equalTo(0)
             make.width.equalTo(self.goalImageScrollView)
             make.height.equalTo(self.goalImageScrollView)
-            make.left.equalTo(0)
-            make.right.equalTo(0)
+            make.left.equalTo(self.goalImageScrollView)
+            make.right.equalTo(self.goalImageScrollView)
         }
         
         self.datapointsTableView.dataSource = self
@@ -152,7 +158,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.scrollView.addSubview(dataEntryView)
         dataEntryView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.datapointsTableView.snp.bottom).offset(10)
-            make.left.equalTo(self.datapointsTableView)
+            if #available(iOS 11.0, *) {
+                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(10)
+            } else {
+                make.left.equalTo(10)
+            }
             make.right.equalTo(self.datapointsTableView)
             make.bottom.equalTo(0)
             make.height.equalTo(120)
@@ -168,7 +178,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.dateTextField.delegate = self
         self.dateTextField.keyboardType = .numberPad
         self.dateTextField.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(0)
+            make.left.equalTo(dataEntryView)
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.top.equalTo(0)
         }
@@ -224,9 +234,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.commentTextField.placeholder = "Comment"
         self.commentTextField.returnKeyType = .send
         self.commentTextField.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.valueTextField.snp.right).offset(10).priorityHigh()
+            make.left.equalTo(self.valueTextField.snp.right).offset(10).priority(.high)
             make.height.equalTo(Constants.defaultTextFieldHeight)
-            make.right.equalTo(0).priorityHigh()
+            if #available(iOS 11.0, *) {
+                make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-10).priority(.high)
+            } else {
+                make.right.equalTo(-10)
+            }
             make.top.equalTo(0)
         }
         
@@ -236,7 +250,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.submitButton.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.commentTextField.snp.bottom).offset(10)
             make.left.equalTo(self.commentTextField)
-            make.right.equalTo(0)
+            make.right.equalTo(self.commentTextField)
         }
         
         self.dateStepper.tintColor = UIColor.beeGrayColor()
