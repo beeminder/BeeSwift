@@ -56,7 +56,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view.layoutMargins.top)
+            make.top.equalTo(self.topLayoutGuide.snp.bottom)
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.bottom.equalTo(0)
@@ -81,7 +81,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.pledgeLabel.snp.makeConstraints { (make) -> Void in
             if UIDevice.current.userInterfaceIdiom == .pad {
                 make.left.equalTo(0)
-                make.centerY.equalTo(0)
+                make.centerY.equalTo(deltasView)
                 make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
             }
         }
@@ -90,7 +90,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.deltasLabel.textAlignment = .center
         self.deltasLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.countdownLabel.snp.right)
-            make.centerY.equalTo(0)
+            make.centerY.equalTo(deltasView)
             make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
         }
 
@@ -98,7 +98,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.countdownLabel.textAlignment = .center
         self.countdownLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.pledgeLabel.snp.right)
-            make.centerY.equalTo(0)
+            make.centerY.equalTo(deltasView)
             make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
         }
         
