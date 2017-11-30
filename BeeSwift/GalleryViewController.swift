@@ -141,6 +141,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.goals = []
         self.collectionView?.reloadData()
         self.hasFetchedData = false
+        self.present(SignInViewController(), animated: true, completion: nil)
     }
     
     @objc func handleWillReset() {
