@@ -129,8 +129,11 @@ class TodayTableViewCell: UITableViewCell {
     
     @objc func refreshGoal() {
         guard let slug = self.goalDictionary["slug"] as? String else { return }
+        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
+        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
         
-        RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: nil, success: { (responseObject) in
+        let parameters = ["access_token": token]
+        RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters, success: { (responseObject) in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
                 self.pollTimer?.invalidate()
