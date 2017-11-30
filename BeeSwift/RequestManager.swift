@@ -14,22 +14,6 @@ class RequestManager {
     static let baseURLString = "http://localhost:3000"
 //    static let baseURLString = "https://www.beeminder.com"
     
-//    func setup() {
-//        RequestManager.responseSerializer = AFJSONResponseSerializer(readingOptions: .allowFragments)
-//
-//        RequestManager.reachabilityManager.setReachabilityStatusChange { (status: AFNetworkReachabilityStatus) -> Void in
-//            if status == .reachableViaWWAN {
-//                RequestManager.operationQueue.isSuspended = false
-//            }
-//            else if status == .reachableViaWiFi {
-//                RequestManager.operationQueue.isSuspended = false
-//            }
-//            else if status == .notReachable {
-//                RequestManager.operationQueue.isSuspended = true
-//            }
-//        }
-//    }
-    
     class func rawRequest(url: String, method: HTTPMethod, parameters: Parameters?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
         Alamofire.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: SessionManager.defaultHTTPHeaders).validate().responseJSON { response in
             switch response.result {
@@ -94,8 +78,4 @@ class RequestManager {
         return params
     }
 
-}
-
-class BSSessionDelegate: SessionDelegate {
-    static let sharedDelegate = BSSessionDelegate()
 }
