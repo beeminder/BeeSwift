@@ -18,4 +18,6 @@ import Foundation
 //    static let facebookUrlScheme = ""
 //    static let googleClientId = ""
 //    static let googleReversedClientId = ""
+//    static let requestSigningKey = ""
 //}
+

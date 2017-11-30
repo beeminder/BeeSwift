@@ -3,7 +3,6 @@ platform :ios, '10.0'
 use_frameworks!
 inhibit_all_warnings!
 target 'BeeSwift' do
-	pod "AFNetworking", '~> 3.0'
 	pod "Alamofire", '~> 4.5'
 	pod "AlamofireImage", '~> 3.3'
 	pod 'AlamofireNetworkActivityIndicator', '~> 2.2'
@@ -19,7 +18,6 @@ target 'BeeSwift' do
 	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '3.9.1'
 end
 target 'BeeSwiftToday' do
-	pod 'AFNetworking', '~>3.0'
 	pod 'Alamofire', '~>4.5'
 	pod 'AlamofireImage', '~>3.3'
 	pod 'SnapKit', '~> 3.2.0'
@@ -29,7 +27,6 @@ target 'BeeSwiftToday' do
 	pod "MBProgressHUD"	
 end
 target 'BeeSwiftTests' do
-	pod "AFNetworking", '~> 3.0'
 	pod "Alamofire", '~> 4.5'
 	pod "AlamofireImage", '~> 3.3'
 	pod 'AlamofireNetworkActivityIndicator', '~> 2.2'

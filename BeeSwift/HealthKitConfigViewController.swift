@@ -65,10 +65,10 @@ class HealthKitConfigViewController: UIViewController {
             var params : [String : [String : String]] = [:]
             params = ["ii_params" : ["name" : "apple", "metric" : goal.healthKitMetric!]]
             
-            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(goal.slug).json", parameters: params,
-               success: { (task, responseObject) -> Void in
+            RequestManager.put(url: "api/v1/users/me/goals/\(goal.slug).json", parameters: params,
+               success: { (responseObject) -> Void in
                 // foo
-            }) { (task, error) -> Void in
+            }) { (error) -> Void in
                 // bar
             }
             

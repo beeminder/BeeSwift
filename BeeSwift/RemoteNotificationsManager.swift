@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import AFNetworking
 
 class RemoteNotificationsManager :NSObject {
     
@@ -48,9 +47,9 @@ class RemoteNotificationsManager :NSObject {
         UserDefaults.standard.synchronize()
         let token = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
         
-        BSHTTPSessionManager.sharedManager.signedPOST("/api/private/device_tokens", parameters: ["device_token" : token], success: { (dataTask, responseObject) -> Void in
+        SignedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: ["device_token" : token], success: { (responseObject) -> Void in
             //foo
-        }) { (dataTask, error) -> Void in
+        }) { (error) -> Void in
             //bar
         }
     }

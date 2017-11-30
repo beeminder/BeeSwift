@@ -60,15 +60,15 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         var userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
         let leadtime = userInfo["leadtime"]
         let params = [ "leadtime" : leadtime, "use_defaults" : false ]
-        BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
-            success: { (task, responseObject) -> Void in
+        RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+            success: { (responseObject) -> Void in
                 self.goal!.leadtime = leadtime!
                 self.goal!.use_defaults = NSNumber(value: false as Bool)
                 self.useDefaultsSwitch.isOn = false
                 NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
                     //completion
                 }
-            }) { (task, error) -> Void in
+            }) { (error) -> Void in
                 // show alert
         }
     }
@@ -77,30 +77,30 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         if self.timePickerEditingMode == .alertstart {
             self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
             let params = ["alertstart" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
-            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
-                success: { (task, responseObject) -> Void in
+            RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+                success: { (responseObject) -> Void in
                     self.goal!.alertstart = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
                     self.useDefaultsSwitch.isOn = false
                     NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
                         //completion
                     }
-                }) { (task, error) -> Void in
+                }) { (error) -> Void in
                     //foo
             }
         }
         if self.timePickerEditingMode == .deadline {
             self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
             let params = ["deadline" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
-            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
-                success: { (task, responseObject) -> Void in
+            RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+                success: { (responseObject) -> Void in
                     self.goal?.deadline = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
                     self.useDefaultsSwitch.isOn = false
                     NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
                         //foo
                     })
-                }) { (task, error) -> Void in
+                }) { (error) -> Void in
                     //foo
             }
         }
@@ -111,8 +111,8 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             let alertController = UIAlertController(title: "Confirm", message: "This will wipe out your current settings for this goal. Are you sure?", preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                 let params = ["use_defaults" : true]
-                BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
-                    success: { (task, responseObject) -> Void in
+                RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+                    success: { (responseObject) -> Void in
                         self.goal?.use_defaults = NSNumber(value: true as Bool)
                         NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
                             //foo
@@ -132,7 +132,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                             }, failure: { () -> Void in
                                 // foo
                         })
-                    }) { (task, error) -> Void in
+                    }) { (error) -> Void in
                         //foo
                 }
             }))
@@ -143,13 +143,13 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         }
         else {
             let params = ["use_defaults" : false]
-            BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
-                success: { (task, responseObject) -> Void in
+            RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+                success: { (responseObject) -> Void in
                     self.goal?.use_defaults = NSNumber(value: false as Bool)
                     NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
                         //foo
                     })
-                }) { (task, error) -> Void in
+                }) { (error) -> Void in
                     //foo
             }
         }

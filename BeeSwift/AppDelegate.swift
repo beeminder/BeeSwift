@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IQKeyboardManager.shared().isEnableAutoToolbar = false
 
         GIDSignIn.sharedInstance().clientID = Config.googleClientId
-        GIDSignIn.sharedInstance().delegate = CurrentUserManager.sharedManager
+        GIDSignIn.sharedInstance().delegate = OAuthSignInManager.sharedManager
 
         if HKHealthStore.isHealthDataAvailable() {
             HealthStoreManager.sharedManager.setupHealthkit()
@@ -76,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-        DataSyncManager.sharedManager.fetchData({ () -> Void in
+        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
             self.updateBadgeCount()
         }, error: { () -> Void in
             //nil
@@ -93,7 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        DataSyncManager.sharedManager.fetchData({ () -> Void in
+        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
             completionHandler(.newData)
         }, error: { () -> Void in
             completionHandler(.failed)
@@ -118,7 +118,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else if url.scheme == Config.twitterUrlScheme {
             return Twitter.sharedInstance().application(app, open: url, options: options)
         }
-        DataSyncManager.sharedManager.fetchData(nil, error: nil)
+        DataSyncManager.sharedManager.fetchData(success: nil, error: nil)
         return true
     }
 
@@ -137,7 +137,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
             }
         }
-        DataSyncManager.sharedManager.fetchData(nil, error: nil)
+        DataSyncManager.sharedManager.fetchData(success: nil, error: nil)
         return true
     }
 

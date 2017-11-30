@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 import Alamofire
 import AlamofireImage
-import AFNetworking
 import MBProgressHUD
 import SwiftyJSON
 
@@ -116,11 +115,9 @@ class TodayTableViewCell: UITableViewCell {
         let params = ["access_token": token, "urtext": "\(formatter.string(from: Date())) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
         guard let slug = self.goalDictionary["slug"] as? String else { return }
         
-        let manager = AFHTTPSessionManager.init(baseURL: URL.init(string: "https://www.beeminder.com"), sessionConfiguration: nil)
-            
-        manager.post("api/v1/users/me/goals/\(slug)/datapoints.json", parameters: params, progress: nil, success: { (dataTask, responseObject) in
+        RequestManager.post(url: "api/v1/users/me/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
             self.pollUntilGraphUpdates()
-        }) { (dataTask, error) in
+        }) { (responseError) in
             self.addDataButton.setTitle("oops!", for: .normal)
         }
     }
@@ -131,13 +128,9 @@ class TodayTableViewCell: UITableViewCell {
     }
     
     @objc func refreshGoal() {
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
         guard let slug = self.goalDictionary["slug"] as? String else { return }
         
-        let manager = AFHTTPSessionManager.init(baseURL: URL.init(string: "https://www.beeminder.com"), sessionConfiguration: nil)
-        
-        manager.get("/api/v1/users/me/goals/\(slug)?access_token=\(token)", parameters: nil, progress: nil, success: { (dataTask, responseObject) in
+        RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: nil, success: { (responseObject) in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
                 self.pollTimer?.invalidate()
@@ -153,7 +146,7 @@ class TodayTableViewCell: UITableViewCell {
                 let urlString = "\(goalJSON["thumb_url"])"
                 self.graphImageView.af_setImage(withURL: URL(string: urlString)!)
             }
-        }) { (dataTask, error) in
+        }) { (responseError) in
             //
         }
     }

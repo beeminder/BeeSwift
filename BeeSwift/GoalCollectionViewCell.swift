@@ -104,7 +104,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         if CurrentUserManager.sharedManager.isDeadbeat() {
             self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
         } else {
-            self.thumbnailImageView.setImageWith(URL(string: goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"))
+            self.thumbnailImageView.af_setImage(withURL: URL(string: goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
         }
     }
 

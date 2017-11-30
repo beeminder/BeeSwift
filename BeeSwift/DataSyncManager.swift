@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import AFNetworking
 import SwiftyJSON
 import MagicalRecord
 
@@ -41,24 +40,32 @@ class DataSyncManager :NSObject {
         UserDefaults.standard.synchronize()
     }
     
-    func fetchData(_ success: (()->Void)!, error: (()->Void)!) {
+    func handleFetchDataSuccess(responseJSON: Any?) {
+        
+    }
+    
+    func fetchData(success: (()->Void)?, error: (()->Void)?) {
         if self.isFetching || !CurrentUserManager.sharedManager.signedIn() {
             return
         }
         
         self.isFetching = true
         
-        BSHTTPSessionManager.sharedManager.get("/api/v1/users/me.json", parameters: ["associations": true, "datapoints_count": 5, "diff_since": self.lastSynced == nil ? 0 : self.lastSynced!.timeIntervalSince1970] as AnyObject, success: { (dataTask, responseObject) -> Void in
-            self.handleResponse(JSON(responseObject!), completion: success)
+        let parameters = ["associations": true, "datapoints_count": 5, "diff_since": self.lastSynced == nil ? 0 : self.lastSynced!.timeIntervalSince1970] as [String : Any]
+        RequestManager.get(url: "api/v1/users/me.json", parameters: parameters, success: { (responseJSON) in
+            self.handleResponse(JSON(responseJSON!), completion: success)
             self.isFetching = false
             self.setLastSynced(Date())
-        }) { (dataTask, responseError) -> Void in
-            if (error != nil) { error() }
+        }) { (responseError) in
+            error?()
             self.isFetching = false
         }
+//        RequestManager.get(url: "api/v1/users/me.json", parameters: parameters, success: self.handleFetchDataSuccess, errorHandler: { (error) in
+//            //
+//        })
     }
     
-    func handleResponse(_ json: JSON, completion: (()->Void)!) {
+    func handleResponse(_ json: JSON, completion: (()->Void)?) {
         CurrentUserManager.sharedManager.setDeadbeat(json["deadbeat"].boolValue)
         let goals = json["goals"].array!
         for goalJSON in goals {
@@ -74,10 +81,10 @@ class DataSyncManager :NSObject {
             }
         }
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
-            let delegate = UIApplication.shared.delegate as! AppDelegate
-            delegate.updateBadgeCount()
-            delegate.updateTodayWidget()
-            if completion != nil && error == nil { completion() }
+//            let delegate = UIApplication.shared.delegate as! AppDelegate
+//            delegate.updateBadgeCount()
+//            delegate.updateTodayWidget()
+            if error == nil { completion?() }
         }
     }
     

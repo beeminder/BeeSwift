@@ -10,6 +10,7 @@ import Foundation
 import SwiftyJSON
 import MagicalRecord
 import MBProgressHUD
+import AlamofireImage
 
 class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate {
     
@@ -330,14 +331,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func safariButtonPressed() {
-        let url = "\(BSHTTPSessionManager.sharedManager.baseURLString)/api/v1/users/me.json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(BSHTTPSessionManager.sharedManager.baseURLString)/\(CurrentUserManager.sharedManager.username!)/\(self.goal!.slug)"
+        let url = "\(RequestManager.baseURLString)/api/v1/users/me.json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(RequestManager.baseURLString)/\(CurrentUserManager.sharedManager.username!)/\(self.goal!.slug)"
         UIApplication.shared.openURL(URL(string: url)!)
     }
     
     @objc func refreshButtonPressed() {
-        BSHTTPSessionManager.sharedManager.get("api/v1/users/me/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, progress: nil, success: { (dataTask, responseObject) in
+        RequestManager.get(url: "api/v1/users/me/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
             self.pollUntilGraphUpdates()
-        }) { (dataTask, error) in
+        }) { (error) in
             let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
@@ -364,7 +365,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         if CurrentUserManager.sharedManager.isDeadbeat() {
             self.goalImageView.image = UIImage(named: "GraphPlaceholder")
         } else {
-            self.goalImageView.setImageWith(URL(string: goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"))
+            self.goalImageView.af_setImage(withURL: URL(string: goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
         }
     }
     
@@ -444,14 +445,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         hud?.mode = .indeterminate
         self.submitButton.isUserInteractionEnabled = false
         self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
-        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": self.urtextFromTextFields(), "requestid": UUID().uuidString]
+        let params = ["urtext": self.urtextFromTextFields(), "requestid": UUID().uuidString]
         
-        BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.goal.slug)/datapoints.json", parameters: params, progress: nil, success: { (dataTask, responseObject) in
+        RequestManager.post(url: "api/v1/users/me/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (responseObject) in
             self.successfullyAddedDatapointWithResponse(responseObject! as AnyObject)
             self.commentTextField.text = ""
             MBProgressHUD.hideAllHUDs(for: self.datapointsTableView, animated: true)
             self.submitButton.isUserInteractionEnabled = true
-        }) { (dataTask, error) in
+        }) { (error) in
             self.submitButton.isUserInteractionEnabled = true
             MBProgressHUD.hideAllHUDs(for: self.datapointsTableView, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
@@ -483,7 +484,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshGoal() {
-        BSHTTPSessionManager.sharedManager.get("/api/v1/users/me/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)", parameters: nil, progress: nil, success: { (dataTask, responseObject) in
+        RequestManager.get(url: "/api/v1/users/me/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)", parameters: nil, success: { (responseObject) in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
                 MBProgressHUD.hideAllHUDs(for: self.goalImageScrollView, animated: true)
@@ -494,7 +495,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 delegate.updateBadgeCount()
                 delegate.updateTodayWidget()
             }
-        }) { (dataTask, error) in
+        }) { (error) in
             // foo
         }
     }

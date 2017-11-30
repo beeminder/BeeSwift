@@ -349,11 +349,11 @@ extension Goal {
                             
                             if datapoints == nil || datapoints?.count == 0 {
                                 let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
-                                self.postDatapoint(params: params, success: { (dataTask, responseObject) in
+                                self.postDatapoint(params: params, success: { (responseObject) in
                                     let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                                     datapoint.goal = self
                                     NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                                }, failure: { (dataTask, error) in
+                                }, failure: { (error) in
                                     print(error)
                                 })
                             } else if datapoints?.count == 1 {
@@ -365,9 +365,9 @@ extension Goal {
                                     "value": "\(datapointValue)",
                                     "comment": "Automatically updated via iOS Health app"
                                 ]
-                                BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (dataTask, responseObject) in
+                                RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
                                     //foo
-                                }, failure: { (dataTask, error) in
+                                }, errorHandler: { (error) in
                                     ///bar
                                 })
                             }
@@ -450,8 +450,8 @@ extension Goal {
         })
     }
     
-    func postDatapoint(params : [String : String], success : ((URLSessionDataTask, Any?) -> Void)?, failure : ((URLSessionDataTask?, Error) -> Void)?) {
-        BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: success, failure: failure)
+    func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?) -> Void)?) {
+        RequestManager.post(url: "api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
     }
     
     func updateBeeminder(collection : HKStatisticsCollection) {
@@ -497,11 +497,11 @@ extension Goal {
                 
                 if datapoints == nil || datapoints?.count == 0 {
                     let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue!) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
-                    BSHTTPSessionManager.sharedManager.post("api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (dataTask, responseObject) -> Void in
+                    RequestManager.post(url: "api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (responseObject) -> Void in
                         let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                         datapoint.goal = self
                         NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                    }) { (dataTask, error) -> Void in
+                    }) { (error) -> Void in
                         print(error)
                     }
                 } else if datapoints?.count == 1 {
@@ -513,9 +513,9 @@ extension Goal {
                         "value": "\(datapointValue!)",
                         "comment": "Automatically updated via iOS Health app"
                     ]
-                    BSHTTPSessionManager.sharedManager.put("api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (dataTask, responseObject) in
+                    RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
                         //foo
-                    }, failure: { (dataTask, error) in
+                    }, errorHandler: { (error) in
                         ///bar
                     })
                 } else {

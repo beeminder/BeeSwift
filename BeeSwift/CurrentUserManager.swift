@@ -8,12 +8,9 @@
 
 import Foundation
 import MagicalRecord
-import AFNetworking
-import FBSDKLoginKit
 import SwiftyJSON
-import TwitterKit
 
-class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate {
+class CurrentUserManager : NSObject {
     
     static let sharedManager = CurrentUserManager()
     static let signedInNotificationName     = "com.beeminder.signedInNotification"
@@ -106,10 +103,10 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     }
     
     func signInWithEmail(_ email: String, password: String) {
-        BSHTTPSessionManager.sharedManager.post("/api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, progress: nil, success: { (dataTask, responseObject) in
+        RequestManager.post(url: "/api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, success: { (responseObject) in
                 self.handleSuccessfulSignin(JSON(responseObject))
-            }) { (dataTask, responseError) in
-                self.handleFailedSignin(responseError)
+            }) { (responseError) in
+                if responseError != nil { self.handleFailedSignin(responseError!) }
         }
     }
     
@@ -127,15 +124,15 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
     }
     
     func syncNotificationDefaults(_ success: (() -> Void)?, failure: (() -> Void)?) {
-        BSHTTPSessionManager.sharedManager.get("api/v1/users/me.json", parameters: [] as AnyObject,
-            success: { (task, responseObject) -> Void in
+        RequestManager.get(url: "api/v1/users/me.json", parameters: [:],
+            success: { (responseObject) -> Void in
                 let responseJSON = JSON(responseObject!)
                 UserDefaults.standard.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
                 UserDefaults.standard.set(responseJSON["default_deadline"].number!, forKey: "default_deadline")
                 UserDefaults.standard.set(responseJSON["default_leadtime"].number!, forKey: "default_leadtime")
                 UserDefaults.standard.synchronize()
                 if (success != nil) { success!() }
-            }, failure: { (task, error) -> Void in
+        }, errorHandler: { (error) -> Void in
                 if (failure != nil) { failure!() }
         })
     }
@@ -179,46 +176,5 @@ class CurrentUserManager : NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.resetNotificationName), object: self)
         }
-    }
-    
-    func signInWithOAuthUserId(_ userId: String, provider: String) {
-        BSHTTPSessionManager.sharedManager.signedPOST("/api/private/sign_in", parameters: ["oauth_user_id": userId, "provider": provider], success: { (dataTask, responseObject) -> Void in
-            self.handleSuccessfulSignin(JSON(responseObject!))
-        }) { (dataTask, responseError) -> Void in
-            self.handleFailedSignin(responseError)
-        }
-    }
-    
-    func signUpWith(email: String, password: String, username: String) {
-        BSHTTPSessionManager.sharedManager.signedPOST("/api/v1/users", parameters: ["email": email, "password": password, "username": username], success: { (dataTask, responseObject) -> Void in
-            self.handleSuccessfulSignin(JSON(responseObject!))
-        }) { (dataTask, responseError) -> Void in
-            self.handleFailedSignup(responseError)
-        }
-    }
-    
-    func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
-        if (result.token != nil) {
-            self.signInWithOAuthUserId(result.token.userID, provider: "facebook")
-        }
-    }
-    
-    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
-        // never called
-    }
-    
-    func loginWithTwitterSession(_ session: TWTRSession!) {
-        self.signInWithOAuthUserId(session.userID, provider: "twitter")
-    }
-    
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        if error != nil {
-            return
-        }
-        self.signInWithOAuthUserId(user.userID, provider: "google_oauth2")
-    }
-    
-    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
-        // never called
     }
 }

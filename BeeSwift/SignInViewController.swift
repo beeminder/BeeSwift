@@ -133,7 +133,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
 
         self.twitterLoginButton = TWTRLogInButton { (session, error) in
             if error == nil {
-                CurrentUserManager.sharedManager.loginWithTwitterSession(session)
+                OAuthSignInManager.sharedManager.loginWithTwitterSession(session)
             }
             else {
                 // show error
@@ -164,7 +164,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         }
         
         GIDSignIn.sharedInstance().uiDelegate = self
-        GIDSignIn.sharedInstance().delegate = CurrentUserManager.sharedManager
+        GIDSignIn.sharedInstance().delegate = OAuthSignInManager.sharedManager
         GIDSignIn.sharedInstance().scopes = ["profile", "email"]
         GIDSignIn.sharedInstance().shouldFetchBasicProfile = true
         scrollView.addSubview(self.googleSigninButton)
@@ -248,7 +248,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     
     @objc func signUpButtonPressed() {
         MBProgressHUD.showAdded(to: self.view, animated: true)
-        CurrentUserManager.sharedManager.signUpWith(email: self.newEmailTextField.text!, password: self.newPasswordTextField.text!, username: self.newUsernameTextField.text!)
+        OAuthSignInManager.sharedManager.signUpWith(email: self.newEmailTextField.text!, password: self.newPasswordTextField.text!, username: self.newUsernameTextField.text!)
     }
     
     @objc func chooseSignInButtonPressed() {
@@ -315,11 +315,11 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
         // show message if error
-        CurrentUserManager.sharedManager.loginButton(loginButton, didCompleteWith: result, error: error as NSError!)
+        OAuthSignInManager.sharedManager.loginButton(loginButton, didCompleteWith: result, error: error as NSError!)
     }
     
     func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
-        CurrentUserManager.sharedManager.loginButtonDidLogOut(loginButton)
+        OAuthSignInManager.sharedManager.loginButtonDidLogOut(loginButton)
     }
     
     @objc func handleFailedSignIn(_ notification : Notification) {
