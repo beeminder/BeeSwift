@@ -1,3 +1,4 @@
+*.swp
 ## Build generated
 build/
 DerivedData/
