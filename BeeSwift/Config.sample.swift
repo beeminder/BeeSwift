@@ -19,5 +19,6 @@ import Foundation
 //    static let googleClientId = ""
 //    static let googleReversedClientId = ""
 //    static let requestSigningKey = ""
+//    static let baseURLString = "https://www.beeminder.com"
 //}
 

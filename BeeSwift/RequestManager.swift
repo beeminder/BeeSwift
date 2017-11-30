@@ -10,9 +10,7 @@ import Foundation
 import Alamofire
 
 class RequestManager {
-    
-    static let baseURLString = "http://localhost:3000"
-//    static let baseURLString = "https://www.beeminder.com"
+    static let baseURLString = Config.baseURLString
     
     class func rawRequest(url: String, method: HTTPMethod, parameters: Parameters?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
         Alamofire.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: SessionManager.defaultHTTPHeaders).validate().responseJSON { response in
