@@ -46,6 +46,7 @@
 		A14D0D001AE48B2B00B0568F /* GoalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14D0CFF1AE48B2B00B0568F /* GoalExtension.swift */; };
 		A15802D81AE4455300E1451D /* DataSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15802D71AE4455300E1451D /* DataSyncManager.swift */; };
 		A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A158DDB51E46EEA10031BD4F /* HealthKit.framework */; };
+		A15A4A0E1FD0B34B00DC3FCA /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BA9A11FCE5187004BB425 /* Config.swift */; };
 		A15FF4201AEB621000A9AD22 /* GoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15FF41F1AEB621000A9AD22 /* GoalCollectionViewCell.swift */; };
 		A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */; };
 		A1619EA61BEECC6700E14B3A /* EditGoalNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */; };
@@ -812,6 +813,7 @@
 				A12E69511BD3EF0200AB94C2 /* TodayViewController.swift in Sources */,
 				A1D853291EB0EA2400FC75DE /* BSLabel.swift in Sources */,
 				A1D8532A1EB0EA2B00FC75DE /* BSButton.swift in Sources */,
+				A15A4A0E1FD0B34B00DC3FCA /* Config.swift in Sources */,
 				A14249301FD0A5A4007736B3 /* HealthKitConfig.swift in Sources */,
 				A1D8532D1EB0EA8100FC75DE /* UIColorExtension.swift in Sources */,
 				A14249251FD0774A007736B3 /* Goal.swift in Sources */,

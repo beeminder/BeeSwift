@@ -49,7 +49,7 @@ class OAuthSignInManager: NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate 
     
     func signInWithOAuthUserId(_ userId: String, provider: String) {
         let params = ["oauth_user_id": userId, "provider": provider]
-        SignedRequestManager.signedPOST(url: "/api/private/sign_in", parameters: params, success: { (responseObject) -> Void in
+        SignedRequestManager.signedPOST(url: "api/private/sign_in", parameters: params, success: { (responseObject) -> Void in
             CurrentUserManager.sharedManager.handleSuccessfulSignin(JSON(responseObject!))
         }) { (responseError) -> Void in
             if responseError != nil { CurrentUserManager.sharedManager.handleFailedSignin(responseError!) }

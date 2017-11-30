@@ -11,12 +11,13 @@ import Alamofire
 
 class SignedRequestManager: RequestManager {
     
-    class func signedGET(url: String, parameters: Parameters?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func signedGET(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
         RequestManager.rawRequest(url: url, method: .get, parameters: SignedRequestManager.signedParameters(RequestManager.authedParams(parameters)), success: success, errorHandler: errorHandler)
     }
     
-    class func signedPOST(url: String, parameters: Parameters?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
-        RequestManager.rawRequest(url: url, method: .post, parameters: SignedRequestManager.signedParameters(RequestManager.authedParams(parameters)), success: success, errorHandler: errorHandler)
+    class func signedPOST(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+        let params = SignedRequestManager.signedParameters(RequestManager.authedParams(parameters))
+        RequestManager.rawRequest(url: url, method: .post, parameters: params, success: success, errorHandler: errorHandler)
     }
     
     fileprivate class func signedParameters(_ params: [String: Any]?) -> [String: Any]? {
@@ -44,6 +45,6 @@ class SignedRequestManager: RequestManager {
         
         let token = base.hmac(algorithm: HMACAlgorithm.SHA1, key: Config.requestSigningKey)
         signed?["beemios_token"] = token
-        return signed! as [String : Any?]
+        return signed! as [String : Any]
     }
 }

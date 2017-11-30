@@ -12,7 +12,7 @@ import Alamofire
 class RequestManager {
     static let baseURLString = Config.baseURLString
     
-    class func rawRequest(url: String, method: HTTPMethod, parameters: Parameters?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
         Alamofire.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: SessionManager.defaultHTTPHeaders).validate().responseJSON { response in
             switch response.result {
             case .success:
@@ -52,16 +52,16 @@ class RequestManager {
         }
     }
     
-    class func get(url: String, parameters: Parameters?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func get(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
         RequestManager.rawRequest(url: url, method: .get, parameters: RequestManager.authedParams(parameters), success: success, errorHandler: errorHandler)
     }
     
     
-    class func put(url: String, parameters: Parameters?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func put(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
         RequestManager.rawRequest(url: url, method: .patch, parameters: RequestManager.authedParams(parameters), success: success, errorHandler: errorHandler)
     }
     
-    class func post(url: String, parameters: Parameters?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func post(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
         RequestManager.rawRequest(url: url, method: .post, parameters: RequestManager.authedParams(parameters), success: success, errorHandler: errorHandler)
     }
     
