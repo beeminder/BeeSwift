@@ -231,10 +231,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func loadGoalsFromDatabase() {
         var sortBy = "losedate"
         var ascending = true
-        if let selectedGoalSort = UserDefaults.standard.value(forKey: Config.selectedGoalSortKey) as? String {
-            if selectedGoalSort == Config.nameGoalSortString { sortBy = "slug" }
-            if selectedGoalSort == Config.recentDataGoalSortString { sortBy = "lasttouch"; ascending = false }
-            if selectedGoalSort == Config.pledgeGoalSortString { sortBy = "pledge"; ascending = false }
+        if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
+            if selectedGoalSort == Constants.nameGoalSortString { sortBy = "slug" }
+            if selectedGoalSort == Constants.recentDataGoalSortString { sortBy = "lasttouch"; ascending = false }
+            if selectedGoalSort == Constants.pledgeGoalSortString { sortBy = "pledge"; ascending = false }
         }
         self.goals = Goal.mr_findAllSorted(by: sortBy, ascending: ascending, with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
     }

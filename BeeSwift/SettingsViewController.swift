@@ -91,7 +91,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         }
         switch section {
         case 0:
-            let selectedGoalSort = UserDefaults.standard.value(forKey: Config.selectedGoalSortKey) as? String
+            let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String
             cell.title = "Sort goals by: \(selectedGoalSort ?? "")"
             cell.imageName = "Sort"
         case 1:

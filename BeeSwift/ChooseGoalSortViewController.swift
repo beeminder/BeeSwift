@@ -41,7 +41,7 @@ class ChooseGoalSortViewController: UIViewController {
 
 extension ChooseGoalSortViewController : UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return Config.goalSortOptions.count
+        return Constants.goalSortOptions.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -51,14 +51,14 @@ extension ChooseGoalSortViewController : UITableViewDataSource, UITableViewDeleg
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as? SettingsTableViewCell else { return UITableViewCell() }
         
-        cell.title = Config.goalSortOptions[indexPath.section]
-        let selectedGoalSort = UserDefaults.standard.value(forKey: Config.selectedGoalSortKey) as? String
-        cell.accessoryType = Config.goalSortOptions[indexPath.section] == selectedGoalSort ? .checkmark : .none
+        cell.title = Constants.goalSortOptions[indexPath.section]
+        let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String
+        cell.accessoryType = Constants.goalSortOptions[indexPath.section] == selectedGoalSort ? .checkmark : .none
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        UserDefaults.standard.set(Config.goalSortOptions[indexPath.section], forKey: Config.selectedGoalSortKey)
+        UserDefaults.standard.set(Constants.goalSortOptions[indexPath.section], forKey: Constants.selectedGoalSortKey)
         UserDefaults.standard.synchronize()
         self.navigationController?.popViewController(animated: true)
     }
