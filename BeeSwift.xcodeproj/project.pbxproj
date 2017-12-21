@@ -11,6 +11,7 @@
 		6E72E1F82DDC41E7CD79BEE4 /* Pods_BeeSwiftTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20121F7A17F740656ADD55D0 /* Pods_BeeSwiftTests.framework */; };
 		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
 		A11488BE1EE9B0CE003316E1 /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11488BD1EE9B0CE003316E1 /* UIDevice.swift */; };
+		A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */; };
 		A11BA9A21FCE5187004BB425 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BA9A11FCE5187004BB425 /* Config.swift */; };
 		A11BA9A41FCE54E3004BB425 /* HealthStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */; };
 		A12B7B271B3BBC1300453CFC /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A12B7B261B3BBC1300453CFC /* GoogleSignIn.bundle */; };
@@ -39,7 +40,7 @@
 		A1453B3D1AEDFA52006F48DA /* CurrentUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */; };
 		A1453B3F1AEDFCC8006F48DA /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */; };
 		A149147B1BE79FD50060600A /* EditNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149147A1BE79FD40060600A /* EditNotificationsViewController.swift */; };
-		A149147F1BE7A5670060600A /* GoalNotificationSettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149147E1BE7A5670060600A /* GoalNotificationSettingsTableViewCell.swift */; };
+		A149147F1BE7A5670060600A /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */; };
 		A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */; };
 		A149B3721AEF54D100F19A09 /* BSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B3711AEF54D100F19A09 /* BSButton.swift */; };
 		A14AF4CB1FCEF4B1006EFCCD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A14AF4CA1FCEF4B1006EFCCD /* GoogleService-Info.plist */; };
@@ -59,6 +60,7 @@
 		A196CB241AE4142F00B90A3E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A196CB231AE4142F00B90A3E /* Images.xcassets */; };
 		A196CB271AE4142F00B90A3E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A196CB251AE4142F00B90A3E /* LaunchScreen.xib */; };
 		A196CB331AE4142F00B90A3E /* BeeSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB321AE4142F00B90A3E /* BeeSwiftTests.swift */; };
+		A1A8BDE61FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */; };
 		A1B53C431B2D098B00AF266F /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B53C421B2D098B00AF266F /* Goal.swift */; };
 		A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723D1B0989DF00584782 /* Foundation.framework */; };
 		A1B672401B0989E800584782 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723F1B0989E800584782 /* UIKit.framework */; };
@@ -129,6 +131,8 @@
 		8A2D58FC1D496CC59C60A22C /* Pods_BeeSwiftToday.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeeSwiftToday.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
 		A11488BD1EE9B0CE003316E1 /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
+		A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseGoalSortViewController.swift; sourceTree = "<group>"; };
+		A11A87C71FEC363600A43E47 /* BeeSwift4.9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeSwift4.9.xcdatamodel; sourceTree = "<group>"; };
 		A11BA9A11FCE5187004BB425 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoreManager.swift; sourceTree = "<group>"; };
 		A12B7B261B3BBC1300453CFC /* GoogleSignIn.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GoogleSignIn.bundle; sourceTree = "<group>"; };
@@ -149,7 +153,7 @@
 		A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentUserManager.swift; sourceTree = "<group>"; };
 		A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		A149147A1BE79FD40060600A /* EditNotificationsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditNotificationsViewController.swift; sourceTree = "<group>"; };
-		A149147E1BE7A5670060600A /* GoalNotificationSettingsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoalNotificationSettingsTableViewCell.swift; sourceTree = "<group>"; };
+		A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		A149B3711AEF54D100F19A09 /* BSButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSButton.swift; sourceTree = "<group>"; };
 		A14AF4CA1FCEF4B1006EFCCD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -175,6 +179,7 @@
 		A196CB311AE4142F00B90A3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A196CB321AE4142F00B90A3E /* BeeSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeSwiftTests.swift; sourceTree = "<group>"; };
 		A1A715EB1EFDB6800063B3DC /* BeeSwift4.6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeSwift4.6.xcdatamodel; sourceTree = "<group>"; };
+		A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureNotificationsViewController.swift; sourceTree = "<group>"; };
 		A1B53C301B2D04EA00AF266F /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		A1B53C421B2D098B00AF266F /* Goal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		A1B6723D1B0989DF00584782 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -349,6 +354,8 @@
 				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
 				A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */,
 				A1EFB53F1F0F2E57005C75AE /* CreateGoalViewController.swift */,
+				A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */,
+				A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */,
 				A196CB201AE4142F00B90A3E /* Main.storyboard */,
 				A196CB231AE4142F00B90A3E /* Images.xcassets */,
 				A196CB251AE4142F00B90A3E /* LaunchScreen.xib */,
@@ -393,7 +400,7 @@
 				A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */,
 				A15FF41F1AEB621000A9AD22 /* GoalCollectionViewCell.swift */,
 				A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */,
-				A149147E1BE7A5670060600A /* GoalNotificationSettingsTableViewCell.swift */,
+				A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */,
 				A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */,
 				A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */,
 			);
@@ -860,12 +867,13 @@
 				A1BEEB511AFDC0DE00E7081F /* RemoteNotificationsManager.swift in Sources */,
 				A11BA9A21FCE5187004BB425 /* Config.swift in Sources */,
 				A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */,
+				A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */,
 				A142492D1FD079B4007736B3 /* SignedRequestManager.swift in Sources */,
 				A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */,
 				A1BCE9851AFFFB3A007322CC /* RequestManager.swift in Sources */,
 				A1B53C431B2D098B00AF266F /* Goal.swift in Sources */,
 				A196CB1D1AE4142F00B90A3E /* BeeSwift.xcdatamodeld in Sources */,
-				A149147F1BE7A5670060600A /* GoalNotificationSettingsTableViewCell.swift in Sources */,
+				A149147F1BE7A5670060600A /* SettingsTableViewCell.swift in Sources */,
 				A1BD0D181AEB30A5001EDE8B /* GoalViewController.swift in Sources */,
 				A196CB1A1AE4142E00B90A3E /* AppDelegate.swift in Sources */,
 				A1EA154F1B01EFCF0052A6E6 /* DatapointExtension.swift in Sources */,
@@ -875,6 +883,7 @@
 				A1619EA61BEECC6700E14B3A /* EditGoalNotificationsViewController.swift in Sources */,
 				A1EFB5401F0F2E57005C75AE /* CreateGoalViewController.swift in Sources */,
 				A12BA9541AFFF21800AFEF32 /* Crypto.swift in Sources */,
+				A1A8BDE61FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift in Sources */,
 				A14249231FD07631007736B3 /* OAuthSignInManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1239,13 +1248,14 @@
 		A196CB1B1AE4142E00B90A3E /* BeeSwift.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				A11A87C71FEC363600A43E47 /* BeeSwift4.9.xcdatamodel */,
 				A1B839C21FB5934C00426FD9 /* BeeSwift4.8.xcdatamodel */,
 				A1A715EB1EFDB6800063B3DC /* BeeSwift4.6.xcdatamodel */,
 				A12E695F1BD44D9A00AB94C2 /* BeeSwift4.2.xcdatamodel */,
 				A15802D21AE43DCE00E1451D /* BeeSwift1.0.xcdatamodel */,
 				A196CB1C1AE4142E00B90A3E /* BeeSwift.xcdatamodel */,
 			);
-			currentVersion = A1B839C21FB5934C00426FD9 /* BeeSwift4.8.xcdatamodel */;
+			currentVersion = A11A87C71FEC363600A43E47 /* BeeSwift4.9.xcdatamodel */;
 			path = BeeSwift.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

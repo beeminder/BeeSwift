@@ -35,6 +35,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleReset), name: NSNotification.Name(rawValue: CurrentUserManager.resetNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleCreateGoalButtonPressed), name: NSNotification.Name(rawValue: "createGoalButtonPressed"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
@@ -133,6 +134,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.navigationController?.pushViewController(SettingsViewController(), animated: true)
     }
     
+    @objc func userDefaultsDidChange() {
+        self.loadGoalsFromDatabase()
+        self.collectionView?.reloadData()
+    }
+    
     @objc func handleSignIn() {
         self.dismiss(animated: true, completion: nil)
     }
@@ -223,8 +229,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func loadGoalsFromDatabase() {
-        self.goals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
-        self.goals = self.goals.sorted { ($0.losedate.intValue < $1.losedate.intValue) }
+        var sortBy = "losedate"
+        var ascending = true
+        if let selectedGoalSort = UserDefaults.standard.value(forKey: Config.selectedGoalSortKey) as? String {
+            if selectedGoalSort == Config.nameGoalSortString { sortBy = "slug" }
+            if selectedGoalSort == Config.recentDataGoalSortString { sortBy = "lasttouch"; ascending = false }
+            if selectedGoalSort == Config.pledgeGoalSortString { sortBy = "pledge"; ascending = false }
+        }
+        self.goals = Goal.mr_findAllSorted(by: sortBy, ascending: ascending, with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

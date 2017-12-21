@@ -12,210 +12,126 @@ import HealthKit
 
 class SettingsViewController: UIViewController {
     
-    fileprivate var emergencyRemindersSwitch = UISwitch()
     fileprivate var tableView = UITableView()
-    fileprivate var goals : [Goal] = []
-    fileprivate var cellReuseIdentifier = "goalNotificationSettingsTableViewCell"
-
+    fileprivate let cellReuseIdentifier = "settingsTableViewCell"
+    
     override func viewDidLoad() {
         self.title = "Settings"
         self.view.backgroundColor = UIColor.white
         
-        NotificationCenter.default.addObserver(self, selector: #selector(SettingsViewController.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
-        
-        var healthKitCell : UIView?
-        
-        if HKHealthStore.isHealthDataAvailable() {
-            healthKitCell = UIView()
-            
-            self.view.addSubview(healthKitCell!)
-            healthKitCell!.snp.makeConstraints({ (make) in
-                if #available(iOS 11.0, *) {
-                    make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(15)
-                    make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-15)
-                } else {
-                    make.left.equalTo(15)
-                    make.right.equalTo(-15)
-                }
-                if #available(iOS 11.0, *) {
-                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(10)
-                } else {
-                    make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
-                }
-                
-                make.height.equalTo(Constants.defaultTextFieldHeight)
-            })
-            
-            let tapGR = UITapGestureRecognizer()
-            healthKitCell!.addGestureRecognizer(tapGR)
-            tapGR.addTarget(self, action: #selector(self.showHealthKitConfig))
-            
-            let label = BSLabel()
-            label.text = "Health app integration"
-            healthKitCell!.addSubview(label)
-            label.snp.makeConstraints({ (make) in
-                make.left.equalTo(healthKitCell!)
-                make.centerY.equalTo(healthKitCell!)
-            })
-            
-            let disclosure = UITableViewCell()
-            healthKitCell!.addSubview(disclosure)
-            disclosure.snp.makeConstraints({ (make) in
-                make.right.equalTo(healthKitCell!)
-                make.centerY.equalTo(healthKitCell!)
-            })
-            disclosure.accessoryType = .disclosureIndicator
-            disclosure.isUserInteractionEnabled = false
-            
-        }
-        
-        self.view.addSubview(self.emergencyRemindersSwitch)
-        self.emergencyRemindersSwitch.addTarget(self, action: #selector(SettingsViewController.emergencyRemindersSwitchChanged), for: .valueChanged)
-        self.updateEmergencyRemindersSwitch()
-        
-        if healthKitCell == nil {
-            self.emergencyRemindersSwitch.snp.makeConstraints { (make) -> Void in
-                if #available(iOS 11.0, *) {
-                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(10)
-                    make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-15)
-                } else {
-                    make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
-                    make.right.equalTo(-15)
-                }
-            }
-        } else {
-            self.emergencyRemindersSwitch.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(healthKitCell!.snp.bottom).offset(10)
-                if #available(iOS 11.0, *) {
-                    make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-15)
-                } else {
-                    make.right.equalTo(-15)
-                }
-            }
-        }
-        
-        let emergencyRemindersLabel = BSLabel()
-        self.view.addSubview(emergencyRemindersLabel)
-        emergencyRemindersLabel.text = "Goal emergency notifications"
-        emergencyRemindersLabel.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(self.emergencyRemindersSwitch)
-            if #available(iOS 11.0, *) {
-                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(15)
-            } else {
-                make.left.equalTo(self.view).offset(15)
-            }
-        }
-        
-        let signOutButton = BSButton()
-        
-        signOutButton.addTarget(self, action: #selector(SettingsViewController.signOutButtonPressed), for: UIControlEvents.touchUpInside)
-        self.view.addSubview(signOutButton)
-        signOutButton.setTitle("Sign Out", for: .normal)
-        signOutButton.snp.makeConstraints { (make) -> Void in
-            if #available(iOS 11.0, *) {
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-30)
-            } else {
-                make.bottom.equalTo(-30)
-            }
-            make.width.equalTo(self.view).multipliedBy(0.75)
-            make.centerX.equalTo(self.view)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-        }
-        
-        let resetButton = BSButton()
-        resetButton.addTarget(self, action: #selector(SettingsViewController.resetButtonPressed), for: .touchUpInside)
-        self.view.addSubview(resetButton)
-        resetButton.setTitle("Reset data", for: .normal)
-        resetButton.snp.makeConstraints { (make) -> Void in
-            make.bottom.equalTo(signOutButton.snp.top).offset(-10)
-            make.left.equalTo(signOutButton)
-            make.right.equalTo(signOutButton)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-            make.centerX.equalTo(self.view)
-        }
+        NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
-            make.top.equalTo(emergencyRemindersSwitch.snp.bottom).offset(5)
-            make.bottom.equalTo(resetButton.snp.top)
+            if #available(iOS 11.0, *) {
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
+            } else {
+                make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
+                make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            }
         }
         
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.tableFooterView = UIView()
-        self.tableView.backgroundColor = UIColor.clear
-        self.tableView.register(GoalNotificationSettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-        self.loadGoalsFromDatabase()
-    }
-    
-    @objc func showHealthKitConfig() {
-        self.navigationController?.pushViewController(HealthKitConfigViewController(), animated: true)
+        self.tableView.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
+        self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
     }
     
     @objc func userDefaultsDidChange() {
-        self.updateEmergencyRemindersSwitch()
+        self.tableView.reloadData()
     }
     
-    func updateEmergencyRemindersSwitch() {
-        self.emergencyRemindersSwitch.isOn = RemoteNotificationsManager.sharedManager.on()
-        self.tableView.isHidden = !self.emergencyRemindersSwitch.isOn        
-    }
-    
-    @objc func resetButtonPressed() {
+    func resetButtonPressed() {
         CurrentUserManager.sharedManager.reset()
         self.navigationController?.popViewController(animated: true)
     }
     
-    @objc func signOutButtonPressed() {
+    func signOutButtonPressed() {
         CurrentUserManager.sharedManager.signOut()
         self.navigationController?.popViewController(animated: true)
-    }
-    
-    @objc func emergencyRemindersSwitchChanged() {
-        self.tableView.isHidden = !self.emergencyRemindersSwitch.isOn
-        if self.emergencyRemindersSwitch.isOn {
-            RemoteNotificationsManager.sharedManager.turnNotificationsOn()
-        }
-        else {
-            RemoteNotificationsManager.sharedManager.turnNotificationsOff()
-        }
-    }
-    
-    func loadGoalsFromDatabase() {
-        self.goals = Goal.mr_findAllSorted(by: "losedate", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
-    }
+    }    
 }
 
 extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return UIView()
+    }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return UIView()
+    }
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return CGFloat.leastNormalMagnitude
+    }
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 20
+    }
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return HKHealthStore.isHealthDataAvailable() ? 5 : 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 1 { return self.goals.count }
         return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! GoalNotificationSettingsTableViewCell!
-        if (indexPath as NSIndexPath).section == 0 {
-            cell?.title = "Default notification settings"
-            return cell!
+        var section = indexPath.section
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as? SettingsTableViewCell else { return UITableViewCell() }
+        cell.backgroundColor = .white
+        if HKHealthStore.isHealthDataAvailable() {
+            if section == 0 {
+                cell.title = "Health app integration"
+                cell.imageName = "Health"
+                return cell
+            }
+            section = section - 1
         }
-        let goal = self.goals[(indexPath as NSIndexPath).row]
-        cell?.title = goal.slug
-        return cell!
+        switch section {
+        case 0:
+            let selectedGoalSort = UserDefaults.standard.value(forKey: Config.selectedGoalSortKey) as? String
+            cell.title = "Sort goals by: \(selectedGoalSort ?? "")"
+            cell.imageName = "Sort"
+        case 1:
+            cell.title = "Goal emergency notifications: \(RemoteNotificationsManager.sharedManager.on() ? "on" : "off")"
+            cell.imageName = "Notifications"
+        case 2:
+            cell.title = "Reset data"
+            cell.imageName = "ResetData"
+            cell.accessoryType = .none
+        case 3:
+            cell.title = "Sign out"
+            cell.imageName = "SignOut"
+            cell.accessoryType = .none
+        default:
+            break
+        }
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (indexPath as NSIndexPath).section == 0 {
-            self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
-        } else {
-            let goal = self.goals[(indexPath as NSIndexPath).row]
-            self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
+        var section = indexPath.section
+        if HKHealthStore.isHealthDataAvailable() {
+            if section == 0 {
+                self.navigationController?.pushViewController(HealthKitConfigViewController(), animated: true)
+                return
+            }
+            section = section - 1
         }
-        self.tableView.deselectRow(at: indexPath, animated: true)
+        
+        switch section {
+        case 0:
+            self.navigationController?.pushViewController(ChooseGoalSortViewController(), animated: true)
+        case 1:
+            self.navigationController?.pushViewController(ConfigureNotificationsViewController(), animated: true)
+        case 2:
+            self.resetButtonPressed()
+        case 3:
+            self.signOutButtonPressed()
+        default:
+            break
+        }
     }
 }

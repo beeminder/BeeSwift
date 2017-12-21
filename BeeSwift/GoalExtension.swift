@@ -32,6 +32,14 @@ extension Goal {
         goal.deadline = json["deadline"].number!
         goal.leadtime = json["leadtime"].number!
         goal.alertstart = json["alertstart"].number!
+        if let lasttouchString = json["lasttouch"].string {
+            let formatter = DateFormatter.init()
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+            if let lasttouchDate = formatter.date(from: lasttouchString) {
+                goal.lasttouch = NSNumber(value: lasttouchDate.timeIntervalSince1970)
+            }
+        }
+        
         goal.losedate = json["losedate"].number!
         goal.runits = json["runits"].string!
         if json["rate"].number != nil { goal.rate = json["rate"].number! }

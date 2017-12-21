@@ -47,7 +47,7 @@ class HealthKitConfigViewController: UIViewController {
     }
     
     func loadGoalsFromDatabase() {
-        self.goals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
+        self.goals = Goal.mr_findAllSorted(by: "slug", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
     }
     
     @objc func handleMetricSavedNotification(notification : Notification) {
