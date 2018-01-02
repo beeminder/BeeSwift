@@ -14,6 +14,7 @@ class TimerViewController: UIViewController {
     let timerLabel = BSLabel()
     let startStopButton = BSButton()
     var isTiming = false
+    var timer: Timer?
     var elapsedTime = 0 {
         didSet {
             let hours = self.elapsedTime/3600
@@ -25,7 +26,6 @@ class TimerViewController: UIViewController {
             self.timerLabel.text = "\(strHours):\(strMinutes):\(strSeconds)"
         }
     }
-    var timer: Timer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,12 +38,18 @@ class TimerViewController: UIViewController {
         }
         self.timerLabel.text = "00:00:00"
         self.timerLabel.textColor = .white
-        self.timerLabel.font = UIFont(name: "Avenir-Black", size: 28)
+        self.timerLabel.font = UIFont(name: "Avenir-Black", size: 48)
         
         let exitButton = BSButton()
         self.view.addSubview(exitButton)
         exitButton.snp.makeConstraints { (make) in
-            make.left.bottom.equalTo(0)
+            if #available(iOS 11.0, *) {
+                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
+            } else {
+                make.left.bottom.equalTo(0)
+            }
+            make.right.equalTo(self.view.snp.centerX)
         }
         exitButton.backgroundColor = .clear
         exitButton.addTarget(self, action: #selector(self.exitButtonPressed), for: .touchUpInside)
@@ -54,6 +60,7 @@ class TimerViewController: UIViewController {
             make.top.equalTo(self.view.snp.centerY).offset(10)
             make.centerX.equalTo(self.view)
         }
+        self.startStopButton.backgroundColor = .clear
         self.startStopButton.addTarget(self, action: #selector(self.startStopButtonPressed), for: .touchUpInside)
         self.startStopButton.setTitle("Start", for: .normal)
         
@@ -63,13 +70,20 @@ class TimerViewController: UIViewController {
             make.top.equalTo(self.startStopButton.snp.bottom).offset(10)
             make.centerX.equalTo(self.view)
         }
+        addDatapointButton.backgroundColor = .clear
         addDatapointButton.addTarget(self, action: #selector(self.addDatapointButtonPressed), for: .touchUpInside)
         addDatapointButton.setTitle("Add Datapoint", for: .normal)
         
         let resetButton = BSButton()
         self.view.addSubview(resetButton)
         resetButton.snp.makeConstraints { (make) in
-            make.right.bottom.equalTo(0)
+            make.left.equalTo(self.view.snp.centerX)
+            if #available(iOS 11.0, *) {
+                make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
+            } else {
+                make.right.bottom.equalTo(0)
+            }
         }
         resetButton.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
         resetButton.setTitle("Reset", for: .normal)
@@ -109,6 +123,6 @@ class TimerViewController: UIViewController {
     
     @objc func addDatapointButtonPressed() {
         // add datapoint
-        self.elapsedTime = 0
+        self.resetButtonPressed()
     }
 }
