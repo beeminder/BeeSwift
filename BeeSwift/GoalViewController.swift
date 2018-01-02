@@ -311,7 +311,15 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.top.equalTo(self.valueStepper.snp.bottom).offset(10)
             make.bottom.equalTo(self.submitButton)
         }
-        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(GoalViewController.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(GoalViewController.safariButtonPressed))]
+        
+        var items = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(self.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.safariButtonPressed))]
+        
+        if (!self.goal.hideDataEntry()) {
+            items.append(UIBarButtonItem.init(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
+        }
+        
+        self.navigationItem.rightBarButtonItems = items
+        
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -328,6 +336,25 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.refreshCountdown()
         self.pledgeLabel.text = "$\(self.goal.pledge)"
         self.deltasLabel.attributedText = self.goal.attributedDeltaText
+    }
+    
+    @objc func timerButtonPressed() {
+        let controller = TimerViewController()
+        controller.slug = self.goal.slug
+        
+        do {
+            let hoursRegex = try NSRegularExpression(pattern: "(hr|hour)s?")
+            let minutesRegex = try NSRegularExpression(pattern: "(min|minute)s?")
+            if hoursRegex.firstMatch(in: self.goal.yaxis, options: [], range: NSMakeRange(0, self.goal.yaxis.count)) != nil {
+                controller.units = "hours"
+            }
+            if minutesRegex.firstMatch(in: self.goal.yaxis, options: [], range: NSMakeRange(0, self.goal.yaxis.count)) != nil {
+                controller.units = "minutes"
+            }
+        } catch {
+            //
+        }
+        self.present(controller, animated: true, completion: nil)
     }
     
     @objc func safariButtonPressed() {

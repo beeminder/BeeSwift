@@ -24,6 +24,7 @@ class Goal: NSManagedObject {
     @NSManaged var pledge: NSNumber
     @NSManaged var rate: NSNumber
     @NSManaged var runits: String
+    @NSManaged var yaxis: String
     @NSManaged var serverDeleted: NSNumber
     @NSManaged var slug: String
     @NSManaged var thumb_url: String

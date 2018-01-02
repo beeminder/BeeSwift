@@ -42,6 +42,7 @@ extension Goal {
         
         goal.losedate = json["losedate"].number!
         goal.runits = json["runits"].string!
+        goal.yaxis = json["yaxis"].string!
         if json["rate"].number != nil { goal.rate = json["rate"].number! }
         if json["delta_text"].string != nil { goal.delta_text = json["delta_text"].string! }
         goal.won = json["won"].number!
@@ -283,6 +284,15 @@ extension Goal {
         return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
             metric.databaseString == self.healthKitMetric
         }?.hkCategoryTypeIdentifier
+    }
+    
+    func hkPermissionType() -> HKObjectType? {
+        if self.hkQuantityTypeIdentifier() != nil {
+            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
+        } else if self.hkCategoryTypeIdentifier() != nil {
+            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        }
+        return nil
     }
     
     func hideDataEntry() -> Bool {

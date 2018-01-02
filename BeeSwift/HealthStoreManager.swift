@@ -17,6 +17,15 @@ class HealthStoreManager :NSObject {
     func setupHealthkit() {
         self.healthStore = HKHealthStore()
         let allGoals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
-        allGoals.forEach { (goal) in goal.setupHealthKit() }
+        var permissions = Set<HKObjectType>.init()
+        allGoals.forEach { (goal) in
+            if goal.hkPermissionType() != nil { permissions.insert(goal.hkPermissionType()!) }
+        }
+        guard permissions.count > 0 else { return }
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        
+        healthStore.requestAuthorization(toShare: nil, read: permissions, completion: { (success, error) in
+            allGoals.forEach { (goal) in goal.setupHealthKit() }
+        })
     }
 }
