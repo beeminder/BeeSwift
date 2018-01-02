@@ -8,24 +8,17 @@
 
 import UIKit
 import SnapKit
+import MBProgressHUD
 
 class TimerViewController: UIViewController {
     
     let timerLabel = BSLabel()
     let startStopButton = BSButton()
-    var isTiming = false
+    var timingSince: Date?
     var timer: Timer?
-    var elapsedTime = 0 {
-        didSet {
-            let hours = self.elapsedTime/3600
-            let minutes = (self.elapsedTime/60) % 60
-            let seconds = self.elapsedTime % 60
-            let strHours = String(format: "%02d", hours)
-            let strMinutes = String(format: "%02d", minutes)
-            let strSeconds = String(format: "%02d", seconds)
-            self.timerLabel.text = "\(strHours):\(strMinutes):\(strSeconds)"
-        }
-    }
+    var slug: String?
+    var units: String?
+    var accumulatedSeconds = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,30 +92,71 @@ class TimerViewController: UIViewController {
         self.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
+    func totalSeconds() -> Double {
+        var total = Double(self.accumulatedSeconds)
+        if self.timingSince != nil {
+            total += Date().timeIntervalSince(self.timingSince!)
+        }
+        return total
+    }
+    
+    @objc func updateTimerLabel() {
+        let total = Int(self.totalSeconds())
+        let hours = total/3600
+        let minutes = (total/60) % 60
+        let seconds = total % 60
+        let strHours = String(format: "%02d", hours)
+        let strMinutes = String(format: "%02d", minutes)
+        let strSeconds = String(format: "%02d", seconds)
+        self.timerLabel.text = "\(strHours):\(strMinutes):\(strSeconds)"
+    }
+    
     @objc func startStopButtonPressed() {
-        if self.timer == nil {
+        if self.timingSince == nil {
+            self.timingSince = Date()
             self.startStopButton.setTitle("Stop", for: .normal)
-            self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateElapsedTime), userInfo: nil, repeats: true)
+            self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateTimerLabel), userInfo: nil, repeats: true)
         } else {
+            self.accumulatedSeconds += Int(Date().timeIntervalSince(self.timingSince!))
             self.startStopButton.setTitle("Start", for: .normal)
             self.timer?.invalidate()
             self.timer = nil
+            self.timingSince = nil
         }
-    }
-    
-    @objc func updateElapsedTime() {
-        self.elapsedTime += 1
     }
     
     @objc func resetButtonPressed() {
         self.startStopButton.setTitle("Start", for: .normal)
         self.timer?.invalidate()
         self.timer = nil
-        self.elapsedTime = 0
+        self.timingSince = nil
+        self.accumulatedSeconds = 0
+    }
+    
+    func urtext() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.dateFormat = "d"
+        
+        var value = self.totalSeconds()/3600.0
+        if self.units == "minutes" { value = self.totalSeconds()/60.0 }
+        
+        let comment = "Automatically entered from iOS timer interface"
+        
+        return "\(formatter.string(from: Date())) \(value) \"\(comment)\""
     }
     
     @objc func addDatapointButtonPressed() {
-        // add datapoint
+        if self.slug == nil { return }
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hud?.mode = .indeterminate
+        let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
+        RequestManager.post(url: "api/v1/users/me/goals/\(self.slug!)/datapoints.json", parameters: params, success: { (responseObject) in
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        }) { (error) in
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
+        }
         self.resetButtonPressed()
     }
 }

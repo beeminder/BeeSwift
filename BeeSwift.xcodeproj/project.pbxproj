@@ -137,6 +137,7 @@
 		A11BA9A11FCE5187004BB425 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoreManager.swift; sourceTree = "<group>"; };
 		A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewController.swift; sourceTree = "<group>"; };
+		A11BC2DA1FFBE2B200E56064 /* BeeSwift5.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeSwift5.0.xcdatamodel; sourceTree = "<group>"; };
 		A12B7B261B3BBC1300453CFC /* GoogleSignIn.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GoogleSignIn.bundle; sourceTree = "<group>"; };
 		A12BA94B1AFF201B00AFEF32 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -1252,6 +1253,7 @@
 		A196CB1B1AE4142E00B90A3E /* BeeSwift.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				A11BC2DA1FFBE2B200E56064 /* BeeSwift5.0.xcdatamodel */,
 				A11A87C71FEC363600A43E47 /* BeeSwift4.9.xcdatamodel */,
 				A1B839C21FB5934C00426FD9 /* BeeSwift4.8.xcdatamodel */,
 				A1A715EB1EFDB6800063B3DC /* BeeSwift4.6.xcdatamodel */,
@@ -1259,7 +1261,7 @@
 				A15802D21AE43DCE00E1451D /* BeeSwift1.0.xcdatamodel */,
 				A196CB1C1AE4142E00B90A3E /* BeeSwift.xcdatamodel */,
 			);
-			currentVersion = A11A87C71FEC363600A43E47 /* BeeSwift4.9.xcdatamodel */;
+			currentVersion = A11BC2DA1FFBE2B200E56064 /* BeeSwift5.0.xcdatamodel */;
 			path = BeeSwift.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

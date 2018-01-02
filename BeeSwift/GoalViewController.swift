@@ -339,7 +339,22 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func timerButtonPressed() {
-        self.present(TimerViewController(), animated: true, completion: nil)
+        let controller = TimerViewController()
+        controller.slug = self.goal.slug
+        
+        do {
+            let hoursRegex = try NSRegularExpression(pattern: "(hr|hour)s?")
+            let minutesRegex = try NSRegularExpression(pattern: "(min|minute)s?")
+            if hoursRegex.firstMatch(in: self.goal.yaxis, options: [], range: NSMakeRange(0, self.goal.yaxis.count)) != nil {
+                controller.units = "hours"
+            }
+            if minutesRegex.firstMatch(in: self.goal.yaxis, options: [], range: NSMakeRange(0, self.goal.yaxis.count)) != nil {
+                controller.units = "minutes"
+            }
+        } catch {
+            //
+        }
+        self.present(controller, animated: true, completion: nil)
     }
     
     @objc func safariButtonPressed() {
