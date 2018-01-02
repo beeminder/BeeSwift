@@ -131,6 +131,7 @@ class TimerViewController: UIViewController {
         self.timer = nil
         self.timingSince = nil
         self.accumulatedSeconds = 0
+        self.updateTimerLabel()
     }
     
     func urtext() -> String {
@@ -152,11 +153,17 @@ class TimerViewController: UIViewController {
         hud?.mode = .indeterminate
         let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
         RequestManager.post(url: "api/v1/users/me/goals/\(self.slug!)/datapoints.json", parameters: params, success: { (responseObject) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            hud?.mode = .text
+            hud?.labelText = "Added!"
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            })
+            self.resetButtonPressed()
+            
         }) { (error) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
         }
-        self.resetButtonPressed()
+        
     }
 }
