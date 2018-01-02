@@ -286,6 +286,15 @@ extension Goal {
         }?.hkCategoryTypeIdentifier
     }
     
+    func hkPermissionType() -> HKObjectType? {
+        if self.hkQuantityTypeIdentifier() != nil {
+            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
+        } else if self.hkCategoryTypeIdentifier() != nil {
+            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        }
+        return nil
+    }
+    
     func hideDataEntry() -> Bool {
         return self.autodata.count > 0 || self.won.boolValue
     }
