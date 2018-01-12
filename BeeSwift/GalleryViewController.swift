@@ -23,6 +23,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let newGoalCellReuseIdentifier = "NewGoalCell"
     var refreshControl = UIRefreshControl()
     var deadbeatView = UIView()
+    let noGoalsLabel = BSLabel()
     
     var goals : [Goal] = []
 
@@ -117,6 +118,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
             make.bottom.equalTo(0)
         }
+        
+        self.view.addSubview(self.noGoalsLabel)
+        self.noGoalsLabel.snp.makeConstraints { (make) in
+            make.top.left.right.equalTo(self.collectionView!)
+        }
+        self.noGoalsLabel.text = "No goals yet!\n\nIn-app goal creation is coming soon, but for now, head to beeminder.com to create a goal."
+        self.noGoalsLabel.textAlignment = .center
+        self.noGoalsLabel.numberOfLines = 0
+        self.noGoalsLabel.isHidden = true
         
         self.fetchData(self.refreshControl)
     }
@@ -213,6 +223,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.updateDeadbeatHeight()
             self.hasFetchedData = true
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            if self.goals.count == 0 {
+                self.noGoalsLabel.isHidden = false
+                self.collectionView?.isHidden = true
+            } else {
+                self.noGoalsLabel.isHidden = true
+                self.collectionView?.isHidden = false
+            }
             if refreshControl != nil {
                 refreshControl!.endRefreshing()
             }
