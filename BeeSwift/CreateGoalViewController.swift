@@ -22,7 +22,7 @@ class CreateGoalViewController: UIViewController {
         }
         webView.delegate = self
         
-        let url = URL.init(string: "\(RequestManager.baseURLString)/api/v1/users/me.json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(RequestManager.baseURLString)/new")
+        let url = URL.init(string: "\(RequestManager.baseURLString)/api/v1/users/me.json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true")
         webView.loadRequest(URLRequest(url: url!))
     }
     

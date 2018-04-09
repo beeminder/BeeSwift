@@ -19,17 +19,6 @@ class ChooseHKMetricViewController: UIViewController {
         self.view.backgroundColor = .white
         self.title = "Choose metric"
         
-        let warningLabel = BSLabel()
-        self.view.addSubview(warningLabel)
-        warningLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
-            make.centerX.equalTo(self.view)
-            make.left.equalTo(20)
-            make.right.equalTo(-20)
-        }
-        warningLabel.text = "Choose wisely! Once you add a metric to a goal, they're paired for life, much like albatross. \n\nYou can email support@beeminder.com if you need to undo anything, though."
-        warningLabel.numberOfLines = 0
-        
         let saveButton = BSButton()
         self.view.addSubview(saveButton)
         saveButton.snp.makeConstraints { (make) in
@@ -45,8 +34,8 @@ class ChooseHKMetricViewController: UIViewController {
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.snp.makeConstraints { (make) in
-            make.top.equalTo(warningLabel.snp.bottom).offset(20)
-            make.centerX.equalTo(warningLabel)
+            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
+            make.centerX.equalTo(self.view)
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.bottom.equalTo(saveButton.snp.top).offset(-20)

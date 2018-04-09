@@ -46,8 +46,13 @@ class HealthKitConfigViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        self.loadGoalsFromDatabase()
+    }
+    
     func loadGoalsFromDatabase() {
         self.goals = Goal.mr_findAllSorted(by: "slug", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
+        self.tableView.reloadData()
     }
     
     @objc func handleMetricSavedNotification(notification : Notification) {
@@ -104,6 +109,10 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
         
         if goal.autodata.count == 0 {
             self.navigationController?.pushViewController(ChooseHKMetricViewController(), animated: true)
+        } else if goal.autodata == "apple" {
+            let controller = RemoveHKMetricViewController()
+            controller.goal = goal
+            self.navigationController?.pushViewController(controller, animated: true)
         }
     }
 }

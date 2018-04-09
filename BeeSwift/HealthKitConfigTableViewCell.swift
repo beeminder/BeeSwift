@@ -15,7 +15,7 @@ class HealthKitConfigTableViewCell: UITableViewCell {
             self.goalnameLabel.text = self.goal?.slug
             self.autodataNameLabel.text = self.goal?.humanizedAutodata()
             if self.goal!.autodata.count > 0 {
-                self.autodataNameLabel.layer.opacity = 0.5
+                if self.goal!.autodata != "apple" { self.autodataNameLabel.layer.opacity = 0.5 }
                 self.addMetricLabel.isHidden = true
             } else {
                 self.addMetricLabel.isHidden = false
