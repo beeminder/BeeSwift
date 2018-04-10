@@ -493,7 +493,6 @@ extension Goal {
                     fatalError("*** Unable to create a quantity type ***")
                 }
                 
-                
                 if quantityType.aggregationStyle == .cumulative {
                     let quantity = statistics.sumQuantity()
                     datapointValue = quantity?.doubleValue(for: unit)
