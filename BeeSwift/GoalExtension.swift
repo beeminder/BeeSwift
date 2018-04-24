@@ -305,6 +305,10 @@ extension Goal {
         return formatter.string(from: Date())
     }
     
+    func queryHealthKitForLast(days : Int) {
+        //
+    }
+    
     func setupHealthKitForSessions() {
         guard let categoryTypeIdentifier = self.hkCategoryTypeIdentifier() else { return }
         
@@ -517,6 +521,7 @@ extension Goal {
                     RequestManager.post(url: "api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (responseObject) -> Void in
                         let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                         datapoint.goal = self
+                        
                         NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
                     }) { (error) -> Void in
                         print(error)

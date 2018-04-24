@@ -312,6 +312,41 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.bottom.equalTo(self.submitButton)
         }
         
+        if goal.autodata == "apple" {
+            let appleSyncView = UIView()
+            self.view.addSubview(appleSyncView)
+            appleSyncView.snp.makeConstraints({ (make) in
+                make.top.equalTo(self.datapointsTableView.snp.bottom).offset(10)
+                if #available(iOS 11.0, *) {
+                    make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(10)
+                } else {
+                    make.left.equalTo(10)
+                }
+                make.right.equalTo(self.datapointsTableView)
+                make.bottom.equalTo(0)
+                make.height.equalTo(120)
+            })
+            
+            let syncTodayButton = BSButton()
+            appleSyncView.addSubview(syncTodayButton)
+            syncTodayButton.snp.makeConstraints({ (make) in
+                make.left.top.equalTo(10)
+                make.right.equalTo(-10)
+                make.height.equalTo(42)
+            })
+            syncTodayButton.setTitle("Sync with Health app", for: .normal)
+            
+            let syncWeekButton = BSButton()
+            appleSyncView.addSubview(syncWeekButton)
+            syncWeekButton.snp.makeConstraints({ (make) in
+                make.left.right.equalTo(syncTodayButton)
+                make.top.equalTo(syncTodayButton.snp.bottom).offset(10)
+                make.height.equalTo(42)
+            })
+            syncWeekButton.setTitle("Sync last 7 days", for: .normal)
+            
+        }
+        
         var items = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(self.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.safariButtonPressed))]
         
         if (!self.goal.hideDataEntry()) {
@@ -319,7 +354,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         self.navigationItem.rightBarButtonItems = items
-        
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
