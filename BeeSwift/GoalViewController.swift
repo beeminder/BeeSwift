@@ -335,6 +335,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 make.height.equalTo(42)
             })
             syncTodayButton.setTitle("Sync with Health app", for: .normal)
+            syncTodayButton.addTarget(self, action: #selector(self.syncTodayButtonPressed), for: .touchUpInside)
             
             let syncWeekButton = BSButton()
             appleSyncView.addSubview(syncWeekButton)
@@ -344,7 +345,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 make.height.equalTo(42)
             })
             syncWeekButton.setTitle("Sync last 7 days", for: .normal)
-            
+            syncWeekButton.addTarget(self, action: #selector(self.syncWeekButtonPressed), for: .touchUpInside)
         }
         
         var items = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(self.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.safariButtonPressed))]
@@ -354,6 +355,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         self.navigationItem.rightBarButtonItems = items
+    }
+    
+    func syncTodayButtonPressed() {
+        //
+    }
+    
+    func syncWeekButtonPressed() {
+        //
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
