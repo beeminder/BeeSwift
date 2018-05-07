@@ -358,11 +358,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func syncTodayButtonPressed() {
-        //
+        self.goal.hkQueryForLast(days: 1)
     }
     
     func syncWeekButtonPressed() {
-        //
+        self.goal.hkQueryForLast(days: 7)
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {

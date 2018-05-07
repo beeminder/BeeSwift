@@ -286,6 +286,21 @@ extension Goal {
         }?.hkCategoryTypeIdentifier
     }
     
+    func hkSampleType() -> Any? {
+        if self.hkQuantityTypeIdentifier() != nil { return self.hkQuantityTypeIdentifier() }
+        if self.hkCategoryTypeIdentifier() != nil { return self.hkCategoryTypeIdentifier() }
+        return nil
+    }
+    
+    func hkObserverQuery() -> HKObserverQuery? {
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return nil }
+        guard let sampleType = self.hkSampleType() as? HKSampleType else { return nil }
+        return HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
+            self.hkQueryForLast(days: 0)
+            completionHandler()
+        })
+    }
+    
     func hkPermissionType() -> HKObjectType? {
         if self.hkQuantityTypeIdentifier() != nil {
             return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
@@ -305,8 +320,82 @@ extension Goal {
         return formatter.string(from: Date())
     }
     
-    func queryHealthKitForLast(days : Int) {
-        //
+    func hkDatapointValueForSamples(samples : [HKSample]) -> Double {
+        if self.hkQuantityTypeIdentifier() == HKQuantityTypeIdentifier.stepCount {
+            //
+        }
+        
+//        for sample in samples! {
+//            if let s = sample as? HKCategorySample {
+//                if categoryTypeIdentifier != .sleepAnalysis ||
+//                    (self.healthKitMetric == "timeAsleep" && s.value == HKCategoryValueSleepAnalysis.asleep.rawValue) ||
+//                    (self.healthKitMetric == "timeInBed" && s.value == HKCategoryValueSleepAnalysis.inBed.rawValue) {
+//                    let duration = s.endDate.timeIntervalSince(s.startDate)
+//                    totalDuration += duration
+//                }
+//            }
+//        }
+//        if #available(iOS 10.0, *) {
+//            datapointValue = self.hkCategoryTypeIdentifier() == .mindfulSession ? totalDuration/60 : totalDuration / 3600
+//        } else {
+//            datapointValue = totalDuration / 3600
+//        }
+        return 33
+    }
+    
+    func hkQueryForLast(days : Int) {
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let sampleType = self.hkSampleType() as? HKSampleType else { return }
+        
+        (-1*days...0).forEach({ (offset) in
+            let calendar = Calendar.current
+            guard let startDate = calendar.date(byAdding: .day, value: -1*days, to: Date()) else { return }
+            guard let endDate = calendar.date(byAdding: .day, value: 1, to: startDate) else { return }
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyyMMdd"
+            let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
+            let daystamp = formatter.string(from: datapointDate)
+            
+            let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id))
+            
+            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+            
+            let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
+                if error != nil || samples == nil { return }
+                
+                let datapointValue = self.hkDatapointValueForSamples(samples: samples!)
+                
+                if datapointValue == 0 { return }
+                
+                if datapoints == nil || datapoints?.count == 0 {
+                    let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
+                    self.postDatapoint(params: params, success: { (responseObject) in
+                        let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
+                        datapoint.goal = self
+                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+                    }, failure: { (error) in
+                        print(error)
+                    })
+                } else if datapoints?.count == 1 {
+                    let datapoint = datapoints?.first as! Datapoint
+                    formatter.dateFormat = "hh:mm"
+                    let params = [
+                        "access_token": CurrentUserManager.sharedManager.accessToken!,
+                        "timestamp": "\(datapointDate)",
+                        "value": "\(datapointValue)",
+                        "comment": "Automatically updated via iOS Health app"
+                    ]
+                    RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                        //foo
+                    }, errorHandler: { (error) in
+                        ///bar
+                    })
+                }
+                
+            })
+            healthStore.execute(query)
+        })
     }
     
     func setupHealthKitForSessions() {
