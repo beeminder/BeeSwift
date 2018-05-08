@@ -344,21 +344,10 @@ extension Goal {
         return 0
     }
     
-    func hkDatapointValueForSamples(samples : [HKSample]) -> Double {
+    func hkDatapointValueForSamples(samples : [HKSample], units: HKUnit?) -> Double {
         var datapointValue : Double = 0
-        if self.hkQuantityTypeIdentifier() != nil {
-            guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return 0 }
-            guard let sample = samples.first as? HKQuantitySample else { return 0 }
-            healthStore.preferredUnits(for: [sample.quantityType]) { (units, error) in
-                guard let unit = units.first?.value else { return }
-                samples.forEach { (sample) in
-                    datapointValue += self.hkDatapointValueForSample(sample: sample, units: unit)
-                }
-            }
-        } else {
-            samples.forEach { (sample) in
-                datapointValue += self.hkDatapointValueForSample(sample: sample, units: nil)
-            }
+        samples.forEach { (sample) in
+            datapointValue += self.hkDatapointValueForSample(sample: sample, units: units)
         }
         return datapointValue
     }
@@ -389,35 +378,38 @@ extension Goal {
             let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
                 if error != nil || samples == nil { return }
                 
-                let datapointValue = self.hkDatapointValueForSamples(samples: samples!)
-                
-                if datapointValue == 0 { return }
-                
-                if datapoints == nil || datapoints?.count == 0 {
-                    let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
-                    self.postDatapoint(params: params, success: { (responseObject) in
-                        let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                        datapoint.goal = self
-                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                    }, failure: { (error) in
-                        print(error)
-                    })
-                } else if datapoints?.count == 1 {
-                    let datapoint = datapoints?.first as! Datapoint
-                    formatter.dateFormat = "hh:mm"
-                    let params = [
-                        "access_token": CurrentUserManager.sharedManager.accessToken!,
-                        "timestamp": "\(datapointDate)",
-                        "value": "\(datapointValue)",
-                        "comment": "Automatically updated via iOS Health app"
-                    ]
-                    RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                        //foo
-                    }, errorHandler: { (error) in
-                        ///bar
-                    })
+                guard let sample = samples!.first as? HKQuantitySample else { return }
+                healthStore.preferredUnits(for: [sample.quantityType]) { (units, error) in
+                    guard let unit = units.first?.value else { return }
+                    let datapointValue = self.hkDatapointValueForSamples(samples: samples!, units: unit)
+                    
+                    if datapointValue == 0 { return }
+                    
+                    if datapoints == nil || datapoints?.count == 0 {
+                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
+                        self.postDatapoint(params: params, success: { (responseObject) in
+                            let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
+                            datapoint.goal = self
+                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+                        }, failure: { (error) in
+                            print(error)
+                        })
+                    } else if datapoints?.count == 1 {
+                        let datapoint = datapoints?.first as! Datapoint
+                        formatter.dateFormat = "hh:mm"
+                        let params = [
+                            "access_token": CurrentUserManager.sharedManager.accessToken!,
+                            "timestamp": "\(datapointDate)",
+                            "value": "\(datapointValue)",
+                            "comment": "Automatically updated via iOS Health app"
+                        ]
+                        RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                            //foo
+                        }, errorHandler: { (error) in
+                            ///bar
+                        })
+                    }
                 }
-                
             })
             healthStore.execute(query)
         })
