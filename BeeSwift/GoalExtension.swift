@@ -323,31 +323,44 @@ extension Goal {
         return formatter.string(from: Date())
     }
     
-    func hkDatapointValueForSamples(samples : [HKSample]) -> Double {
-        var datapointValue : Double = 0
-        if self.hkQuantityTypeIdentifier() == HKQuantityTypeIdentifier.stepCount {
-            samples.forEach { (sample) in
-                if let s = sample as? HKQuantitySample {
-                    datapointValue += s.quantity.doubleValue(for: HKUnit.count())
+    func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
+        if let s = sample as? HKQuantitySample, let u = units {
+            return s.quantity.doubleValue(for: u)
+        } else if let s = sample as? HKCategorySample {
+            if (self.healthKitMetric == "timeAsleep" && s.value != HKCategoryValueSleepAnalysis.asleep.rawValue) ||
+                (self.healthKitMetric == "timeInBed" && s.value != HKCategoryValueSleepAnalysis.inBed.rawValue) {
+                return 0
+            } else if self.hkCategoryTypeIdentifier() == .appleStandHour {
+                return 1
+            } else if self.hkCategoryTypeIdentifier() == .sleepAnalysis {
+                return s.endDate.timeIntervalSince(s.startDate)/3600.0
+            }
+            if #available(iOS 10.0, *) {
+                if self.hkCategoryTypeIdentifier() == .mindfulSession {
+                    return s.endDate.timeIntervalSince(s.startDate)/60.0
                 }
             }
         }
+        return 0
+    }
+    
+    func hkDatapointValueForSamples(samples : [HKSample]) -> Double {
+        var datapointValue : Double = 0
+        if self.hkQuantityTypeIdentifier() != nil {
+            guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return 0 }
+            guard let sample = samples.first as? HKQuantitySample else { return 0 }
+            healthStore.preferredUnits(for: [sample.quantityType]) { (units, error) in
+                guard let unit = units.first?.value else { return }
+                samples.forEach { (sample) in
+                    datapointValue += self.hkDatapointValueForSample(sample: sample, units: unit)
+                }
+            }
+        } else {
+            samples.forEach { (sample) in
+                datapointValue += self.hkDatapointValueForSample(sample: sample, units: nil)
+            }
+        }
         return datapointValue
-//        for sample in samples! {
-//            if let s = sample as? HKCategorySample {
-//                if categoryTypeIdentifier != .sleepAnalysis ||
-//                    (self.healthKitMetric == "timeAsleep" && s.value == HKCategoryValueSleepAnalysis.asleep.rawValue) ||
-//                    (self.healthKitMetric == "timeInBed" && s.value == HKCategoryValueSleepAnalysis.inBed.rawValue) {
-//                    let duration = s.endDate.timeIntervalSince(s.startDate)
-//                    totalDuration += duration
-//                }
-//            }
-//        }
-//        if #available(iOS 10.0, *) {
-//            datapointValue = self.hkCategoryTypeIdentifier() == .mindfulSession ? totalDuration/60 : totalDuration / 3600
-//        } else {
-//            datapointValue = totalDuration / 3600
-//        }
     }
     
     func hkQueryForLast(days : Int) {
