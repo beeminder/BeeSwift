@@ -357,11 +357,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.navigationItem.rightBarButtonItems = items
     }
     
-    func syncTodayButtonPressed() {
+    @objc func syncTodayButtonPressed() {
         self.goal.hkQueryForLast(days: 1)
     }
     
-    func syncWeekButtonPressed() {
+    @objc func syncWeekButtonPressed() {
         self.goal.hkQueryForLast(days: 7)
     }
     

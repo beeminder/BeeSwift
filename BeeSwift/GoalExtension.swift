@@ -286,15 +286,18 @@ extension Goal {
         }?.hkCategoryTypeIdentifier
     }
     
-    func hkSampleType() -> Any? {
-        if self.hkQuantityTypeIdentifier() != nil { return self.hkQuantityTypeIdentifier() }
-        if self.hkCategoryTypeIdentifier() != nil { return self.hkCategoryTypeIdentifier() }
+    func hkSampleType() -> HKSampleType? {
+        if self.hkQuantityTypeIdentifier() != nil {
+            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
+        }
+        if self.hkCategoryTypeIdentifier() != nil {
+            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        }
         return nil
     }
     
     func hkObserverQuery() -> HKObserverQuery? {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return nil }
-        guard let sampleType = self.hkSampleType() as? HKSampleType else { return nil }
+        guard let sampleType = self.hkSampleType() else { return nil }
         return HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
             self.hkQueryForLast(days: 0)
             completionHandler()
@@ -321,10 +324,15 @@ extension Goal {
     }
     
     func hkDatapointValueForSamples(samples : [HKSample]) -> Double {
+        var datapointValue : Double = 0
         if self.hkQuantityTypeIdentifier() == HKQuantityTypeIdentifier.stepCount {
-            //
+            samples.forEach { (sample) in
+                if let s = sample as? HKQuantitySample {
+                    datapointValue += s.quantity.doubleValue(for: HKUnit.count())
+                }
+            }
         }
-        
+        return datapointValue
 //        for sample in samples! {
 //            if let s = sample as? HKCategorySample {
 //                if categoryTypeIdentifier != .sleepAnalysis ||
@@ -340,17 +348,21 @@ extension Goal {
 //        } else {
 //            datapointValue = totalDuration / 3600
 //        }
-        return 33
     }
     
     func hkQueryForLast(days : Int) {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
-        guard let sampleType = self.hkSampleType() as? HKSampleType else { return }
+        guard let sampleType = self.hkSampleType() else { return }
         
-        (-1*days...0).forEach({ (offset) in
+        ((-1*days + 1)...0).forEach({ (offset) in
             let calendar = Calendar.current
-            guard let startDate = calendar.date(byAdding: .day, value: -1*days, to: Date()) else { return }
-            guard let endDate = calendar.date(byAdding: .day, value: 1, to: startDate) else { return }
+            
+            let components = calendar.dateComponents(in: TimeZone.current, from: Date())
+            let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
+            let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
+
+            guard let startDate = calendar.date(byAdding: .day, value: offset, to: localMidnightThisMorning!) else { return }
+            guard let endDate = calendar.date(byAdding: .day, value: offset, to: localMidnightTonight!) else { return }
             
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyyMMdd"
