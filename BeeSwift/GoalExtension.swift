@@ -415,163 +415,23 @@ extension Goal {
         })
     }
     
-    func setupHealthKitForSessions() {
-        guard let categoryTypeIdentifier = self.hkCategoryTypeIdentifier() else { return }
-        
+    func setupHealthKit() {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let sampleType = self.hkSampleType() else { return }
         
-        guard let categoryType = HKObjectType.categoryType(forIdentifier: categoryTypeIdentifier) else { return }
-        
-        HealthStoreManager.sharedManager.healthStore?.requestAuthorization(toShare: nil, read: [categoryType], completion: { (success, error) in
-            healthStore.enableBackgroundDelivery(for: categoryType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
+        healthStore.requestAuthorization(toShare: nil, read: [sampleType], completion: { (success, error) in
+            if error != nil {
+                //handle error
+                return
+            }
+            healthStore.enableBackgroundDelivery(for: sampleType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
                 
-                let endDate = Date()
-                let calendar = Calendar.current
-                
-                guard let observerStartDate = calendar.date(byAdding: .day, value: -7, to: endDate) else {
+                if error != nil {
+                    //handle error
                     return
                 }
                 
-                let observerPredicate = HKQuery.predicateForSamples(withStart: observerStartDate, end: endDate, options: .strictEndDate)
-                
-                let observerQuery = HKObserverQuery.init(sampleType: categoryType, predicate: observerPredicate, updateHandler: { (query, completionHandler, error) in
-                    (-7...0).forEach({ (offset) in
-                        guard let startDate = calendar.date(byAdding: .day, value: offset, to: endDate) else {
-                            return
-                        }
-                        
-                        let formatter = DateFormatter()
-                        formatter.dateFormat = "yyyyMMdd"
-                        let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
-                        let daystamp = formatter.string(from: datapointDate)
-                        
-                        formatter.dateFormat = "d"
-                        
-                        let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id))
-                        
-                        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: calendar.date(byAdding: .day, value: 1, to: startDate), options: .strictEndDate)
-                        
-                        let query = HKSampleQuery.init(sampleType: categoryType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
-                            if error != nil || samples == nil { return }
-                            var totalDuration : Double = 0
-                            for sample in samples! {
-                                if let s = sample as? HKCategorySample {
-                                    if categoryTypeIdentifier != .sleepAnalysis ||
-                                        (self.healthKitMetric == "timeAsleep" && s.value == HKCategoryValueSleepAnalysis.asleep.rawValue) ||
-                                        (self.healthKitMetric == "timeInBed" && s.value == HKCategoryValueSleepAnalysis.inBed.rawValue) {
-                                        let duration = s.endDate.timeIntervalSince(s.startDate)
-                                        totalDuration += duration
-                                    }
-                                }
-                            }
-                            
-                            var datapointValue : Double
-                            
-                            if #available(iOS 10.0, *) {
-                                datapointValue = self.hkCategoryTypeIdentifier() == .mindfulSession ? totalDuration/60 : totalDuration / 3600
-                            } else {
-                                datapointValue = totalDuration / 3600
-                            }
-                            
-                            if totalDuration == 0 { return }
-                            
-                            if datapoints == nil || datapoints?.count == 0 {
-                                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
-                                self.postDatapoint(params: params, success: { (responseObject) in
-                                    let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                                    datapoint.goal = self
-                                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                                }, failure: { (error) in
-                                    print(error)
-                                })
-                            } else if datapoints?.count == 1 {
-                                let datapoint = datapoints?.first as! Datapoint
-                                formatter.dateFormat = "hh:mm"
-                                let params = [
-                                    "access_token": CurrentUserManager.sharedManager.accessToken!,
-                                    "timestamp": "\(datapointDate)",
-                                    "value": "\(datapointValue)",
-                                    "comment": "Automatically updated via iOS Health app"
-                                ]
-                                RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                                    //foo
-                                }, errorHandler: { (error) in
-                                    ///bar
-                                })
-                            }
-                        })
-                        healthStore.execute(query)
-                        completionHandler()
-                    })
-                })
-                
-                healthStore.execute(observerQuery)
-            })
-        })
-    }
-    
-    func setupHealthKit() {
-        
-        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
-            self.setupHealthKitForSessions()
-            return
-        }
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-            fatalError("*** Unable to create a quantity type ***")
-        }
-
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
-
-        let metricType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier)!
-        healthStore.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
-            healthStore.enableBackgroundDelivery(for: quantityType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
-                let calendar = Calendar.current
-                var interval = DateComponents()
-                interval.day = 1
-                
-                var anchorComponents = calendar.dateComponents([.day, .month, .year, .weekday], from: Date())
-                anchorComponents.hour = 0
-                anchorComponents.minute = 0
-                anchorComponents.second = 0
-                
-                guard let midnight = calendar.date(from: anchorComponents) else {
-                    fatalError("*** unable to create a valid date from the given components ***")
-                }
-                let anchorDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: midnight)!
-                
-                var options : HKStatisticsOptions
-                if quantityType.aggregationStyle == .cumulative {
-                    options = .cumulativeSum
-                } else {
-                    options = .discreteMin
-                }
-                
-                let query = HKStatisticsCollectionQuery(quantityType: quantityType,
-                                                        quantitySamplePredicate: nil,
-                                                        options: options,
-                                                        anchorDate: anchorDate,
-                                                        intervalComponents: interval)
-                query.initialResultsHandler = {
-                    query, collection, error in
-                    
-                    guard let statsCollection = collection else {
-                        // Perform proper error handling here
-                        fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
-                    }
-                    
-                    self.updateBeeminder(collection: statsCollection)
-                }
-                
-                query.statisticsUpdateHandler = {
-                    query, statistics, collection, error in
-                    
-                    guard let statsCollection = collection else {
-                        // Perform proper error handling here
-                        fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
-                    }
-                    
-                    self.updateBeeminder(collection: statsCollection)
-                }
+                guard let query = self.hkObserverQuery() else { return }
                 
                 healthStore.execute(query)
             })
@@ -580,86 +440,5 @@ extension Goal {
     
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?) -> Void)?) {
         RequestManager.post(url: "api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
-    }
-    
-    func updateBeeminder(collection : HKStatisticsCollection) {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
-        
-        let endDate = Date()
-        let calendar = Calendar.current
-        guard let startDate = calendar.date(byAdding: .day, value: -7, to: endDate) else {
-            return
-        }
-        
-        collection.enumerateStatistics(from: startDate, to: endDate) { [unowned self] statistics, stop in
-            healthStore.preferredUnits(for: [statistics.quantityType], completion: { (units, error) in
-                guard let unit = units.first?.value else { return }
-                var datapointValue : Double?
-                
-                guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
-                    return
-                }
-                guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-                    fatalError("*** Unable to create a quantity type ***")
-                }
-                
-                if quantityType.aggregationStyle == .cumulative {
-                    let quantity = statistics.sumQuantity()
-                    datapointValue = quantity?.doubleValue(for: unit)
-                } else if quantityType.aggregationStyle == .discrete {
-                    let quantity = statistics.minimumQuantity()
-                    datapointValue = quantity?.doubleValue(for: unit)
-                }
-                
-                guard datapointValue != nil else { return }
-
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyyMMdd"
-                let datapointDate = self.deadline.intValue >= 0 ? statistics.startDate : statistics.endDate
-                let daystamp = formatter.string(from: datapointDate)
-                
-                formatter.dateFormat = "d"
-
-                let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id))
-                
-                if datapoints == nil || datapoints?.count == 0 {
-                    let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue!) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
-                    RequestManager.post(url: "api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: { (responseObject) -> Void in
-                        let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                        datapoint.goal = self
-                        
-                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                    }) { (error) -> Void in
-                        print(error)
-                    }
-                } else if datapoints?.count == 1 {
-                    let datapoint = datapoints?.first as! Datapoint
-                    formatter.dateFormat = "hh:mm"
-                    let params = [
-                        "access_token": CurrentUserManager.sharedManager.accessToken!,
-                        "timestamp": "\(datapointDate)",
-                        "value": "\(datapointValue!)",
-                        "comment": "Automatically updated via iOS Health app"
-                    ]
-                    RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                        //foo
-                    }, errorHandler: { (error) in
-                        ///bar
-                    })
-                } else {
-                    // delete extra datapoints locally
-                    var first = true
-                    datapoints?.forEach({ (datapoint) in
-                        let d = datapoint as! Datapoint
-                        if (!first) {
-                            d.mr_deleteEntity()
-                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                        } else {
-                            first = false
-                        }
-                    })
-                }
-            })
-        }
     }
 }
