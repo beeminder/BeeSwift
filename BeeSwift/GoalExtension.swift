@@ -362,9 +362,12 @@ extension Goal {
             let components = calendar.dateComponents(in: TimeZone.current, from: Date())
             let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
             let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
+            
+            let endOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!)
+            let startOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!)
 
-            guard let startDate = calendar.date(byAdding: .day, value: offset, to: localMidnightThisMorning!) else { return }
-            guard let endDate = calendar.date(byAdding: .day, value: offset, to: localMidnightTonight!) else { return }
+            guard let startDate = calendar.date(byAdding: .day, value: offset, to: startOfToday!) else { return }
+            guard let endDate = calendar.date(byAdding: .day, value: offset, to: endOfToday!) else { return }
             
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyyMMdd"
