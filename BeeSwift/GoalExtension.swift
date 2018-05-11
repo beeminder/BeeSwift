@@ -299,7 +299,7 @@ extension Goal {
     func hkObserverQuery() -> HKObserverQuery? {
         guard let sampleType = self.hkSampleType() else { return nil }
         return HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
-            self.hkQueryForLast(days: 0)
+            self.hkQueryForLast(days: 1)
             completionHandler()
         })
     }
@@ -389,6 +389,7 @@ extension Goal {
                     if datapointValue == 0 { return }
                     
                     if datapoints == nil || datapoints?.count == 0 {
+                        formatter.dateFormat = "d"
                         let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
                         self.postDatapoint(params: params, success: { (responseObject) in
                             let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
