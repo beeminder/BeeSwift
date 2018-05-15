@@ -405,7 +405,8 @@ extension Goal {
                             "access_token": CurrentUserManager.sharedManager.accessToken!,
                             "timestamp": "\(datapointDate)",
                             "value": "\(datapointValue)",
-                            "comment": "Automatically updated via iOS Health app"
+                            "comment": "Automatically updated via iOS Health app",
+                            "requestid": self.hkRequestId()
                         ]
                         RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
                             //foo
