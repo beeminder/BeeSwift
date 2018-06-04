@@ -317,7 +317,7 @@ extension Goal {
         return self.autodata.count > 0 || self.won.boolValue
     }
     
-    func hkRequestId() -> String {
+    func minuteStamp() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "YYYYMMddHHmm"
         return formatter.string(from: Date())
@@ -389,8 +389,9 @@ extension Goal {
                     if datapointValue == 0 { return }
                     
                     if datapoints == nil || datapoints?.count == 0 {
+                        let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
                         formatter.dateFormat = "d"
-                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": self.hkRequestId()]
+                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
                         self.postDatapoint(params: params, success: { (responseObject) in
                             let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                             datapoint.goal = self
@@ -399,6 +400,7 @@ extension Goal {
                             print(error)
                         })
                     } else if datapoints?.count == 1 {
+                        let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
                         let datapoint = datapoints?.first as! Datapoint
                         formatter.dateFormat = "hh:mm"
                         let params = [
@@ -406,7 +408,7 @@ extension Goal {
                             "timestamp": "\(datapointDate)",
                             "value": "\(datapointValue)",
                             "comment": "Automatically updated via iOS Health app",
-                            "requestid": self.hkRequestId()
+                            "requestid": requestId
                         ]
                         RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
                             //foo
