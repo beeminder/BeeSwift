@@ -299,7 +299,7 @@ extension Goal {
     func hkObserverQuery() -> HKObserverQuery? {
         guard let sampleType = self.hkSampleType() else { return nil }
         return HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
-            self.hkQueryForLast(days: 1)
+            self.hkQueryForLast(days: 1, success: nil, errorCompletion: nil)
             completionHandler()
         })
     }
@@ -352,7 +352,7 @@ extension Goal {
         return datapointValue
     }
     
-    func hkQueryForLast(days : Int) {
+    func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
         
@@ -396,8 +396,10 @@ extension Goal {
                                 let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                                 datapoint.goal = self
                                 NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+                                success?()
                             }, failure: { (error) in
                                 print(error)
+                                errorCompletion?()
                             })
                         } else if datapoints?.count == 1 {
                             let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
@@ -411,9 +413,9 @@ extension Goal {
                                 "requestid": requestId
                             ]
                             RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                                //foo
+                                success?()
                             }, errorHandler: { (error) in
-                                ///bar
+                                errorCompletion?()
                             })
                         }
                     }

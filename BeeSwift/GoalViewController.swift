@@ -358,11 +358,23 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func syncTodayButtonPressed() {
-        self.goal.hkQueryForLast(days: 1)
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hud?.mode = .indeterminate
+        self.goal.hkQueryForLast(days: 1, success: {
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        }) {
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        }
     }
     
     @objc func syncWeekButtonPressed() {
-        self.goal.hkQueryForLast(days: 7)
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hud?.mode = .indeterminate
+        self.goal.hkQueryForLast(days: 7, success: {
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        }) {
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        }
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
