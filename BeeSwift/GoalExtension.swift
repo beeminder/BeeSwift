@@ -346,6 +346,24 @@ extension Goal {
     
     func hkDatapointValueForSamples(samples : [HKSample], units: HKUnit?) -> Double {
         var datapointValue : Double = 0
+        if self.healthKitMetric == "weight" {
+            let weights = samples.map { (sample) -> Double? in
+                let s = sample as? HKQuantitySample
+                if s != nil { return (s?.quantity.doubleValue(for: units!))! }
+                else {
+                    return nil
+                }
+            }
+            let weight = weights.min { (w1, w2) -> Bool in
+                if w1 == nil { return true }
+                if w2 == nil { return false }
+                return w2! > w1!
+            }
+            if weight != nil {
+                datapointValue = weight as! Double
+            }
+            return datapointValue
+        }
         samples.forEach { (sample) in
             datapointValue += self.hkDatapointValueForSample(sample: sample, units: units)
         }
@@ -401,7 +419,7 @@ extension Goal {
                                 print(error)
                                 errorCompletion?()
                             })
-                        } else if datapoints?.count == 1 {
+                        } else if (datapoints?.count)! >= 1 {
                             let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
                             let datapoint = datapoints?.first as! Datapoint
                             formatter.dateFormat = "hh:mm"
