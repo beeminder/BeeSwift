@@ -453,7 +453,7 @@ extension Goal {
                         }, failure: { (error) in
                             print(error)
                         })
-                    } else if datapoints?.count == 1 {
+                    } else if (datapoints?.count)! >= 1 {
                         let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
                         let datapoint = datapoints?.first as! Datapoint
                         formatter.dateFormat = "hh:mm"
