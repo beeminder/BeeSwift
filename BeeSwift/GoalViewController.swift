@@ -53,7 +53,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.dateStepper.minimumValue = -365
         self.dateStepper.maximumValue = 365
         
-        self.datapoints = NSMutableArray(array: self.goal.lastFiveDatapoints())
+        self.datapoints = NSMutableArray(array: [])
+        self.loadDatapoints()
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
@@ -357,6 +358,18 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.navigationItem.rightBarButtonItems = items
     }
     
+    func loadDatapoints() {
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug).json", parameters: [:], success: { (response) in
+            let responseJSON = JSON(response)
+            let datapoints = responseJSON["recent_data"].arrayValue.map({$0.stringValue})
+            self.datapoints = NSMutableArray(array: datapoints)
+            self.datapointsTableView.reloadData()
+        }) { (responseError) in
+            //
+        }
+        
+    }
+    
     @objc func syncTodayButtonPressed() {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
@@ -550,8 +563,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.datapoints.removeObject(at: 0)
             }
 
-            self.datapoints.add(datapoint)
-            self.datapointsTableView.reloadSections(IndexSet(integersIn: NSMakeRange(0, 1).toRange()!), with: .automatic)
+            self.loadDatapoints()
             self.pollUntilGraphUpdates()
         }
         self.view.endEditing(true)
@@ -590,12 +602,16 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         return 24
     }
     
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 24
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.datapoints.count
+        return 5
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -604,7 +620,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier) as! DatapointTableViewCell
-        cell.datapoint = (self.datapoints[(indexPath as NSIndexPath).row] as! Datapoint)
+        if (indexPath as NSIndexPath).row < self.datapoints.count {
+            let text = (self.datapoints[(indexPath as NSIndexPath).row] as! String)
+            cell.datapointText = text
+        }
         return cell
     }
 }

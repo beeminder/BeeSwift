@@ -12,10 +12,10 @@ class DatapointTableViewCell : UITableViewCell {
     
     var datapointLabel = BSLabel()
     
-    var datapoint : Datapoint?
+    var datapointText : String?
     {
         didSet {
-            self.datapointLabel.text = datapoint!.canonical
+            self.datapointLabel.text = datapointText
         }
     }
     
