@@ -53,7 +53,7 @@ class RemoveHKMetricViewController: UIViewController {
             var params : [String : [String : String]] = [:]
             params = ["ii_params" : ["name" : "", "metric" : ""]]
             
-            RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
+            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
                                success: { (responseObject) -> Void in
                                 // foo
             }) { (error) -> Void in

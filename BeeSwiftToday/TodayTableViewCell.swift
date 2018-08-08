@@ -115,7 +115,7 @@ class TodayTableViewCell: UITableViewCell {
         let params = ["access_token": token, "urtext": "\(formatter.string(from: Date())) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
         guard let slug = self.goalDictionary["slug"] as? String else { return }
         
-        RequestManager.post(url: "api/v1/users/me/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
+        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
             self.pollUntilGraphUpdates()
         }) { (responseError) in
             self.addDataButton.setTitle("oops!", for: .normal)
@@ -133,7 +133,7 @@ class TodayTableViewCell: UITableViewCell {
         guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
         
         let parameters = ["access_token": token]
-        RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters, success: { (responseObject) in
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(slug)", parameters: parameters, success: { (responseObject) in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
                 self.pollTimer?.invalidate()

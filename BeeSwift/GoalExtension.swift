@@ -430,7 +430,7 @@ extension Goal {
                                 "comment": "Automatically updated via iOS Health app",
                                 "requestid": requestId
                             ]
-                            RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
                                 success?()
                             }, errorHandler: { (error) in
                                 errorCompletion?()
@@ -464,7 +464,7 @@ extension Goal {
                             "comment": "Automatically updated via iOS Health app",
                             "requestid": requestId
                         ]
-                        RequestManager.put(url: "api/v1/users/me/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
                             //foo
                         }, errorHandler: { (error) in
                             ///bar
@@ -500,6 +500,6 @@ extension Goal {
     }
     
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?) -> Void)?) {
-        RequestManager.post(url: "api/v1/users/me/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
+        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
     }
 }

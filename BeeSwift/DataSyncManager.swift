@@ -52,7 +52,7 @@ class DataSyncManager :NSObject {
         self.isFetching = true
         
         let parameters = ["associations": true, "datapoints_count": 5, "diff_since": self.lastSynced == nil ? 0 : self.lastSynced!.timeIntervalSince1970] as [String : Any]
-        RequestManager.get(url: "api/v1/users/me.json", parameters: parameters, success: { (responseJSON) in
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: parameters, success: { (responseJSON) in
             self.handleResponse(JSON(responseJSON!), completion: success)
             self.isFetching = false
             self.setLastSynced(Date())

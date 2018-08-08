@@ -70,7 +70,7 @@ class HealthKitConfigViewController: UIViewController {
             var params : [String : [String : String]] = [:]
             params = ["ii_params" : ["name" : "apple", "metric" : goal.healthKitMetric!]]
             
-            RequestManager.put(url: "api/v1/users/me/goals/\(goal.slug).json", parameters: params,
+            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(goal.slug).json", parameters: params,
                success: { (responseObject) -> Void in
                 // foo
             }) { (error) -> Void in
