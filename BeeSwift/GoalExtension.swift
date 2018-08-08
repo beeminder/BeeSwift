@@ -392,7 +392,7 @@ extension Goal {
             let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
             let daystamp = formatter.string(from: datapointDate)
             
-            let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id))
+            let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id)) as? [Datapoint]
             
             let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
             
@@ -420,21 +420,36 @@ extension Goal {
                                 errorCompletion?()
                             })
                         } else if (datapoints?.count)! >= 1 {
-                            let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
-                            let datapoint = datapoints?.first as! Datapoint
-                            formatter.dateFormat = "hh:mm"
-                            let params = [
-                                "access_token": CurrentUserManager.sharedManager.accessToken!,
-                                "timestamp": "\(datapointDate)",
-                                "value": "\(datapointValue)",
-                                "comment": "Automatically updated via iOS Health app",
-                                "requestid": requestId
-                            ]
-                            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                                success?()
-                            }, errorHandler: { (error) in
-                                errorCompletion?()
+                            var first = true
+                            datapoints?.forEach({ (datapoint) in
+                                if first {
+                                    let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
+                                    formatter.dateFormat = "hh:mm"
+                                    let params = [
+                                        "access_token": CurrentUserManager.sharedManager.accessToken!,
+                                        "timestamp": "\(datapointDate)",
+                                        "value": "\(datapointValue)",
+                                        "comment": "Automatically updated via iOS Health app",
+                                        "requestid": requestId
+                                    ]
+                                    RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                                        success?()
+                                    }, errorHandler: { (error) in
+                                        errorCompletion?()
+                                    })
+                                } else {
+                                    let params = [
+                                        "access_token": CurrentUserManager.sharedManager.accessToken!,
+                                    ]
+                                    RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                                        success?()
+                                    }, errorHandler: { (error) in
+                                        errorCompletion?()
+                                    })
+                                }
+                                first = false
                             })
+                            
                         }
                     }
                 } else {
@@ -454,21 +469,36 @@ extension Goal {
                             print(error)
                         })
                     } else if (datapoints?.count)! >= 1 {
-                        let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
-                        let datapoint = datapoints?.first as! Datapoint
-                        formatter.dateFormat = "hh:mm"
-                        let params = [
-                            "access_token": CurrentUserManager.sharedManager.accessToken!,
-                            "timestamp": "\(datapointDate)",
-                            "value": "\(datapointValue)",
-                            "comment": "Automatically updated via iOS Health app",
-                            "requestid": requestId
-                        ]
-                        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                            //foo
-                        }, errorHandler: { (error) in
-                            ///bar
+                        var first = true
+                        datapoints?.forEach({ (datapoint) in
+                            if first {
+                                let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
+                                formatter.dateFormat = "hh:mm"
+                                let params = [
+                                    "access_token": CurrentUserManager.sharedManager.accessToken!,
+                                    "timestamp": "\(datapointDate)",
+                                    "value": "\(datapointValue)",
+                                    "comment": "Automatically updated via iOS Health app",
+                                    "requestid": requestId
+                                ]
+                                RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                                    //foo
+                                }, errorHandler: { (error) in
+                                    ///bar
+                                })
+                            } else {
+                                let params = [
+                                    "access_token": CurrentUserManager.sharedManager.accessToken!
+                                ]
+                                RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                                    //foo
+                                }, errorHandler: { (error) in
+                                    ///bar
+                                })
+                            }
+                            first = false
                         })
+                        
                     }
                 }
             })

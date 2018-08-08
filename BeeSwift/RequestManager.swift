@@ -65,6 +65,10 @@ class RequestManager {
         RequestManager.rawRequest(url: url, method: .post, parameters: RequestManager.authedParams(parameters), success: success, errorHandler: errorHandler)
     }
     
+    class func delete(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+        RequestManager.rawRequest(url: url, method: .delete, parameters: RequestManager.authedParams(parameters), success: success, errorHandler: errorHandler)
+    }
+    
     
     class func authedParams(_ params: [String: Any]?) -> Parameters? {
         if params == nil { return ["access_token" : CurrentUserManager.sharedManager.accessToken!] }
