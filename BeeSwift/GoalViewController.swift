@@ -361,7 +361,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func loadDatapoints() {
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug).json", parameters: [:], success: { (response) in
             let responseJSON = JSON(response)
-            let datapoints = responseJSON["recent_data"].arrayValue.map({$0.stringValue})
+            let datapoints = responseJSON["recent_data"].arrayValue
             self.datapoints = NSMutableArray(array: datapoints)
             self.datapointsTableView.reloadData()
         }) { (responseError) in
@@ -615,12 +615,20 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.view.endEditing(true)
+        if (self.goal.hideDataEntry()) { return }
+        let datapointJSON : JSON = (self.datapoints[(indexPath as NSIndexPath).row] as? JSON)!
+        let editDatapointViewController = EditDatapointViewController()
+        editDatapointViewController.datapointJSON = datapointJSON
+        editDatapointViewController.goalSlug = self.goal.slug
+        self.navigationController?.pushViewController(editDatapointViewController, animated: true)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier) as! DatapointTableViewCell
         if (indexPath as NSIndexPath).row < self.datapoints.count {
-            let text = (self.datapoints[(indexPath as NSIndexPath).row] as! String)
+            
+            let datapoint : JSON = (self.datapoints[(indexPath as NSIndexPath).row] as? JSON)!
+            let text = datapoint["canonical"].string
             cell.datapointText = text
         }
         return cell
