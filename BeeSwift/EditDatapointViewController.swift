@@ -8,18 +8,12 @@
 
 import UIKit
 import SwiftyJSON
+import MBProgressHUD
 
 class EditDatapointViewController: UIViewController {
     
     var datapointJSON : JSON?
     var goalSlug : String?
-    fileprivate var datapointDate : Date?
-    {
-        didSet {
-            self.updateDateLabel()
-            if datapointDate != nil { self.datePicker.date = datapointDate! }
-        }
-    }
     fileprivate var datePicker = UIDatePicker()
     fileprivate var scrollView = UIScrollView()
     fileprivate var dateLabel = BSLabel()
@@ -61,8 +55,8 @@ class EditDatapointViewController: UIViewController {
             make.top.equalTo(self.dateLabel.snp.bottom)
         }
         self.datePicker.datePickerMode = .date
-        self.datePicker.isHidden = false
-        
+        self.datePicker.isHidden = true
+        self.datePicker.addTarget(self, action: #selector(self.datePickerValueChanged), for: .valueChanged)
         
         self.scrollView.addSubview(self.valueField)
         self.valueField.snp.makeConstraints { (make) in
@@ -73,6 +67,7 @@ class EditDatapointViewController: UIViewController {
         self.valueField.textAlignment = .center
         self.valueField.keyboardType = .decimalPad
         self.valueField.text = "\(self.datapointJSON!["value"].number!)"
+        self.valueField.addTarget(self, action: #selector(self.textFieldEditingDidBegin), for: .editingDidBegin)
         
         self.scrollView.addSubview(self.commentField)
         self.commentField.snp.makeConstraints { (make) in
@@ -82,6 +77,7 @@ class EditDatapointViewController: UIViewController {
         self.commentField.placeholder = "Comment"
         self.commentField.textAlignment = .center
         self.commentField.text = self.datapointJSON!["comment"].string
+        self.commentField.addTarget(self, action: #selector(self.textFieldEditingDidBegin), for: .editingDidBegin)
         
         let updateButton = BSButton()
         self.scrollView.addSubview(updateButton)
@@ -104,49 +100,94 @@ class EditDatapointViewController: UIViewController {
         let daystamp = self.datapointJSON!["daystamp"].string
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
-        if daystamp != nil { self.datapointDate = dateFormatter.date(from: daystamp!) }
+        if daystamp != nil { self.datePicker.date = dateFormatter.date(from: daystamp!)! }
+        self.updateDateLabel()
     }
     
     func urtext() -> String {
-        return "2018 08 09 1 \"comment\""
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy MM dd"
+        return "\(dateFormatter.string(from: self.datePicker.date)) \(self.valueField.text!) \"\(self.commentField.text!)\""
     }
     
     func updateDateLabel() {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        self.dateLabel.text = dateFormatter.string(from: self.datapointDate!)
+        self.dateLabel.text = dateFormatter.string(from: self.datePicker.date)
+    }
+    
+    @objc func datePickerValueChanged() {
+        self.updateDateLabel()
+    }
+    
+    @objc func textFieldEditingDidBegin() {
+        self.datePicker.snp.updateConstraints { (make) in
+            make.height.equalTo(0)
+        }
+        self.datePicker.isHidden = true
     }
     
     @objc func dateLabelTapped() {
-        self.datePicker.snp.remakeConstraints { (make) in
-            make.left.right.equalTo(self.scrollView)
-            make.width.equalTo(self.scrollView)
-            make.height.equalTo(200)
-            make.top.equalTo(self.dateLabel.snp.bottom)
+        self.datePicker.snp.updateConstraints { (make) in
+            if self.datePicker.isHidden {
+                make.height.equalTo(200)
+            } else {
+                make.height.equalTo(0)
+            }
         }
+        self.datePicker.isHidden = !self.datePicker.isHidden
+        self.view.endEditing(true)
     }
     
     @objc func updateButtonPressed() {
+        self.view.endEditing(true)
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hud?.mode = .indeterminate
         let params = [
             "access_token": CurrentUserManager.sharedManager.accessToken!,
             "urtext": self.urtext()
         ]
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"].string).json", parameters: params, success: { (response) in
-            //
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
+            let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+            hud?.mode = .customView
+            hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+            hud?.hide(true, afterDelay: 2)
+        }) { (error) in
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            // alert
+        }
+    }
+    
+    func deleteDatapoint() {
+        let params = [
+            "access_token": CurrentUserManager.sharedManager.accessToken!
+        ]
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hud?.mode = .indeterminate
+        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
+            let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+            hud?.mode = .customView
+            hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+            hud?.hide(true, afterDelay: 2)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self.navigationController?.popViewController(animated: true)
+            }
         }) { (error) in
             //
         }
     }
     
     @objc func deleteButtonPressed() {
-        let params = [
-            "access_token": CurrentUserManager.sharedManager.accessToken!
-        ]
-        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"].string).json", parameters: params, success: { (response) in
+        self.view.endEditing(true)
+        let alert = UIAlertController(title: "Confirm deletion", message: "Are you sure?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
+            self.deleteDatapoint()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
             //
-        }) { (error) in
-            //
-        }
+        }))
+        
+        self.present(alert, animated: true, completion: nil)
     }
 
     override func didReceiveMemoryWarning() {

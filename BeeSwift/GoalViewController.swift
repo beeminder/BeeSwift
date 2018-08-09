@@ -402,6 +402,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidAppear(_ animated: Bool) {
         self.setGraphImage()
         self.refreshCountdown()
+        self.loadDatapoints()
         self.pledgeLabel.text = "$\(self.goal.pledge)"
         self.deltasLabel.attributedText = self.goal.attributedDeltaText
     }
