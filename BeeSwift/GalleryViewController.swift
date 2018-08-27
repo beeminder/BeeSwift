@@ -212,6 +212,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if self.goals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
+        if DataSyncManager.sharedManager.isFetching { return }
         DataSyncManager.sharedManager.fetchData(success: { () -> Void in
             let isRegisteredForNotifications = UIApplication.shared.currentUserNotificationSettings?.types.contains(UIUserNotificationType.alert) ?? false
             if !isRegisteredForNotifications {
