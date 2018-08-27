@@ -361,7 +361,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func loadDatapoints() {
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug).json", parameters: [:], success: { (response) in
             let responseJSON = JSON(response)
-            let datapoints = responseJSON["recent_data"].arrayValue
+            let datapoints = Array.reverse(responseJSON["recent_data"].arrayValue)
             self.datapoints = NSMutableArray(array: datapoints)
             self.datapointsTableView.reloadData()
         }) { (responseError) in
