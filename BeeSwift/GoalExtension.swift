@@ -396,20 +396,35 @@ extension Goal {
             
             let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
             
-            let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
-                if error != nil || samples == nil { return }
-                
-                if let sample = samples!.first as? HKQuantitySample {
-                    healthStore.preferredUnits(for: [sample.quantityType]) { (units, error) in
+            if self.hkQuantityTypeIdentifier() != nil {
+                let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: .cumulativeSum, completionHandler: { (query, statistics, error) in
+                    if error != nil || statistics == nil { return }
+                    
+                    guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
+                        return
+                    }
+                    guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+                        fatalError("*** Unable to create a quantity type ***")
+                    }
+                    
+                    healthStore.preferredUnits(for: [quantityType], completion: { (units, error) in
+                        var datapointValue : Double?
                         guard let unit = units.first?.value else { return }
-                        let datapointValue = self.hkDatapointValueForSamples(samples: samples!, units: unit)
                         
-                        if datapointValue == 0 { return }
+                        if quantityType.aggregationStyle == .cumulative {
+                            let quantity = statistics!.sumQuantity()
+                            datapointValue = quantity?.doubleValue(for: unit)
+                        } else if quantityType.aggregationStyle == .discrete {
+                            let quantity = statistics!.minimumQuantity()
+                            datapointValue = quantity?.doubleValue(for: unit)
+                        }
+                        
+                        if datapointValue == nil || datapointValue == 0  { return }
                         
                         if datapoints == nil || datapoints?.count == 0 {
                             let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
                             formatter.dateFormat = "d"
-                            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
+                            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue!) \"Automatically entered via iOS Health app\"", "requestid": requestId]
                             self.postDatapoint(params: params, success: { (responseObject) in
                                 let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
                                 datapoint.goal = self
@@ -428,7 +443,7 @@ extension Goal {
                                     let params = [
                                         "access_token": CurrentUserManager.sharedManager.accessToken!,
                                         "timestamp": "\(datapointDate)",
-                                        "value": "\(datapointValue)",
+                                        "value": "\(datapointValue!)",
                                         "comment": "Automatically updated via iOS Health app",
                                         "requestid": requestId
                                     ]
@@ -440,7 +455,7 @@ extension Goal {
                                 } else {
                                     let params = [
                                         "access_token": CurrentUserManager.sharedManager.accessToken!,
-                                    ]
+                                        ]
                                     RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
                                         success?()
                                     }, errorHandler: { (error) in
@@ -449,10 +464,16 @@ extension Goal {
                                 }
                                 first = false
                             })
-                            
                         }
-                    }
-                } else {
+                    })
+                })
+                
+                healthStore.execute(statsQuery)
+                return
+            } else {
+                let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
+                    if error != nil || samples == nil { return }
+                    
                     let datapointValue = self.hkDatapointValueForSamples(samples: samples!, units: nil)
                     
                     if datapointValue == 0 { return }
@@ -498,11 +519,10 @@ extension Goal {
                             }
                             first = false
                         })
-                        
                     }
-                }
-            })
-            healthStore.execute(query)
+                })
+                healthStore.execute(query)
+            }
         })
     }
     
