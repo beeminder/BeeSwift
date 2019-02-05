@@ -20,4 +20,4 @@ Since the Beeminder backend/web application isn't open source (yet), you'll need
 
 ### Contributing
 
-Read and sign [beeminder.com/cla](beeminder.com/cla). Then make a branch off of master and send a pull request!
+Read and sign [beeminder.com/cla](http://beeminder.com/cla). Then make a branch off of master and send a pull request!
