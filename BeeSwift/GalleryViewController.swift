@@ -14,7 +14,6 @@ import SwiftyJSON
 
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
     
-    fileprivate var hasFetchedData = false
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewLayout?
     let lastUpdatedView = UIView()
@@ -37,6 +36,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleCreateGoalButtonPressed), name: NSNotification.Name(rawValue: "createGoalButtonPressed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didFetchData), name: Notification.Name(rawValue: "dataSyncManagerSuccess"), object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
@@ -103,8 +103,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView!.register(NewGoalCollectionViewCell.self, forCellWithReuseIdentifier: self.newGoalCellReuseIdentifier)
         self.view.addSubview(self.collectionView!)
         
-        self.refreshControl = UIRefreshControl()
-        self.refreshControl.addTarget(self, action: #selector(self.fetchData(_:)), for: UIControlEvents.valueChanged)
+        self.refreshControl.addTarget(self, action: #selector(self.fetchData), for: UIControlEvents.valueChanged)
         self.collectionView!.addSubview(self.refreshControl)
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
@@ -128,16 +127,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.noGoalsLabel.numberOfLines = 0
         self.noGoalsLabel.isHidden = true
         
-        self.fetchData(self.refreshControl)
+        self.fetchData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         if !CurrentUserManager.sharedManager.signedIn() {
             self.present(SignInViewController(), animated: true, completion: nil)
         }
-        else if !self.hasFetchedData {
-            self.fetchData(nil)
-        }
+        self.fetchData()
     }
     
     @objc func settingsButtonPressed() {
@@ -156,7 +153,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func handleSignOut() {
         self.goals = []
         self.collectionView?.reloadData()
-        self.hasFetchedData = false
         self.present(SignInViewController(), animated: true, completion: nil)
     }
     
@@ -166,7 +162,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleReset() {
-        self.fetchData(nil)
+        self.fetchData()
     }
     
     func updateDeadbeatHeight() {
@@ -208,36 +204,37 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
-    @objc func fetchData(_ refreshControl: UIRefreshControl?) {
+    @objc func didFetchData() {
+        let isRegisteredForNotifications = UIApplication.shared.currentUserNotificationSettings?.types.contains(UIUserNotificationType.alert) ?? false
+        if !isRegisteredForNotifications {
+            RemoteNotificationsManager.sharedManager.turnNotificationsOn()
+        }
+        self.loadGoalsFromDatabase()
+        self.collectionView!.reloadData()
+        self.updateLastUpdatedLabel()
+        self.updateDeadbeatHeight()
+        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        if self.goals.count == 0 {
+            self.noGoalsLabel.isHidden = false
+            self.collectionView?.isHidden = true
+        } else {
+            self.noGoalsLabel.isHidden = true
+            self.collectionView?.isHidden = false
+        }
+        self.refreshControl.endRefreshing()
+    }
+    
+    @objc func fetchData() {
         if self.goals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
-        if DataSyncManager.sharedManager.isFetching { return }
+        if DataSyncManager.sharedManager.isFetching {
+            return
+        }
         DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-            let isRegisteredForNotifications = UIApplication.shared.currentUserNotificationSettings?.types.contains(UIUserNotificationType.alert) ?? false
-            if !isRegisteredForNotifications {
-                RemoteNotificationsManager.sharedManager.turnNotificationsOn()
-            }
-            self.loadGoalsFromDatabase()
-            self.collectionView!.reloadData()
-            self.updateLastUpdatedLabel()
-            self.updateDeadbeatHeight()
-            self.hasFetchedData = true
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            if self.goals.count == 0 {
-                self.noGoalsLabel.isHidden = false
-                self.collectionView?.isHidden = true
-            } else {
-                self.noGoalsLabel.isHidden = true
-                self.collectionView?.isHidden = false
-            }
-            if refreshControl != nil {
-                refreshControl!.endRefreshing()
-            }
-            }, error: { () -> Void in              
-                if refreshControl != nil {
-                    refreshControl!.endRefreshing()
-                }
+            self.didFetchData()
+            }, error: { () -> Void in
+                self.refreshControl.endRefreshing()
         })
     }
 

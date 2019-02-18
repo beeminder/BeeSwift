@@ -59,10 +59,8 @@ class DataSyncManager :NSObject {
         }) { (responseError) in
             error?()
             self.isFetching = false
+            NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "dataSyncManagerError")))
         }
-//        RequestManager.get(url: "api/v1/users/me.json", parameters: parameters, success: self.handleFetchDataSuccess, errorHandler: { (error) in
-//            //
-//        })
     }
     
     func handleResponse(_ json: JSON, completion: (()->Void)?) {
@@ -81,10 +79,12 @@ class DataSyncManager :NSObject {
             }
         }
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
-//            let delegate = UIApplication.shared.delegate as! AppDelegate
-//            delegate.updateBadgeCount()
-//            delegate.updateTodayWidget()
-            if error == nil { completion?() }
+            if error == nil {
+                completion?()
+                NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "dataSyncManagerSuccess")))
+            } else {
+                NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "dataSyncManagerError")))
+            }
         }
     }
     
