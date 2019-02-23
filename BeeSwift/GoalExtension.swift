@@ -373,6 +373,7 @@ extension Goal {
     }
     
     func setupHKStatisticsCollectionQuery() {
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
     
@@ -423,6 +424,7 @@ extension Goal {
             
             self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
         }
+        healthStore.execute(query)
     }
 
     func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection, success: (() -> ())?, errorCompletion: (() -> ())?) {
@@ -585,7 +587,7 @@ extension Goal {
                     //handle error
                     return
                 }
-                if self.hkQuantityTypeIdentifier != nil {
+                if self.hkQuantityTypeIdentifier() != nil {
                     self.setupHKStatisticsCollectionQuery()
                 }
                 else if let query = self.hkObserverQuery() {
