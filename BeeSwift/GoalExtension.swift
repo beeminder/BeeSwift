@@ -373,9 +373,58 @@ extension Goal {
     }
     
     func hkStatisticsCollectionQuery() -> HKStatisticsCollectionQuery? {
-        if self.hkQuantityTypeIdentifier() != nil {
-            let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
+        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
+    
+        let calendar = Calendar.current
+        var interval = DateComponents()
+        interval.day = 1
+        
+        var anchorComponents = calendar.dateComponents([.day, .month, .year, .weekday], from: Date())
+        anchorComponents.hour = 0
+        anchorComponents.minute = 0
+        anchorComponents.second = 0
+        
+        guard let midnight = calendar.date(from: anchorComponents) else {
+            fatalError("*** unable to create a valid date from the given components ***")
         }
+        let anchorDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: midnight)!
+        
+        var options : HKStatisticsOptions
+        if quantityType!.aggregationStyle == .cumulative {
+            options = .cumulativeSum
+        } else {
+            options = .discreteMin
+        }
+        
+        let query = HKStatisticsCollectionQuery(quantityType: quantityType!,
+                                                quantitySamplePredicate: nil,
+                                                options: options,
+                                                anchorDate: anchorDate,
+                                                intervalComponents: interval)
+        query.initialResultsHandler = {
+            query, collection, error in
+            
+            guard let statsCollection = collection else {
+                // Perform proper error handling here
+                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+            }
+            
+//                self.updateBeeminder(collection: statsCollection)
+        }
+        
+        query.statisticsUpdateHandler = {
+            query, statistics, collection, error in
+            
+            guard let statsCollection = collection else {
+                // Perform proper error handling here
+                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+            }
+            
+//                self.updateBeeminder(collection: statsCollection)
+        }
+        
+        return query
     }
     
     func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
