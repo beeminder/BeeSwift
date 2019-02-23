@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>beeminder.com</string>
+		<string>webcredentials:beeminder.com</string>
 	</array>
 	<key>com.apple.developer.healthkit</key>
 	<true/>
