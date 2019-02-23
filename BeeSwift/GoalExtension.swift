@@ -372,7 +372,7 @@ extension Goal {
         return datapointValue
     }
     
-    func hkStatisticsCollectionQuery() -> HKStatisticsCollectionQuery? {
+    func setupHKStatisticsCollectionQuery() {
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
     
@@ -391,13 +391,13 @@ extension Goal {
         let anchorDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: midnight)!
         
         var options : HKStatisticsOptions
-        if quantityType!.aggregationStyle == .cumulative {
+        if quantityType.aggregationStyle == .cumulative {
             options = .cumulativeSum
         } else {
             options = .discreteMin
         }
         
-        let query = HKStatisticsCollectionQuery(quantityType: quantityType!,
+        let query = HKStatisticsCollectionQuery(quantityType: quantityType,
                                                 quantitySamplePredicate: nil,
                                                 options: options,
                                                 anchorDate: anchorDate,
@@ -410,7 +410,7 @@ extension Goal {
                 fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
             }
             
-//                self.updateBeeminder(collection: statsCollection)
+            self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
         }
         
         query.statisticsUpdateHandler = {
@@ -421,10 +421,109 @@ extension Goal {
                 fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
             }
             
-//                self.updateBeeminder(collection: statsCollection)
+            self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
+        }
+    }
+
+    func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection, success: (() -> ())?, errorCompletion: (() -> ())?) {
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        
+        let endDate = Date()
+        let calendar = Calendar.current
+        guard let startDate = calendar.date(byAdding: .day, value: -7, to: endDate) else {
+            return
         }
         
-        return query
+        collection.enumerateStatistics(from: startDate, to: endDate) { [unowned self] statistics, stop in
+            healthStore.preferredUnits(for: [statistics.quantityType], completion: { (units, error) in
+                guard let unit = units.first?.value else { return }
+                var datapointValue : Double?
+                
+                guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
+                    return
+                }
+                guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+                    fatalError("*** Unable to create a quantity type ***")
+                }
+                
+                
+                if quantityType.aggregationStyle == .cumulative {
+                    let quantity = statistics.sumQuantity()
+                    datapointValue = quantity?.doubleValue(for: unit)
+                } else if quantityType.aggregationStyle == .discrete {
+                    let quantity = statistics.minimumQuantity()
+                    datapointValue = quantity?.doubleValue(for: unit)
+                }
+                
+                guard datapointValue != nil else { return }
+                
+                let startDate = statistics.startDate
+                let endDate = statistics.endDate
+                
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyyMMdd"
+                let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
+                let daystamp = formatter.string(from: datapointDate)
+
+                self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
+            })
+        }
+    }
+    
+    func updateBeeminderWithValue(datapointValue : Double, daystamp : String, success: (() -> ())?, errorCompletion: (() -> ())?) {
+        let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id)) as? [Datapoint]
+        
+        if datapointValue == 0  { return }
+        
+        if datapoints == nil || datapoints?.count == 0 {
+            let requestId = "\(daystamp)-\(self.minuteStamp())"
+            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
+            self.postDatapoint(params: params, success: { (responseObject) in
+                let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
+                datapoint.goal = self
+                NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+                success?()
+            }, failure: { (error) in
+                print(error)
+                errorCompletion?()
+            })
+        } else if (datapoints?.count)! >= 1 {
+            var first = true
+            datapoints?.forEach({ (datapoint) in
+                if first {
+                    let requestId = "\(daystamp)-\(self.minuteStamp())"
+                    let params = [
+                        "access_token": CurrentUserManager.sharedManager.accessToken!,
+                        "value": "\(datapointValue)",
+                        "comment": "Automatically updated via iOS Health app",
+                        "requestid": requestId
+                    ]
+                    if datapointValue == datapoint.value.doubleValue { success?() }
+                    else {
+                        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                            let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
+                            datapoint.goal = self
+                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+                            success?()
+                        }, errorHandler: { (error) in
+                            errorCompletion?()
+                        })
+                    }
+                } else {
+                    let params = [
+                        "access_token": CurrentUserManager.sharedManager.accessToken!,
+                        ]
+                    RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                            datapoint.mr_deleteEntity(in: NSManagedObjectContext.mr_default())
+                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+                        success?()
+                    }, errorHandler: { (error) in
+                        errorCompletion?()
+                    })
+                }
+                first = false
+            })
+        }
     }
     
     func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
@@ -454,87 +553,8 @@ extension Goal {
             let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
             
             if self.hkQuantityTypeIdentifier() != nil {
-                let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: .cumulativeSum, completionHandler: { (query, statistics, error) in
-                    if error != nil || statistics == nil { return }
-                    
-                    guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
-                        return
-                    }
-                    guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-                        fatalError("*** Unable to create a quantity type ***")
-                    }
-                    
-                    healthStore.preferredUnits(for: [quantityType], completion: { (units, error) in
-                        var datapointValue : Double?
-                        guard let unit = units.first?.value else { return }
-                        
-                        if quantityType.aggregationStyle == .cumulative {
-                            let quantity = statistics!.sumQuantity()
-                            datapointValue = quantity?.doubleValue(for: unit)
-                        } else if quantityType.aggregationStyle == .discrete {
-                            let quantity = statistics!.minimumQuantity()
-                            datapointValue = quantity?.doubleValue(for: unit)
-                        }
-                        
-                        if datapointValue == nil || datapointValue == 0  { return }
-                        
-                        if datapoints == nil || datapoints?.count == 0 {
-                            let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
-                            formatter.dateFormat = "d"
-                            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue!) \"Automatically entered via iOS Health app\"", "requestid": requestId]
-                            self.postDatapoint(params: params, success: { (responseObject) in
-                                let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                                datapoint.goal = self
-                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                                success?()
-                            }, failure: { (error) in
-                                print(error)
-                                errorCompletion?()
-                            })
-                        } else if (datapoints?.count)! >= 1 {
-                            var first = true
-                            datapoints?.forEach({ (datapoint) in
-                                if first {
-                                    let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
-                                    formatter.dateFormat = "hh:mm"
-                                    let params = [
-                                        "access_token": CurrentUserManager.sharedManager.accessToken!,
-                                        "timestamp": "\(datapointDate)",
-                                        "value": "\(datapointValue!)",
-                                        "comment": "Automatically updated via iOS Health app",
-                                        "requestid": requestId
-                                    ]
-                                    if datapointValue == datapoint.value.doubleValue { success?() }
-                                    else {
-                                        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                                            let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                                            datapoint.goal = self
-                                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                                            success?()
-                                        }, errorHandler: { (error) in
-                                            errorCompletion?()
-                                        })
-                                    }
-                                } else {
-                                    let params = [
-                                        "access_token": CurrentUserManager.sharedManager.accessToken!,
-                                        ]
-                                    RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                                        datapoint.mr_deleteEntity(in: NSManagedObjectContext.mr_default())
-                                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                                        success?()
-                                    }, errorHandler: { (error) in
-                                        errorCompletion?()
-                                    })
-                                }
-                                first = false
-                            })
-                        }
-                    })
-                })
+                self.setupHKStatisticsCollectionQuery()
                 
-                healthStore.execute(statsQuery)
-                return
             } else {
                 let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
                     if error != nil || samples == nil { return }
@@ -543,48 +563,7 @@ extension Goal {
                     
                     if datapointValue == 0 { return }
                     
-                    if datapoints == nil || datapoints?.count == 0 {
-                        let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
-                        formatter.dateFormat = "d"
-                        let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(formatter.string(from: datapointDate)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
-                        self.postDatapoint(params: params, success: { (responseObject) in
-                            let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                            datapoint.goal = self
-                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                        }, failure: { (error) in
-                            print(error)
-                        })
-                    } else if (datapoints?.count)! >= 1 {
-                        var first = true
-                        datapoints?.forEach({ (datapoint) in
-                            if first {
-                                let requestId = "\(formatter.string(from: datapointDate))-\(self.minuteStamp())"
-                                formatter.dateFormat = "hh:mm"
-                                let params = [
-                                    "access_token": CurrentUserManager.sharedManager.accessToken!,
-                                    "timestamp": "\(datapointDate)",
-                                    "value": "\(datapointValue)",
-                                    "comment": "Automatically updated via iOS Health app",
-                                    "requestid": requestId
-                                ]
-                                RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                                    //foo
-                                }, errorHandler: { (error) in
-                                    ///bar
-                                })
-                            } else {
-                                let params = [
-                                    "access_token": CurrentUserManager.sharedManager.accessToken!
-                                ]
-                                RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                                    //foo
-                                }, errorHandler: { (error) in
-                                    ///bar
-                                })
-                            }
-                            first = false
-                        })
-                    }
+                    self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
                 })
                 healthStore.execute(query)
             }
@@ -606,11 +585,13 @@ extension Goal {
                     //handle error
                     return
                 }
-                
-                if let query = self.hkObserverQuery() {
+                if self.hkQuantityTypeIdentifier != nil {
+                    self.setupHKStatisticsCollectionQuery()
+                }
+                else if let query = self.hkObserverQuery() {
                     healthStore.execute(query)
                 } else {
-                    
+                    // big trouble
                 }
             })
         })
