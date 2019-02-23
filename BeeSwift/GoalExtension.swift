@@ -296,6 +296,8 @@ extension Goal {
         return nil
     }
     
+    
+    
     func hkObserverQuery() -> HKObserverQuery? {
         guard let sampleType = self.hkSampleType() else { return nil }
         return HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
@@ -368,6 +370,12 @@ extension Goal {
             datapointValue += self.hkDatapointValueForSample(sample: sample, units: units)
         }
         return datapointValue
+    }
+    
+    func hkStatisticsCollectionQuery() -> HKStatisticsCollectionQuery? {
+        if self.hkQuantityTypeIdentifier() != nil {
+            let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
+        }
     }
     
     func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
@@ -550,9 +558,11 @@ extension Goal {
                     return
                 }
                 
-                guard let query = self.hkObserverQuery() else { return }
-                
-                healthStore.execute(query)
+                if let query = self.hkObserverQuery() {
+                    healthStore.execute(query)
+                } else {
+                    
+                }
             })
         })
     }
