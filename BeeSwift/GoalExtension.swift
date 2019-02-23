@@ -447,14 +447,17 @@ extension Goal {
                                         "comment": "Automatically updated via iOS Health app",
                                         "requestid": requestId
                                     ]
-                                    RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                                        let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                                        datapoint.goal = self
-                                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                                        success?()
-                                    }, errorHandler: { (error) in
-                                        errorCompletion?()
-                                    })
+                                    if datapointValue == datapoint.value.doubleValue { success?() }
+                                    else {
+                                        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                                            let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
+                                            datapoint.goal = self
+                                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
+                                            success?()
+                                        }, errorHandler: { (error) in
+                                            errorCompletion?()
+                                        })
+                                    }
                                 } else {
                                     let params = [
                                         "access_token": CurrentUserManager.sharedManager.accessToken!,
