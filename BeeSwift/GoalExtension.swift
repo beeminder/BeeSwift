@@ -463,6 +463,8 @@ extension Goal {
                                         "access_token": CurrentUserManager.sharedManager.accessToken!,
                                         ]
                                     RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                                        datapoint.mr_deleteEntity(in: NSManagedObjectContext.mr_default())
+                                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
                                         success?()
                                     }, errorHandler: { (error) in
                                         errorCompletion?()
