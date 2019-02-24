@@ -37,6 +37,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleCreateGoalButtonPressed), name: NSNotification.Name(rawValue: "createGoalButtonPressed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.didFetchData), name: Notification.Name(rawValue: "dataSyncManagerSuccess"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didBecomeActive), name: Notification.Name(rawValue: "didBecomeActive"), object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
@@ -202,6 +203,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.count))
             self.lastUpdatedLabel.attributedText = lastText
         }
+    }
+    
+    @objc func didBecomeActive() {
+        self.refreshControl.endRefreshing()
     }
     
     @objc func didFetchData() {
