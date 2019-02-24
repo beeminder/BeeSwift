@@ -58,12 +58,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
         print(userInfo)
-        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-            //
-        }, error: { () -> Void in
-            //
-        })
-        HealthStoreManager.sharedManager.setupHealthkit()
+        if !HKHealthStore.isHealthDataAvailable() { return }
+        guard let slug = userInfo["slug"] else { return }
+        guard let goal = Goal.mr_findFirst(with: NSPredicate(format: "serverDeleted = false and slug = %@", slug as! CVarArg)) else { return }
+        goal.setupHealthKit()
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
