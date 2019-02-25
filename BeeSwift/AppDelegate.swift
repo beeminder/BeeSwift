@@ -47,6 +47,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
+        
+        if UserDefaults.standard.object(forKey: Constants.healthSyncRemindersPreferenceKey) == nil {
+            UserDefaults.standard.set(true, forKey: Constants.healthSyncRemindersPreferenceKey)
+        }
 
         return true
     }

@@ -14,7 +14,8 @@ class HealthKitConfigViewController: UIViewController {
     var tableView = UITableView()
     var goals : [Goal] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
-    
+    var syncRemindersSwitch = UISwitch()
+    let margin = 12
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,11 +24,29 @@ class HealthKitConfigViewController: UIViewController {
         let backItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         self.navigationItem.backBarButtonItem = backItem
         
+        let syncRemindersLabel = BSLabel()
+        self.view.addSubview(syncRemindersLabel)
+        syncRemindersLabel.text = "Sync Health data reminders"
+        syncRemindersLabel.snp.makeConstraints { (make) in
+            make.left.equalTo(self.margin)
+            make.right.equalTo(0)
+            make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
+        }
+        
+        self.view.addSubview(self.syncRemindersSwitch)
+        self.syncRemindersSwitch.isOn = UserDefaults.standard.bool(forKey: Constants.healthSyncRemindersPreferenceKey)
+        self.syncRemindersSwitch.addTarget(self, action: #selector(self.syncRemindersSwitchValueChanged), for: .valueChanged)
+        self.syncRemindersSwitch.snp.makeConstraints { (make) in
+            make.centerY.equalTo(syncRemindersLabel)
+            make.right.equalTo(-self.margin)
+        }
+        
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
-            make.top.equalTo(self.topLayoutGuide.snp.top)
+            make.top.equalTo(syncRemindersLabel.snp.bottom)
             make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
         }
         
@@ -48,6 +67,10 @@ class HealthKitConfigViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         self.loadGoalsFromDatabase()
+    }
+    
+    @objc func syncRemindersSwitchValueChanged() {
+        UserDefaults.standard.set(self.syncRemindersSwitch.isOn, forKey: Constants.healthSyncRemindersPreferenceKey)
     }
     
     func loadGoalsFromDatabase() {

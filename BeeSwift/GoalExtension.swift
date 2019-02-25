@@ -432,6 +432,7 @@ extension Goal {
     }
     
     func setUnlockNotification() {
+        if UserDefaults.standard.bool(forKey: Constants.healthSyncRemindersPreferenceKey) == false { return }
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
             let content = UNMutableNotificationContent()
