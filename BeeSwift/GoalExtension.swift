@@ -368,7 +368,21 @@ extension Goal {
             }
             return datapointValue
         }
+        
+        var uniqueSamples : [HKSample] = []
         samples.forEach { (sample) in
+            var dupe = false
+            uniqueSamples.forEach({ (seenSample) in
+                if seenSample.startDate == sample.startDate &&
+                     seenSample.endDate == sample.endDate &&
+                     seenSample.device  != sample.device {
+                    dupe = true
+                }
+            })
+            if !dupe { uniqueSamples.append(sample) }
+        }
+        
+        uniqueSamples.forEach { (sample) in
             datapointValue += self.hkDatapointValueForSample(sample: sample, units: units)
         }
         return datapointValue
