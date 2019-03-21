@@ -375,7 +375,7 @@ extension Goal {
             uniqueSamples.forEach({ (seenSample) in
                 if seenSample.startDate == sample.startDate &&
                      seenSample.endDate == sample.endDate &&
-                     seenSample.device  != sample.device {
+                     seenSample.device  == sample.device {
                     dupe = true
                 }
             })
@@ -386,6 +386,68 @@ extension Goal {
             datapointValue += self.hkDatapointValueForSample(sample: sample, units: units)
         }
         return datapointValue
+    }
+    
+    func setupActivitySummaryQuery() {
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let categoryType = self.hkCategoryTypeIdentifier() else { return }
+        if categoryType != .appleStandHour { return }
+
+        let calendar = Calendar.current
+        
+        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
+        let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
+        let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
+        
+        guard let startDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!) else { return }
+        guard let endDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!) else { return }
+        
+        let startDateComponents = calendar.dateComponents([.day,.month,.year], from: startDate)
+        let endDateComponents = calendar.dateComponents([.day,.month,.year], from: endDate)
+        
+        let summariesWithinRange = HKQuery.predicate(forActivitySummariesBetweenStart: startDateComponents, end: endDateComponents)
+        
+        let query = HKActivitySummaryQuery(predicate: summariesWithinRange) { (query, summaries, error) -> Void in
+            guard let activitySummaries = summaries else {
+                guard let queryError = error else {
+                    fatalError("*** Did not return a valid error object. ***")
+                }
+                print(queryError)
+                return
+            }
+            self.updateBeeminderWithActivitySummaries(summaries: activitySummaries, success: nil, errorCompletion: nil)
+            
+        }
+        query.updateHandler = self.activitySummaryUpdateHandler
+        healthStore.execute(query)
+    }
+    
+    func activitySummaryUpdateHandler(query: HKActivitySummaryQuery, summaries: [HKActivitySummary]?, error: Error?) {
+        guard let activitySummaries = summaries else {
+            guard let queryError = error else {
+                fatalError("*** Did not return a valid error object. ***")
+            }
+            print(queryError)
+            return
+        }
+        self.updateBeeminderWithActivitySummaries(summaries: activitySummaries, success: nil, errorCompletion: nil)
+    }
+    
+    func updateBeeminderWithActivitySummaries(summaries: [HKActivitySummary]?, success: (() -> ())?, errorCompletion: (() -> ())?) {
+        summaries?.forEach({ (summary) in
+            let calendar = Calendar.current
+            let dateComponents = summary.dateComponents(for: Calendar.current)
+            guard let summaryDate = calendar.date(from: dateComponents) else { return }
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyyMMdd"
+            let daystamp = formatter.string(from: summaryDate)
+            let standHours = summary.appleStandHours
+            self.updateBeeminderWithValue(datapointValue: standHours.doubleValue(for: HKUnit.count()), daystamp: daystamp, success: {
+                success?()
+            }, errorCompletion: {
+                errorCompletion?()
+            })
+        })
     }
     
     func setupHKStatisticsCollectionQuery() {
@@ -641,7 +703,10 @@ extension Goal {
                     //handle error
                     return
                 }
-                if self.hkQuantityTypeIdentifier() != nil {
+                if self.hkCategoryTypeIdentifier() == .appleStandHour {
+                    self.setupActivitySummaryQuery()
+                }
+                else if self.hkQuantityTypeIdentifier() != nil {
                     self.setupHKStatisticsCollectionQuery()
                 }
                 else if let query = self.hkObserverQuery() {
