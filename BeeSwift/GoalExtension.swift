@@ -670,10 +670,44 @@ extension Goal {
             let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
             let daystamp = formatter.string(from: datapointDate)
             
+            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+            
             if self.hkQuantityTypeIdentifier() != nil {
-                self.setupHKStatisticsCollectionQuery()
+                let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: .cumulativeSum, completionHandler: { (query, statistics, error) in
+                    if error != nil || statistics == nil { return }
+                    
+                    guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
+                        return
+                    }
+                    guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+                        fatalError("*** Unable to create a quantity type ***")
+                    }
+                    
+                    healthStore.preferredUnits(for: [quantityType], completion: { (units, error) in
+                        var datapointValue : Double?
+                        guard let unit = units.first?.value else { return }
+                        
+                        if quantityType.aggregationStyle == .cumulative {
+                            let quantity = statistics!.sumQuantity()
+                            datapointValue = quantity?.doubleValue(for: unit)
+                        } else if quantityType.aggregationStyle == .discrete {
+                            let quantity = statistics!.minimumQuantity()
+                            datapointValue = quantity?.doubleValue(for: unit)
+                        }
+                        
+                        if datapointValue == nil || datapointValue == 0  { return }
+                        
+                        self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp, success: {
+                            success?()
+                        }, errorCompletion: {
+                            errorCompletion?()
+                        })
+                    })
+                })
+                
+                healthStore.execute(statsQuery)
+                return
             } else {
-                let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
                 let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
                     if error != nil || samples == nil { return }
                     

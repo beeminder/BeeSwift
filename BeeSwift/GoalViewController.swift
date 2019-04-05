@@ -385,9 +385,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         self.goal.hkQueryForLast(days: 7, success: {
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            DispatchQueue.main.async {
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            }
         }) {
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            DispatchQueue.main.async {
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            }
         }
     }
     
