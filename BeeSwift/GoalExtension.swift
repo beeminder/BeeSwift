@@ -399,8 +399,8 @@ extension Goal {
         let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
         let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
         
-        guard let startDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!) else { return }
-        guard let endDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!) else { return }
+        guard let startDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!) else { return }
+        guard let endDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!) else { return }
         
         let startDateComponents = calendar.dateComponents([.day,.month,.year], from: startDate)
         let endDateComponents = calendar.dateComponents([.day,.month,.year], from: endDate)
@@ -670,14 +670,10 @@ extension Goal {
             let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
             let daystamp = formatter.string(from: datapointDate)
             
-            let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id)) as? [Datapoint]
-            
-            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
-            
             if self.hkQuantityTypeIdentifier() != nil {
                 self.setupHKStatisticsCollectionQuery()
-                
             } else {
+                let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
                 let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
                     if error != nil || samples == nil { return }
                     
