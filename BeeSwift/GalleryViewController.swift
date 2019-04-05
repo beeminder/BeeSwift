@@ -210,6 +210,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func didFetchData() {
+        self.refreshControl.endRefreshing()
+        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
         let isRegisteredForNotifications = UIApplication.shared.currentUserNotificationSettings?.types.contains(UIUserNotificationType.alert) ?? false
         if !isRegisteredForNotifications {
             RemoteNotificationsManager.sharedManager.turnNotificationsOn()
@@ -218,7 +220,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView!.reloadData()
         self.updateLastUpdatedLabel()
         self.updateDeadbeatHeight()
-        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
         if self.goals.count == 0 {
             self.noGoalsLabel.isHidden = false
             self.collectionView?.isHidden = true
@@ -226,15 +227,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.noGoalsLabel.isHidden = true
             self.collectionView?.isHidden = false
         }
-        self.refreshControl.endRefreshing()
     }
     
     @objc func fetchData() {
         if self.goals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
-        }
-        if DataSyncManager.sharedManager.isFetching {
-            return
         }
         DataSyncManager.sharedManager.fetchData(success: { () -> Void in
             self.didFetchData()

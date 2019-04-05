@@ -158,7 +158,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.thumbnailImageView.image = nil
             self.setThumbnailImage()
 
-            if DataSyncManager.sharedManager.isFetching || goal == nil {
+            if goal == nil {
                 self.countdownLabel.text = ""
                 self.countdownView.backgroundColor = UIColor.beeGrayColor()
             } else {

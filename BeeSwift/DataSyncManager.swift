@@ -11,8 +11,6 @@ import SwiftyJSON
 import MagicalRecord
 
 class DataSyncManager :NSObject {
-
-    var isFetching = false
     fileprivate let lastSyncedKey = "lastSynced"
 
     static let sharedManager = DataSyncManager()
@@ -45,20 +43,17 @@ class DataSyncManager :NSObject {
     }
     
     func fetchData(success: (()->Void)?, error: (()->Void)?) {
-        if self.isFetching || !CurrentUserManager.sharedManager.signedIn() {
+        if !CurrentUserManager.sharedManager.signedIn() {
             return
         }
         
-        self.isFetching = true
-        
         let parameters = ["associations": true, "datapoints_count": 5, "diff_since": self.lastSynced == nil ? 0 : self.lastSynced!.timeIntervalSince1970] as [String : Any]
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: parameters, success: { (responseJSON) in
-            self.handleResponse(JSON(responseJSON!), completion: success)
-            self.isFetching = false
+            success?()
+            self.handleResponse(JSON(responseJSON!), completion: nil)
             self.setLastSynced(Date())
         }) { (responseError) in
             error?()
-            self.isFetching = false
             NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "dataSyncManagerError")))
         }
     }
