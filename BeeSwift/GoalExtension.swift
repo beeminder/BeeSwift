@@ -405,9 +405,9 @@ extension Goal {
         let startDateComponents = calendar.dateComponents([.day,.month,.year], from: startDate)
         let endDateComponents = calendar.dateComponents([.day,.month,.year], from: endDate)
         
-        var startDC = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: startDateComponents.year, month: startDateComponents.month, day: startDateComponents.day, hour: nil, minute: nil, second: nil, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
+        let startDC = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: startDateComponents.year, month: startDateComponents.month, day: startDateComponents.day, hour: nil, minute: nil, second: nil, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
         
-        var endDC = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: endDateComponents.year, month: endDateComponents.month, day: endDateComponents.day, hour: nil, minute: nil, second: nil, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
+        let endDC = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: endDateComponents.year, month: endDateComponents.month, day: endDateComponents.day, hour: nil, minute: nil, second: nil, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
         
         let summariesWithinRange = HKQuery.predicate(forActivitySummariesBetweenStart: startDC, end: endDC)
         
