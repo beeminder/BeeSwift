@@ -411,7 +411,7 @@ extension Goal {
         
         let summariesWithinRange = HKQuery.predicate(forActivitySummariesBetweenStart: startDC, end: endDC)
         
-        let query = HKActivitySummaryQuery(predicate: summariesWithinRange) { (query, summaries, error) -> Void in
+        let query = HKActivitySummaryQuery(predicate: nil) { (query, summaries, error) -> Void in
             guard let activitySummaries = summaries else {
                 guard let queryError = error else {
                     fatalError("*** Did not return a valid error object. ***")
@@ -442,6 +442,10 @@ extension Goal {
             let calendar = Calendar.current
             let dateComponents = summary.dateComponents(for: Calendar.current)
             guard let summaryDate = calendar.date(from: dateComponents) else { return }
+            // ignore anything older than 7 days
+            if summaryDate.compare(Date(timeIntervalSinceNow: -604800)) == ComparisonResult.orderedAscending {
+                return
+            }
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyyMMdd"
             let daystamp = formatter.string(from: summaryDate)
