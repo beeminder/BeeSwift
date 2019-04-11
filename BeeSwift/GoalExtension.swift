@@ -335,7 +335,7 @@ extension Goal {
                 (self.healthKitMetric == "timeInBed" && s.value != HKCategoryValueSleepAnalysis.inBed.rawValue) {
                 return 0
             } else if self.hkCategoryTypeIdentifier() == .appleStandHour {
-                return 1
+                return Double(s.value)
             } else if self.hkCategoryTypeIdentifier() == .sleepAnalysis {
                 return s.endDate.timeIntervalSince(s.startDate)/3600.0
             }
@@ -741,10 +741,7 @@ extension Goal {
                     //handle error
                     return
                 }
-                if self.hkCategoryTypeIdentifier() == .appleStandHour {
-                    self.setupActivitySummaryQuery()
-                }
-                else if self.hkQuantityTypeIdentifier() != nil {
+                if self.hkQuantityTypeIdentifier() != nil {
                     self.setupHKStatisticsCollectionQuery()
                 }
                 else if let query = self.hkObserverQuery() {

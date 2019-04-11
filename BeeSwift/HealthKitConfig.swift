@@ -31,7 +31,7 @@ class HealthKitConfig : NSObject {
             HealthKitMetric.init(humanText: "Water", databaseString: "water", hkIdentifier: HKQuantityTypeIdentifier.dietaryWater, hkCategoryTypeIdentifier: nil),
             HealthKitMetric.init(humanText: "Time in bed", databaseString: "timeInBed", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.sleepAnalysis),
             HealthKitMetric.init(humanText: "Time asleep", databaseString: "timeAsleep", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.sleepAnalysis),
-            HealthKitMetric.init(humanText: "Stand hours", databaseString: "standHour", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.appleStandHour),
+//            HealthKitMetric.init(humanText: "Stand hours", databaseString: "standHour", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.appleStandHour),
             HealthKitMetric.init(humanText: "Resting energy", databaseString: "basalEnergy", hkIdentifier: HKQuantityTypeIdentifier.basalEnergyBurned, hkCategoryTypeIdentifier: nil),
             HealthKitMetric.init(humanText: "Dietary energy", databaseString: "dietaryEnergy", hkIdentifier: HKQuantityTypeIdentifier.dietaryEnergyConsumed, hkCategoryTypeIdentifier: nil),
             HealthKitMetric.init(humanText: "Dietary protein", databaseString: "dietaryProtein", hkIdentifier: HKQuantityTypeIdentifier.dietaryProtein, hkCategoryTypeIdentifier: nil)
