@@ -8,6 +8,7 @@
 
 import UIKit
 import HealthKit
+import UserNotifications
 
 class HealthKitConfigViewController: UIViewController {
     
@@ -71,6 +72,9 @@ class HealthKitConfigViewController: UIViewController {
     
     @objc func syncRemindersSwitchValueChanged() {
         UserDefaults.standard.set(self.syncRemindersSwitch.isOn, forKey: Constants.healthSyncRemindersPreferenceKey)
+        if self.syncRemindersSwitch.isOn == false {
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        }
     }
     
     func loadGoalsFromDatabase() {
