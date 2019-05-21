@@ -626,6 +626,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.view.endEditing(true)
         if (self.goal.hideDataEntry()) { return }
+        if ((indexPath as NSIndexPath).row >= self.datapoints.count) { return }
         let datapointJSON : JSON = (self.datapoints[(indexPath as NSIndexPath).row] as? JSON)!
         let editDatapointViewController = EditDatapointViewController()
         editDatapointViewController.datapointJSON = datapointJSON
