@@ -680,7 +680,14 @@ extension Goal {
             let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
             
             if self.hkQuantityTypeIdentifier() != nil {
-                let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: .cumulativeSum, completionHandler: { (query, statistics, error) in
+                var options : HKStatisticsOptions
+                guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
+                if quantityType.aggregationStyle == .cumulative {
+                    options = .cumulativeSum
+                } else {
+                    options = .discreteMin
+                }
+                let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: options, completionHandler: { (query, statistics, error) in
                     if error != nil || statistics == nil { return }
                     
                     guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
