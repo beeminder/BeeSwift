@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Beeminder does not share or use your location</string>
 	<key>CFBundleDisplayName</key>
 	<string>Beeminder</string>
 	<key>CFBundleExecutable</key>
