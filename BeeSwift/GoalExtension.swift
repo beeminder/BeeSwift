@@ -494,7 +494,7 @@ extension Goal {
             
             guard let statsCollection = collection else {
                 // Perform proper error handling here
-                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+                return
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5), execute: {
                 self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
@@ -508,7 +508,7 @@ extension Goal {
             if HKHealthStore.isHealthDataAvailable() {
                 guard let statsCollection = collection else {
                     // Perform proper error handling here
-                    fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+                    return
                 }
                 
                 self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
