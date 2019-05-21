@@ -496,21 +496,24 @@ extension Goal {
                 // Perform proper error handling here
                 fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
             }
-            
-            self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
-            self.setUnlockNotification()
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5), execute: {
+                self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
+                self.setUnlockNotification()
+            })
         }
         
         query.statisticsUpdateHandler = {
             query, statistics, collection, error in
             
-            guard let statsCollection = collection else {
-                // Perform proper error handling here
-                fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+            if HKHealthStore.isHealthDataAvailable() {
+                guard let statsCollection = collection else {
+                    // Perform proper error handling here
+                    fatalError("*** An error occurred while calculating the statistics: \(error?.localizedDescription) ***")
+                }
+                
+                self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
+                self.setUnlockNotification()
             }
-            
-            self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
-            self.setUnlockNotification()
         }
         healthStore.execute(query)
     }
