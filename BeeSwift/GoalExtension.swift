@@ -496,7 +496,7 @@ extension Goal {
                 // Perform proper error handling here
                 return
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5), execute: {
+            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + .seconds(5), execute: {
                 self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
                 self.setUnlockNotification()
             })
