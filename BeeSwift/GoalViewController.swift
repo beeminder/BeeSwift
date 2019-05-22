@@ -375,9 +375,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         self.goal.hkQueryForLast(days: 1, success: {
-            DispatchQueue.main.async {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                hud?.mode = .customView
+                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud?.hide(true, afterDelay: 2)
+            })
         }) {
             DispatchQueue.main.async {
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
