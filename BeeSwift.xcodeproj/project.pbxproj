@@ -457,7 +457,6 @@
 				A12E69491BD3EF0200AB94C2 /* Sources */,
 				A12E694A1BD3EF0200AB94C2 /* Frameworks */,
 				A12E694B1BD3EF0200AB94C2 /* Resources */,
-				836ED2B439D4115ADCB439F7 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -500,7 +499,6 @@
 				A196CB291AE4142F00B90A3E /* Frameworks */,
 				A196CB2A1AE4142F00B90A3E /* Resources */,
 				1B9207D955CDFDDAD7B0C02E /* [CP] Embed Pods Frameworks */,
-				0DC989D5B1305B340F0F2475 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -639,21 +637,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		0DC989D5B1305B340F0F2475 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BeeSwiftTests/Pods-BeeSwiftTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		1B9207D955CDFDDAD7B0C02E /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -743,30 +726,13 @@
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TwitterKitResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TwitterShareExtensionUIResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BeeSwift/Pods-BeeSwift-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		836ED2B439D4115ADCB439F7 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-BeeSwiftToday/Pods-BeeSwiftToday-resources.sh",
-				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterKitResources.bundle",
-				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterShareExtensionUIResources.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BeeSwiftToday/Pods-BeeSwiftToday-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A1C02F631FCE1C2C00D08E6E /* Run Script - Sentry */ = {

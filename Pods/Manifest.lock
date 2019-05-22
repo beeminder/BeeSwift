@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (4.5.1)
+  - Alamofire (4.7.3)
   - AlamofireImage (3.3.0):
     - Alamofire (~> 4.5)
   - AlamofireNetworkActivityIndicator (2.2.0):
@@ -15,18 +15,18 @@ PODS:
   - FBSDKLoginKit (4.11.0):
     - FBSDKCoreKit
   - GoogleSignIn (4.1.1):
-    - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
-    - GoogleToolboxForMac/NSString+URLArguments (~> 2.1)
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
     - GTMOAuth2 (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
   - GoogleToolboxForMac/DebugUtils (2.1.3):
     - GoogleToolboxForMac/Defines (= 2.1.3)
   - GoogleToolboxForMac/Defines (2.1.3)
-  - GoogleToolboxForMac/NSDictionary+URLArguments (2.1.3):
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.1.3)":
     - GoogleToolboxForMac/DebugUtils (= 2.1.3)
     - GoogleToolboxForMac/Defines (= 2.1.3)
-    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.3)
-  - GoogleToolboxForMac/NSString+URLArguments (2.1.3)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.1.3)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.1.3)"
   - GTMOAuth2 (1.1.5):
     - GTMSessionFetcher (~> 1.1)
   - GTMSessionFetcher (1.1.12):
@@ -62,7 +62,7 @@ PODS:
     - TwitterCore (>= 3.0.2)
 
 DEPENDENCIES:
-  - Alamofire (~> 4.5)
+  - Alamofire (~> 4.7.1)
   - AlamofireImage (~> 3.3)
   - AlamofireNetworkActivityIndicator (~> 2.2)
   - FBSDKCoreKit
@@ -76,6 +76,27 @@ DEPENDENCIES:
   - SwiftyJSON
   - TwitterKit
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - AlamofireImage
+    - AlamofireNetworkActivityIndicator
+    - Bolts
+    - FBSDKCoreKit
+    - FBSDKLoginKit
+    - GoogleSignIn
+    - GoogleToolboxForMac
+    - GTMOAuth2
+    - GTMSessionFetcher
+    - IQKeyboardManager
+    - KSCrash
+    - MagicalRecord
+    - MBProgressHUD
+    - SnapKit
+    - SwiftyJSON
+    - TwitterCore
+    - TwitterKit
+
 EXTERNAL SOURCES:
   Sentry:
     :git: https://github.com/getsentry/sentry-cocoa.git
@@ -87,7 +108,7 @@ CHECKOUT OPTIONS:
     :tag: 3.9.1
 
 SPEC CHECKSUMS:
-  Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
+  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
   AlamofireImage: 2e784dc5d00f04903a52c1d169181469c805c3df
   AlamofireNetworkActivityIndicator: 81e1630e7cfed22a4e4e82a174c59e651dc4f8ca
   Bolts: a0058fa3b331c5a1e4402d534f2dae36dbff31e4
@@ -95,7 +116,7 @@ SPEC CHECKSUMS:
   FBSDKLoginKit: bade9fc78277764149ccc5bfaadbf13c83175c6a
   GoogleSignIn: 3fdaa34a2ba04dbd7a25d7db39aecb0da98d5bdc
   GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
-  GTMOAuth2: be83fd28d63ae3087e7d351b1f39c1a7e24ab6e7
+  GTMOAuth2: 70fdc49d6692763274638898913b6549d186e2b6
   GTMSessionFetcher: ebaa1f79a5366922c1735f1566901f50beba23b7
   IQKeyboardManager: 2341089c4ae25fa2fa82ce356a259fcd267dc6b6
   KSCrash: 931b6caeebfbfe0d316007fcd209f6cb9889c624
@@ -107,6 +128,6 @@ SPEC CHECKSUMS:
   TwitterCore: e0420b01e02e7d20e94690e37f43e75de219ab8d
   TwitterKit: 205ac89824bbfe9e85a16c420d30bb7bcbedac45
 
-PODFILE CHECKSUM: f1e61f625d2820bb338a1b1ee34348607267184a
+PODFILE CHECKSUM: 66503a32542356911c0f6c1ff557611b1525a0ee
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.5.3
