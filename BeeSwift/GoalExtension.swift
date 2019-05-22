@@ -734,6 +734,7 @@ extension Goal {
                 healthStore.execute(query)
             }
         })
+        success?()
     }
     
     func setupHealthKit() {
