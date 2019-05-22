@@ -1,9 +1,9 @@
 PODS:
-  - Alamofire (4.7.3)
-  - AlamofireImage (3.3.0):
-    - Alamofire (~> 4.5)
-  - AlamofireNetworkActivityIndicator (2.2.0):
-    - Alamofire (~> 4.5)
+  - Alamofire (4.8.2)
+  - AlamofireImage (3.5.2):
+    - Alamofire (~> 4.8)
+  - AlamofireNetworkActivityIndicator (2.4.0):
+    - Alamofire (~> 4.8)
   - Bolts (1.7.0):
     - Bolts/AppLinks (= 1.7.0)
     - Bolts/Tasks (= 1.7.0)
@@ -55,16 +55,16 @@ PODS:
   - Sentry/Core (3.9.1)
   - Sentry/KSCrash (3.9.1):
     - KSCrash/Core (~> 1.15.12)
-  - SnapKit (3.2.0)
+  - SnapKit (4.2.0)
   - SwiftyJSON (3.1.0)
   - TwitterCore (3.0.2)
   - TwitterKit (3.2.1):
     - TwitterCore (>= 3.0.2)
 
 DEPENDENCIES:
-  - Alamofire (~> 4.7.1)
-  - AlamofireImage (~> 3.3)
-  - AlamofireNetworkActivityIndicator (~> 2.2)
+  - Alamofire (~> 4.8)
+  - AlamofireImage (~> 3.5)
+  - AlamofireNetworkActivityIndicator (~> 2.4)
   - FBSDKCoreKit
   - FBSDKLoginKit
   - GoogleSignIn
@@ -72,7 +72,7 @@ DEPENDENCIES:
   - MagicalRecord
   - MBProgressHUD
   - Sentry (from `https://github.com/getsentry/sentry-cocoa.git`, tag `3.9.1`)
-  - SnapKit (~> 3.2.0)
+  - SnapKit (~> 4.0)
   - SwiftyJSON
   - TwitterKit
 
@@ -108,9 +108,9 @@ CHECKOUT OPTIONS:
     :tag: 3.9.1
 
 SPEC CHECKSUMS:
-  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
-  AlamofireImage: 2e784dc5d00f04903a52c1d169181469c805c3df
-  AlamofireNetworkActivityIndicator: 81e1630e7cfed22a4e4e82a174c59e651dc4f8ca
+  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
+  AlamofireImage: 63cfe3baf1370be6c498149687cf6db3e3b00999
+  AlamofireNetworkActivityIndicator: 9acc3de3ca6645bf0efed462396b0df13dd3e7b8
   Bolts: a0058fa3b331c5a1e4402d534f2dae36dbff31e4
   FBSDKCoreKit: 686ac982723a14ec9ddb85e2f81235d7706c891b
   FBSDKLoginKit: bade9fc78277764149ccc5bfaadbf13c83175c6a
@@ -123,11 +123,11 @@ SPEC CHECKSUMS:
   MagicalRecord: 53bed74b4323b930992a725be713e53b37d19755
   MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
   Sentry: e2707f9a6b498277d9620a48fcb1bd3b655c8473
-  SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
+  SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
   SwiftyJSON: 29b9f2a64f118c07e691667c2ba1efe536acfe0b
   TwitterCore: e0420b01e02e7d20e94690e37f43e75de219ab8d
   TwitterKit: 205ac89824bbfe9e85a16c420d30bb7bcbedac45
 
-PODFILE CHECKSUM: 66503a32542356911c0f6c1ff557611b1525a0ee
+PODFILE CHECKSUM: 532c30b7b0b261486b41bc91e0da4cca0e376c82
 
 COCOAPODS: 1.5.3
