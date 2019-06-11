@@ -88,6 +88,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "didBecomeActive")))
         DataSyncManager.sharedManager.fetchData(success: { () -> Void in
             self.updateBadgeCount()
+            self.updateTodayWidget()
         }, error: { () -> Void in
             //nil
         })
