@@ -135,9 +135,9 @@ class EditNotificationsViewController: UIViewController {
     
     func updateLeadTimeLabel() {
         if self.leadTimeStepper.value == 1 {
-            self.leadTimeLabel.text = "Notify 1 day before derailing"
+            self.leadTimeLabel.text = "Notify 1 day before derail"
         } else {
-            self.leadTimeLabel.text = "Notify \(Int(self.leadTimeStepper.value)) days before derailing"
+            self.leadTimeLabel.text = "Notify \(Int(self.leadTimeStepper.value)) days before derail"
         }
     }
     
