@@ -329,6 +329,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     
     @objc func handleFailedSignUp(_ notification : Notification) {
         UIAlertView(title: "Could not sign up", message: "Username or email is already taken", delegate: self, cancelButtonTitle: "OK").show()
+        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
     }
     
     @objc func handleSignedIn(_ notification : Notification) {
