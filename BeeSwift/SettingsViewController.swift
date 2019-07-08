@@ -17,7 +17,7 @@ class SettingsViewController: UIViewController {
     
     override func viewDidLoad() {
         self.title = "Settings"
-        self.view.backgroundColor = UIColor.white
+        self.view.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         
@@ -27,7 +27,7 @@ class SettingsViewController: UIViewController {
             make.right.equalTo(0)
             if #available(iOS 11.0, *) {
                 make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
+                make.bottom.equalTo(self.view.snp.bottom)
             } else {
                 make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
                 make.top.equalTo(self.topLayoutGuide.snp.bottom)
@@ -36,6 +36,7 @@ class SettingsViewController: UIViewController {
         
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        self.tableView.isScrollEnabled = false
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
         self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
