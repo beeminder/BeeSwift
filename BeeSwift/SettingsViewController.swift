@@ -39,6 +39,19 @@ class SettingsViewController: UIViewController {
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
         self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
+        
+        let versionLabel = BSLabel()
+        versionLabel.text = "Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String)"
+        self.view.addSubview(versionLabel)
+        versionLabel.snp.makeConstraints { (make) in
+            if #available(iOS 11.0, *) {
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-10)
+            } else {
+                make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-10)
+            }
+            make.width.equalTo(self.view)
+        }
+        versionLabel.textAlignment = .center
     }
     
     @objc func userDefaultsDidChange() {
