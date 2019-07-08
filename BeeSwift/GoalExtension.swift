@@ -25,10 +25,10 @@ extension Goal {
     }
     
     class func updateGoal(_ goal :Goal, withJSON json :JSON) {
-        goal.slug = json["slug"].string!
         goal.id = json["id"].string!
         goal.title = json["title"].string!
         goal.burner = json["burner"].string!
+        goal.slug = json["slug"].string!
         goal.panic = json["panic"].number!
         goal.deadline = json["deadline"].number!
         goal.leadtime = json["leadtime"].number!
