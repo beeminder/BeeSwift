@@ -260,14 +260,28 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.dateStepper.addTarget(self, action: #selector(GoalViewController.dateStepperValueChanged), for: .valueChanged)
         self.dateStepper.value = 0
         
-        // if the goal's deadline is after midnight, and it's after midnight, 
+        // if the goal's deadline is after midnight, and it's after midnight,
+        // but before the deadline,
         // default to entering data for the "previous" day.
         let now = Date()
         let calendar = Calendar.current
-        let components = (calendar as NSCalendar).components(NSCalendar.Unit.hour, from: now)
-        let hour = components.hour
-        if self.goal.deadline.intValue > 0 && hour! < 6 {
+        let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
+        let currentHour = components.hour
+        if self.goal.deadline.intValue > 0 && currentHour! < 6 && self.goal.deadline.intValue/3600 < currentHour! {
             self.dateStepper.value = -1
+        }
+        
+        // if the goal's deadline is before midnight and has already passed for this calendar day, default to entering data for the "next" day
+        
+        if self.goal.deadline.intValue < 0 {
+            let deadlineSecondsAfterMidnight = 24*3600 + self.goal.deadline.intValue
+            let deadlineHour = deadlineSecondsAfterMidnight/3600
+            let deadlineMinute = (deadlineSecondsAfterMidnight % 3600)/60
+            let currentMinute = components.minute
+            if deadlineHour < currentHour! ||
+                (deadlineHour == currentHour! && deadlineMinute < currentMinute!) {
+                self.dateStepper.value = 1
+            }
         }
         
         self.dateStepper.snp.makeConstraints { (make) -> Void in
