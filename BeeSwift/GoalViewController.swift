@@ -272,7 +272,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         // if the goal's deadline is before midnight and has already passed for this calendar day, default to entering data for the "next" day
-        
         if self.goal.deadline.intValue < 0 {
             let deadlineSecondsAfterMidnight = 24*3600 + self.goal.deadline.intValue
             let deadlineHour = deadlineSecondsAfterMidnight/3600
@@ -437,7 +436,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     @objc func timerButtonPressed() {
         let controller = TimerViewController()
         controller.slug = self.goal.slug
-        
+        controller.goal = self.goal
         do {
             let hoursRegex = try NSRegularExpression(pattern: "(hr|hour)s?")
             let minutesRegex = try NSRegularExpression(pattern: "(min|minute)s?")
