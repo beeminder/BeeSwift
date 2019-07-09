@@ -211,7 +211,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         colonButton.layer.borderColor = UIColor.beeGrayColor().cgColor
         colonButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 26)
         colonButton.setTitleColor(UIColor.black, for: UIControlState())
-        colonButton.addTarget(self, action: #selector(GoalViewController.colonButtonPressed), for: .touchUpInside)
+        colonButton.addTarget(self, action: #selector(self.colonButtonPressed), for: .touchUpInside)
         self.valueTextField.addTarget(self, action: #selector(GoalViewController.valueTextFieldValueChanged), for: .editingChanged)
         self.valueTextField.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.dateTextField.snp.right).offset(10)
@@ -530,14 +530,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if (textField.isEqual(self.valueTextField)) {
+            if textField.text!.components(separatedBy: ".").count > 1 {
+                if string == "." || string == "," { return false }
+            }
             if (string == ",") {
                 textField.text = textField.text! + "."
                 return false
             }
             if (string as NSString).rangeOfCharacter(from: CharacterSet(charactersIn: "1234567890.").inverted).location != NSNotFound {
-                return false
-            }
-            if textField.text!.components(separatedBy: ".").count > 1 && string == "." {
                 return false
             }
         }

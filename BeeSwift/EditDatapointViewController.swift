@@ -10,7 +10,7 @@ import UIKit
 import SwiftyJSON
 import MBProgressHUD
 
-class EditDatapointViewController: UIViewController {
+class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     
     var datapointJSON : JSON?
     var goalSlug : String?
@@ -63,11 +63,31 @@ class EditDatapointViewController: UIViewController {
             make.left.right.height.equalTo(self.dateLabel)
             make.top.equalTo(self.datePicker.snp.bottom).offset(10)
         }
+        self.valueField.delegate = self
         self.valueField.placeholder = "Value"
         self.valueField.textAlignment = .center
         self.valueField.keyboardType = .decimalPad
         self.valueField.text = "\(self.datapointJSON!["value"].number!)"
         self.valueField.addTarget(self, action: #selector(self.textFieldEditingDidBegin), for: .editingDidBegin)
+        
+        let accessory = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
+        accessory.backgroundColor = UIColor.white
+        self.valueField.inputAccessoryView = accessory
+        let colonButton = UIButton()
+        accessory.addSubview(colonButton)
+        accessory.clipsToBounds = true
+        colonButton.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(accessory).multipliedBy(1.0/3.0).offset(-1)
+            make.height.equalTo(accessory)
+            make.left.equalTo(-1)
+            make.top.equalTo(0)
+        }
+        colonButton.setTitle(":", for: UIControlState())
+        colonButton.layer.borderWidth = 1
+        colonButton.layer.borderColor = UIColor.beeGrayColor().cgColor
+        colonButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 26)
+        colonButton.setTitleColor(UIColor.black, for: UIControlState())
+        colonButton.addTarget(self, action: #selector(self.colonButtonPressed), for: .touchUpInside)
         
         self.scrollView.addSubview(self.commentField)
         self.commentField.snp.makeConstraints { (make) in
@@ -125,6 +145,26 @@ class EditDatapointViewController: UIViewController {
             make.height.equalTo(0)
         }
         self.datePicker.isHidden = true
+    }
+    
+    @objc func colonButtonPressed() {
+        self.valueField.text = "\(self.valueField.text!):"
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if (textField.isEqual(self.valueField)) {
+            if textField.text!.components(separatedBy: ".").count > 1 {
+                if string == "." || string == "," { return false }
+            }
+            if (string == ",") {
+                textField.text = textField.text! + "."
+                return false
+            }
+            if (string as NSString).rangeOfCharacter(from: CharacterSet(charactersIn: "1234567890.").inverted).location != NSNotFound {
+                return false
+            }
+        }
+        return true
     }
     
     @objc func dateLabelTapped() {
