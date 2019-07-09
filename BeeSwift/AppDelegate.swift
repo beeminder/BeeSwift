@@ -183,7 +183,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if shortSlug.count > 20 {
                     shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
                 }
-                return [ "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
+                return [ "deadline": goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
             }
         }
 
@@ -192,7 +192,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if shortSlug.count > 20 {
                 shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
             }
-            return [ "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
+            return [ "deadline": goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
         }
     }
 }
