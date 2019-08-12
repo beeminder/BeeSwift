@@ -287,7 +287,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.openGoal(self.goals[(indexPath as NSIndexPath).row])
+        let row = (indexPath as NSIndexPath).row
+        if row < self.goals.count { self.openGoal(self.goals[row]) }
     }
 
     @objc func openGoalFromNotification(_ notification: Notification) {
