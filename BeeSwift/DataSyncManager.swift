@@ -64,16 +64,14 @@ class DataSyncManager :NSObject {
         for goalJSON in goals {
             Goal.crupdateWithJSON(goalJSON)
         }
-        if let deletedGoals = json["deleted_goals"].array {
-            for goalJSON in deletedGoals {
-                if let goal = Goal.mr_findFirst(byAttribute: "id", withValue: goalJSON["id"].string!) as Goal? {
-                    for datapoint in goal.datapoints {
-                        (datapoint as AnyObject).mr_deleteEntity()
-                    }
-                    goal.serverDeleted = true
+        guard let deletedGoals = json["deleted_goals"].array else { return }
+        for goalJSON in deletedGoals {
+            if let goal = Goal.mr_findFirst(byAttribute: "id", withValue: goalJSON["id"].string!) as Goal? {
+                for datapoint in goal.datapoints {
+                    (datapoint as AnyObject).mr_deleteEntity()
                 }
+                goal.serverDeleted = true
             }
-            CurrentUserManager.sharedManager.reset()
         }
         NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
             if error == nil {
