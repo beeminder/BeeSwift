@@ -79,7 +79,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         return 20
     }
     func numberOfSections(in tableView: UITableView) -> Int {
-        return HKHealthStore.isHealthDataAvailable() ? 5 : 4
+        return HKHealthStore.isHealthDataAvailable() ? 4 : 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
