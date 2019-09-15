@@ -287,11 +287,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     @objc func openGoalFromNotification(_ notification: Notification) {
         let slug = (notification as NSNotification).userInfo!["slug"] as! String
-        guard let goal = Goal.mr_findFirst(byAttribute: "slug", withValue: slug) else {
-            return
+        let matchingGoal = self.jsonGoals.filter({ (jsonGoal) -> Bool in
+            return jsonGoal.slug == slug
+        }).last
+        if matchingGoal != nil {
+            self.navigationController?.popToRootViewController(animated: false)
+            self.openGoal(matchingGoal!)
         }
-        self.navigationController?.popToRootViewController(animated: false)
-        //        TODO: self.openGoal(goal)
     }
     
     func openGoal(_ goal: JSONGoal) {
