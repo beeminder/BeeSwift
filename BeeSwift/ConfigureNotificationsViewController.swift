@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 class ConfigureNotificationsViewController: UIViewController {
     
-    fileprivate var goals : [Goal] = []
+    fileprivate var jsonGoals : [JSONGoal] = []
     fileprivate var cellReuseIdentifier = "configureNotificationsTableViewCell"
     fileprivate var tableView = UITableView()
     fileprivate var emergencyRemindersSwitch = UISwitch()
@@ -61,15 +62,28 @@ class ConfigureNotificationsViewController: UIViewController {
         self.tableView.dataSource = self
         self.tableView.tableFooterView = UIView()
         self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-        self.loadGoalsFromDatabase()
+        self.fetchGoals()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
-    func loadGoalsFromDatabase() {
-        self.goals = Goal.mr_findAllSorted(by: "slug", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
+    func fetchGoals() {
+        guard let username = CurrentUserManager.sharedManager.username else { return }
+        RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
+            guard let responseGoals = JSON(responseJSON!).array else { return }
+            var jGoals : [JSONGoal] = []
+            responseGoals.forEach({ (goalJSON) in
+                let g = JSONGoal(json: goalJSON)
+                jGoals.append(g)
+            })
+            self.jsonGoals = jGoals.sorted(by: { (goal1, goal2) -> Bool in
+                return goal1.slug > goal2.slug
+            })
+        }) { (responseError) in
+            //foo
+        }
     }
     
     @objc func emergencyRemindersSwitchChanged() {
@@ -89,7 +103,7 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 1 { return self.goals.count }
+        if section == 1 { return self.jsonGoals.count }
         return 1
     }
     
@@ -99,7 +113,7 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
             cell?.title = "Default notification settings"
             return cell!
         }
-        let goal = self.goals[(indexPath as NSIndexPath).row]
+        let goal = self.jsonGoals[(indexPath as NSIndexPath).row]
         cell?.title = goal.slug
         return cell!
     }
@@ -108,7 +122,7 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
         if (indexPath as NSIndexPath).section == 0 {
             self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
         } else {
-            let goal = self.goals[(indexPath as NSIndexPath).row]
+            let goal = self.jsonGoals[(indexPath as NSIndexPath).row]
             self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
         }
         self.tableView.deselectRow(at: indexPath, animated: true)

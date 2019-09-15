@@ -25,7 +25,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let noGoalsLabel = BSLabel()
     var lastUpdated : Date?
     
-    var goals : [Goal] = []
     var jsonGoals : Array<JSONGoal> = []
 
     override func viewDidLoad() {
@@ -242,7 +241,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.jsonGoals.sort(by: { (goal1, goal2) -> Bool in
             if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
                 if selectedGoalSort == Constants.nameGoalSortString {
-                    return goal1.slug > goal2.slug
+                    return goal1.slug < goal2.slug
                 }
                 else if selectedGoalSort == Constants.recentDataGoalSortString {
                     return goal1.lasttouch!.intValue > goal2.lasttouch!.intValue
@@ -251,7 +250,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     return goal1.pledge.intValue > goal2.pledge.intValue
                 }
             }
-            return goal1.deadline.intValue > goal2.deadline.intValue
+            return goal1.deadline.intValue < goal2.deadline.intValue
         })
     }
 

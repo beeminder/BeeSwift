@@ -10,7 +10,7 @@ import UIKit
 
 class RemoveHKMetricViewController: UIViewController {
     
-    var goal : Goal?
+    var goal : JSONGoal?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,24 +49,13 @@ class RemoveHKMetricViewController: UIViewController {
     @objc func removeButtonPressed() {
         guard self.goal != nil else { return }
         self.goal?.autodata = ""
-        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) in
-            var params : [String : [String : String]] = [:]
-            params = ["ii_params" : ["name" : "", "metric" : ""]]
-            
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
-                               success: { (responseObject) -> Void in
-                                // foo
-            }) { (error) -> Void in
-                // bar
-            }
-            
-            DispatchQueue.main.async {
-                DataSyncManager.sharedManager.fetchData(success: {
-                    self.navigationController?.popViewController(animated: true)
-                }, error: {
-                    //
-                })
-            }
+        var params : [String : [String : String]] = [:]
+        params = ["ii_params" : ["name" : "", "metric" : ""]]
+        
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
+                            // foo
+        }) { (error) -> Void in
+            // bar
         }
     }
 }

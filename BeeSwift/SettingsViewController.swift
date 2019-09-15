@@ -59,11 +59,6 @@ class SettingsViewController: UIViewController {
         self.tableView.reloadData()
     }
     
-    func resetButtonPressed() {
-        CurrentUserManager.sharedManager.reset()
-        self.navigationController?.popViewController(animated: true)
-    }
-    
     func signOutButtonPressed() {
         CurrentUserManager.sharedManager.signOut()
         self.navigationController?.popViewController(animated: true)
@@ -112,10 +107,6 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             cell.title = "Goal emergency notifications: \(RemoteNotificationsManager.sharedManager.on() ? "on" : "off")"
             cell.imageName = "Notifications"
         case 2:
-            cell.title = "Reset data"
-            cell.imageName = "ResetData"
-            cell.accessoryType = .none
-        case 3:
             cell.title = "Sign out"
             cell.imageName = "SignOut"
             cell.accessoryType = .none
@@ -141,8 +132,6 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         case 1:
             self.navigationController?.pushViewController(ConfigureNotificationsViewController(), animated: true)
         case 2:
-            self.resetButtonPressed()
-        case 3:
             self.signOutButtonPressed()
         default:
             break

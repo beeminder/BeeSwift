@@ -10,18 +10,18 @@ import Foundation
 import UIKit
 
 class EditGoalNotificationsViewController : EditNotificationsViewController {
-    var goal : Goal? {
+    var goal : JSONGoal? {
         didSet {
 
         }
     }
     fileprivate var useDefaultsSwitch = UISwitch()
     
-    init(goal : Goal) {
+    init(goal : JSONGoal) {
         super.init()
         self.goal = goal
-        self.leadTimeStepper.value = goal.leadtime.doubleValue
-        self.alertstart = goal.alertstart
+        self.leadTimeStepper.value = goal.leadtime!.doubleValue
+        self.alertstart = goal.alertstart!
         self.deadline = goal.deadline
     }
 
@@ -47,7 +47,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             make.centerY.equalTo(useDefaultsLabel)
             make.right.equalTo(-20)
         }
-        self.useDefaultsSwitch.isOn = (self.goal?.use_defaults.boolValue)!
+        self.useDefaultsSwitch.isOn = (self.goal?.use_defaults!.boolValue)!
         self.useDefaultsSwitch.addTarget(self, action: #selector(EditGoalNotificationsViewController.useDefaultsSwitchValueChanged), for: .valueChanged)
         
         self.leadTimeLabel.snp.remakeConstraints { (make) -> Void in

@@ -61,11 +61,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
-        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-            //
-        }, error: { () -> Void in
-            //
-        })
+//        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
+//            //
+//        }, error: { () -> Void in
+//            //
+//        })
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -86,12 +86,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "didBecomeActive")))
-        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-            self.updateBadgeCount()
-            self.updateTodayWidget()
-        }, error: { () -> Void in
-            //nil
-        })
+//        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
+//            self.updateBadgeCount()
+//            self.updateTodayWidget()
+//        }, error: { () -> Void in
+//            //nil
+//        })
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -99,11 +99,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-            completionHandler(.newData)
-        }, error: { () -> Void in
-            completionHandler(.failed)
-        })
+//        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
+//            completionHandler(.newData)
+//        }, error: { () -> Void in
+//            completionHandler(.failed)
+//        })
     }
 
     @available(iOS 9.0, *)
@@ -124,7 +124,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else if url.scheme == Config.twitterUrlScheme {
             return Twitter.sharedInstance().application(app, open: url, options: options)
         }
-        DataSyncManager.sharedManager.fetchData(success: nil, error: nil)
+        
+        if let galleryViewController = app.keyWindow?.rootViewController as? GalleryViewController {
+            galleryViewController.fetchData()
+        }
         return true
     }
 
@@ -143,7 +146,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
             }
         }
-        DataSyncManager.sharedManager.fetchData(success: nil, error: nil)
+//        DataSyncManager.sharedManager.fetchData(success: nil, error: nil)
         return true
     }
 

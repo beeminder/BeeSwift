@@ -610,7 +610,15 @@ class JSONGoal {
     }
     
     func updateBeeminderWithValue(datapointValue : Double, daystamp : String, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id)) as? [Datapoint]
+        
+        
+        let datapoints = self.recent_data?.filter { (datapoint) -> Bool in
+            if let d = datapoint as? [String : Any?] {
+                return d["daystamp"] as? String == daystamp
+            } else {
+                return false
+            }
+        }
         
         if datapointValue == 0  { return }
         
@@ -629,6 +637,7 @@ class JSONGoal {
         } else if (datapoints?.count)! >= 1 {
             var first = true
             datapoints?.forEach({ (datapoint) in
+                guard let d = datapoint as? [String : Any?] else { return }
                 if first {
                     let requestId = "\(daystamp)-\(self.minuteStamp())"
                     let params = [
@@ -637,9 +646,11 @@ class JSONGoal {
                         "comment": "Automatically updated via iOS Health app",
                         "requestid": requestId
                     ]
-                    if datapointValue == datapoint.value.doubleValue { success?() }
+                    let val = d["value"] as? Double
+                    if datapointValue == val { success?() }
                     else {
-                        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
+                        let datapointID = d["id"] as? String
+                        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID).json", parameters: params, success: { (responseObject) in
 //                            let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
 //                            datapoint.goal = self
 //                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
@@ -649,16 +660,6 @@ class JSONGoal {
                         })
                     }
                 } else {
-                    let params = [
-                        "access_token": CurrentUserManager.sharedManager.accessToken!,
-                    ]
-                    RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                        datapoint.mr_deleteEntity(in: NSManagedObjectContext.mr_default())
-                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                        success?()
-                    }, errorHandler: { (error) in
-                        errorCompletion?()
-                    })
                 }
                 first = false
             })
