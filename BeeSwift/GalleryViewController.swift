@@ -141,6 +141,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func userDefaultsDidChange() {
+        self.sortGoals()
         self.collectionView?.reloadData()
     }
     
@@ -229,26 +230,29 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 let g = JSONGoal(json: goalJSON)
                 jGoals.append(g)
             })
-            
-            jGoals.sort(by: { (goal1, goal2) -> Bool in
-                if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
-                    if selectedGoalSort == Constants.nameGoalSortString {
-                        return goal1.slug > goal2.slug
-                    }
-                    else if selectedGoalSort == Constants.recentDataGoalSortString {
-                        return goal1.lasttouch!.intValue > goal2.lasttouch!.intValue
-                    }
-                    else if selectedGoalSort == Constants.pledgeGoalSortString {
-                        return goal1.pledge.intValue > goal2.pledge.intValue
-                    }
-                }
-                return goal1.deadline.intValue > goal2.deadline.intValue
-            })
             self.jsonGoals = jGoals
+            self.sortGoals()
             self.didFetchData()
         }) { (responseError) in
             //foo
         }
+    }
+    
+    func sortGoals() {
+        self.jsonGoals.sort(by: { (goal1, goal2) -> Bool in
+            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
+                if selectedGoalSort == Constants.nameGoalSortString {
+                    return goal1.slug > goal2.slug
+                }
+                else if selectedGoalSort == Constants.recentDataGoalSortString {
+                    return goal1.lasttouch!.intValue > goal2.lasttouch!.intValue
+                }
+                else if selectedGoalSort == Constants.pledgeGoalSortString {
+                    return goal1.pledge.intValue > goal2.pledge.intValue
+                }
+            }
+            return goal1.deadline.intValue > goal2.deadline.intValue
+        })
     }
 
     override func didReceiveMemoryWarning() {
