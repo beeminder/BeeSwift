@@ -39,6 +39,7 @@ class JSONGoal {
     var lasttouch: NSNumber?
     var use_defaults: NSNumber?
     var queued: Bool?
+    var recent_data: Array<Any>?
     
     init(json: JSON) {
         self.id = json["id"].string!
@@ -80,14 +81,19 @@ class JSONGoal {
         
         if json["graph_url"].string != nil { self.graph_url = json["graph_url"].string! }
         if json["thumb_url"].string != nil { self.thumb_url = json["thumb_url"].string! }
+        
+        var datapoints : Array<JSON> = json["recent_data"].arrayValue
+        datapoints.reverse()
+        self.recent_data = Array(datapoints)
     }
     
     var rateString :String {
+        guard let r = self.rate else { return "" }
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US")
         formatter.numberStyle = NumberFormatter.Style.decimal
         formatter.maximumFractionDigits = 2
-        return "\(formatter.string(from: self.rate!)!)/\(self.humanizedRunits)"
+        return "\(formatter.string(from: r)!)/\(self.humanizedRunits)"
     }
     
     var cacheBustingThumbUrl :String {

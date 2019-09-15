@@ -28,7 +28,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     fileprivate var dateStepper = UIStepper()
     fileprivate var valueStepper = UIStepper()
     fileprivate var valueDecimalRemnant : Double = 0.0
-    fileprivate var datapoints = NSMutableArray()
     fileprivate var goalImageScrollView = UIScrollView()
     fileprivate var datapointsTableView = DatapointsTableView()
     fileprivate var pollTimer : Timer?
@@ -49,9 +48,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.valueStepper.maximumValue = 1000000
         self.dateStepper.minimumValue = -365
         self.dateStepper.maximumValue = 365
-        
-        self.datapoints = NSMutableArray(array: [])
-        self.loadDatapoints()
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
@@ -215,9 +211,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.top.equalTo(0)
         }
-//        if let datapoint = self.jsonGoal.orderedDatapoints().last {
-//            self.valueTextField.text = "\(datapoint.value)"
-//        }
+        
+        if let lastDatapoint = self.jsonGoal!.recent_data?.last as? JSON {
+            self.valueTextField.text = "\(String(describing: lastDatapoint["value"]))"
+        }
+        
         self.valueTextFieldValueChanged()
         
         let commentLeftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 1))
@@ -368,19 +366,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.navigationItem.rightBarButtonItems = items
     }
     
-    func loadDatapoints() {
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.jsonGoal.slug).json", parameters: [:], success: { (response) in
-            let responseJSON = JSON(response as Any)
-            var datapoints : Array<JSON> = responseJSON["recent_data"].arrayValue
-            datapoints.reverse()
-            self.datapoints = NSMutableArray(array: datapoints)
-            self.datapointsTableView.reloadData()
-        }) { (responseError) in
-            //
-        }
-        
-    }
-    
     @objc func syncTodayButtonPressed() {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
@@ -425,7 +410,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidAppear(_ animated: Bool) {
         self.setGraphImage()
         self.refreshCountdown()
-        self.loadDatapoints()
         self.pledgeLabel.text = "$\(self.jsonGoal.pledge)"
         self.deltasLabel.attributedText = self.jsonGoal.attributedDeltaText
     }
@@ -553,44 +537,39 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @objc func submitDatapoint() {
         self.view.endEditing(true)
-        let hud = MBProgressHUD.showAdded(to: self.datapointsTableView, animated: true)
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         self.submitButton.isUserInteractionEnabled = false
         self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
         let params = ["urtext": self.urtextFromTextFields(), "requestid": UUID().uuidString]
         
         RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.jsonGoal.slug)/datapoints.json", parameters: params, success: { (responseObject) in
-            self.successfullyAddedDatapointWithResponse(responseObject! as AnyObject)
             self.commentTextField.text = ""
             self.refreshGoal()
+            self.pollUntilGraphUpdates()
             self.submitButton.isUserInteractionEnabled = true
         }) { (error) in
             self.submitButton.isUserInteractionEnabled = true
-            MBProgressHUD.hideAllHUDs(for: self.datapointsTableView, animated: true)
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
         }
     }
     
-    func successfullyAddedDatapointWithResponse(_ responseObject: AnyObject) {
-        self.refreshGoal()
-        self.pollUntilGraphUpdates()
-        self.view.endEditing(true)
-    }
-    
     func pollUntilGraphUpdates() {
         if self.pollTimer != nil { return }
-        let hud = MBProgressHUD.showAdded(to: self.goalImageScrollView, animated: true)
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         hud?.show(true)
         self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.refreshGoal), userInfo: nil, repeats: true)
     }
     
     @objc func refreshGoal() {
-        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.jsonGoal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)", parameters: nil, success: { (responseObject) in
+        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.jsonGoal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
             self.jsonGoal = JSONGoal(json: JSON(responseObject!))
+            self.datapointsTableView.reloadData()
             if (!self.jsonGoal.queued!) {
-                MBProgressHUD.hideAllHUDs(for: self.goalImageScrollView, animated: true)
-//                Goal.crupdateWithJSON(goalJSON)
+                self.setGraphImage()
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 self.pollTimer?.invalidate()
                 self.pollTimer = nil
                 let delegate = UIApplication.shared.delegate as! AppDelegate
@@ -625,8 +604,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.view.endEditing(true)
         if (self.jsonGoal.hideDataEntry()) { return }
-        if ((indexPath as NSIndexPath).row >= self.datapoints.count) { return }
-        let datapointJSON : JSON = (self.datapoints[(indexPath as NSIndexPath).row] as? JSON)!
+        if ((indexPath as NSIndexPath).row >= self.jsonGoal!.recent_data!.count) { return }
+        let datapointJSON : JSON = (self.jsonGoal!.recent_data![(indexPath as NSIndexPath).row] as? JSON)!
         let editDatapointViewController = EditDatapointViewController()
         editDatapointViewController.datapointJSON = datapointJSON
         editDatapointViewController.goalSlug = self.jsonGoal.slug
@@ -635,9 +614,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier) as! DatapointTableViewCell
-        if (indexPath as NSIndexPath).row < self.datapoints.count {
+        if (indexPath as NSIndexPath).row < self.jsonGoal!.recent_data!.count {
             
-            let datapoint : JSON = (self.datapoints[(indexPath as NSIndexPath).row] as? JSON)!
+            let datapoint : JSON = (self.jsonGoal!.recent_data![(indexPath as NSIndexPath).row] as? JSON)!
             let text = datapoint["canonical"].string
             cell.datapointText = text
         }

@@ -169,8 +169,6 @@ class TimerViewController: UIViewController {
         
         let comment = "Automatically entered from iOS timer interface"
         
-        
-        
         return "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(value) \"\(comment)\""
     }
     
@@ -185,8 +183,11 @@ class TimerViewController: UIViewController {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             })
+            if let goalVC = self.presentingViewController?.childViewControllers.last as? GoalViewController {
+                goalVC.refreshGoal()
+                goalVC.pollUntilGraphUpdates()
+            }
             self.resetButtonPressed()
-            
         }) { (error) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()

@@ -231,10 +231,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func fetchData() {
+        guard let username = CurrentUserManager.sharedManager.username else { return }
         if self.jsonGoals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals.json", parameters: nil, success: { (responseJSON) in
+        RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
             guard let responseGoals = JSON(responseJSON!).array else { return }
             var jGoals : [JSONGoal] = []
             responseGoals.forEach({ (goalJSON) in
