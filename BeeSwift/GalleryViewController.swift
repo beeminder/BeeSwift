@@ -23,6 +23,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var refreshControl = UIRefreshControl()
     var deadbeatView = UIView()
     let noGoalsLabel = BSLabel()
+    var lastUpdated : Date?
     
     var goals : [Goal] = []
     var jsonGoals : Array<JSONGoal> = []
@@ -32,8 +33,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleWillReset), name: NSNotification.Name(rawValue: CurrentUserManager.willResetNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleReset), name: NSNotification.Name(rawValue: CurrentUserManager.resetNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleCreateGoalButtonPressed), name: NSNotification.Name(rawValue: "createGoalButtonPressed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
@@ -50,8 +49,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(GalleryViewController.settingsButtonPressed))
         self.navigationItem.rightBarButtonItem = item
-        
-        self.loadGoalsFromDatabase()
         
         self.view.addSubview(self.lastUpdatedView)
         self.lastUpdatedView.backgroundColor = UIColor.beeGrayColor()
@@ -144,7 +141,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func userDefaultsDidChange() {
-        self.loadGoalsFromDatabase()
         self.collectionView?.reloadData()
     }
     
@@ -153,18 +149,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleSignOut() {
-        self.goals = []
+        self.jsonGoals = []
         self.collectionView?.reloadData()
         self.present(SignInViewController(), animated: true, completion: nil)
-    }
-    
-    @objc func handleWillReset() {
-        self.goals = []
-        self.collectionView?.reloadData()
-    }
-    
-    @objc func handleReset() {
-        self.fetchData()
     }
     
     func updateDeadbeatHeight() {
@@ -183,16 +170,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func updateLastUpdatedLabel() {
-        if let lastSynced = DataSyncManager.sharedManager.lastSynced {
-            if lastSynced.timeIntervalSinceNow < -3600 {
+        if let lastUpdated = self.lastUpdated {
+            if lastUpdated.timeIntervalSinceNow < -3600 {
                 let lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: more than an hour ago")
                 lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.count))
                 self.lastUpdatedLabel.attributedText = lastText
             }
-            else if lastSynced.timeIntervalSinceNow < -120 {
-                self.lastUpdatedLabel.text = "Last updated: \(-1*Int(lastSynced.timeIntervalSinceNow/60)) minutes ago"
+            else if lastUpdated.timeIntervalSinceNow < -120 {
+                self.lastUpdatedLabel.text = "Last updated: \(-1*Int(lastUpdated.timeIntervalSinceNow/60)) minutes ago"
             }
-            else if lastSynced.timeIntervalSinceNow < -60 {
+            else if lastUpdated.timeIntervalSinceNow < -60 {
                 self.lastUpdatedLabel.text = "Last updated: 1 minute ago"
             }
             else {
@@ -217,10 +204,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if !isRegisteredForNotifications {
             RemoteNotificationsManager.sharedManager.turnNotificationsOn()
         }
-        self.loadGoalsFromDatabase()
         self.collectionView!.reloadData()
-        self.updateLastUpdatedLabel()
         self.updateDeadbeatHeight()
+        self.lastUpdated = Date()
+        self.updateLastUpdatedLabel()
         if self.jsonGoals.count == 0 {
             self.noGoalsLabel.isHidden = false
             self.collectionView?.isHidden = true
@@ -242,35 +229,25 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 let g = JSONGoal(json: goalJSON)
                 jGoals.append(g)
             })
+            
+            // TODO: sort jgoals
+//            var sortBy = "losedate"
+//            var ascending = true
+//            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
+//                if selectedGoalSort == Constants.nameGoalSortString { sortBy = "slug" }
+//                if selectedGoalSort == Constants.recentDataGoalSortString { sortBy = "lasttouch"; ascending = false }
+//                if selectedGoalSort == Constants.pledgeGoalSortString { sortBy = "pledge"; ascending = false }
+//            }
             self.jsonGoals = jGoals
             self.didFetchData()
-//            success?()
-            
         }) { (responseError) in
-//            error?()
             //foo
         }
-//        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-//            self.didFetchData()
-//            }, error: { () -> Void in
-//                self.refreshControl.endRefreshing()
-//        })
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    func loadGoalsFromDatabase() {
-        var sortBy = "losedate"
-        var ascending = true
-        if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
-            if selectedGoalSort == Constants.nameGoalSortString { sortBy = "slug" }
-            if selectedGoalSort == Constants.recentDataGoalSortString { sortBy = "lasttouch"; ascending = false }
-            if selectedGoalSort == Constants.pledgeGoalSortString { sortBy = "pledge"; ascending = false }
-        }
-        self.goals = Goal.mr_findAllSorted(by: sortBy, ascending: ascending, with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -293,7 +270,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
         let jsonGoal:JSONGoal = self.jsonGoals[(indexPath as NSIndexPath).row]
-//        let goal:Goal = self.goals[(indexPath as NSIndexPath).row]
         
         cell.jsonGoal = jsonGoal
         
@@ -315,7 +291,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             return
         }
         self.navigationController?.popToRootViewController(animated: false)
-//        self.openGoal(goal)
+        //        TODO: self.openGoal(goal)
     }
     
     func openGoal(_ goal: JSONGoal) {
