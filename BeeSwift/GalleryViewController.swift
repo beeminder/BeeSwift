@@ -25,6 +25,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let noGoalsLabel = BSLabel()
     
     var goals : [Goal] = []
+    var jsonGoals : Array<JSONGoal> = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -220,7 +221,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView!.reloadData()
         self.updateLastUpdatedLabel()
         self.updateDeadbeatHeight()
-        if self.goals.count == 0 {
+        if self.jsonGoals.count == 0 {
             self.noGoalsLabel.isHidden = false
             self.collectionView?.isHidden = true
         } else {
@@ -230,14 +231,29 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func fetchData() {
-        if self.goals.count == 0 {
+        if self.jsonGoals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
-        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals.json", parameters: nil, success: { (responseJSON) in
+            guard let responseGoals = JSON(responseJSON!).array else { return }
+            var jGoals : [JSONGoal] = []
+            responseGoals.forEach({ (goalJSON) in
+                let g = JSONGoal(json: goalJSON)
+                jGoals.append(g)
+            })
+            self.jsonGoals = jGoals
             self.didFetchData()
-            }, error: { () -> Void in
-                self.refreshControl.endRefreshing()
-        })
+//            success?()
+            
+        }) { (responseError) in
+//            error?()
+            //foo
+        }
+//        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
+//            self.didFetchData()
+//            }, error: { () -> Void in
+//                self.refreshControl.endRefreshing()
+//        })
     }
 
     override func didReceiveMemoryWarning() {
@@ -257,7 +273,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.goals.count + 1
+        return self.jsonGoals.count + 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -269,26 +285,27 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if (indexPath as NSIndexPath).row >= self.goals.count {
+        if (indexPath as NSIndexPath).row >= self.jsonGoals.count {
             let cell:NewGoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.newGoalCellReuseIdentifier, for: indexPath) as! NewGoalCollectionViewCell
             return cell
         }
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let goal:Goal = self.goals[(indexPath as NSIndexPath).row]
+        let jsonGoal:JSONGoal = self.jsonGoals[(indexPath as NSIndexPath).row]
+//        let goal:Goal = self.goals[(indexPath as NSIndexPath).row]
         
-        cell.goal = goal
+        cell.jsonGoal = jsonGoal
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: 320, height: section == 0 && self.goals.count > 0 ? 5 : 0)
+        return CGSize(width: 320, height: section == 0 && self.jsonGoals.count > 0 ? 5 : 0)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let row = (indexPath as NSIndexPath).row
-        if row < self.goals.count { self.openGoal(self.goals[row]) }
+        if row < self.jsonGoals.count { self.openGoal(self.jsonGoals[row]) }
     }
 
     @objc func openGoalFromNotification(_ notification: Notification) {
@@ -297,12 +314,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             return
         }
         self.navigationController?.popToRootViewController(animated: false)
-        self.openGoal(goal)
+//        self.openGoal(goal)
     }
     
-    func openGoal(_ goal: Goal) {
+    func openGoal(_ goal: JSONGoal) {
         let goalViewController = GoalViewController()
-        goalViewController.goal = goal
+        goalViewController.jsonGoal = goal
         self.navigationController?.pushViewController(goalViewController, animated: true)
     }
 }

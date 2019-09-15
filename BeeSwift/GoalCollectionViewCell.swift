@@ -104,7 +104,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         if CurrentUserManager.sharedManager.isDeadbeat() {
             self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
         } else {
-            self.thumbnailImageView.af_setImage(withURL: URL(string: goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
+            self.thumbnailImageView.af_setImage(withURL: URL(string: self.jsonGoal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
         }
     }
 
@@ -135,14 +135,14 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.thumbnailImageView.image = nil
             self.setThumbnailImage()
         } else if keyPath == "losedate" || keyPath == "lane" {
-            self.countdownLabel.text = goal?.briefLosedate
-            self.countdownView.backgroundColor = goal?.countdownColor
+            self.countdownLabel.text = jsonGoal?.briefLosedate
+            self.countdownView.backgroundColor = jsonGoal?.countdownColor
         } else if keyPath == "title" {
-            self.titleLabel.text = goal?.title
+            self.titleLabel.text = jsonGoal?.title
         } else if keyPath == "rate" {
-            self.rateLabel.text = goal?.rateString
+            self.rateLabel.text = jsonGoal?.rateString
         } else if keyPath == "delta_text" {
-            self.deltasLabel.attributedText = goal?.attributedDeltaText
+            self.deltasLabel.attributedText = jsonGoal?.attributedDeltaText
         }
     }
     
@@ -162,15 +162,25 @@ class GoalCollectionViewCell: UICollectionViewCell {
                 self.countdownLabel.text = ""
                 self.countdownView.backgroundColor = UIColor.beeGrayColor()
             } else {
-                self.countdownLabel.text = goal!.briefLosedate
-                self.countdownView.backgroundColor = goal!.countdownColor
+                self.countdownLabel.text = jsonGoal!.briefLosedate
+                self.countdownView.backgroundColor = jsonGoal!.countdownColor
             }
 
-            self.titleLabel.text = goal?.title
-            self.slugLabel.text = goal?.slug
-            self.titleLabel.isHidden = goal?.title == goal?.slug
-            self.rateLabel.text = goal?.rateString
-            self.deltasLabel.attributedText = goal?.attributedDeltaText
+            self.titleLabel.text = jsonGoal?.title
+            self.slugLabel.text = jsonGoal?.slug
+            self.titleLabel.isHidden = jsonGoal?.title == goal?.slug
+            self.rateLabel.text = jsonGoal?.rateString
+            self.deltasLabel.attributedText = jsonGoal?.attributedDeltaText
+        }
+    }
+    
+    var jsonGoal: JSONGoal? {
+        didSet {
+            self.titleLabel.text = jsonGoal?.title
+            self.slugLabel.text = jsonGoal?.slug
+            self.titleLabel.isHidden = jsonGoal?.title == jsonGoal?.slug
+            self.rateLabel.text = jsonGoal?.rateString
+            self.deltasLabel.attributedText = NSAttributedString(string: jsonGoal!.delta_text)
         }
     }
 }

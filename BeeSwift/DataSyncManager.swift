@@ -59,31 +59,31 @@ class DataSyncManager :NSObject {
     }
     
     func handleResponse(_ json: JSON, completion: (()->Void)?) {
-        CurrentUserManager.sharedManager.setDeadbeat(json["deadbeat"].boolValue)
-        let goals = json["goals"].array!
-        for goalJSON in goals {
-            Goal.crupdateWithJSON(goalJSON)
-        }
-        guard let deletedGoals = json["deleted_goals"].array else { return }
-        var deletedAGoal = false
-        for goalJSON in deletedGoals {
-            if let goal = Goal.mr_findFirst(byAttribute: "id", withValue: goalJSON["id"].string!) as Goal? {
-                for datapoint in goal.datapoints {
-                    (datapoint as AnyObject).mr_deleteEntity()
-                }
-                goal.serverDeleted = true
-                deletedAGoal = true
-            }
-        }
-        if deletedAGoal { CurrentUserManager.sharedManager.reset() }
-        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
-            if error == nil {
-                completion?()
-                NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "dataSyncManagerSuccess")))
-            } else {
-                NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "dataSyncManagerError")))
-            }
-        }
+//        CurrentUserManager.sharedManager.setDeadbeat(json["deadbeat"].boolValue)
+//        let goals = json["goals"].array!
+//        for goalJSON in goals {
+//            Goal.crupdateWithJSON(goalJSON)
+//        }
+//        guard let deletedGoals = json["deleted_goals"].array else { return }
+//        var deletedAGoal = false
+//        for goalJSON in deletedGoals {
+//            if let goal = Goal.mr_findFirst(byAttribute: "id", withValue: goalJSON["id"].string!) as Goal? {
+//                for datapoint in goal.datapoints {
+//                    (datapoint as AnyObject).mr_deleteEntity()
+//                }
+//                goal.serverDeleted = true
+//                deletedAGoal = true
+//            }
+//        }
+//        if deletedAGoal { CurrentUserManager.sharedManager.reset() }
+//        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
+//            if error == nil {
+//                completion?()
+//                NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "dataSyncManagerSuccess")))
+//            } else {
+//                NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "dataSyncManagerError")))
+//            }
+//        }
     }
     
     

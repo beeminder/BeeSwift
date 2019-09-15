@@ -160,10 +160,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func updateBadgeCount() {
-        let allGoals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
-        UIApplication.shared.applicationIconBadgeNumber = allGoals.filter({ (goal: Goal) -> Bool in
-            return goal.relativeLane.intValue < -1
-        }).count
+//        let allGoals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
+//        UIApplication.shared.applicationIconBadgeNumber = allGoals.filter({ (goal: Goal) -> Bool in
+//            return goal.relativeLane.intValue < -1
+//        }).count
     }
 
     func updateTodayWidget() {
@@ -175,24 +175,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func todayGoalDictionaries() -> Array<NSDictionary> {
-        guard let goals = Goal.mr_findAllSorted(by: "losedate", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as? [Goal] else { return [] }
-
-        if goals.count < 3 {
-            return goals.map { (goal: Goal) -> NSDictionary in
-                var shortSlug = goal.slug
-                if shortSlug.count > 20 {
-                    shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
-                }
-                return [ "deadline": goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
-            }
-        }
-
-        return goals[0..<3].map { (goal: Goal) -> NSDictionary in
-            var shortSlug = goal.slug
-            if shortSlug.count > 20 {
-                shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
-            }
-            return [ "deadline": goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
-        }
+        return []
+//        guard let goals = Goal.mr_findAllSorted(by: "losedate", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as? [Goal] else { return [] }
+//
+//        if goals.count < 3 {
+//            return goals.map { (goal: Goal) -> NSDictionary in
+//                var shortSlug = goal.slug
+//                if shortSlug.count > 20 {
+//                    shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
+//                }
+//                return [ "deadline": goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
+//            }
+//        }
+//
+//        return goals[0..<3].map { (goal: Goal) -> NSDictionary in
+//            var shortSlug = goal.slug
+//            if shortSlug.count > 20 {
+//                shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
+//            }
+//            return [ "deadline": goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
+//        }
     }
 }

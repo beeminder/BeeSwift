@@ -90,6 +90,7 @@
 		A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */; };
 		A1EA154F1B01EFCF0052A6E6 /* DatapointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154E1B01EFCF0052A6E6 /* DatapointExtension.swift */; };
 		A1EFB5401F0F2E57005C75AE /* CreateGoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EFB53F1F0F2E57005C75AE /* CreateGoalViewController.swift */; };
+		A1F8F07B232C05410060B83E /* JSONGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* JSONGoal.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
 		A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */; };
 		D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */; };
@@ -209,6 +210,7 @@
 		A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCell.swift; sourceTree = "<group>"; };
 		A1EA154E1B01EFCF0052A6E6 /* DatapointExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointExtension.swift; sourceTree = "<group>"; };
 		A1EFB53F1F0F2E57005C75AE /* CreateGoalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateGoalViewController.swift; sourceTree = "<group>"; };
+		A1F8F07A232C05410060B83E /* JSONGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONGoal.swift; sourceTree = "<group>"; };
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
 		A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGoalCollectionViewCell.swift; sourceTree = "<group>"; };
 		AF1B05535FB9C64FEC41EBE9 /* Pods-BeeSwiftTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftTests/Pods-BeeSwiftTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -420,6 +422,7 @@
 		A1EA15501B01F98B0052A6E6 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				A1F8F07A232C05410060B83E /* JSONGoal.swift */,
 				A1EA154A1B01E1890052A6E6 /* Datapoint.swift */,
 				A1EA154E1B01EFCF0052A6E6 /* DatapointExtension.swift */,
 				A1B53C421B2D098B00AF266F /* Goal.swift */,
@@ -840,6 +843,7 @@
 				A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */,
 				A1453B391AEDA71D006F48DA /* BSLabel.swift in Sources */,
 				A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */,
+				A1F8F07B232C05410060B83E /* JSONGoal.swift in Sources */,
 				A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */,
 				A149B3721AEF54D100F19A09 /* BSButton.swift in Sources */,
 				A1C170E01BEEB3110018D32B /* UIFontExtension.swift in Sources */,
