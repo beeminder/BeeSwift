@@ -230,14 +230,20 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 jGoals.append(g)
             })
             
-            // TODO: sort jgoals
-//            var sortBy = "losedate"
-//            var ascending = true
-//            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
-//                if selectedGoalSort == Constants.nameGoalSortString { sortBy = "slug" }
-//                if selectedGoalSort == Constants.recentDataGoalSortString { sortBy = "lasttouch"; ascending = false }
-//                if selectedGoalSort == Constants.pledgeGoalSortString { sortBy = "pledge"; ascending = false }
-//            }
+            jGoals.sort(by: { (goal1, goal2) -> Bool in
+                if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
+                    if selectedGoalSort == Constants.nameGoalSortString {
+                        return goal1.slug > goal2.slug
+                    }
+                    else if selectedGoalSort == Constants.recentDataGoalSortString {
+                        return goal1.lasttouch!.intValue > goal2.lasttouch!.intValue
+                    }
+                    else if selectedGoalSort == Constants.pledgeGoalSortString {
+                        return goal1.pledge.intValue > goal2.pledge.intValue
+                    }
+                }
+                return goal1.deadline.intValue > goal2.deadline.intValue
+            })
             self.jsonGoals = jGoals
             self.didFetchData()
         }) { (responseError) in
