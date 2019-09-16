@@ -84,8 +84,11 @@ class HealthKitConfigViewController: UIViewController {
     
     func fetchGoals() {
         guard let username = CurrentUserManager.sharedManager.username else { return }
+        MBProgressHUD.showAdded(to: self.view, animated: true)
         RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             guard let responseGoals = JSON(responseJSON!).array else { return }
+            
             var jGoals : [JSONGoal] = []
             responseGoals.forEach({ (goalJSON) in
                 let g = JSONGoal(json: goalJSON)
@@ -94,10 +97,16 @@ class HealthKitConfigViewController: UIViewController {
             self.jsonGoals = jGoals.sorted(by: { (goal1, goal2) -> Bool in
                 return goal1.slug > goal2.slug
             })
+            self.tableView.reloadData()
         }) { (responseError) in
-            //foo
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            if let errorString = responseError?.localizedDescription {
+                let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+            self.tableView.reloadData()
         }
-        self.tableView.reloadData()
     }
     
     @objc func handleMetricSavedNotification(notification : Notification) {

@@ -21,7 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        MagicalRecord.setupAutoMigratingCoreDataStack()
 
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Avenir", size: 20)!]
         UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedStringKey.font : UIFont(name: "Avenir", size: 18)!], for: UIControlState())
@@ -86,12 +85,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "didBecomeActive")))
-//        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-//            self.updateBadgeCount()
-//            self.updateTodayWidget()
-//        }, error: { () -> Void in
-//            //nil
-//        })
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

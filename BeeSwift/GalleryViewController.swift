@@ -233,7 +233,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.sortGoals()
             self.didFetchData()
         }) { (responseError) in
-            //foo
+            print(responseError)
+            if let errorString = responseError?.localizedDescription {
+                let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+            self.refreshControl.endRefreshing()
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            self.collectionView!.reloadData()
         }
     }
     
