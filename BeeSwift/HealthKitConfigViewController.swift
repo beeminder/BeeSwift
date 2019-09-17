@@ -67,10 +67,6 @@ class HealthKitConfigViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        self.fetchGoals()
-    }
-    
     @objc func syncRemindersSwitchValueChanged() {
         UserDefaults.standard.set(self.syncRemindersSwitch.isOn, forKey: Constants.healthSyncRemindersPreferenceKey)
         if self.syncRemindersSwitch.isOn == false {

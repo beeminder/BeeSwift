@@ -11,6 +11,7 @@ import MagicalRecord
 import SnapKit
 import MBProgressHUD
 import SwiftyJSON
+import HealthKit
 
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
     
@@ -217,6 +218,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
+    func setupHealthKit() {
+        var permissions = Set<HKObjectType>.init()
+        self.jsonGoals.forEach { (goal) in
+            if goal.hkPermissionType() != nil { permissions.insert(goal.hkPermissionType()!) }
+        }
+        guard permissions.count > 0 else { return }
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        
+        healthStore.requestAuthorization(toShare: nil, read: permissions, completion: { (success, error) in
+            self.jsonGoals.forEach { (goal) in goal.setupHealthKit() }
+        })
+    }
+    
     @objc func fetchData() {
         guard let username = CurrentUserManager.sharedManager.username else { return }
         if self.jsonGoals.count == 0 {
@@ -232,6 +246,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.jsonGoals = jGoals
             self.sortGoals()
             self.didFetchData()
+            self.setupHealthKit()
         }) { (responseError) in
             print(responseError)
             if let errorString = responseError?.localizedDescription {
