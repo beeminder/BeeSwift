@@ -65,9 +65,6 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 self.goal!.leadtime = leadtime!
                 self.goal!.use_defaults = NSNumber(value: false as Bool)
                 self.useDefaultsSwitch.isOn = false
-                NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
-                    //completion
-                }
             }) { (error) -> Void in
                 // show alert
         }

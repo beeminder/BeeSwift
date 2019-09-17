@@ -17,7 +17,6 @@ class RequestManager {
             switch response.result {
             case .success:
                 success?(response.result.value)
-                print("Validation Successful")
             case .failure(let e):
                 print(response.error)
                 if let error = e as? AFError {

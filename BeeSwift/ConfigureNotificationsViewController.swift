@@ -81,6 +81,7 @@ class ConfigureNotificationsViewController: UIViewController {
             self.jsonGoals = jGoals.sorted(by: { (goal1, goal2) -> Bool in
                 return goal1.slug > goal2.slug
             })
+            self.tableView.reloadData()
         }) { (responseError) in
             //foo
         }
@@ -119,8 +120,7 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (indexPath as NSIndexPath).section == 0 {
-            self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
+        if (indexPath as NSIndexPath).section == 0 {        self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
         } else {
             let goal = self.jsonGoals[(indexPath as NSIndexPath).row]
             self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
