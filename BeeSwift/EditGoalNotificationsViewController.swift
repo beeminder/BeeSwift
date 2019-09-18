@@ -143,9 +143,6 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
                 success: { (responseObject) -> Void in
                     self.goal?.use_defaults = NSNumber(value: false as Bool)
-                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
-                        //foo
-                    })
                 }) { (error) -> Void in
                     //foo
             }
