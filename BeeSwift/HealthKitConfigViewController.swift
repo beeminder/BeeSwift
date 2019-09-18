@@ -60,6 +60,7 @@ class HealthKitConfigViewController: UIViewController {
         self.fetchGoals()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricSavedNotification(notification:)), name: NSNotification.Name(rawValue: Constants.savedMetricNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricRemovedNotification(notification:)), name: NSNotification.Name(rawValue: Constants.removedMetricNotificationName), object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -108,6 +109,10 @@ class HealthKitConfigViewController: UIViewController {
     @objc func handleMetricSavedNotification(notification : Notification) {
         let metric = notification.userInfo?["metric"]
         self.saveMetric(databaseString: metric as! String)
+    }
+    
+    @objc func handleMetricRemovedNotification(notification : Notification) {
+        self.fetchGoals()
     }
     
     func saveMetric(databaseString : String) {

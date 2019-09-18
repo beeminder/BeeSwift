@@ -17,6 +17,7 @@ struct Constants {
     static let defaultFontSize = UIDevice.current.userInterfaceIdiom == .pad ? CGFloat(18) : CGFloat(14)
     static let defaultTextFieldHeight = 44
     static let savedMetricNotificationName = "hkMetricSaved"
+    static let removedMetricNotificationName = "hkMetricRemoved"
     static let selectedGoalSortKey = "selectedGoalSort"
     static let recentDataGoalSortString = "Recent Data"
     static let nameGoalSortString = "Name"

@@ -632,9 +632,6 @@ class JSONGoal {
             let requestId = "\(daystamp)-\(self.minuteStamp())"
             let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
             self.postDatapoint(params: params, success: { (responseObject) in
-//                let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-//                datapoint.goal = self
-//                NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
                 success?()
             }, failure: { (error) in
                 print(error)
@@ -657,9 +654,6 @@ class JSONGoal {
                     else {
                         let datapointID = d["id"] as? String
                         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID).json", parameters: params, success: { (responseObject) in
-//                            let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-//                            datapoint.goal = self
-//                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
                             success?()
                         }, errorHandler: { (error) in
                             errorCompletion?()
