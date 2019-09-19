@@ -82,11 +82,7 @@ class JSONGoal {
         if json["graph_url"].string != nil { self.graph_url = json["graph_url"].string! }
         if json["thumb_url"].string != nil { self.thumb_url = json["thumb_url"].string! }
         
-        if let ii = json["ii"].dictionary {
-            if ii["name"] == "apple", let metric = ii["metric"]?.string {
-                self.healthKitMetric = metric
-            }
-        }
+        self.healthKitMetric = json["healthkitmetric"].string
         
         var datapoints : Array<JSON> = json["recent_data"].arrayValue
         datapoints.reverse()
