@@ -80,21 +80,8 @@ class GoalCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(self.thumbnailImageView.snp.centerY)
             make.right.equalTo(self.rateLabel)
         }
-        
-//        NotificationCenter.default.addObserver(self, selector: #selector(GoalCollectionViewCell.willSignOutNotificationReceived), name: NSNotification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(GoalCollectionViewCell.willResetNotificationReceived), name: NSNotification.Name(rawValue: CurrentUserManager.willResetNotificationName), object: nil)
     }
-    
-//    @objc func willSignOutNotificationReceived() {
-//        self.removeAllObservers()
-//        self.goal = nil
-//    }
-//
-//    @objc func willResetNotificationReceived() {
-//        self.removeAllObservers()
-//        self.goal = nil
-//    }
-    
+        
     func deadbeatChanged() {
         self.setThumbnailImage()
     }

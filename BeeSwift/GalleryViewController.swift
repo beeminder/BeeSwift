@@ -147,6 +147,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc func handleSignIn() {
         self.dismiss(animated: true, completion: nil)
+        self.fetchData()
     }
     
     @objc func handleSignOut() {
