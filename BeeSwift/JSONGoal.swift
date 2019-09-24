@@ -571,7 +571,7 @@ class JSONGoal {
         
         let endDate = Date()
         let calendar = Calendar.current
-        guard let startDate = calendar.date(byAdding: .day, value: -7, to: endDate) else {
+        guard let startDate = calendar.date(byAdding: .day, value: -5, to: endDate) else {
             return
         }
         

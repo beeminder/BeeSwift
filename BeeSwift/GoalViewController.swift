@@ -385,7 +385,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     @objc func syncWeekButtonPressed() {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        self.jsonGoal.hkQueryForLast(days: 7, success: {
+        self.jsonGoal.hkQueryForLast(days: 5, success: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
