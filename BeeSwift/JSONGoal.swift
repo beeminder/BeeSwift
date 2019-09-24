@@ -615,8 +615,10 @@ class JSONGoal {
         
         
         let datapoints = self.recent_data?.filter { (datapoint) -> Bool in
-            if let d = datapoint as? [String : Any?] {
-                return d["daystamp"] as? String == daystamp
+            if let d = datapoint as? JSON {
+                print(d["daystamp"])
+                print(d["daystamp"].string as? String)
+                return d["daystamp"].string as? String == daystamp
             } else {
                 return false
             }
@@ -636,7 +638,7 @@ class JSONGoal {
         } else if (datapoints?.count)! >= 1 {
             var first = true
             datapoints?.forEach({ (datapoint) in
-                guard let d = datapoint as? [String : Any?] else { return }
+                guard let d = datapoint as? JSON else { return }
                 if first {
                     let requestId = "\(daystamp)-\(self.minuteStamp())"
                     let params = [
@@ -645,10 +647,10 @@ class JSONGoal {
                         "comment": "Automatically updated via iOS Health app",
                         "requestid": requestId
                     ]
-                    let val = d["value"] as? Double
+                    let val = d["value"].double as? Double
                     if datapointValue == val { success?() }
                     else {
-                        let datapointID = d["id"] as? String
+                        let datapointID = d["id"].string as? String
                         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID).json", parameters: params, success: { (responseObject) in
                             success?()
                         }, errorHandler: { (error) in
@@ -656,6 +658,7 @@ class JSONGoal {
                         })
                     }
                 } else {
+                    // delete extras
                 }
                 first = false
             })
