@@ -171,27 +171,33 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func updateLastUpdatedLabel() {
+        var lastTextString = ""
+        var color = UIColor.black
         if let lastUpdated = self.lastUpdated {
             if lastUpdated.timeIntervalSinceNow < -3600 {
-                let lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: more than an hour ago")
-                lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.count))
-                self.lastUpdatedLabel.attributedText = lastText
+                color = UIColor.red
+                lastTextString = "Last updated: a long time ago..."
             }
             else if lastUpdated.timeIntervalSinceNow < -120 {
-                self.lastUpdatedLabel.text = "Last updated: \(-1*Int(lastUpdated.timeIntervalSinceNow/60)) minutes ago"
+                color = UIColor.black
+                lastTextString = "Last updated: \(-1*Int(lastUpdated.timeIntervalSinceNow/60)) minutes ago"
             }
             else if lastUpdated.timeIntervalSinceNow < -60 {
-                self.lastUpdatedLabel.text = "Last updated: 1 minute ago"
+                color = UIColor.black
+                lastTextString = "Last updated: 1 minute ago"
             }
             else {
-                self.lastUpdatedLabel.text = "Last updated: less than a minute ago"
+                color = UIColor.black
+                lastTextString = "Last updated: less than a minute ago"
             }
         }
         else {
-            let lastText :NSMutableAttributedString = NSMutableAttributedString(string: "Last updated: a long time ago...")
-            lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSRange(location: 0, length: lastText.string.count))
-            self.lastUpdatedLabel.attributedText = lastText
+            color = UIColor.red
+            lastTextString = "Last updated: a long time ago..."
         }
+        let lastText :NSMutableAttributedString = NSMutableAttributedString(string: lastTextString)
+        lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: color, range: NSRange(location: 0, length: lastText.string.count))
+        self.lastUpdatedLabel.attributedText = lastText
     }
     
     @objc func didBecomeActive() {
