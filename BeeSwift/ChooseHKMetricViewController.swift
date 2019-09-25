@@ -12,6 +12,7 @@ import HealthKit
 class ChooseHKMetricViewController: UIViewController {
     fileprivate let cellReuseIdentifier = "hkMetricTableViewCell"
     fileprivate var tableView = UITableView()
+    var goal : JSONGoal?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,19 +48,48 @@ class ChooseHKMetricViewController: UIViewController {
     @objc func saveButtonPressed() {
         guard let selectedRow = self.tableView.indexPathForSelectedRow?.row else { return }
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hud?.mode = .indeterminate
         let metric = HealthKitConfig.shared.metrics[selectedRow]
         if metric.hkIdentifier != nil {
             let metricType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
             healthStore.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: Constants.savedMetricNotificationName), object: self, userInfo: ["metric" : metric.databaseString!])
+                self.saveMetric(databaseString: metric.databaseString!)
             })
         } else if metric.hkCategoryTypeIdentifier != nil {
             let categoryType = HKObjectType.categoryType(forIdentifier: metric.hkCategoryTypeIdentifier!)
             healthStore.requestAuthorization(toShare: nil, read: [categoryType!], completion: { (success, error) in
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: Constants.savedMetricNotificationName), object: self, userInfo: ["metric" : metric.databaseString!])
+                self.saveMetric(databaseString: metric.databaseString!)
             })
         }
         
+    }
+    
+    func saveMetric(databaseString : String) {
+        self.goal!.healthKitMetric = databaseString
+        self.goal!.autodata = "apple"
+        self.goal!.setupHealthKit()
+        
+        var params : [String : [String : String]] = [:]
+        params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
+        
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
+                self.tableView.reloadData()
+                let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+                hud?.mode = .customView
+                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud?.hide(true, afterDelay: 2)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    self.navigationController?.popViewController(animated: true)
+                }
+        }) { (responseError) -> Void in
+            if let errorString = responseError?.localizedDescription {
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {

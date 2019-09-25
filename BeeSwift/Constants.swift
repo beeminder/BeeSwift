@@ -24,6 +24,7 @@ struct Constants {
     static let pledgeGoalSortString = "Pledge"
     static let deadlineGoalSortString = "Deadline"
     static let healthSyncRemindersPreferenceKey = "wantsHealthSyncReminders"
+    static let healthKitUpdateDictionaryKey = "healthKitUpdateDictionary"
     static let goalSortOptions = [Constants.nameGoalSortString, Constants.deadlineGoalSortString, Constants.pledgeGoalSortString, Constants.recentDataGoalSortString]
 }
 

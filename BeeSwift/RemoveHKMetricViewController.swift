@@ -57,13 +57,9 @@ class RemoveHKMetricViewController: UIViewController {
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-            if let healthKitConfigVC = self.presentingViewController as? HealthKitConfigViewController {
-                healthKitConfigVC.fetchGoals()
-            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 hud?.hide(true, afterDelay: 2)
                 self.navigationController?.popViewController(animated: true)
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: Constants.removedMetricNotificationName), object: self, userInfo: nil)
             })
         }) { (error) -> Void in
             // bar

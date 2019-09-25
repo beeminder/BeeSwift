@@ -56,7 +56,9 @@ class SettingsViewController: UIViewController {
     }
     
     @objc func userDefaultsDidChange() {
-        self.tableView.reloadData()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
     
     func signOutButtonPressed() {
