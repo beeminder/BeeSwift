@@ -598,7 +598,7 @@ class JSONGoal {
         if datapointValue == 0  { return }
         
         
-        let params = ["ioskit" : true]
+        let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
         
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (response) in
             let responseJSON = JSON(response)
