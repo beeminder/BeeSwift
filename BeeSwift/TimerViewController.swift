@@ -14,7 +14,7 @@ class TimerViewController: UIViewController {
     
     let timerLabel = BSLabel()
     let startStopButton = BSButton()
-    var goal : Goal?
+    var jsonGoal : JSONGoal?
     var timingSince: Date?
     var timer: Timer?
     var slug: String?
@@ -144,13 +144,13 @@ class TimerViewController: UIViewController {
         let calendar = Calendar.current
         let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
         let currentHour = components.hour
-        if self.goal!.deadline.intValue > 0 && currentHour! < 6 && self.goal!.deadline.intValue/3600 < currentHour! {
+        if self.jsonGoal!.deadline.intValue > 0 && currentHour! < 6 && self.jsonGoal!.deadline.intValue/3600 < currentHour! {
             offset = -1
         }
         
         // if the goal's deadline is before midnight and has already passed for this calendar day, default to entering data for the "next" day
-        if self.goal!.deadline.intValue < 0 {
-            let deadlineSecondsAfterMidnight = 24*3600 + self.goal!.deadline.intValue
+        if self.jsonGoal!.deadline.intValue < 0 {
+            let deadlineSecondsAfterMidnight = 24*3600 + self.jsonGoal!.deadline.intValue
             let deadlineHour = deadlineSecondsAfterMidnight/3600
             let deadlineMinute = (deadlineSecondsAfterMidnight % 3600)/60
             let currentMinute = components.minute
@@ -169,8 +169,6 @@ class TimerViewController: UIViewController {
         
         let comment = "Automatically entered from iOS timer interface"
         
-        
-        
         return "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(value) \"\(comment)\""
     }
     
@@ -185,8 +183,11 @@ class TimerViewController: UIViewController {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             })
+            if let goalVC = self.presentingViewController?.childViewControllers.last as? GoalViewController {
+                goalVC.refreshGoal()
+                goalVC.pollUntilGraphUpdates()
+            }
             self.resetButtonPressed()
-            
         }) { (error) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()

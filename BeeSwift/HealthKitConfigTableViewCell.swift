@@ -10,12 +10,12 @@ import UIKit
 
 class HealthKitConfigTableViewCell: UITableViewCell {
 
-    var goal : Goal? {
+    var jsonGoal : JSONGoal? {
         didSet {
-            self.goalnameLabel.text = self.goal?.slug
-            self.autodataNameLabel.text = self.goal?.humanizedAutodata()
-            if self.goal!.autodata.count > 0 {
-                if self.goal!.autodata != "apple" { self.autodataNameLabel.layer.opacity = 0.5 }
+            self.goalnameLabel.text = self.jsonGoal?.slug
+            self.autodataNameLabel.text = self.jsonGoal?.humanizedAutodata()
+            if self.jsonGoal!.autodata.count > 0 {
+                if self.jsonGoal!.autodata != "apple" { self.autodataNameLabel.layer.opacity = 0.5 }
                 self.addMetricLabel.isHidden = true
             } else {
                 self.addMetricLabel.isHidden = false

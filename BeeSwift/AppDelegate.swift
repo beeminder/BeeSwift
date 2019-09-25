@@ -21,7 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        MagicalRecord.setupAutoMigratingCoreDataStack()
 
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Avenir", size: 20)!]
         UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedStringKey.font : UIFont(name: "Avenir", size: 18)!], for: UIControlState())
@@ -61,11 +60,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
-        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-            //
-        }, error: { () -> Void in
-            //
-        })
+//        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
+//            //
+//        }, error: { () -> Void in
+//            //
+//        })
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -86,12 +85,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "didBecomeActive")))
-        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-            self.updateBadgeCount()
-            self.updateTodayWidget()
-        }, error: { () -> Void in
-            //nil
-        })
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -99,11 +92,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-            completionHandler(.newData)
-        }, error: { () -> Void in
-            completionHandler(.failed)
-        })
+//        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
+//            completionHandler(.newData)
+//        }, error: { () -> Void in
+//            completionHandler(.failed)
+//        })
     }
 
     @available(iOS 9.0, *)
@@ -124,7 +117,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else if url.scheme == Config.twitterUrlScheme {
             return Twitter.sharedInstance().application(app, open: url, options: options)
         }
-        DataSyncManager.sharedManager.fetchData(success: nil, error: nil)
+        
+        if let galleryViewController = app.keyWindow?.rootViewController as? GalleryViewController {
+            galleryViewController.fetchData()
+        }
         return true
     }
 
@@ -143,7 +139,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
             }
         }
-        DataSyncManager.sharedManager.fetchData(success: nil, error: nil)
+//        DataSyncManager.sharedManager.fetchData(success: nil, error: nil)
         return true
     }
 
@@ -160,10 +156,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func updateBadgeCount() {
-        let allGoals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
-        UIApplication.shared.applicationIconBadgeNumber = allGoals.filter({ (goal: Goal) -> Bool in
-            return goal.relativeLane.intValue < -1
-        }).count
+//        let allGoals = Goal.mr_findAll(with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
+//        UIApplication.shared.applicationIconBadgeNumber = allGoals.filter({ (goal: Goal) -> Bool in
+//            return goal.relativeLane.intValue < -1
+//        }).count
     }
 
     func updateTodayWidget() {
@@ -175,24 +171,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func todayGoalDictionaries() -> Array<NSDictionary> {
-        guard let goals = Goal.mr_findAllSorted(by: "losedate", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as? [Goal] else { return [] }
-
-        if goals.count < 3 {
-            return goals.map { (goal: Goal) -> NSDictionary in
-                var shortSlug = goal.slug
-                if shortSlug.count > 20 {
-                    shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
-                }
-                return [ "deadline": goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
-            }
-        }
-
-        return goals[0..<3].map { (goal: Goal) -> NSDictionary in
-            var shortSlug = goal.slug
-            if shortSlug.count > 20 {
-                shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
-            }
-            return [ "deadline": goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
-        }
+        return []
+//        guard let goals = Goal.mr_findAllSorted(by: "losedate", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as? [Goal] else { return [] }
+//
+//        if goals.count < 3 {
+//            return goals.map { (goal: Goal) -> NSDictionary in
+//                var shortSlug = goal.slug
+//                if shortSlug.count > 20 {
+//                    shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
+//                }
+//                return [ "deadline": goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
+//            }
+//        }
+//
+//        return goals[0..<3].map { (goal: Goal) -> NSDictionary in
+//            var shortSlug = goal.slug
+//            if shortSlug.count > 20 {
+//                shortSlug = String(shortSlug[..<shortSlug.index(shortSlug.endIndex, offsetBy: -1)])
+//            }
+//            return [ "deadline": goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
+//        }
     }
 }

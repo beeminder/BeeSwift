@@ -9,11 +9,12 @@
 import UIKit
 import HealthKit
 import UserNotifications
+import SwiftyJSON
 
 class HealthKitConfigViewController: UIViewController {
     
     var tableView = UITableView()
-    var goals : [Goal] = []
+    var jsonGoals : [JSONGoal] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
     var syncRemindersSwitch = UISwitch()
     let margin = 12
@@ -56,18 +57,16 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-        self.loadGoalsFromDatabase()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricSavedNotification(notification:)), name: NSNotification.Name(rawValue: Constants.savedMetricNotificationName), object: nil)
+        self.fetchGoals()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        self.fetchGoals()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        self.loadGoalsFromDatabase()
     }
     
     @objc func syncRemindersSwitchValueChanged() {
@@ -81,39 +80,35 @@ class HealthKitConfigViewController: UIViewController {
         }
     }
     
-    func loadGoalsFromDatabase() {
-        self.goals = Goal.mr_findAllSorted(by: "slug", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as! [Goal]
-        self.tableView.reloadData()
-    }
-    
-    @objc func handleMetricSavedNotification(notification : Notification) {
-        let metric = notification.userInfo?["metric"]
-        self.saveMetric(databaseString: metric as! String)
-    }
-    
-    func saveMetric(databaseString : String) {
-        let goal = self.goals[(self.tableView.indexPathForSelectedRow?.row)!]
-        goal.healthKitMetric = databaseString
-        goal.autodata = "apple"
-        goal.setupHealthKit()
-        
-        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) in
-            var params : [String : [String : String]] = [:]
-            params = ["ii_params" : ["name" : "apple", "metric" : goal.healthKitMetric!]]
+    func fetchGoals() {
+        guard let username = CurrentUserManager.sharedManager.username else { return }
+        MBProgressHUD.showAdded(to: self.view, animated: true)
+        RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            guard let responseGoals = JSON(responseJSON!).array else { return }
             
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(goal.slug).json", parameters: params,
-               success: { (responseObject) -> Void in
-                // foo
-            }) { (error) -> Void in
-                // bar
+            var jGoals : [JSONGoal] = []
+            responseGoals.forEach({ (goalJSON) in
+                let g = JSONGoal(json: goalJSON)
+                jGoals.append(g)
+            })
+            self.jsonGoals = jGoals.sorted(by: { (goal1, goal2) -> Bool in
+                return goal1.slug > goal2.slug
+            })
+            self.tableView.reloadData()
+        }) { (responseError) in
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            if let errorString = responseError?.localizedDescription {
+                let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
             }
-            
-            DispatchQueue.main.async {
-                self.loadGoalsFromDatabase()
-                self.tableView.reloadData()
-                self.navigationController?.popViewController(animated: true)
-            }
+            self.tableView.reloadData()
         }
+    }
+    
+    @objc func handleMetricRemovedNotification(notification : Notification) {
+        self.fetchGoals()
     }
 }
 
@@ -123,23 +118,25 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.goals.count
+        return self.jsonGoals.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitConfigTableViewCell!
 
-        let goal = self.goals[(indexPath as NSIndexPath).row]
-        cell!.goal = goal
+        let goal = self.jsonGoals[(indexPath as NSIndexPath).row]
+        cell!.jsonGoal = goal
         
         return cell!
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let goal = self.goals[(indexPath as NSIndexPath).row]
+        let goal = self.jsonGoals[(indexPath as NSIndexPath).row]
         
         if goal.autodata.count == 0 {
-            self.navigationController?.pushViewController(ChooseHKMetricViewController(), animated: true)
+            let chooseHKMetricViewController = ChooseHKMetricViewController()
+            chooseHKMetricViewController.goal = goal
+            self.navigationController?.pushViewController(chooseHKMetricViewController, animated: true)
         } else if goal.autodata == "apple" {
             let controller = RemoveHKMetricViewController()
             controller.goal = goal

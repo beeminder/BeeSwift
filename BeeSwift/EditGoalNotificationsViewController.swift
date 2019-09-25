@@ -10,18 +10,18 @@ import Foundation
 import UIKit
 
 class EditGoalNotificationsViewController : EditNotificationsViewController {
-    var goal : Goal? {
+    var goal : JSONGoal? {
         didSet {
 
         }
     }
     fileprivate var useDefaultsSwitch = UISwitch()
     
-    init(goal : Goal) {
+    init(goal : JSONGoal) {
         super.init()
         self.goal = goal
-        self.leadTimeStepper.value = goal.leadtime.doubleValue
-        self.alertstart = goal.alertstart
+        self.leadTimeStepper.value = goal.leadtime!.doubleValue
+        self.alertstart = goal.alertstart!
         self.deadline = goal.deadline
     }
 
@@ -47,7 +47,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             make.centerY.equalTo(useDefaultsLabel)
             make.right.equalTo(-20)
         }
-        self.useDefaultsSwitch.isOn = (self.goal?.use_defaults.boolValue)!
+        self.useDefaultsSwitch.isOn = (self.goal?.use_defaults!.boolValue)!
         self.useDefaultsSwitch.addTarget(self, action: #selector(EditGoalNotificationsViewController.useDefaultsSwitchValueChanged), for: .valueChanged)
         
         self.leadTimeLabel.snp.remakeConstraints { (make) -> Void in
@@ -65,9 +65,6 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 self.goal!.leadtime = leadtime!
                 self.goal!.use_defaults = NSNumber(value: false as Bool)
                 self.useDefaultsSwitch.isOn = false
-                NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
-                    //completion
-                }
             }) { (error) -> Void in
                 // show alert
         }
@@ -82,9 +79,6 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     self.goal!.alertstart = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
                     self.useDefaultsSwitch.isOn = false
-                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
-                        //completion
-                    }
                 }) { (error) -> Void in
                     //foo
             }
@@ -97,9 +91,6 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     self.goal?.deadline = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
                     self.useDefaultsSwitch.isOn = false
-                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
-                        //foo
-                    })
                 }) { (error) -> Void in
                     //foo
             }
@@ -114,9 +105,6 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
                     success: { (responseObject) -> Void in
                         self.goal?.use_defaults = NSNumber(value: true as Bool)
-                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
-                            //foo
-                        })
                         CurrentUserManager.sharedManager.syncNotificationDefaults({ () -> Void in
                             self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
                             self.updateLeadTimeLabel()
@@ -126,9 +114,6 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                             self.goal!.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
                             self.goal!.deadline = CurrentUserManager.sharedManager.defaultDeadline()
                             self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
-                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
-                                //foo
-                            })
                             }, failure: { () -> Void in
                                 // foo
                         })
@@ -146,9 +131,6 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
                 success: { (responseObject) -> Void in
                     self.goal?.use_defaults = NSNumber(value: false as Bool)
-                    NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: { (success, error) -> Void in
-                        //foo
-                    })
                 }) { (error) -> Void in
                     //foo
             }

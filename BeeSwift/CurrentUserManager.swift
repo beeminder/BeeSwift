@@ -45,11 +45,6 @@ class CurrentUserManager : NSObject {
     func setDefaultLeadTime(_ leadtime : NSNumber) {
         UserDefaults.standard.set(leadtime, forKey: self.defaultLeadtimeKey)
         UserDefaults.standard.synchronize()
-        let goals = Goal.mr_find(byAttribute: "use_defaults", withValue: NSNumber(value: true as Bool)) as! [Goal]
-        for goal in goals {
-            goal.leadtime = leadtime
-        }
-        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
     }
     
     func defaultAlertstart() -> NSNumber {
@@ -59,11 +54,6 @@ class CurrentUserManager : NSObject {
     func setDefaultAlertstart(_ alertstart : NSNumber) {
         UserDefaults.standard.set(alertstart, forKey: self.defaultAlertstartKey)
         UserDefaults.standard.synchronize()
-        let goals = Goal.mr_find(byAttribute: "use_defaults", withValue: NSNumber(value: true as Bool)) as! [Goal]
-        for goal in goals {
-            goal.alertstart = alertstart
-        }
-        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
     }
     
     func defaultDeadline() -> NSNumber {
@@ -73,11 +63,6 @@ class CurrentUserManager : NSObject {
     func setDefaultDeadline(_ deadline : NSNumber) {
         UserDefaults.standard.set(deadline, forKey: self.defaultDeadlineKey)
         UserDefaults.standard.synchronize()
-        let goals = Goal.mr_find(byAttribute: "use_defaults", withValue: NSNumber(value: true as Bool)) as! [Goal]
-        for goal in goals {
-            goal.deadline = deadline
-        }
-        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
     }
     
     func signedIn() -> Bool {
@@ -153,28 +138,6 @@ class CurrentUserManager : NSObject {
         UserDefaults.standard.removeObject(forKey: deadbeatKey)
         UserDefaults.standard.removeObject(forKey: usernameKey)
         UserDefaults.standard.synchronize()
-        for datapoint in Datapoint.mr_findAll()! {
-            datapoint.mr_deleteEntity()
-        }
-        for goal in Goal.mr_findAll()! {
-            goal.mr_deleteEntity()
-        }
-        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
-        }
-    }
-    
-    func reset() {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willResetNotificationName), object: self)
-        for datapoint in Datapoint.mr_findAll()! {
-            datapoint.mr_deleteEntity()
-        }
-        for goal in Goal.mr_findAll()! {
-            goal.mr_deleteEntity()
-        }
-        DataSyncManager.sharedManager.setLastSynced(nil)
-        NSManagedObjectContext.mr_default().mr_saveToPersistentStore { (success, error) -> Void in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.resetNotificationName), object: self)
-        }
+        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
     }
 }

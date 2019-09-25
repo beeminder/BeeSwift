@@ -27,11 +27,6 @@
 		A142491F1FD073EC007736B3 /* RequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BCE9841AFFFB3A007322CC /* RequestManager.swift */; };
 		A14249211FD07514007736B3 /* CurrentUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */; };
 		A14249231FD07631007736B3 /* OAuthSignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14249221FD07631007736B3 /* OAuthSignInManager.swift */; };
-		A14249241FD0773E007736B3 /* DataSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15802D71AE4455300E1451D /* DataSyncManager.swift */; };
-		A14249251FD0774A007736B3 /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B53C421B2D098B00AF266F /* Goal.swift */; };
-		A14249261FD0774D007736B3 /* GoalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14D0CFF1AE48B2B00B0568F /* GoalExtension.swift */; };
-		A14249271FD0774F007736B3 /* DatapointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154E1B01EFCF0052A6E6 /* DatapointExtension.swift */; };
-		A14249281FD07752007736B3 /* Datapoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154A1B01E1890052A6E6 /* Datapoint.swift */; };
 		A142492A1FD0788F007736B3 /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11488BD1EE9B0CE003316E1 /* UIDevice.swift */; };
 		A142492D1FD079B4007736B3 /* SignedRequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A142492C1FD079B4007736B3 /* SignedRequestManager.swift */; };
 		A142492E1FD0A56A007736B3 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A158DDB51E46EEA10031BD4F /* HealthKit.framework */; };
@@ -46,8 +41,6 @@
 		A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */; };
 		A149B3721AEF54D100F19A09 /* BSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B3711AEF54D100F19A09 /* BSButton.swift */; };
 		A14AF4CB1FCEF4B1006EFCCD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A14AF4CA1FCEF4B1006EFCCD /* GoogleService-Info.plist */; };
-		A14D0D001AE48B2B00B0568F /* GoalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14D0CFF1AE48B2B00B0568F /* GoalExtension.swift */; };
-		A15802D81AE4455300E1451D /* DataSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15802D71AE4455300E1451D /* DataSyncManager.swift */; };
 		A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A158DDB51E46EEA10031BD4F /* HealthKit.framework */; };
 		A15A4A0E1FD0B34B00DC3FCA /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BA9A11FCE5187004BB425 /* Config.swift */; };
 		A15FF4201AEB621000A9AD22 /* GoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15FF41F1AEB621000A9AD22 /* GoalCollectionViewCell.swift */; };
@@ -56,14 +49,12 @@
 		A1781AB31DE50F59000B96C5 /* BSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1781AB21DE50F59000B96C5 /* BSTextField.swift */; };
 		A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17E930B1B09032F0098FCA0 /* QuartzCore.framework */; };
 		A196CB1A1AE4142E00B90A3E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB191AE4142E00B90A3E /* AppDelegate.swift */; };
-		A196CB1D1AE4142F00B90A3E /* BeeSwift.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A196CB1B1AE4142E00B90A3E /* BeeSwift.xcdatamodeld */; };
 		A196CB1F1AE4142F00B90A3E /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */; };
 		A196CB221AE4142F00B90A3E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A196CB201AE4142F00B90A3E /* Main.storyboard */; };
 		A196CB241AE4142F00B90A3E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A196CB231AE4142F00B90A3E /* Images.xcassets */; };
 		A196CB271AE4142F00B90A3E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A196CB251AE4142F00B90A3E /* LaunchScreen.xib */; };
 		A196CB331AE4142F00B90A3E /* BeeSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB321AE4142F00B90A3E /* BeeSwiftTests.swift */; };
 		A1A8BDE61FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */; };
-		A1B53C431B2D098B00AF266F /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B53C421B2D098B00AF266F /* Goal.swift */; };
 		A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723D1B0989DF00584782 /* Foundation.framework */; };
 		A1B672401B0989E800584782 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723F1B0989E800584782 /* UIKit.framework */; };
 		A1B672421B0989ED00584782 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B672411B0989ED00584782 /* CoreGraphics.framework */; };
@@ -86,10 +77,9 @@
 		A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */; };
 		A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */; };
 		A1E619001E86980900D8ED93 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
-		A1EA154B1B01E1890052A6E6 /* Datapoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154A1B01E1890052A6E6 /* Datapoint.swift */; };
 		A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */; };
-		A1EA154F1B01EFCF0052A6E6 /* DatapointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154E1B01EFCF0052A6E6 /* DatapointExtension.swift */; };
 		A1EFB5401F0F2E57005C75AE /* CreateGoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EFB53F1F0F2E57005C75AE /* CreateGoalViewController.swift */; };
+		A1F8F07B232C05410060B83E /* JSONGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* JSONGoal.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
 		A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */; };
 		D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */; };
@@ -136,11 +126,9 @@
 		A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveHKMetricViewController.swift; sourceTree = "<group>"; };
 		A11488BD1EE9B0CE003316E1 /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
 		A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseGoalSortViewController.swift; sourceTree = "<group>"; };
-		A11A87C71FEC363600A43E47 /* BeeSwift4.9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeSwift4.9.xcdatamodel; sourceTree = "<group>"; };
 		A11BA9A11FCE5187004BB425 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoreManager.swift; sourceTree = "<group>"; };
 		A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewController.swift; sourceTree = "<group>"; };
-		A11BC2DA1FFBE2B200E56064 /* BeeSwift5.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeSwift5.0.xcdatamodel; sourceTree = "<group>"; };
 		A12B7B261B3BBC1300453CFC /* GoogleSignIn.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GoogleSignIn.bundle; sourceTree = "<group>"; };
 		A12BA94B1AFF201B00AFEF32 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -150,7 +138,6 @@
 		A12E69531BD3EF0200AB94C2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		A12E69551BD3EF0200AB94C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A12E695C1BD3EF3600AB94C2 /* BeeSwiftToday.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BeeSwiftToday.entitlements; sourceTree = "<group>"; };
-		A12E695F1BD44D9A00AB94C2 /* BeeSwift4.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeSwift4.2.xcdatamodel; sourceTree = "<group>"; };
 		A1308D451DE24D76006D0626 /* BeeSwift.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BeeSwift.entitlements; sourceTree = "<group>"; };
 		A14249221FD07631007736B3 /* OAuthSignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthSignInManager.swift; sourceTree = "<group>"; };
 		A142492C1FD079B4007736B3 /* SignedRequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedRequestManager.swift; sourceTree = "<group>"; };
@@ -164,9 +151,6 @@
 		A149B3711AEF54D100F19A09 /* BSButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSButton.swift; sourceTree = "<group>"; };
 		A14AF4CA1FCEF4B1006EFCCD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A14AF4CC1FCEF67D006EFCCD /* Sentry.sh */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text.script.sh; path = Sentry.sh; sourceTree = "<group>"; };
-		A14D0CFF1AE48B2B00B0568F /* GoalExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoalExtension.swift; sourceTree = "<group>"; };
-		A15802D21AE43DCE00E1451D /* BeeSwift1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeSwift1.0.xcdatamodel; sourceTree = "<group>"; };
-		A15802D71AE4455300E1451D /* DataSyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSyncManager.swift; sourceTree = "<group>"; };
 		A158DDB51E46EEA10031BD4F /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		A15FF41F1AEB621000A9AD22 /* GoalCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoalCollectionViewCell.swift; sourceTree = "<group>"; };
 		A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDefaultNotificationsViewController.swift; sourceTree = "<group>"; };
@@ -176,7 +160,6 @@
 		A196CB141AE4142E00B90A3E /* BeeSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeeSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A196CB181AE4142E00B90A3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A196CB191AE4142E00B90A3E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A196CB1C1AE4142E00B90A3E /* BeeSwift.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeSwift.xcdatamodel; sourceTree = "<group>"; };
 		A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
 		A196CB211AE4142F00B90A3E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A196CB231AE4142F00B90A3E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -184,14 +167,11 @@
 		A196CB2C1AE4142F00B90A3E /* BeeSwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeeSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A196CB311AE4142F00B90A3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A196CB321AE4142F00B90A3E /* BeeSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeSwiftTests.swift; sourceTree = "<group>"; };
-		A1A715EB1EFDB6800063B3DC /* BeeSwift4.6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeSwift4.6.xcdatamodel; sourceTree = "<group>"; };
 		A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureNotificationsViewController.swift; sourceTree = "<group>"; };
 		A1B53C301B2D04EA00AF266F /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
-		A1B53C421B2D098B00AF266F /* Goal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		A1B6723D1B0989DF00584782 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A1B6723F1B0989E800584782 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A1B672411B0989ED00584782 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		A1B839C21FB5934C00426FD9 /* BeeSwift4.8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeSwift4.8.xcdatamodel; sourceTree = "<group>"; };
 		A1BCE9841AFFFB3A007322CC /* RequestManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestManager.swift; sourceTree = "<group>"; };
 		A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoalViewController.swift; sourceTree = "<group>"; };
 		A1BD0D1B1AEB34E0001EDE8B /* GalleryNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryNavigationController.swift; sourceTree = "<group>"; };
@@ -205,10 +185,9 @@
 		A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfigViewController.swift; sourceTree = "<group>"; };
 		A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfigTableViewCell.swift; sourceTree = "<group>"; };
 		A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfig.swift; sourceTree = "<group>"; };
-		A1EA154A1B01E1890052A6E6 /* Datapoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Datapoint.swift; sourceTree = "<group>"; };
 		A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCell.swift; sourceTree = "<group>"; };
-		A1EA154E1B01EFCF0052A6E6 /* DatapointExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointExtension.swift; sourceTree = "<group>"; };
 		A1EFB53F1F0F2E57005C75AE /* CreateGoalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateGoalViewController.swift; sourceTree = "<group>"; };
+		A1F8F07A232C05410060B83E /* JSONGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONGoal.swift; sourceTree = "<group>"; };
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
 		A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGoalCollectionViewCell.swift; sourceTree = "<group>"; };
 		AF1B05535FB9C64FEC41EBE9 /* Pods-BeeSwiftTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftTests/Pods-BeeSwiftTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -271,7 +250,6 @@
 			isa = PBXGroup;
 			children = (
 				A1BCE9841AFFFB3A007322CC /* RequestManager.swift */,
-				A15802D71AE4455300E1451D /* DataSyncManager.swift */,
 				A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */,
 				A1BEEB501AFDC0DE00E7081F /* RemoteNotificationsManager.swift */,
 				A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */,
@@ -344,7 +322,6 @@
 			children = (
 				A1308D451DE24D76006D0626 /* BeeSwift.entitlements */,
 				A1E618E51E79E01900D8ED93 /* Cells */,
-				A1EA15501B01F98B0052A6E6 /* CoreData */,
 				A106AD8B1AF1F62800C434E8 /* Managers */,
 				A149147C1BE7A4FC0060600A /* UI */,
 				A149147D1BE7A5140060600A /* Util */,
@@ -359,6 +336,7 @@
 				A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */,
 				A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */,
 				A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */,
+				A1F8F07A232C05410060B83E /* JSONGoal.swift */,
 				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
 				A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */,
 				A1EFB53F1F0F2E57005C75AE /* CreateGoalViewController.swift */,
@@ -369,7 +347,6 @@
 				A196CB201AE4142F00B90A3E /* Main.storyboard */,
 				A196CB231AE4142F00B90A3E /* Images.xcassets */,
 				A196CB251AE4142F00B90A3E /* LaunchScreen.xib */,
-				A196CB1B1AE4142E00B90A3E /* BeeSwift.xcdatamodeld */,
 				A196CB171AE4142E00B90A3E /* Supporting Files */,
 			);
 			path = BeeSwift;
@@ -415,17 +392,6 @@
 				A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */,
 			);
 			name = Cells;
-			sourceTree = "<group>";
-		};
-		A1EA15501B01F98B0052A6E6 /* CoreData */ = {
-			isa = PBXGroup;
-			children = (
-				A1EA154A1B01E1890052A6E6 /* Datapoint.swift */,
-				A1EA154E1B01EFCF0052A6E6 /* DatapointExtension.swift */,
-				A1B53C421B2D098B00AF266F /* Goal.swift */,
-				A14D0CFF1AE48B2B00B0568F /* GoalExtension.swift */,
-			);
-			name = CoreData;
 			sourceTree = "<group>";
 		};
 		C039E8389CFF5C0D8CF85D8D /* Frameworks */ = {
@@ -793,22 +759,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A14249261FD0774D007736B3 /* GoalExtension.swift in Sources */,
 				A12E69511BD3EF0200AB94C2 /* TodayViewController.swift in Sources */,
 				A1D853291EB0EA2400FC75DE /* BSLabel.swift in Sources */,
 				A1D8532A1EB0EA2B00FC75DE /* BSButton.swift in Sources */,
 				A15A4A0E1FD0B34B00DC3FCA /* Config.swift in Sources */,
 				A14249301FD0A5A4007736B3 /* HealthKitConfig.swift in Sources */,
 				A1D8532D1EB0EA8100FC75DE /* UIColorExtension.swift in Sources */,
-				A14249251FD0774A007736B3 /* Goal.swift in Sources */,
 				A142492F1FD0A590007736B3 /* HealthStoreManager.swift in Sources */,
-				A14249241FD0773E007736B3 /* DataSyncManager.swift in Sources */,
 				A142492A1FD0788F007736B3 /* UIDevice.swift in Sources */,
-				A14249281FD07752007736B3 /* Datapoint.swift in Sources */,
 				A1D8532C1EB0EA5700FC75DE /* UIFontExtension.swift in Sources */,
 				A1D853261EB0332D00FC75DE /* Constants.swift in Sources */,
 				A14249211FD07514007736B3 /* CurrentUserManager.swift in Sources */,
-				A14249271FD0774F007736B3 /* DatapointExtension.swift in Sources */,
 				A142491F1FD073EC007736B3 /* RequestManager.swift in Sources */,
 				A1D8532B1EB0EA2D00FC75DE /* BSTextField.swift in Sources */,
 				A1D853281EB0DE0700FC75DE /* TodayTableViewCell.swift in Sources */,
@@ -820,8 +781,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1453B3F1AEDFCC8006F48DA /* SignInViewController.swift in Sources */,
-				A15802D81AE4455300E1451D /* DataSyncManager.swift in Sources */,
-				A1EA154B1B01E1890052A6E6 /* Datapoint.swift in Sources */,
 				A1453B3D1AEDFA52006F48DA /* CurrentUserManager.swift in Sources */,
 				A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */,
 				A1781AB31DE50F59000B96C5 /* BSTextField.swift in Sources */,
@@ -832,7 +791,6 @@
 				A1BE73AC1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift in Sources */,
 				A1C11B481B06F5D100D22871 /* Constants.swift in Sources */,
 				A11488BE1EE9B0CE003316E1 /* UIDevice.swift in Sources */,
-				A14D0D001AE48B2B00B0568F /* GoalExtension.swift in Sources */,
 				A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */,
 				A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */,
 				A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */,
@@ -840,6 +798,7 @@
 				A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */,
 				A1453B391AEDA71D006F48DA /* BSLabel.swift in Sources */,
 				A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */,
+				A1F8F07B232C05410060B83E /* JSONGoal.swift in Sources */,
 				A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */,
 				A149B3721AEF54D100F19A09 /* BSButton.swift in Sources */,
 				A1C170E01BEEB3110018D32B /* UIFontExtension.swift in Sources */,
@@ -850,12 +809,9 @@
 				A142492D1FD079B4007736B3 /* SignedRequestManager.swift in Sources */,
 				A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */,
 				A1BCE9851AFFFB3A007322CC /* RequestManager.swift in Sources */,
-				A1B53C431B2D098B00AF266F /* Goal.swift in Sources */,
-				A196CB1D1AE4142F00B90A3E /* BeeSwift.xcdatamodeld in Sources */,
 				A149147F1BE7A5670060600A /* SettingsTableViewCell.swift in Sources */,
 				A1BD0D181AEB30A5001EDE8B /* GoalViewController.swift in Sources */,
 				A196CB1A1AE4142E00B90A3E /* AppDelegate.swift in Sources */,
-				A1EA154F1B01EFCF0052A6E6 /* DatapointExtension.swift in Sources */,
 				A1453B351AED9184006F48DA /* UIColorExtension.swift in Sources */,
 				A11BA9A41FCE54E3004BB425 /* HealthStoreManager.swift in Sources */,
 				A15FF4201AEB621000A9AD22 /* GoalCollectionViewCell.swift in Sources */,
@@ -927,6 +883,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeeSwiftToday/BeeSwiftToday.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_TESTABILITY = YES;
@@ -955,6 +912,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeeSwiftToday/BeeSwiftToday.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1094,6 +1052,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeeSwift/BeeSwift.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1126,6 +1085,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeeSwift/BeeSwift.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1229,25 +1189,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		A196CB1B1AE4142E00B90A3E /* BeeSwift.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				A11BC2DA1FFBE2B200E56064 /* BeeSwift5.0.xcdatamodel */,
-				A11A87C71FEC363600A43E47 /* BeeSwift4.9.xcdatamodel */,
-				A1B839C21FB5934C00426FD9 /* BeeSwift4.8.xcdatamodel */,
-				A1A715EB1EFDB6800063B3DC /* BeeSwift4.6.xcdatamodel */,
-				A12E695F1BD44D9A00AB94C2 /* BeeSwift4.2.xcdatamodel */,
-				A15802D21AE43DCE00E1451D /* BeeSwift1.0.xcdatamodel */,
-				A196CB1C1AE4142E00B90A3E /* BeeSwift.xcdatamodel */,
-			);
-			currentVersion = A11BC2DA1FFBE2B200E56064 /* BeeSwift5.0.xcdatamodel */;
-			path = BeeSwift.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = A196CB0C1AE4142E00B90A3E /* Project object */;
 }

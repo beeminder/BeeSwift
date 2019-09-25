@@ -1,103 +1,115 @@
 //
-//  GoalExtension.swift
+//  JSONself.swift
 //  BeeSwift
 //
-//  Created by Andy Brett on 4/19/15.
-//  Copyright (c) 2015 APB. All rights reserved.
+//  Created by Andy Brett on 9/13/19.
+//  Copyright © 2019 APB. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
-import MagicalRecord
 import HealthKit
 import UserNotifications
 
-extension Goal {
+class JSONGoal {
+    var autodata: String = ""
+    var burner: String = ""
+    var delta_text: String = ""
+    var graph_url: String?
+    var healthKitMetric: String?
+    var id: String = ""
+    var lane: NSNumber?
+    var losedate: NSNumber = 0
+    var panic: NSNumber = 0
+    var pledge: NSNumber = 0
+    var rate: NSNumber?
+    var runits: String = ""
+    var yaxis: String = ""
+    var slug: String = ""
+    var thumb_url: String?
+    var title: String = ""
+    var won: NSNumber = 0
+    var yaw: NSNumber = 0
+    var safebump: NSNumber?
+    var curval: NSNumber?
+    var limsum: String?
+    var deadline: NSNumber = 0
+    var leadtime: NSNumber?
+    var alertstart: NSNumber?
+    var lasttouch: NSNumber?
+    var use_defaults: NSNumber?
+    var queued: Bool?
+    var recent_data: Array<Any>?
     
-    class func crupdateWithJSON(_ json :JSON) {
-        
-        if let id = json["id"].string, let goal :Goal = Goal.mr_findFirst(byAttribute: "id", withValue:id) {
-            Goal.updateGoal(goal, withJSON: json)
-        }
-        else if let goal :Goal = Goal.mr_createEntity() {
-            Goal.updateGoal(goal, withJSON: json)
-        }
-    }
-    
-    class func updateGoal(_ goal :Goal, withJSON json :JSON) {
-        goal.id = json["id"].string!
-        goal.title = json["title"].string!
-        goal.burner = json["burner"].string!
-        goal.slug = json["slug"].string!
-        goal.panic = json["panic"].number!
-        goal.deadline = json["deadline"].number!
-        goal.leadtime = json["leadtime"].number!
-        goal.alertstart = json["alertstart"].number!
+    init(json: JSON) {
+        self.id = json["id"].string!
+        self.title = json["title"].string!
+        self.burner = json["burner"].string!
+        self.slug = json["slug"].string!
+        self.panic = json["panic"].number!
+        self.deadline = json["deadline"].number!
+        self.leadtime = json["leadtime"].number!
+        self.alertstart = json["alertstart"].number!
         if let lasttouchString = json["lasttouch"].string {
             let formatter = DateFormatter.init()
             formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
             if let lasttouchDate = formatter.date(from: lasttouchString) {
-                goal.lasttouch = NSNumber(value: lasttouchDate.timeIntervalSince1970)
+                self.lasttouch = NSNumber(value: lasttouchDate.timeIntervalSince1970)
             }
         }
+        self.queued = json["queued"].bool!
         
-        goal.losedate = json["losedate"].number!
-        goal.runits = json["runits"].string!
-        goal.yaxis = json["yaxis"].string!
-        if json["rate"].number != nil { goal.rate = json["rate"].number! }
-        if json["delta_text"].string != nil { goal.delta_text = json["delta_text"].string! }
-        goal.won = json["won"].number!
-        if json["lane"].number != nil { goal.lane = json["lane"].number! }
-        goal.yaw = json["yaw"].number!
-        if json["limsum"].string != nil { goal.limsum = json["limsum"].string! }
-        goal.use_defaults = json["use_defaults"].bool! as NSNumber
+        self.losedate = json["losedate"].number!
+        self.runits = json["runits"].string!
+        self.yaxis = json["yaxis"].string!
+        if json["rate"].number != nil { self.rate = json["rate"].number! }
+        if json["delta_text"].string != nil { self.delta_text = json["delta_text"].string! }
+        self.won = json["won"].number!
+        if json["lane"].number != nil { self.lane = json["lane"].number! }
+        self.yaw = json["yaw"].number!
+        if json["limsum"].string != nil { self.limsum = json["limsum"].string! }
+        self.use_defaults = json["use_defaults"].bool! as NSNumber
         if let safebump = json["safebump"].number {
-            goal.safebump = safebump
-        }
-        if let hkMetric = json["healthkitmetric"].string {
-            if hkMetric.count > 0 {
-                goal.healthKitMetric = hkMetric
-                goal.setupHealthKit()
-            }
+            self.safebump = safebump
         }
         if let curval = json["curval"].number {
-            goal.curval = curval
+            self.curval = curval
         }
-        goal.pledge = json["pledge"].number!
-        let autodata : String? = json["autodata"].string
-        if autodata != nil { goal.autodata = autodata! } else { goal.autodata = "" }
-
-        if let newDatapoints = json["datapoints"].array {
-            for datapointJSON in newDatapoints {
-                let datapoint = Datapoint.crupdateWithJSON(datapointJSON)
-                datapoint.goal = goal
-            }
-        }
-        // these are last because other classes use KVO on them...hack.
-        if json["graph_url"].string != nil { goal.graph_url = json["graph_url"].string! }
-        if json["thumb_url"].string != nil { goal.thumb_url = json["thumb_url"].string! }
+        self.pledge = json["pledge"].number!
+        let ad : String? = json["autodata"].string
+        if ad != nil { self.autodata = ad! } else { self.autodata = "" }
+        
+        if json["graph_url"].string != nil { self.graph_url = json["graph_url"].string! }
+        if json["thumb_url"].string != nil { self.thumb_url = json["thumb_url"].string! }
+        
+        self.healthKitMetric = json["healthkitmetric"].string
+        
+        var datapoints : Array<JSON> = json["recent_data"].arrayValue
+        datapoints.reverse()
+        self.recent_data = Array(datapoints)
     }
     
     var rateString :String {
+        guard let r = self.rate else { return "" }
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US")
         formatter.numberStyle = NumberFormatter.Style.decimal
         formatter.maximumFractionDigits = 2
-        return "\(formatter.string(from: self.rate)!)/\(self.humanizedRunits)"
+        return "\(formatter.string(from: r)!)/\(self.humanizedRunits)"
     }
     
     var cacheBustingThumbUrl :String {
-        if self.thumb_url.range(of: "&") == nil {
-            return "\(self.thumb_url)?t=\(Date().timeIntervalSince1970)"
+        if self.thumb_url!.range(of: "&") == nil {
+            return "\(self.thumb_url!)?t=\(Date().timeIntervalSince1970)"
         }
-        return "\(self.thumb_url)&t=\(Date().timeIntervalSince1970)"
+        return "\(self.thumb_url!)&t=\(Date().timeIntervalSince1970)"
     }
     
     var cacheBustingGraphUrl :String {
-        if self.graph_url.range(of: "&") == nil {
-            return "\(self.graph_url)?t=\(Date().timeIntervalSince1970)"
+        if self.graph_url!.range(of: "&") == nil {
+            return "\(self.graph_url!)?t=\(Date().timeIntervalSince1970)"
         }
-        return "\(self.graph_url)&t=\(Date().timeIntervalSince1970)"
+        return "\(self.graph_url!)&t=\(Date().timeIntervalSince1970)"
     }
     
     var briefLosedate :String {
@@ -132,7 +144,7 @@ extension Goal {
     }
     
     var countdownText :NSString {
-
+        
         let losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
         let seconds = losedateDate.timeIntervalSinceNow
         if seconds < 0 {
@@ -174,7 +186,7 @@ extension Goal {
     }
     
     var relativeLane : NSNumber {
-        return NSNumber(value: self.lane.int32Value * self.yaw.int32Value as Int32)
+        return NSNumber(value: self.lane!.int32Value * self.yaw.int32Value as Int32)
     }
     
     var attributedDeltaText :NSAttributedString {
@@ -184,8 +196,8 @@ extension Goal {
             return NSAttributedString(string: self.delta_text)
         }
         if self.delta_text.components(separatedBy: "✔").count == 4 {
-            if (self.safebump.doubleValue - self.curval.doubleValue > 0) {
-                let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump.doubleValue - self.curval.doubleValue))
+            if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
+                let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
                 attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.count))
                 return attString
             }
@@ -200,7 +212,7 @@ extension Goal {
         }
         
         spaceIndices.append(self.delta_text.count)
-
+        
         let attString :NSMutableAttributedString = NSMutableAttributedString(string: self.delta_text)
         
         for i in 0..<spaceIndices.count {
@@ -215,7 +227,7 @@ extension Goal {
         }
         
         attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.count))
-
+        
         return attString
     }
     
@@ -243,25 +255,6 @@ extension Goal {
         return "week"
     }
     
-    func orderedDatapoints() -> [Datapoint] {
-        let points : [Datapoint] = self.datapoints.allObjects as! [Datapoint]
-        return points.sorted(by: { (d1, d2) -> Bool in
-            if d1.timestamp == d2.timestamp {
-                return d1.updated_at.intValue < d2.updated_at.intValue
-            }
-            return d1.timestamp.intValue < d2.timestamp.intValue
-        })
-    }
-    
-    func lastFiveDatapoints() -> [Datapoint] {
-        var allDatapoints = self.orderedDatapoints()
-        if allDatapoints.count < 6 {
-            return allDatapoints
-        }
-        
-        return Array(allDatapoints[(allDatapoints.count - 5)...(allDatapoints.count - 1)])
-    }
-    
     func humanizedAutodata() -> String? {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
@@ -278,13 +271,13 @@ extension Goal {
     func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
         return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
             metric.databaseString == self.healthKitMetric
-        }?.hkIdentifier
+            }?.hkIdentifier
     }
     
     func hkCategoryTypeIdentifier() -> HKCategoryTypeIdentifier? {
         return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
             metric.databaseString == self.healthKitMetric
-        }?.hkCategoryTypeIdentifier
+            }?.hkCategoryTypeIdentifier
     }
     
     func hkSampleType() -> HKSampleType? {
@@ -374,8 +367,8 @@ extension Goal {
             var dupe = false
             uniqueSamples.forEach({ (seenSample) in
                 if seenSample.startDate == sample.startDate &&
-                     seenSample.endDate == sample.endDate &&
-                     seenSample.device  == sample.device {
+                    seenSample.endDate == sample.endDate &&
+                    seenSample.device  == sample.device {
                     dupe = true
                 }
             })
@@ -392,7 +385,7 @@ extension Goal {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let categoryType = self.hkCategoryTypeIdentifier() else { return }
         if categoryType != .appleStandHour { return }
-
+        
         let calendar = Calendar.current
         
         let components = calendar.dateComponents(in: TimeZone.current, from: Date())
@@ -419,6 +412,7 @@ extension Goal {
                 print(queryError)
                 return
             }
+            if self.hasRecentlyUpdatedHealthData() { return }
             self.updateBeeminderWithActivitySummaries(summaries: activitySummaries, success: nil, errorCompletion: nil)
             
         }
@@ -462,7 +456,7 @@ extension Goal {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
-    
+        
         let calendar = Calendar.current
         var interval = DateComponents()
         interval.day = 1
@@ -531,7 +525,7 @@ extension Goal {
             
             var trigger : UNNotificationTrigger
             if hour < 9 {
-                 // data synced before 9 am. Schedule for nine hours from now.
+                // data synced before 9 am. Schedule for nine hours from now.
                 trigger = UNTimeIntervalNotificationTrigger(timeInterval: 32400.0, repeats: false)
             }
             else if hour >= 9 && hour < 17 {
@@ -549,17 +543,17 @@ extension Goal {
             let notification = UNNotificationRequest.init(identifier: "foo", content: content, trigger: trigger)
             UNUserNotificationCenter.current().add(notification, withCompletionHandler: nil)
         } else {
-//            update please!
+            //            update please!
         }
         
     }
-
+    
     func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection, success: (() -> ())?, errorCompletion: (() -> ())?) {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         
         let endDate = Date()
         let calendar = Calendar.current
-        guard let startDate = calendar.date(byAdding: .day, value: -7, to: endDate) else {
+        guard let startDate = calendar.date(byAdding: .day, value: -5, to: endDate) else {
             return
         }
         
@@ -593,71 +587,106 @@ extension Goal {
                 formatter.dateFormat = "yyyyMMdd"
                 let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
                 let daystamp = formatter.string(from: datapointDate)
-
+                
                 self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
             })
         }
     }
     
     func updateBeeminderWithValue(datapointValue : Double, daystamp : String, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        let datapoints = Datapoint.mr_findAll(with: NSPredicate(format: "daystamp == %@ and goal.id = %@", daystamp, self.id)) as? [Datapoint]
         
         if datapointValue == 0  { return }
         
-        if datapoints == nil || datapoints?.count == 0 {
-            let requestId = "\(daystamp)-\(self.minuteStamp())"
-            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
-            self.postDatapoint(params: params, success: { (responseObject) in
-                let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                datapoint.goal = self
-                NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                success?()
-            }, failure: { (error) in
-                print(error)
-                errorCompletion?()
-            })
-        } else if (datapoints?.count)! >= 1 {
-            var first = true
-            datapoints?.forEach({ (datapoint) in
-                if first {
-                    let requestId = "\(daystamp)-\(self.minuteStamp())"
-                    let params = [
-                        "access_token": CurrentUserManager.sharedManager.accessToken!,
-                        "value": "\(datapointValue)",
-                        "comment": "Automatically updated via iOS Health app",
-                        "requestid": requestId
-                    ]
-                    if datapointValue == datapoint.value.doubleValue { success?() }
-                    else {
-                        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                            let datapoint = Datapoint.crupdateWithJSON(JSON(responseObject!))
-                            datapoint.goal = self
-                            NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                            success?()
-                        }, errorHandler: { (error) in
-                            errorCompletion?()
-                        })
-                    }
+        
+        let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
+        
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (response) in
+            let responseJSON = JSON(response)
+            var datapoints = responseJSON.array!
+            datapoints = datapoints.filter { (datapoint) -> Bool in
+                if let datapointStamp = datapoint["daystamp"].string {
+                    return datapointStamp == daystamp
                 } else {
-                    let params = [
-                        "access_token": CurrentUserManager.sharedManager.accessToken!,
-                        ]
-                    RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params, success: { (responseObject) in
-                            datapoint.mr_deleteEntity(in: NSManagedObjectContext.mr_default())
-                        NSManagedObjectContext.mr_default().mr_saveToPersistentStore(completion: nil)
-                        success?()
-                    }, errorHandler: { (error) in
-                        errorCompletion?()
-                    })
+                    return false
                 }
-                first = false
-            })
+            }
+            
+            if datapoints.count == 0 {
+                let requestId = "\(daystamp)-\(self.minuteStamp())"
+                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
+                self.postDatapoint(params: params, success: { (responseObject) in
+                    success?()
+                }, failure: { (error) in
+                    print(error)
+                    errorCompletion?()
+                })
+            } else if datapoints.count >= 1 {
+                var first = true
+                datapoints.forEach({ (datapoint) in
+                    guard let d = datapoint as? JSON else { return }
+                    if first {
+                        let requestId = "\(daystamp)-\(self.minuteStamp())"
+                        let params = [
+                            "access_token": CurrentUserManager.sharedManager.accessToken!,
+                            "value": "\(datapointValue)",
+                            "comment": "Automatically updated via iOS Health app",
+                            "requestid": requestId
+                        ]
+                        let val = d["value"].double as? Double
+                        if datapointValue == val { success?() }
+                        else {
+                            let datapointID = d["id"].string
+                            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
+                                success?()
+                            }, errorHandler: { (error) in
+                                errorCompletion?()
+                            })
+                        }
+                    } else {
+                        let datapointID = d["id"].string
+                        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
+                            //
+                        }) { (error) in
+                            //
+                        }
+                    }
+                    first = false
+                })
+            }
+        }) { (error) in
+            //
         }
+        
+
+    }
+    
+    func hasRecentlyUpdatedHealthData() -> Bool {
+        var updateDictionary = UserDefaults.standard.dictionary(forKey: Constants.healthKitUpdateDictionaryKey)
+        if updateDictionary == nil {
+            updateDictionary = [:]
+        }
+        
+        if updateDictionary![self.slug] != nil {
+            let lastUpdate = updateDictionary![self.slug] as! Date
+            if lastUpdate.timeIntervalSinceNow > -60.0 {
+                return true
+            }
+        }
+        updateDictionary![self.slug] = Date()
+        
+        UserDefaults.standard.set(updateDictionary, forKey: Constants.healthKitUpdateDictionaryKey)
+        UserDefaults.standard.synchronize()
+        
+        return false
     }
     
     func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
+        if self.hasRecentlyUpdatedHealthData() {
+            success?()
+            return
+        }
         
         ((-1*days + 1)...0).forEach({ (offset) in
             let calendar = Calendar.current
@@ -668,7 +697,7 @@ extension Goal {
             
             let endOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!)
             let startOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!)
-
+            
             guard let startDate = calendar.date(byAdding: .day, value: offset, to: startOfToday!) else { return }
             guard let endDate = calendar.date(byAdding: .day, value: offset, to: endOfToday!) else { return }
             
