@@ -255,25 +255,6 @@ class JSONGoal {
         return "week"
     }
     
-//    func orderedDatapoints() -> [Datapoint] {
-//        let points : [Datapoint] = self.datapoints.allObjects as! [Datapoint]
-//        return points.sorted(by: { (d1, d2) -> Bool in
-//            if d1.timestamp == d2.timestamp {
-//                return d1.updated_at.intValue < d2.updated_at.intValue
-//            }
-//            return d1.timestamp.intValue < d2.timestamp.intValue
-//        })
-//    }
-//    
-//    func lastFiveDatapoints() -> [Datapoint] {
-//        var allDatapoints = self.orderedDatapoints()
-//        if allDatapoints.count < 6 {
-//            return allDatapoints
-//        }
-//        
-//        return Array(allDatapoints[(allDatapoints.count - 5)...(allDatapoints.count - 1)])
-//    }
-    
     func humanizedAutodata() -> String? {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
@@ -431,6 +412,7 @@ class JSONGoal {
                 print(queryError)
                 return
             }
+            if self.hasRecentlyUpdatedHealthData() { return }
             self.updateBeeminderWithActivitySummaries(summaries: activitySummaries, success: nil, errorCompletion: nil)
             
         }
@@ -613,61 +595,98 @@ class JSONGoal {
     
     func updateBeeminderWithValue(datapointValue : Double, daystamp : String, success: (() -> ())?, errorCompletion: (() -> ())?) {
         
-        
-        let datapoints = self.recent_data?.filter { (datapoint) -> Bool in
-            if let d = datapoint as? JSON {
-                print(d["daystamp"])
-                print(d["daystamp"].string as? String)
-                return d["daystamp"].string as? String == daystamp
-            } else {
-                return false
-            }
-        }
-        
         if datapointValue == 0  { return }
         
-        if datapoints == nil || datapoints?.count == 0 {
-            let requestId = "\(daystamp)-\(self.minuteStamp())"
-            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
-            self.postDatapoint(params: params, success: { (responseObject) in
-                success?()
-            }, failure: { (error) in
-                print(error)
-                errorCompletion?()
-            })
-        } else if (datapoints?.count)! >= 1 {
-            var first = true
-            datapoints?.forEach({ (datapoint) in
-                guard let d = datapoint as? JSON else { return }
-                if first {
-                    let requestId = "\(daystamp)-\(self.minuteStamp())"
-                    let params = [
-                        "access_token": CurrentUserManager.sharedManager.accessToken!,
-                        "value": "\(datapointValue)",
-                        "comment": "Automatically updated via iOS Health app",
-                        "requestid": requestId
-                    ]
-                    let val = d["value"].double as? Double
-                    if datapointValue == val { success?() }
-                    else {
-                        let datapointID = d["id"].string as? String
-                        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID).json", parameters: params, success: { (responseObject) in
-                            success?()
-                        }, errorHandler: { (error) in
-                            errorCompletion?()
-                        })
-                    }
+        
+        let params = ["ioskit" : true]
+        
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (response) in
+            let responseJSON = JSON(response)
+            var datapoints = responseJSON.array!
+            datapoints = datapoints.filter { (datapoint) -> Bool in
+                if let datapointStamp = datapoint["daystamp"].string {
+                    return datapointStamp == daystamp
                 } else {
-                    // delete extras
+                    return false
                 }
-                first = false
-            })
+            }
+            
+            if datapoints.count == 0 {
+                let requestId = "\(daystamp)-\(self.minuteStamp())"
+                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
+                self.postDatapoint(params: params, success: { (responseObject) in
+                    success?()
+                }, failure: { (error) in
+                    print(error)
+                    errorCompletion?()
+                })
+            } else if datapoints.count >= 1 {
+                var first = true
+                datapoints.forEach({ (datapoint) in
+                    guard let d = datapoint as? JSON else { return }
+                    if first {
+                        let requestId = "\(daystamp)-\(self.minuteStamp())"
+                        let params = [
+                            "access_token": CurrentUserManager.sharedManager.accessToken!,
+                            "value": "\(datapointValue)",
+                            "comment": "Automatically updated via iOS Health app",
+                            "requestid": requestId
+                        ]
+                        let val = d["value"].double as? Double
+                        if datapointValue == val { success?() }
+                        else {
+                            let datapointID = d["id"].string
+                            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
+                                success?()
+                            }, errorHandler: { (error) in
+                                errorCompletion?()
+                            })
+                        }
+                    } else {
+                        let datapointID = d["id"].string
+                        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
+                            //
+                        }) { (error) in
+                            //
+                        }
+                    }
+                    first = false
+                })
+            }
+        }) { (error) in
+            //
         }
+        
+
+    }
+    
+    func hasRecentlyUpdatedHealthData() -> Bool {
+        var updateDictionary = UserDefaults.standard.dictionary(forKey: Constants.healthKitUpdateDictionaryKey)
+        if updateDictionary == nil {
+            updateDictionary = [:]
+        }
+        
+        if updateDictionary![self.slug] != nil {
+            let lastUpdate = updateDictionary![self.slug] as! Date
+            if lastUpdate.timeIntervalSinceNow > -60.0 {
+                return true
+            }
+        }
+        updateDictionary![self.slug] = Date()
+        
+        UserDefaults.standard.set(updateDictionary, forKey: Constants.healthKitUpdateDictionaryKey)
+        UserDefaults.standard.synchronize()
+        
+        return false
     }
     
     func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
+        if self.hasRecentlyUpdatedHealthData() {
+            success?()
+            return
+        }
         
         ((-1*days + 1)...0).forEach({ (offset) in
             let calendar = Calendar.current
