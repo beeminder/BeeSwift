@@ -91,8 +91,13 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     self.goal?.deadline = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
                     self.useDefaultsSwitch.isOn = false
-                }) { (error) -> Void in
-                    //foo
+                }) { (responseError) -> Void in
+                    if let errorString = responseError?.localizedDescription {
+                        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                        let alert = UIAlertController(title: "Error saving to Beeminder", message: errorString, preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
             }
         }
     }

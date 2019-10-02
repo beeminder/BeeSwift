@@ -161,9 +161,11 @@ class EditNotificationsViewController: UIViewController {
     }
     
     func setTimePickerComponents(_ offsetFromMidnight : Int) {
-        let hour = offsetFromMidnight / 3600
-        let minute = (offsetFromMidnight % 3600) / 60
+        var hour = offsetFromMidnight / 3600
+        var minute = (offsetFromMidnight % 3600) / 60
         if self.use24HourTime() {
+            if hour < 0 { hour = 25 + hour }
+            if minute < 0 { minute = 60 + minute }
             self.timePickerView.selectRow(hour, inComponent: 0, animated: true)
             self.timePickerView.selectRow(minute, inComponent: 1, animated: true)
         }
