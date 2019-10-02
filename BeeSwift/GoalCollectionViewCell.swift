@@ -43,7 +43,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         
         self.titleLabel.font = UIFont(name: "Avenir-Light", size: 18)
         if #available(iOS 13.0, *) {
-            self.titleLabel.textColor = .secondaryLabel
+            self.titleLabel.textColor = .label
         }
         self.titleLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.slugLabel)
