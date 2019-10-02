@@ -223,6 +223,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func didFetchData() {
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        delegate.updateBadgeCount()
+        delegate.updateTodayWidget()
         self.refreshControl.endRefreshing()
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
         let isRegisteredForNotifications = UIApplication.shared.currentUserNotificationSettings?.types.contains(UIUserNotificationType.alert) ?? false
@@ -296,7 +299,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     return goal1.pledge.intValue > goal2.pledge.intValue
                 }
             }
-            return goal1.deadline.intValue < goal2.deadline.intValue
+            return goal1.losedate.intValue < goal2.losedate.intValue
         })
     }
 
