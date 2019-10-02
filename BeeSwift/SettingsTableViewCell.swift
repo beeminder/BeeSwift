@@ -33,13 +33,27 @@ class SettingsTableViewCell: UITableViewCell {
     
     func configure() {
         self.selectionStyle = .none
-        self.backgroundColor = .white
+        if #available(iOS 13.0, *) {
+            self.backgroundColor = .secondarySystemBackground
+        } else {
+            self.backgroundColor = .white
+        }
         self.accessoryType = .disclosureIndicator
         
         self.contentView.addSubview(self.titleLabel)
         
+        
+        if #available(iOS 13.0, *) {
+            self.titleLabel.textColor = .label
+        } else {
+            self.titleLabel.textColor = .beeGrayColor()
+        }
+        
         if self.imageName != nil {
-            let imageView = UIImageView(image: UIImage(named: self.imageName!))
+            let image = UIImage(named: self.imageName!)
+            let imageView = UIImageView(image: image)
+            
+            
             self.contentView.addSubview(imageView)
             imageView.snp.remakeConstraints({ (make) in
                 make.centerY.equalTo(self.contentView)

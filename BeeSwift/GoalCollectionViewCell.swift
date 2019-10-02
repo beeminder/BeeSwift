@@ -28,15 +28,23 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(self.deltasLabel)
         self.contentView.addSubview(self.countdownView)
         self.countdownView.addSubview(self.countdownLabel)
-        
+        if #available(iOS 13.0, *) {
+            self.contentView.backgroundColor = .systemBackground
+        }
         self.slugLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
         self.slugLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.margin)
             make.top.equalTo(10)
             make.width.lessThanOrEqualTo(self.contentView).multipliedBy(0.35)
         }
+        if #available(iOS 13.0, *) {
+            self.slugLabel.textColor = .label
+        }
         
         self.titleLabel.font = UIFont(name: "Avenir-Light", size: 18)
+        if #available(iOS 13.0, *) {
+            self.titleLabel.textColor = .secondaryLabel
+        }
         self.titleLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.slugLabel)
             make.left.equalTo(self.slugLabel.snp.right).offset(10)
@@ -102,64 +110,6 @@ class GoalCollectionViewCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
     }
-    
-//    func removeAllObservers() {
-//        self.goal?.removeObserver(self, forKeyPath: "thumb_url")
-//        self.goal?.removeObserver(self, forKeyPath: "losedate")
-//        self.goal?.removeObserver(self, forKeyPath: "lane")
-//        self.goal?.removeObserver(self, forKeyPath: "rate")
-//        self.goal?.removeObserver(self, forKeyPath: "title")
-//        self.goal?.removeObserver(self, forKeyPath: "delta_text")
-//    }
-//
-//    deinit {
-//        self.removeAllObservers()
-//    }
-    
-//    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-//        if (!CurrentUserManager.sharedManager.signedIn()) { return }
-//        if keyPath == "thumb_url" {
-//            self.thumbnailImageView.image = nil
-//            self.setThumbnailImage()
-//        } else if keyPath == "losedate" || keyPath == "lane" {
-//            self.countdownLabel.text = jsonGoal?.briefLosedate
-//            self.countdownView.backgroundColor = jsonGoal?.countdownColor
-//        } else if keyPath == "title" {
-//            self.titleLabel.text = jsonGoal?.title
-//        } else if keyPath == "rate" {
-//            self.rateLabel.text = jsonGoal?.rateString
-//        } else if keyPath == "delta_text" {
-//            self.deltasLabel.attributedText = jsonGoal?.attributedDeltaText
-//        }
-//    }
-    
-//    var goal :Goal?
-//    {
-//        didSet {
-//            goal?.addObserver(self, forKeyPath: "thumb_url", options: [], context: nil)
-//            goal?.addObserver(self, forKeyPath: "losedate", options: [], context: nil)
-//            goal?.addObserver(self, forKeyPath: "lane", options: [], context: nil)
-//            goal?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-//            goal?.addObserver(self, forKeyPath: "title", options: [], context: nil)
-//            goal?.addObserver(self, forKeyPath: "delta_text", options: [], context: nil)
-//            self.thumbnailImageView.image = nil
-//            self.setThumbnailImage()
-//
-//            if goal == nil {
-//                self.countdownLabel.text = ""
-//                self.countdownView.backgroundColor = UIColor.beeGrayColor()
-//            } else {
-//                self.countdownLabel.text = jsonGoal!.briefLosedate
-//                self.countdownView.backgroundColor = jsonGoal!.countdownColor
-//            }
-//
-//            self.titleLabel.text = jsonGoal?.title
-//            self.slugLabel.text = jsonGoal?.slug
-//            self.titleLabel.isHidden = jsonGoal?.title == goal?.slug
-//            self.rateLabel.text = jsonGoal?.rateString
-//            self.deltasLabel.attributedText = jsonGoal?.attributedDeltaText
-//        }
-//    }
     
     var jsonGoal: JSONGoal? {
         didSet {

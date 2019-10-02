@@ -25,7 +25,11 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
 
         self.title = "Edit Datapoint"
         
-        self.view.backgroundColor = .white
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } else {
+            self.view.backgroundColor = .white
+        }
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in

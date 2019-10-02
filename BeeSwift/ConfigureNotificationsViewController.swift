@@ -19,7 +19,11 @@ class ConfigureNotificationsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Notifications"
-        self.view.backgroundColor = .white
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } else {
+            self.view.backgroundColor = .white
+        }
     
         let emergencyRemindersLabel = BSLabel()
         self.view.addSubview(emergencyRemindersLabel)

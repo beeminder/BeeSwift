@@ -21,7 +21,11 @@ class HealthKitConfigViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .white
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } else {
+            self.view.backgroundColor = .white
+        }
         self.title = "Health app integration"
         let backItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         self.navigationItem.backBarButtonItem = backItem
@@ -29,6 +33,11 @@ class HealthKitConfigViewController: UIViewController {
         let syncRemindersLabel = BSLabel()
         self.view.addSubview(syncRemindersLabel)
         syncRemindersLabel.text = "Sync Health data reminders"
+        if #available(iOS 13.0, *) {
+            syncRemindersLabel.backgroundColor = .secondarySystemBackground
+        } else {
+            syncRemindersLabel.backgroundColor = .clear
+        }
         syncRemindersLabel.snp.makeConstraints { (make) in
             make.left.equalTo(self.margin)
             make.right.equalTo(0)

@@ -41,7 +41,11 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignUp(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignedIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
-        self.view.backgroundColor = UIColor.white
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = UIColor.systemBackground
+        } else {
+            self.view.backgroundColor = UIColor.white
+        }
         
         scrollView.addSubview(self.chooseSignInButton)
         self.chooseSignInButton.setTitle("I have a Beeminder account", for: .normal)

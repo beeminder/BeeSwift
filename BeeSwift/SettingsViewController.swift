@@ -17,7 +17,11 @@ class SettingsViewController: UIViewController {
     
     override func viewDidLoad() {
         self.title = "Settings"
-        self.view.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } else {
+            self.view.backgroundColor = .white
+        }
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         
@@ -38,7 +42,11 @@ class SettingsViewController: UIViewController {
         self.tableView.dataSource = self
         self.tableView.isScrollEnabled = false
         self.tableView.tableFooterView = UIView()
-        self.tableView.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } else {
+            self.view.backgroundColor = .white
+        }
         self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         
         let versionLabel = BSLabel()
@@ -91,7 +99,6 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var section = indexPath.section
         guard let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as? SettingsTableViewCell else { return UITableViewCell() }
-        cell.backgroundColor = .white
         if HKHealthStore.isHealthDataAvailable() {
             if section == 0 {
                 cell.title = "Health app integration"
@@ -100,13 +107,14 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             }
             section = section - 1
         }
+        
         switch section {
         case 0:
             let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String
             cell.title = "Sort goals by: \(selectedGoalSort ?? "")"
             cell.imageName = "Sort"
         case 1:
-            cell.title = "Goal emergency notifications: \(RemoteNotificationsManager.sharedManager.on() ? "on" : "off")"
+            cell.title = "Emergency notifications: \(RemoteNotificationsManager.sharedManager.on() ? "on" : "off")"
             cell.imageName = "Notifications"
         case 2:
             cell.title = "Sign out"

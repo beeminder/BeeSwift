@@ -39,7 +39,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     fileprivate let headerWidth = UIDevice.current.userInterfaceIdiom == .pad ? Double(1.0/3.0) : Double(0.5)
 
     override func viewDidLoad() {
-        self.view.backgroundColor = UIColor.white
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = UIColor.systemBackground
+        } else {
+            self.view.backgroundColor = UIColor.white
+        }
         self.title = self.jsonGoal.slug
         
         // have to set these before the datapoints since setting the most recent datapoint updates the text field,

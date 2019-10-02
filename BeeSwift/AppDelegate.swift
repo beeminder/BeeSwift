@@ -7,13 +7,12 @@
 //
 
 import UIKit
-import CoreData
-import MagicalRecord
 import TwitterKit
 import IQKeyboardManager
 import HealthKit
 import Sentry
 import AlamofireNetworkActivityIndicator
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -92,11 +91,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-//        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-//            completionHandler(.newData)
-//        }, error: { () -> Void in
-//            completionHandler(.failed)
-//        })
+//        if let galleryVC = application.keyWindow?.rootViewController as? GalleryViewController {
+//            galleryVC.fetchData(){
+//                completionHandler(.newData)
+//            }) {
+//                completionHandler(.failed)
+//            }
+//        }
     }
 
     @available(iOS 9.0, *)
@@ -139,7 +140,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
             }
         }
-//        DataSyncManager.sharedManager.fetchData(success: nil, error: nil)
         return true
     }
 
@@ -170,7 +170,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         sharedDefaults?.synchronize()
     }
 
-    func todayGoalDictionaries() -> Array<NSDictionary> {
+    func todayGoalDictionaries() -> Array<Any> {
+        if let galleryVC = UIApplication.shared.keyWindow?.rootViewController as? GalleryViewController {
+            let todayGoals = galleryVC.jsonGoals.map { (jsonGoal) -> Any? in
+                let shortSlug = jsonGoal.slug.prefix(20)
+                return ["deadline" : jsonGoal.deadline.intValue, "thumbUrl": jsonGoal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(jsonGoal.limsum)", "slug": jsonGoal.slug, "hideDataEntry": jsonGoal.hideDataEntry()]
+            }
+            return todayGoals as Array<Any>
+        }
         return []
 //        guard let goals = Goal.mr_findAllSorted(by: "losedate", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as? [Goal] else { return [] }
 //

@@ -41,10 +41,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
-        self.collectionView?.backgroundColor = UIColor.white
+        if #available(iOS 13.0, *) {
+            self.collectionView?.backgroundColor = .systemBackground
+        } else {
+            self.collectionView?.backgroundColor = UIColor.white
+        }
+        
         self.collectionView?.alwaysBounceVertical = true
         self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: "footer")
-        self.view.backgroundColor = UIColor.white
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } else {
+            self.view.backgroundColor = .white
+        }
         self.title = "Goals"
         
         let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(GalleryViewController.settingsButtonPressed))
@@ -133,7 +142,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if !CurrentUserManager.sharedManager.signedIn() {
             self.present(SignInViewController(), animated: true, completion: nil)
         }
-        self.fetchData()
+        if let lastUpdated = self.lastUpdated {
+            if lastUpdated.timeIntervalSinceNow < -60 {
+                self.fetchData()
+            }
+        } else {
+            self.fetchData()
+        }
     }
     
     @objc func settingsButtonPressed() {
@@ -257,7 +272,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.didFetchData()
             self.setupHealthKit()
         }) { (responseError) in
-            print(responseError)
             if let errorString = responseError?.localizedDescription {
                 let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))

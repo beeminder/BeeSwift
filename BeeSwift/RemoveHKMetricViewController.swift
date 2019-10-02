@@ -15,7 +15,11 @@ class RemoveHKMetricViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = .white
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } else {
+            self.view.backgroundColor = .white
+        }
         self.title = ""
         
         let currentMetricLabel = BSLabel()
