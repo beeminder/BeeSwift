@@ -171,12 +171,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func todayGoalDictionaries() -> Array<Any> {
-        if let galleryVC = UIApplication.shared.keyWindow?.rootViewController as? GalleryViewController {
+        if let galleryVC = UIApplication.shared.keyWindow?.rootViewController?.childViewControllers.first as? GalleryViewController {
             let todayGoals = galleryVC.jsonGoals.map { (jsonGoal) -> Any? in
                 let shortSlug = jsonGoal.slug.prefix(20)
-                return ["deadline" : jsonGoal.deadline.intValue, "thumbUrl": jsonGoal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(jsonGoal.limsum)", "slug": jsonGoal.slug, "hideDataEntry": jsonGoal.hideDataEntry()]
+                return ["deadline" : jsonGoal.deadline.intValue, "thumbUrl": jsonGoal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(jsonGoal.limsum!)", "slug": jsonGoal.slug, "hideDataEntry": jsonGoal.hideDataEntry()]
             }
-            return todayGoals as Array<Any>
+            return Array(todayGoals.prefix(3)) as Array<Any>
         }
         return []
 //        guard let goals = Goal.mr_findAllSorted(by: "losedate", ascending: true, with: NSPredicate(format: "serverDeleted = false")) as? [Goal] else { return [] }
