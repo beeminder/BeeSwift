@@ -30,7 +30,7 @@ class CurrentUserManager : NSObject {
     
     var goals : [JSONGoal] = []
     var goalsFetchedAt : Date = Date()
-    var goalsCacheBusted = false
+    var goalsCacheBusted = true
     
     var accessToken :String? {
         return UserDefaults.standard.object(forKey: accessTokenKey) as! String?
@@ -152,7 +152,7 @@ class CurrentUserManager : NSObject {
             success?([])
             return
         }
-        if self.goalsCacheBusted == false && self.goalsFetchedAt.timeIntervalSinceNow < -60 {
+        if self.goalsCacheBusted == false && self.goalsFetchedAt.timeIntervalSinceNow > -60 {
             success?(self.goals)
             return
         }
