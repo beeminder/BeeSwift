@@ -414,7 +414,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.setGraphImage()
         self.refreshCountdown()
         self.pledgeLabel.text = "$\(self.jsonGoal.pledge)"
-        self.deltasLabel.attributedText = self.jsonGoal.attributedDeltaText
     }
     
     @objc func timerButtonPressed() {
@@ -458,6 +457,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     @objc func refreshCountdown() {
         self.countdownLabel.textColor = self.jsonGoal.countdownColor
         self.countdownLabel.text = self.jsonGoal.countdownText as String
+        self.deltasLabel.attributedText = self.jsonGoal.attributedDeltaText
     }
     
     func setGraphImage() {
@@ -551,6 +551,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.refreshGoal()
             self.pollUntilGraphUpdates()
             self.submitButton.isUserInteractionEnabled = true
+            CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
         }) { (error) in
             self.submitButton.isUserInteractionEnabled = true
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
@@ -575,9 +576,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 self.pollTimer?.invalidate()
                 self.pollTimer = nil
-                let delegate = UIApplication.shared.delegate as! AppDelegate
-                delegate.updateBadgeCount()
-                delegate.updateTodayWidget()
             }
         }) { (error) in
             // foo

@@ -19,6 +19,7 @@ class CurrentUserManager : NSObject {
     static let signedOutNotificationName    = "com.beeminder.signedOutNotification"
     static let resetNotificationName        = "com.beeminder.resetNotification"
     static let willResetNotificationName    = "com.beeminder.willResetNotification"
+    static let goalsFetchedNotificationName = "com.beeminder.goalsFetchedNotification"
     fileprivate let accessTokenKey = "access_token"
     fileprivate let usernameKey = "username"
     fileprivate let deadbeatKey = "deadbeat"
@@ -28,6 +29,7 @@ class CurrentUserManager : NSObject {
     fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
     
     var goals : [JSONGoal] = []
+    var goalsFetchedAt : Date?
     
     var accessToken :String? {
         return UserDefaults.standard.object(forKey: accessTokenKey) as! String?
@@ -134,6 +136,8 @@ class CurrentUserManager : NSObject {
     }
     
     func signOut() {
+        self.goals = []
+        self.goalsFetchedAt = nil
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
         UserDefaults.standard.removeObject(forKey: accessTokenKey)
         UserDefaults.standard.removeObject(forKey: deadbeatKey)
@@ -155,16 +159,28 @@ class CurrentUserManager : NSObject {
                 jGoals.append(g)
             })
             self.goals = jGoals
-            let delegate = UIApplication.shared.delegate as! AppDelegate
-            delegate.updateBadgeCount()
-            delegate.updateTodayWidget()
-            let isRegisteredForNotifications = UIApplication.shared.currentUserNotificationSettings?.types.contains(UIUserNotificationType.alert) ?? false
-            if !isRegisteredForNotifications {
-                RemoteNotificationsManager.sharedManager.turnNotificationsOn()
-            }
+            self.updateTodayWidget()
+            self.goalsFetchedAt = Date()
+            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
             success?(jGoals)
         }) { (responseError) in
             error?(responseError)
         }
+    }
+
+    func updateTodayWidget() {
+        if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder") {
+            sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
+            sharedDefaults.set(CurrentUserManager.sharedManager.accessToken, forKey: "accessToken")
+            sharedDefaults.synchronize()
+        }
+    }
+    
+    func todayGoalDictionaries() -> Array<Any> {
+        let todayGoals = self.goals.map { (jsonGoal) -> Any? in
+            let shortSlug = jsonGoal.slug.prefix(20)
+            return ["deadline" : jsonGoal.deadline.intValue, "thumbUrl": jsonGoal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(jsonGoal.limsum!)", "slug": jsonGoal.slug, "hideDataEntry": jsonGoal.hideDataEntry()]
+        }
+        return Array(todayGoals.prefix(3)) as Array<Any>
     }
 }

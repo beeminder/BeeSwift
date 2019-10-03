@@ -25,7 +25,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let noGoalsLabel = BSLabel()
     var lastUpdated : Date?
     
-    var jsonGoals : Array<JSONGoal> = []
+    var goals : Array<JSONGoal> = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -140,6 +140,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.present(SignInViewController(), animated: true, completion: nil)
         }
         if let lastUpdated = self.lastUpdated {
+            if lastUpdated != CurrentUserManager.sharedManager.goalsFetchedAt {
+                self.fetchGoals()
+            }
             if lastUpdated.timeIntervalSinceNow < -60 {
                 self.fetchGoals()
             }
@@ -165,7 +168,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleSignOut() {
-        self.jsonGoals = []
+        self.goals = []
         self.collectionView?.reloadData()
         self.present(SignInViewController(), animated: true, completion: nil)
     }
@@ -222,9 +225,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
         self.collectionView!.reloadData()
         self.updateDeadbeatHeight()
-        self.lastUpdated = Date()
+        self.lastUpdated = CurrentUserManager.sharedManager.goalsFetchedAt
         self.updateLastUpdatedLabel()
-        if self.jsonGoals.count == 0 {
+        if self.goals.count == 0 {
             self.noGoalsLabel.isHidden = false
             self.collectionView?.isHidden = true
         } else {
@@ -235,23 +238,23 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func setupHealthKit() {
         var permissions = Set<HKObjectType>.init()
-        self.jsonGoals.forEach { (goal) in
+        self.goals.forEach { (goal) in
             if goal.hkPermissionType() != nil { permissions.insert(goal.hkPermissionType()!) }
         }
         guard permissions.count > 0 else { return }
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         
         healthStore.requestAuthorization(toShare: nil, read: permissions, completion: { (success, error) in
-            self.jsonGoals.forEach { (goal) in goal.setupHealthKit() }
+            self.goals.forEach { (goal) in goal.setupHealthKit() }
         })
     }
     
     @objc func fetchGoals() {
-        if self.jsonGoals.count == 0 {
+        if self.goals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
-            self.jsonGoals = goals
+            self.goals = goals
             self.didFetchGoals()
         }) { (error) in
             if let errorString = error?.localizedDescription {
@@ -266,7 +269,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func sortGoals() {
-        self.jsonGoals.sort(by: { (goal1, goal2) -> Bool in
+        self.goals.sort(by: { (goal1, goal2) -> Bool in
             if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
                 if selectedGoalSort == Constants.nameGoalSortString {
                     return goal1.slug < goal2.slug
@@ -288,7 +291,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.jsonGoals.count + 1
+        return self.goals.count + 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -300,13 +303,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if (indexPath as NSIndexPath).row >= self.jsonGoals.count {
+        if (indexPath as NSIndexPath).row >= self.goals.count {
             let cell:NewGoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.newGoalCellReuseIdentifier, for: indexPath) as! NewGoalCollectionViewCell
             return cell
         }
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let jsonGoal:JSONGoal = self.jsonGoals[(indexPath as NSIndexPath).row]
+        let jsonGoal:JSONGoal = self.goals[(indexPath as NSIndexPath).row]
         
         cell.jsonGoal = jsonGoal
         
@@ -314,17 +317,17 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: 320, height: section == 0 && self.jsonGoals.count > 0 ? 5 : 0)
+        return CGSize(width: 320, height: section == 0 && self.goals.count > 0 ? 5 : 0)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let row = (indexPath as NSIndexPath).row
-        if row < self.jsonGoals.count { self.openGoal(self.jsonGoals[row]) }
+        if row < self.goals.count { self.openGoal(self.goals[row]) }
     }
 
     @objc func openGoalFromNotification(_ notification: Notification) {
         let slug = (notification as NSNotification).userInfo!["slug"] as! String
-        let matchingGoal = self.jsonGoals.filter({ (jsonGoal) -> Bool in
+        let matchingGoal = self.goals.filter({ (jsonGoal) -> Bool in
             return jsonGoal.slug == slug
         }).last
         if matchingGoal != nil {

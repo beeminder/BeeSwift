@@ -41,21 +41,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("\(error)")
             // Wrong DSN or KSCrash not installed
         }
-
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
         
         if UserDefaults.standard.object(forKey: Constants.healthSyncRemindersPreferenceKey) == nil {
             UserDefaults.standard.set(true, forKey: Constants.healthSyncRemindersPreferenceKey)
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
 
         return true
-    }
-
-    @objc func handleSignOut() {
-        self.updateTodayWidget()
-        self.updateBadgeCount()
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
@@ -147,31 +142,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         RemoteNotificationsManager.sharedManager.didFailToRegisterForRemoteNotificationsWithError(error)
     }
-
-    func updateBadgeCount() {
-        if let galleryVC = UIApplication.shared.keyWindow?.rootViewController?.childViewControllers.first as? GalleryViewController {
-            UIApplication.shared.applicationIconBadgeNumber = galleryVC.jsonGoals.filter({ (goal: JSONGoal) -> Bool in
-                return goal.relativeLane.intValue < -1
-            }).count
-        }
-    }
-
-    func updateTodayWidget() {
-        if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder") {
-            sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
-            sharedDefaults.set(CurrentUserManager.sharedManager.accessToken, forKey: "accessToken")
-            sharedDefaults.synchronize()
-        }
-    }
-
-    func todayGoalDictionaries() -> Array<Any> {
-        if let galleryVC = UIApplication.shared.keyWindow?.rootViewController?.childViewControllers.first as? GalleryViewController {
-            let todayGoals = galleryVC.jsonGoals.map { (jsonGoal) -> Any? in
-                let shortSlug = jsonGoal.slug.prefix(20)
-                return ["deadline" : jsonGoal.deadline.intValue, "thumbUrl": jsonGoal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(jsonGoal.limsum!)", "slug": jsonGoal.slug, "hideDataEntry": jsonGoal.hideDataEntry()]
-            }
-            return Array(todayGoals.prefix(3)) as Array<Any>
-        }
-        return []
+    
+    @objc func updateBadgeCount() {
+        UIApplication.shared.applicationIconBadgeNumber = CurrentUserManager.sharedManager.goals.filter({ (goal: JSONGoal) -> Bool in
+            return goal.relativeLane.intValue < -1
+        }).count
     }
 }
