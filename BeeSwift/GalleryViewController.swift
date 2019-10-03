@@ -35,8 +35,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleCreateGoalButtonPressed), name: NSNotification.Name(rawValue: "createGoalButtonPressed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didFetchData), name: Notification.Name(rawValue: "dataSyncManagerSuccess"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didBecomeActive), name: Notification.Name(rawValue: "didBecomeActive"), object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
@@ -110,7 +108,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView!.register(NewGoalCollectionViewCell.self, forCellWithReuseIdentifier: self.newGoalCellReuseIdentifier)
         self.view.addSubview(self.collectionView!)
         
-        self.refreshControl.addTarget(self, action: #selector(self.fetchData), for: UIControlEvents.valueChanged)
+        self.refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
         self.collectionView!.addSubview(self.refreshControl)
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
@@ -134,7 +132,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.noGoalsLabel.numberOfLines = 0
         self.noGoalsLabel.isHidden = true
         
-        self.fetchData()
+        self.fetchGoals()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -143,10 +141,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         if let lastUpdated = self.lastUpdated {
             if lastUpdated.timeIntervalSinceNow < -60 {
-                self.fetchData()
+                self.fetchGoals()
             }
         } else {
-            self.fetchData()
+            self.fetchGoals()
         }
     }
     
@@ -163,7 +161,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc func handleSignIn() {
         self.dismiss(animated: true, completion: nil)
-        self.fetchData()
+        self.fetchGoals()
     }
     
     @objc func handleSignOut() {
@@ -217,20 +215,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.lastUpdatedLabel.attributedText = lastText
     }
     
-    @objc func didBecomeActive() {
-        self.refreshControl.endRefreshing()
-    }
-    
-    @objc func didFetchData() {
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        delegate.updateBadgeCount()
-        delegate.updateTodayWidget()
+    @objc func didFetchGoals() {
+        self.sortGoals()
+        self.setupHealthKit()
         self.refreshControl.endRefreshing()
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-        let isRegisteredForNotifications = UIApplication.shared.currentUserNotificationSettings?.types.contains(UIUserNotificationType.alert) ?? false
-        if !isRegisteredForNotifications {
-            RemoteNotificationsManager.sharedManager.turnNotificationsOn()
-        }
         self.collectionView!.reloadData()
         self.updateDeadbeatHeight()
         self.lastUpdated = Date()
@@ -257,15 +246,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         })
     }
     
-    @objc func fetchData() {
+    @objc func fetchGoals() {
         if self.jsonGoals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             self.jsonGoals = goals
-            self.sortGoals()
-            self.didFetchData()
-            self.setupHealthKit()
+            self.didFetchGoals()
         }) { (error) in
             if let errorString = error?.localizedDescription {
                 let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
@@ -276,7 +263,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             self.collectionView!.reloadData()
         }
-        
     }
     
     func sortGoals() {

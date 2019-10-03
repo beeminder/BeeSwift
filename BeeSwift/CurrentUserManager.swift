@@ -144,6 +144,7 @@ class CurrentUserManager : NSObject {
     
     func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, error: ((_ error : Error?) -> ())?) {
         guard let username = self.username else {
+            success?([])
             return
         }
         RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
@@ -154,6 +155,13 @@ class CurrentUserManager : NSObject {
                 jGoals.append(g)
             })
             self.goals = jGoals
+            let delegate = UIApplication.shared.delegate as! AppDelegate
+            delegate.updateBadgeCount()
+            delegate.updateTodayWidget()
+            let isRegisteredForNotifications = UIApplication.shared.currentUserNotificationSettings?.types.contains(UIUserNotificationType.alert) ?? false
+            if !isRegisteredForNotifications {
+                RemoteNotificationsManager.sharedManager.turnNotificationsOn()
+            }
             success?(jGoals)
         }) { (responseError) in
             error?(responseError)

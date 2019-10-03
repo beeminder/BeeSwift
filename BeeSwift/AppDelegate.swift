@@ -83,7 +83,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "didBecomeActive")))
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -91,13 +90,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-//        if let galleryVC = application.keyWindow?.rootViewController as? GalleryViewController {
-//            galleryVC.fetchData(){
-//                completionHandler(.newData)
-//            }) {
-//                completionHandler(.failed)
-//            }
-//        }
+        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
+            completionHandler(.newData)
+        }) { (error) in
+            completionHandler(.failed)
+        }
     }
 
     @available(iOS 9.0, *)
@@ -117,10 +114,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         } else if url.scheme == Config.twitterUrlScheme {
             return Twitter.sharedInstance().application(app, open: url, options: options)
-        }
-        
-        if let galleryViewController = app.keyWindow?.rootViewController as? GalleryViewController {
-            galleryViewController.fetchData()
         }
         return true
     }
