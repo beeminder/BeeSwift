@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import MagicalRecord
 import SwiftyJSON
 
 class CurrentUserManager : NSObject {
@@ -27,6 +26,8 @@ class CurrentUserManager : NSObject {
     fileprivate let defaultAlertstartKey = "default_alertstart"
     fileprivate let defaultDeadlineKey = "default_deadline"
     fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
+    
+    var goals : [JSONGoal] = []
     
     var accessToken :String? {
         return UserDefaults.standard.object(forKey: accessTokenKey) as! String?
@@ -139,5 +140,23 @@ class CurrentUserManager : NSObject {
         UserDefaults.standard.removeObject(forKey: usernameKey)
         UserDefaults.standard.synchronize()
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
+    }
+    
+    func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, error: ((_ error : Error?) -> ())?) {
+        guard let username = self.username else {
+            return
+        }
+        RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
+            guard let responseGoals = JSON(responseJSON!).array else { return }
+            var jGoals : [JSONGoal] = []
+            responseGoals.forEach({ (goalJSON) in
+                let g = JSONGoal(json: goalJSON)
+                jGoals.append(g)
+            })
+            self.goals = jGoals
+            success?(jGoals)
+        }) { (responseError) in
+            error?(responseError)
+        }
     }
 }

@@ -14,7 +14,7 @@ import SwiftyJSON
 class HealthKitConfigViewController: UIViewController {
     
     var tableView = UITableView()
-    var jsonGoals : [JSONGoal] = []
+    var goals : [JSONGoal] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
     var syncRemindersSwitch = UISwitch()
     let margin = 12
@@ -66,7 +66,14 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-        self.fetchGoals()
+        self.goals = CurrentUserManager.sharedManager.goals
+        self.sortGoals()
+    }
+    
+    func sortGoals() {
+        self.goals.sort { (goal1, goal2) -> Bool in
+            return goal1.slug > goal2.slug
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -90,24 +97,15 @@ class HealthKitConfigViewController: UIViewController {
     }
     
     func fetchGoals() {
-        guard let username = CurrentUserManager.sharedManager.username else { return }
         MBProgressHUD.showAdded(to: self.view, animated: true)
-        RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
+        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            guard let responseGoals = JSON(responseJSON!).array else { return }
-            
-            var jGoals : [JSONGoal] = []
-            responseGoals.forEach({ (goalJSON) in
-                let g = JSONGoal(json: goalJSON)
-                jGoals.append(g)
-            })
-            self.jsonGoals = jGoals.sorted(by: { (goal1, goal2) -> Bool in
-                return goal1.slug > goal2.slug
-            })
+            self.goals = goals
+            self.sortGoals()
             self.tableView.reloadData()
-        }) { (responseError) in
+        }) { (error) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            if let errorString = responseError?.localizedDescription {
+            if let errorString = error?.localizedDescription {
                 let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
@@ -127,20 +125,20 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.jsonGoals.count
+        return self.goals.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitConfigTableViewCell!
 
-        let goal = self.jsonGoals[(indexPath as NSIndexPath).row]
+        let goal = self.goals[(indexPath as NSIndexPath).row]
         cell!.jsonGoal = goal
         
         return cell!
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let goal = self.jsonGoals[(indexPath as NSIndexPath).row]
+        let goal = self.goals[(indexPath as NSIndexPath).row]
         
         if goal.autodata.count == 0 {
             let chooseHKMetricViewController = ChooseHKMetricViewController()

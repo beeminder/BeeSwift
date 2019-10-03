@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import MagicalRecord
 
 class EditNotificationsViewController: UIViewController {
     enum TimePickerEditingMode {

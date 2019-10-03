@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import MagicalRecord
 import SnapKit
 import MBProgressHUD
 import SwiftyJSON
@@ -259,23 +258,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func fetchData() {
-        guard let username = CurrentUserManager.sharedManager.username else { return }
         if self.jsonGoals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
-        RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
-            guard let responseGoals = JSON(responseJSON!).array else { return }
-            var jGoals : [JSONGoal] = []
-            responseGoals.forEach({ (goalJSON) in
-                let g = JSONGoal(json: goalJSON)
-                jGoals.append(g)
-            })
-            self.jsonGoals = jGoals
+        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
+            self.jsonGoals = goals
             self.sortGoals()
             self.didFetchData()
             self.setupHealthKit()
-        }) { (responseError) in
-            if let errorString = responseError?.localizedDescription {
+        }) { (error) in
+            if let errorString = error?.localizedDescription {
                 let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
@@ -284,6 +276,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             self.collectionView!.reloadData()
         }
+        
     }
     
     func sortGoals() {

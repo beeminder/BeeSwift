@@ -24,6 +24,7 @@
 		A12E69511BD3EF0200AB94C2 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12E69501BD3EF0200AB94C2 /* TodayViewController.swift */; };
 		A12E69541BD3EF0200AB94C2 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A12E69521BD3EF0200AB94C2 /* MainInterface.storyboard */; };
 		A12E69581BD3EF0200AB94C2 /* BeeSwiftToday.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A12E694D1BD3EF0200AB94C2 /* BeeSwiftToday.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A13C9CFB2345C18D002912C4 /* JSONGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* JSONGoal.swift */; };
 		A142491F1FD073EC007736B3 /* RequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BCE9841AFFFB3A007322CC /* RequestManager.swift */; };
 		A14249211FD07514007736B3 /* CurrentUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */; };
 		A14249231FD07631007736B3 /* OAuthSignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14249221FD07631007736B3 /* OAuthSignInManager.swift */; };
@@ -770,6 +771,7 @@
 				A1D8532C1EB0EA5700FC75DE /* UIFontExtension.swift in Sources */,
 				A1D853261EB0332D00FC75DE /* Constants.swift in Sources */,
 				A14249211FD07514007736B3 /* CurrentUserManager.swift in Sources */,
+				A13C9CFB2345C18D002912C4 /* JSONGoal.swift in Sources */,
 				A142491F1FD073EC007736B3 /* RequestManager.swift in Sources */,
 				A1D8532B1EB0EA2D00FC75DE /* BSTextField.swift in Sources */,
 				A1D853281EB0DE0700FC75DE /* TodayTableViewCell.swift in Sources */,

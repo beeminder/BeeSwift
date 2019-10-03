@@ -59,11 +59,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
-//        DataSyncManager.sharedManager.fetchData(success: { () -> Void in
-//            //
-//        }, error: { () -> Void in
-//            //
-//        })
+        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
+            //
+        }) { (error) in
+            //
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -161,15 +161,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return goal.relativeLane.intValue < -1
             }).count
         }
-        
     }
 
     func updateTodayWidget() {
-        let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-
-        sharedDefaults?.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
-        sharedDefaults?.set(CurrentUserManager.sharedManager.accessToken, forKey: "accessToken")
-        sharedDefaults?.synchronize()
+        if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder") {
+            sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
+            sharedDefaults.set(CurrentUserManager.sharedManager.accessToken, forKey: "accessToken")
+            sharedDefaults.synchronize()
+        }
     }
 
     func todayGoalDictionaries() -> Array<Any> {

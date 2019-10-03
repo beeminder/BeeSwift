@@ -8,7 +8,6 @@
 
 import Foundation
 import SwiftyJSON
-import MagicalRecord
 import MBProgressHUD
 import AlamofireImage
 
