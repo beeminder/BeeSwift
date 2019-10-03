@@ -140,21 +140,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if !CurrentUserManager.sharedManager.signedIn() {
             self.present(SignInViewController(), animated: true, completion: nil)
         }
-        if let lastUpdated = self.lastUpdated,
-           let goalsFetchedAt = CurrentUserManager.sharedManager.goalsFetchedAt {
-            if lastUpdated == goalsFetchedAt {
-                if lastUpdated.timeIntervalSinceNow < -60 {
-                    self.fetchGoals()
-                }
-            } else {
-                if lastUpdated.timeIntervalSinceNow < -60 || goalsFetchedAt.timeIntervalSinceNow < -60 {
-                    self.fetchGoals()
-                }
-            }
-            
-        } else {
-            self.fetchGoals()
-        }
+        self.fetchGoals()
     }
     
     @objc func handleGoalsFetchedNotification() {

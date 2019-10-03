@@ -29,7 +29,8 @@ class CurrentUserManager : NSObject {
     fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
     
     var goals : [JSONGoal] = []
-    var goalsFetchedAt : Date?
+    var goalsFetchedAt : Date = Date()
+    var goalsCacheBusted = false
     
     var accessToken :String? {
         return UserDefaults.standard.object(forKey: accessTokenKey) as! String?
@@ -137,7 +138,7 @@ class CurrentUserManager : NSObject {
     
     func signOut() {
         self.goals = []
-        self.goalsFetchedAt = nil
+        self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
         UserDefaults.standard.removeObject(forKey: accessTokenKey)
         UserDefaults.standard.removeObject(forKey: deadbeatKey)
@@ -151,6 +152,10 @@ class CurrentUserManager : NSObject {
             success?([])
             return
         }
+        if self.goalsCacheBusted == false && self.goalsFetchedAt.timeIntervalSinceNow < -60 {
+            success?(self.goals)
+            return
+        }
         RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
             guard let responseGoals = JSON(responseJSON!).array else { return }
             var jGoals : [JSONGoal] = []
@@ -159,6 +164,7 @@ class CurrentUserManager : NSObject {
                 jGoals.append(g)
             })
             self.goals = jGoals
+            self.goalsCacheBusted = false
             self.updateTodayWidget()
             self.goalsFetchedAt = Date()
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
