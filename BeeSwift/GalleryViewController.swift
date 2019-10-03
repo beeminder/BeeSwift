@@ -138,7 +138,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     override func viewDidAppear(_ animated: Bool) {
         if !CurrentUserManager.sharedManager.signedIn() {
-            self.present(SignInViewController(), animated: true, completion: nil)
+            let signInVC = SignInViewController()
+            signInVC.modalPresentationStyle = .fullScreen
+            self.present(signInVC, animated: true, completion: nil)
         }
         self.fetchGoals()
     }
@@ -168,7 +170,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func handleSignOut() {
         self.goals = []
         self.collectionView?.reloadData()
-        self.present(SignInViewController(), animated: true, completion: nil)
+        let signInVC = SignInViewController()
+        signInVC.modalPresentationStyle = .fullScreen
+        self.present(signInVC, animated: true, completion: nil)
     }
     
     func updateDeadbeatHeight() {
