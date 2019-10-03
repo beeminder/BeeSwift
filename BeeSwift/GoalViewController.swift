@@ -420,6 +420,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let controller = TimerViewController()
         controller.slug = self.goal.slug
         controller.goal = self.goal
+        controller.modalPresentationStyle = .fullScreen
         do {
             let hoursRegex = try NSRegularExpression(pattern: "(hr|hour)s?")
             let minutesRegex = try NSRegularExpression(pattern: "(min|minute)s?")
