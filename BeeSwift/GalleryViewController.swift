@@ -35,6 +35,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleCreateGoalButtonPressed), name: NSNotification.Name(rawValue: "createGoalButtonPressed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
@@ -139,16 +140,27 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if !CurrentUserManager.sharedManager.signedIn() {
             self.present(SignInViewController(), animated: true, completion: nil)
         }
-        if let lastUpdated = self.lastUpdated {
-            if lastUpdated != CurrentUserManager.sharedManager.goalsFetchedAt {
-                self.fetchGoals()
+        if let lastUpdated = self.lastUpdated,
+           let goalsFetchedAt = CurrentUserManager.sharedManager.goalsFetchedAt {
+            if lastUpdated == goalsFetchedAt {
+                if lastUpdated.timeIntervalSinceNow < -60 {
+                    self.fetchGoals()
+                }
+            } else {
+                if lastUpdated.timeIntervalSinceNow < -60 || goalsFetchedAt.timeIntervalSinceNow < -60 {
+                    self.fetchGoals()
+                }
             }
-            if lastUpdated.timeIntervalSinceNow < -60 {
-                self.fetchGoals()
-            }
+            
         } else {
             self.fetchGoals()
         }
+    }
+    
+    @objc func handleGoalsFetchedNotification() {
+        self.goals = CurrentUserManager.sharedManager.goals
+        self.lastUpdated = CurrentUserManager.sharedManager.goalsFetchedAt
+        self.didFetchGoals()
     }
     
     @objc func settingsButtonPressed() {
@@ -225,7 +237,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
         self.collectionView!.reloadData()
         self.updateDeadbeatHeight()
-        self.lastUpdated = CurrentUserManager.sharedManager.goalsFetchedAt
+        self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
         if self.goals.count == 0 {
             self.noGoalsLabel.isHidden = false
