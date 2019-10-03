@@ -307,9 +307,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let jsonGoal:JSONGoal = self.goals[(indexPath as NSIndexPath).row]
+        let goal:JSONGoal = self.goals[(indexPath as NSIndexPath).row]
         
-        cell.jsonGoal = jsonGoal
+        cell.goal = goal
         
         return cell
     }
@@ -325,8 +325,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     @objc func openGoalFromNotification(_ notification: Notification) {
         let slug = (notification as NSNotification).userInfo!["slug"] as! String
-        let matchingGoal = self.goals.filter({ (jsonGoal) -> Bool in
-            return jsonGoal.slug == slug
+        let matchingGoal = self.goals.filter({ (goal) -> Bool in
+            return goal.slug == slug
         }).last
         if matchingGoal != nil {
             self.navigationController?.popToRootViewController(animated: false)
@@ -336,7 +336,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func openGoal(_ goal: JSONGoal) {
         let goalViewController = GoalViewController()
-        goalViewController.jsonGoal = goal
+        goalViewController.goal = goal
         self.navigationController?.pushViewController(goalViewController, animated: true)
     }
 }

@@ -14,7 +14,7 @@ class TimerViewController: UIViewController {
     
     let timerLabel = BSLabel()
     let startStopButton = BSButton()
-    var jsonGoal : JSONGoal?
+    var goal : JSONGoal?
     var timingSince: Date?
     var timer: Timer?
     var slug: String?
@@ -144,13 +144,13 @@ class TimerViewController: UIViewController {
         let calendar = Calendar.current
         let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
         let currentHour = components.hour
-        if self.jsonGoal!.deadline.intValue > 0 && currentHour! < 6 && self.jsonGoal!.deadline.intValue/3600 < currentHour! {
+        if self.goal!.deadline.intValue > 0 && currentHour! < 6 && self.goal!.deadline.intValue/3600 < currentHour! {
             offset = -1
         }
         
         // if the goal's deadline is before midnight and has already passed for this calendar day, default to entering data for the "next" day
-        if self.jsonGoal!.deadline.intValue < 0 {
-            let deadlineSecondsAfterMidnight = 24*3600 + self.jsonGoal!.deadline.intValue
+        if self.goal!.deadline.intValue < 0 {
+            let deadlineSecondsAfterMidnight = 24*3600 + self.goal!.deadline.intValue
             let deadlineHour = deadlineSecondsAfterMidnight/3600
             let deadlineMinute = (deadlineSecondsAfterMidnight % 3600)/60
             let currentMinute = components.minute

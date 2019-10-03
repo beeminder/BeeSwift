@@ -95,11 +95,11 @@ class GoalCollectionViewCell: UICollectionViewCell {
     }
     
     func setThumbnailImage() {
-        guard let _ = self.jsonGoal else { return }
+        guard let _ = self.goal else { return }
         if CurrentUserManager.sharedManager.isDeadbeat() {
             self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
         } else {
-            self.thumbnailImageView.af_setImage(withURL: URL(string: self.jsonGoal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
+            self.thumbnailImageView.af_setImage(withURL: URL(string: self.goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
         }
     }
 
@@ -111,24 +111,24 @@ class GoalCollectionViewCell: UICollectionViewCell {
         super.layoutSubviews()
     }
     
-    var jsonGoal: JSONGoal? {
+    var goal: JSONGoal? {
         didSet {
             self.thumbnailImageView.image = nil
             self.setThumbnailImage()
             
-            if jsonGoal == nil {
+            if goal == nil {
                 self.countdownLabel.text = ""
                 self.countdownView.backgroundColor = UIColor.beeGrayColor()
             } else {
-                self.countdownLabel.text = jsonGoal!.briefLosedate
-                self.countdownView.backgroundColor = jsonGoal!.countdownColor
+                self.countdownLabel.text = goal!.briefLosedate
+                self.countdownView.backgroundColor = goal!.countdownColor
             }
             
-            self.titleLabel.text = jsonGoal?.title
-            self.slugLabel.text = jsonGoal?.slug
-            self.titleLabel.isHidden = jsonGoal?.title == jsonGoal?.slug
-            self.rateLabel.text = jsonGoal?.rateString
-            self.deltasLabel.attributedText = jsonGoal?.attributedDeltaText
+            self.titleLabel.text = goal?.title
+            self.slugLabel.text = goal?.slug
+            self.titleLabel.isHidden = goal?.title == goal?.slug
+            self.rateLabel.text = goal?.rateString
+            self.deltasLabel.attributedText = goal?.attributedDeltaText
         }
     }
 }

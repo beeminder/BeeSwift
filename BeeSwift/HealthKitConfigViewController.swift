@@ -132,7 +132,7 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitConfigTableViewCell!
 
         let goal = self.goals[(indexPath as NSIndexPath).row]
-        cell!.jsonGoal = goal
+        cell!.goal = goal
         
         return cell!
     }
