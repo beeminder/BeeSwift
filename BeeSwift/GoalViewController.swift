@@ -552,7 +552,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.refreshGoal()
             self.pollUntilGraphUpdates()
             self.submitButton.isUserInteractionEnabled = true
-            CurrentUserManager.sharedManager.goalsCacheBusted = true
             CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
         }) { (error) in
             self.submitButton.isUserInteractionEnabled = true

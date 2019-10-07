@@ -30,7 +30,6 @@ class CurrentUserManager : NSObject {
     
     var goals : [JSONGoal] = []
     var goalsFetchedAt : Date = Date()
-    var goalsCacheBusted = true
     
     var accessToken :String? {
         return UserDefaults.standard.object(forKey: accessTokenKey) as! String?
@@ -152,10 +151,6 @@ class CurrentUserManager : NSObject {
             success?([])
             return
         }
-        if self.goalsCacheBusted == false && self.goalsFetchedAt.timeIntervalSinceNow > -60 {
-            success?(self.goals)
-            return
-        }
         RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
             guard let responseGoals = JSON(responseJSON!).array else { return }
             var jGoals : [JSONGoal] = []
@@ -164,7 +159,6 @@ class CurrentUserManager : NSObject {
                 jGoals.append(g)
             })
             self.goals = jGoals
-            self.goalsCacheBusted = false
             self.updateTodayWidget()
             self.goalsFetchedAt = Date()
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
