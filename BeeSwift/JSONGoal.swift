@@ -30,6 +30,7 @@ class JSONGoal {
     var title: String = ""
     var won: NSNumber = 0
     var yaw: NSNumber = 0
+    var dir: NSNumber = 0
     var safebump: NSNumber?
     var curval: NSNumber?
     var limsum: String?
@@ -67,6 +68,7 @@ class JSONGoal {
         self.won = json["won"].number!
         if json["lane"].number != nil { self.lane = json["lane"].number! }
         self.yaw = json["yaw"].number!
+        self.dir = json["dir"].number!
         if json["limsum"].string != nil { self.limsum = json["limsum"].string! }
         self.use_defaults = json["use_defaults"].bool! as NSNumber
         if let safebump = json["safebump"].number {
@@ -189,53 +191,28 @@ class JSONGoal {
         return NSNumber(value: self.lane!.int32Value * self.yaw.int32Value as Int32)
     }
     
-    var attributedDeltaText :NSAttributedString {
-        if self.delta_text.count == 0 { return NSAttributedString.init(string: "") }
-        let modelName = UIDevice.current.modelName
-        if modelName.contains("iPhone 5") || modelName.contains("iPad Mini") || modelName.contains("iPad 4") {
-            return NSAttributedString(string: self.delta_text)
+    var countdownHelperText :String {
+        if self.yaw.intValue < 0 && self.dir.intValue > 0 {
+            return "safe for"
         }
-        if self.delta_text.components(separatedBy: "✔").count == 4 {
-            if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
-                let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
-                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.count))
-                return attString
-            }
-            return NSMutableAttributedString(string: "")
-        }
-        var spaceIndices :Array<Int> = [0]
-        
-        for i in 0...self.delta_text.count - 1 {
-            if self.delta_text[delta_text.index(delta_text.startIndex, offsetBy: i)] == " " {
-                spaceIndices.append(i)
-            }
-        }
-        
-        spaceIndices.append(self.delta_text.count)
-        
-        let attString :NSMutableAttributedString = NSMutableAttributedString(string: self.delta_text)
-        
-        for i in 0..<spaceIndices.count {
-            if i + 1 >= spaceIndices.count {
-                continue
-            }
-            var color = self.deltaColors.first
-            if i < self.deltaColors.count {
-                color = self.deltaColors[i]
-            }
-            attString.addAttribute(NSAttributedStringKey.foregroundColor, value: color as Any, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
-        }
-        
-        attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.count))
-        
-        return attString
+        return "due in"
     }
     
-    var deltaColors :Array<UIColor> {
-        if self.yaw == 1 {
-            return [UIColor.orange, UIColor.blue, UIColor.beeGreenColor()]
+    var bareMinText :String {
+        if self.delta_text.count == 0 { return "" }
+        
+        if self.delta_text.components(separatedBy: "✔").count == 4 {
+            if self.safebump != nil && self.curval != nil {
+                if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
+                    return String(format: "+ %.2f ", self.safebump!.doubleValue - self.curval!.doubleValue)
+                }
+            } else {
+                return ""
+            }
+        } else {
+            return self.delta_text.replacingOccurrences(of: "✔", with: "").trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: " ")[0]
         }
-        return [UIColor.beeGreenColor(), UIColor.blue, UIColor.orange]
+        return ""
     }
     
     var humanizedRunits :String {

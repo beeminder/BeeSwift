@@ -12,7 +12,6 @@ class GoalCollectionViewCell: UICollectionViewCell {
     var slugLabel :BSLabel = BSLabel()
     var titleLabel :BSLabel = BSLabel()
     var thumbnailImageView :UIImageView = UIImageView()
-    var rateLabel :BSLabel = BSLabel()
     var deltasLabel :BSLabel = BSLabel()
     var countdownView :UIView = UIView()
     var countdownLabel :BSLabel = BSLabel()
@@ -23,7 +22,6 @@ class GoalCollectionViewCell: UICollectionViewCell {
         
         self.contentView.addSubview(self.slugLabel)
         self.contentView.addSubview(self.titleLabel)
-        self.contentView.addSubview(self.rateLabel)
         self.contentView.addSubview(self.thumbnailImageView)
         self.contentView.addSubview(self.deltasLabel)
         self.contentView.addSubview(self.countdownView)
@@ -72,21 +70,14 @@ class GoalCollectionViewCell: UICollectionViewCell {
             make.height.equalTo(Constants.thumbnailHeight)
             make.width.equalTo(Constants.thumbnailWidth)
         }
-        
-        self.rateLabel.textAlignment = NSTextAlignment.center
-        self.rateLabel.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
-            make.bottom.equalTo(self.thumbnailImageView.snp.centerY)
-            make.right.equalTo(-self.margin)
-        }
 
         self.deltasLabel.textAlignment = NSTextAlignment.center
         self.deltasLabel.font = UIFont(name: "Avenir-Black", size: 13)
         self.deltasLabel.numberOfLines = 0
         self.deltasLabel.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.rateLabel)
-            make.top.equalTo(self.thumbnailImageView.snp.centerY)
-            make.right.equalTo(self.rateLabel)
+            make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
+            make.bottom.equalTo(self.thumbnailImageView.snp.centerY)
+            make.right.equalTo(-self.margin)
         }
     }
         
@@ -127,8 +118,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.titleLabel.text = goal?.title
             self.slugLabel.text = goal?.slug
             self.titleLabel.isHidden = goal?.title == goal?.slug
-            self.rateLabel.text = goal?.rateString
-            self.deltasLabel.attributedText = goal?.attributedDeltaText
+            self.deltasLabel.text = goal!.bareMinText + " " + goal!.countdownHelperText + "\n" + String(goal!.countdownText)
         }
     }
 }
