@@ -79,10 +79,17 @@ class GoalCollectionViewCell: UICollectionViewCell {
             make.bottom.equalTo(self.thumbnailImageView.snp.centerY)
             make.right.equalTo(-self.margin)
         }
+        
+        Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GoalCollectionViewCell.refreshCountdown), userInfo: nil, repeats: true)
     }
         
     func deadbeatChanged() {
         self.setThumbnailImage()
+    }
+    
+    func refreshCountdown() {
+        if self.goal == nil { return }
+        self.deltasLabel.text = self.goal!.bareMinText + " " + self.goal!.countdownHelperText + "\n" + String(self.goal!.countdownText)
     }
     
     func setThumbnailImage() {
