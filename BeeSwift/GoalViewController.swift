@@ -402,7 +402,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         if keyPath == "graph_url" {
             self.setGraphImage()
         } else if keyPath == "delta_text" || keyPath == "safebump" {
-            self.deltasLabel.text = self.goal.bareMinText + " " + self.goal.countdownHelperText
+            self.deltasLabel.text = self.goal.baremin! + " " + self.goal.countdownHelperText
         }
     }
     
@@ -454,7 +454,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     @objc func refreshCountdown() {
         self.countdownLabel.textColor = self.goal.countdownColor
         self.countdownLabel.text = self.goal.countdownText as String
-        self.deltasLabel.text = self.goal.bareMinText + " " + self.goal.countdownHelperText
+        self.deltasLabel.text = self.goal.baremin! + " " + self.goal.countdownHelperText
     }
     
     func setGraphImage() {

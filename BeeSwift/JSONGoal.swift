@@ -33,6 +33,7 @@ class JSONGoal {
     var dir: NSNumber = 0
     var safebump: NSNumber?
     var curval: NSNumber?
+    var baremin: String?
     var limsum: String?
     var deadline: NSNumber = 0
     var leadtime: NSNumber?
@@ -63,6 +64,7 @@ class JSONGoal {
         self.losedate = json["losedate"].number!
         self.runits = json["runits"].string!
         self.yaxis = json["yaxis"].string!
+        self.baremin = json["baremin"].string!
         if json["rate"].number != nil { self.rate = json["rate"].number! }
         if json["delta_text"].string != nil { self.delta_text = json["delta_text"].string! }
         self.won = json["won"].number!
@@ -192,27 +194,17 @@ class JSONGoal {
     }
     
     var countdownHelperText :String {
+        if self.delta_text.components(separatedBy: "✔").count == 4 {
+            if self.safebump != nil && self.curval != nil {
+                if (self.safebump!.doubleValue - self.curval!.doubleValue <= 0) {
+                    return "Ending in"
+                }
+            }
+        }
         if self.yaw.intValue < 0 && self.dir.intValue > 0 {
             return "safe for"
         }
         return "due in"
-    }
-    
-    var bareMinText :String {
-        if self.delta_text.count == 0 { return "" }
-        
-        if self.delta_text.components(separatedBy: "✔").count == 4 {
-            if self.safebump != nil && self.curval != nil {
-                if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
-                    return String(format: "+ %.2f ", self.safebump!.doubleValue - self.curval!.doubleValue)
-                }
-            } else {
-                return ""
-            }
-        } else {
-            return self.delta_text.replacingOccurrences(of: "✔", with: "").trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: " ")[0]
-        }
-        return ""
     }
     
     var humanizedRunits :String {

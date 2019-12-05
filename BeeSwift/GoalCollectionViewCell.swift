@@ -89,7 +89,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     
     func refreshCountdown() {
         if self.goal == nil { return }
-        self.deltasLabel.text = self.goal!.bareMinText + " " + self.goal!.countdownHelperText + "\n" + String(self.goal!.countdownText)
+        self.deltasLabel.text = self.goal!.baremin! + " " + self.goal!.countdownHelperText + "\n" + String(self.goal!.countdownText)
     }
     
     func setThumbnailImage() {
@@ -125,7 +125,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.titleLabel.text = goal?.title
             self.slugLabel.text = goal?.slug
             self.titleLabel.isHidden = goal?.title == goal?.slug
-            self.deltasLabel.text = goal!.bareMinText + " " + goal!.countdownHelperText + "\n" + String(goal!.countdownText)
+            self.deltasLabel.text = goal!.baremin! + " " + goal!.countdownHelperText + "\n" + String(goal!.countdownText)
         }
     }
 }
