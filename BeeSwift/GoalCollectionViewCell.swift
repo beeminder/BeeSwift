@@ -76,7 +76,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.deltasLabel.numberOfLines = 0
         self.deltasLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
-            make.bottom.equalTo(self.thumbnailImageView.snp.centerY)
+            make.centerY.equalTo(self.thumbnailImageView.snp.centerY)
             make.right.equalTo(-self.margin)
         }
         
