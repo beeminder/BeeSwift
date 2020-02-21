@@ -77,7 +77,7 @@ DEPENDENCIES:
   - TwitterKit
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - Alamofire
     - AlamofireImage
     - AlamofireNetworkActivityIndicator
@@ -130,4 +130,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 532c30b7b0b261486b41bc91e0da4cca0e376c82
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.8.4
