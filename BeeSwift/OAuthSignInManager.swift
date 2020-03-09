@@ -11,7 +11,7 @@ import FBSDKLoginKit
 import SwiftyJSON
 import TwitterKit
 
-class OAuthSignInManager: NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate {
+class OAuthSignInManager: NSObject, FBSDKLoginButtonDelegate {
     static let sharedManager = OAuthSignInManager()
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
@@ -26,17 +26,6 @@ class OAuthSignInManager: NSObject, GIDSignInDelegate, FBSDKLoginButtonDelegate 
     
     func loginWithTwitterSession(_ session: TWTRSession!) {
         self.signInWithOAuthUserId(session.userID, provider: "twitter")
-    }
-    
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        if error != nil {
-            return
-        }
-        self.signInWithOAuthUserId(user.userID, provider: "google_oauth2")
-    }
-    
-    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
-        // never called
     }
     
     func signUpWith(email: String, password: String, username: String) {

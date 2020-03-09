@@ -14,7 +14,6 @@ target 'BeeSwift' do
 	pod "MBProgressHUD"
 	pod 'IQKeyboardManager'
 	pod 'TwitterKit'
-	pod 'GoogleSignIn'
 	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '3.9.1'
 end
 target 'BeeSwiftToday' do
@@ -37,7 +36,7 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
-      config.build_settings['SWIFT_VERSION'] = '3.0'
+      config.build_settings['SWIFT_VERSION'] = '4.0'
     end
   end
 end

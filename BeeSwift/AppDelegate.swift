@@ -26,9 +26,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Twitter.sharedInstance().start(withConsumerKey: Config.twitterConsumerKey, consumerSecret: Config.twitterConsumerSecret)
         IQKeyboardManager.shared().isEnableAutoToolbar = false
 
-        GIDSignIn.sharedInstance().clientID = Config.googleClientId
-        GIDSignIn.sharedInstance().delegate = OAuthSignInManager.sharedManager
-
         if HKHealthStore.isHealthDataAvailable() {
             HealthStoreManager.sharedManager.setupHealthkit()
         }
@@ -98,9 +95,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if url.scheme == Config.facebookUrlScheme {
             return FBSDKApplicationDelegate.sharedInstance().application(app, open: url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplicationOpenURLOptionsKey.annotation])
         }
-        else if url.scheme == Config.googleReversedClientId {
-            return GIDSignIn.sharedInstance().handle(url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplicationOpenURLOptionsKey.annotation])
-        }
         else if url.scheme == "beeminder" {
             if let query = url.query {
                 let slugKeyIndex = query.components(separatedBy: "=").index(of: "slug")
@@ -117,9 +111,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         if url.scheme == Config.facebookUrlScheme {
             return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
-        }
-        else if url.scheme == Config.googleReversedClientId {
-            return GIDSignIn.sharedInstance().handle(url, sourceApplication: sourceApplication, annotation: annotation)
         }
         else if url.scheme == "beeminder" {
             if let query = url.query {

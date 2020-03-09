@@ -11,7 +11,7 @@ import TwitterKit
 import FBSDKLoginKit
 import MBProgressHUD
 
-class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSignInUIDelegate, UITextFieldDelegate, UIAlertViewDelegate {
+class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextFieldDelegate, UIAlertViewDelegate {
     
     var headerLabel = BSLabel()
     var emailTextField = BSTextField()
@@ -28,7 +28,6 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
     var signInButton = BSButton()
     var facebookLoginButton : FBSDKLoginButton = FBSDKLoginButton()
     var twitterLoginButton : TWTRLogInButton = TWTRLogInButton()
-    var googleSigninButton = GIDSignInButton()
     var divider = UIView()
     
     override func viewDidLoad() {
@@ -167,24 +166,11 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
             FBSDKAccessToken.setCurrent(nil)
         }
         
-        GIDSignIn.sharedInstance().uiDelegate = self
-        GIDSignIn.sharedInstance().delegate = OAuthSignInManager.sharedManager
-        GIDSignIn.sharedInstance().scopes = ["profile", "email"]
-        GIDSignIn.sharedInstance().shouldFetchBasicProfile = true
-        scrollView.addSubview(self.googleSigninButton)
-        self.googleSigninButton.isHidden = true
-        self.googleSigninButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.facebookLoginButton.snp.bottom).offset(15)
-            make.centerX.equalTo(self.signInButton)
-            make.width.equalTo(self.signInButton)
-            make.height.equalTo(self.signInButton)
-        }
-        
         scrollView.addSubview(self.backToSignUpButton)
         self.backToSignUpButton.isHidden = true
         self.backToSignUpButton.setTitle("Back to Sign Up", for: .normal)
         self.backToSignUpButton.snp.makeConstraints { (make) in
-            make.top.equalTo(self.googleSigninButton.snp.bottom).offset(15)
+            make.top.equalTo(self.facebookLoginButton.snp.bottom).offset(15)
             make.centerX.equalTo(scrollView)
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.width.equalTo(self.view).multipliedBy(0.75)
@@ -259,7 +245,6 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         CurrentUserManager.sharedManager.signingUp = false
         self.beeImageView.isHidden = true
         self.divider.isHidden = false
-        self.googleSigninButton.isHidden = false
         self.twitterLoginButton.isHidden = false
         self.facebookLoginButton.alpha = 1.0
         self.backToSignUpButton.isHidden = false
@@ -287,7 +272,6 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, GIDSign
         CurrentUserManager.sharedManager.signingUp = true
         self.beeImageView.isHidden = true
         self.divider.isHidden = false
-        self.googleSigninButton.isHidden = true
         self.twitterLoginButton.isHidden = true
         self.facebookLoginButton.alpha = 0.0
         self.backToSignUpButton.isHidden = true
