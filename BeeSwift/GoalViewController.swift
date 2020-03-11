@@ -261,7 +261,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let calendar = Calendar.current
         let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
         let currentHour = components.hour
-        if self.goal.deadline.intValue > 0 && currentHour! < 6 && self.goal.deadline.intValue/3600 < currentHour! {
+        if self.goal.deadline.intValue > 0 && currentHour! < 6 && currentHour! < self.goal.deadline.intValue/3600 {
             self.dateStepper.value = -1
         }
         
