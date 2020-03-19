@@ -26,6 +26,7 @@ class CurrentUserManager : NSObject {
     fileprivate let defaultLeadtimeKey = "default_leadtime"
     fileprivate let defaultAlertstartKey = "default_alertstart"
     fileprivate let defaultDeadlineKey = "default_deadline"
+    fileprivate let beemTZKey = "timezone"
     fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
     
     var goals : [JSONGoal] = []
@@ -107,6 +108,7 @@ class CurrentUserManager : NSObject {
         UserDefaults.standard.set(responseJSON[defaultAlertstartKey].number!, forKey: defaultAlertstartKey)
         UserDefaults.standard.set(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
         UserDefaults.standard.set(responseJSON[defaultLeadtimeKey].number!, forKey: defaultLeadtimeKey)
+        UserDefaults.standard.set(responseJSON[beemTZKey].string!, forKey: beemTZKey)
         UserDefaults.standard.synchronize()
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
     }
