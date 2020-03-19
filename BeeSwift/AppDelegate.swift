@@ -13,7 +13,6 @@ import HealthKit
 import Sentry
 import AlamofireNetworkActivityIndicator
 
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

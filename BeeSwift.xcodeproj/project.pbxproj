@@ -82,6 +82,7 @@
 		D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */; };
 		E55FEE6B23FF7552007C20B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
 		E55FEE6C23FF7552007C20B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
+		E5C161942423CEA00045C90D /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C161932423CE9F0045C90D /* VersionManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -193,6 +194,7 @@
 		E029CC25A4BEE8E42BD37670 /* Pods-BeeSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwift/Pods-BeeSwift.release.xcconfig"; sourceTree = "<group>"; };
 		E55FEE6A23FF7552007C20B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		E55FEE6D23FF78E8007C20B2 /* Sentry.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Sentry.sh; sourceTree = "<group>"; };
+		E5C161932423CE9F0045C90D /* VersionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -254,6 +256,7 @@
 				A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */,
 				A14249221FD07631007736B3 /* OAuthSignInManager.swift */,
 				A142492C1FD079B4007736B3 /* SignedRequestManager.swift */,
+				E5C161932423CE9F0045C90D /* VersionManager.swift */,
 			);
 			name = Managers;
 			sourceTree = "<group>";
@@ -795,6 +798,7 @@
 				A12BA9541AFFF21800AFEF32 /* Crypto.swift in Sources */,
 				A1A8BDE61FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift in Sources */,
 				A14249231FD07631007736B3 /* OAuthSignInManager.swift in Sources */,
+				E5C161942423CEA00045C90D /* VersionManager.swift in Sources */,
 				A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

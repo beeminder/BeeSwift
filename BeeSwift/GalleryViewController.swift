@@ -22,6 +22,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let newGoalCellReuseIdentifier = "NewGoalCell"
     var refreshControl = UIRefreshControl()
     var deadbeatView = UIView()
+    var outofdateView = UIView()
     let noGoalsLabel = BSLabel()
     var lastUpdated : Date?
     
@@ -103,6 +104,28 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.right.equalTo(-10)
         }
         
+        self.view.addSubview(self.outofdateView)
+        self.outofdateView.backgroundColor = UIColor.beeGrayColor()
+        self.outofdateView.snp.makeConstraints { (make) in
+            make.right.left.equalTo(0)
+            make.top.equalTo(self.deadbeatView.snp.bottom)
+            make.height.equalTo(0)
+        }
+        
+        let outofdateLabel = BSLabel()
+        self.outofdateView.addSubview(outofdateLabel)
+        outofdateLabel.textColor = .red
+        outofdateLabel.numberOfLines = 0
+        outofdateLabel.font = UIFont(name: "Avenir-Heavy", size: 12)
+        outofdateLabel.textAlignment = .center
+        outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
+        outofdateLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(3)
+            make.bottom.equalTo(-3)
+            make.left.equalTo(10)
+            make.right.equalTo(-10)
+        }
+        
         self.collectionView!.delegate = self
         self.collectionView!.dataSource = self
         self.collectionView!.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
@@ -113,7 +136,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView!.addSubview(self.refreshControl)
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.deadbeatView.snp.bottom)
+            make.top.equalTo(self.outofdateView.snp.bottom)
             if #available(iOS 11.0, *) {
                 make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
                 make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
@@ -133,7 +156,34 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.noGoalsLabel.numberOfLines = 0
         self.noGoalsLabel.isHidden = true
         
+        if VersionManager.sharedManager.updateRequired() {
+            outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
+            self.outofdateView.snp.remakeConstraints { (make) -> Void in
+                make.left.equalTo(0)
+                make.right.equalTo(0)
+                make.top.equalTo(self.deadbeatView.snp.bottom)
+                make.height.equalTo(42)
+            }
+        }
+        
         self.fetchGoals()
+        
+        _ = try? VersionManager.sharedManager.appStoreVersion { (version, error) in
+            if let error = error {
+                print(error)
+            } else if let appStoreVersion = version, let currentVersion = VersionManager.sharedManager.currentVersion() {
+                if currentVersion < appStoreVersion {
+                    DispatchQueue.main.sync {
+                        self.outofdateView.snp.remakeConstraints { (make) -> Void in
+                            make.left.equalTo(0)
+                            make.right.equalTo(0)
+                            make.top.equalTo(self.deadbeatView.snp.bottom)
+                            make.height.equalTo(42)
+                        }
+                    }
+                }
+            }
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -293,7 +343,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.goals.count + 1
+        return VersionManager.sharedManager.updateRequired() ? 0 : self.goals.count + 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
