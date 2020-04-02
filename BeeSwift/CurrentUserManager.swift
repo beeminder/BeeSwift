@@ -181,7 +181,8 @@ class CurrentUserManager : NSObject {
     func todayGoalDictionaries() -> Array<Any> {
         let todayGoals = self.goals.map { (goal) -> Any? in
             let shortSlug = goal.slug.prefix(20)
-            return ["deadline" : goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum!)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
+            let limsum = goal.limsum ?? ""
+            return ["deadline" : goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
         }
         return Array(todayGoals.prefix(3)) as Array<Any>
     }

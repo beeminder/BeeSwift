@@ -24,6 +24,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var deadbeatView = UIView()
     var outofdateView = UIView()
     let noGoalsLabel = BSLabel()
+    let outofdateLabel = BSLabel()
     var lastUpdated : Date?
     
     var goals : Array<JSONGoal> = []
@@ -112,14 +113,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.height.equalTo(0)
         }
         
-        let outofdateLabel = BSLabel()
-        self.outofdateView.addSubview(outofdateLabel)
-        outofdateLabel.textColor = .red
-        outofdateLabel.numberOfLines = 0
-        outofdateLabel.font = UIFont(name: "Avenir-Heavy", size: 12)
-        outofdateLabel.textAlignment = .center
-        outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
-        outofdateLabel.snp.makeConstraints { (make) in
+        self.outofdateView.addSubview(self.outofdateLabel)
+        self.outofdateLabel.textColor = .red
+        self.outofdateLabel.numberOfLines = 0
+        self.outofdateLabel.font = UIFont(name: "Avenir-Heavy", size: 12)
+        self.outofdateLabel.textAlignment = .center
+        self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
+        self.outofdateLabel.snp.makeConstraints { (make) in
             make.top.equalTo(3)
             make.bottom.equalTo(-3)
             make.left.equalTo(10)
@@ -182,6 +182,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                         }
                     }
                 }
+            }
+        }
+        
+        VersionManager.sharedManager.checkIfUpdateRequired { (required, error) in
+            if required && error == nil {
+                self.outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
+                self.collectionView?.isHidden = true
             }
         }
     }

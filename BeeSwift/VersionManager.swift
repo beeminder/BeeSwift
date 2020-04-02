@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 enum VersionError: Error {
     case invalidResponse, invalidBundleInfo
@@ -14,6 +15,7 @@ enum VersionError: Error {
 
 class VersionManager : NSObject {
     static let sharedManager = VersionManager()
+    var minRequiredVersion : Decimal = 1.0
     
     func currentVersion() -> Decimal? {
         let formatter = NumberFormatter()
@@ -25,7 +27,20 @@ class VersionManager : NSObject {
     
     func updateRequired() -> Bool {
         guard let version = VersionManager.sharedManager.currentVersion() else { return false }
-        return version < 5.0
+        return version < VersionManager.sharedManager.minRequiredVersion
+    }
+    
+    func checkIfUpdateRequired(completion: @escaping (Bool, Error?) -> Void) {        
+        RequestManager.get(url: "api/private/app_versions.json", parameters: nil, success: { (responseJSON) in
+            guard let response = JSON(responseJSON!).dictionary else { return }
+            if let minVersion = response["min_ios"]?.number?.decimalValue,
+                let currentVersion = VersionManager.sharedManager.currentVersion() {
+                VersionManager.sharedManager.minRequiredVersion = minVersion
+                completion(currentVersion < minVersion, nil)
+            }
+        }) { (responseError) in
+            completion(false, responseError)
+        }
     }
     
     func appStoreVersion(completion: @escaping (Decimal?, Error?) -> Void) throws -> URLSessionDataTask {
