@@ -156,16 +156,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.noGoalsLabel.numberOfLines = 0
         self.noGoalsLabel.isHidden = true
         
-        if VersionManager.sharedManager.updateRequired() {
-            outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
-            self.outofdateView.snp.remakeConstraints { (make) -> Void in
-                make.left.equalTo(0)
-                make.right.equalTo(0)
-                make.top.equalTo(self.deadbeatView.snp.bottom)
-                make.height.equalTo(42)
-            }
-        }
-        
         self.fetchGoals()
         
         _ = try? VersionManager.sharedManager.appStoreVersion { (version, error) in
@@ -187,6 +177,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         VersionManager.sharedManager.checkIfUpdateRequired { (required, error) in
             if required && error == nil {
+                self.outofdateView.snp.remakeConstraints { (make) -> Void in
+                    make.left.equalTo(0)
+                    make.right.equalTo(0)
+                    make.top.equalTo(self.deadbeatView.snp.bottom)
+                    make.height.equalTo(42)
+                }
                 self.outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
                 self.collectionView?.isHidden = true
             }
