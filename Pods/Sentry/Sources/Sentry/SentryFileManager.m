@@ -13,6 +13,7 @@
 #import <Sentry/SentryLog.h>
 #import <Sentry/SentryEvent.h>
 #import <Sentry/SentryBreadcrumb.h>
+#import <Sentry/SentryDsn.h>
 
 #else
 #import "SentryFileManager.h"
@@ -20,9 +21,13 @@
 #import "SentryLog.h"
 #import "SentryEvent.h"
 #import "SentryBreadcrumb.h"
+#import "SentryDsn.h"
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSInteger const defaultMaxEvents = 10;
+NSInteger const defaultMaxBreadcrumbs = 200;
 
 @interface SentryFileManager ()
 
@@ -35,12 +40,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SentryFileManager
 
-- (_Nullable instancetype)initWithError:(NSError **)error {
+- (_Nullable instancetype)initWithDsn:(SentryDsn *)dsn didFailWithError:(NSError **)error {
     self = [super init];
     if (self) {
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+        
         self.sentryPath = [cachePath stringByAppendingPathComponent:@"io.sentry"];
+        self.sentryPath = [self.sentryPath stringByAppendingPathComponent:[dsn getHash]];
+        
         if (![fileManager fileExistsAtPath:self.sentryPath]) {
             [self.class createDirectoryAtPath:self.sentryPath withError:error];
         }
@@ -56,6 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         self.currentFileCounter = 0;
+        self.maxEvents = defaultMaxEvents;
+        self.maxBreadcrumbs = defaultMaxBreadcrumbs;
     }
     return self;
 }
@@ -134,23 +144,63 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)storeEvent:(SentryEvent *)event {
-    return [self storeDictionary:[event serialize] toPath:self.eventsPath];
+    return [self storeEvent:event maxCount:self.maxEvents];
+}
+
+- (NSString *)storeEvent:(SentryEvent *)event maxCount:(NSUInteger)maxCount {
+    @synchronized (self) {
+        NSString *result;
+        if (nil != event.json) {
+            result = [self storeData:event.json toPath:self.eventsPath];
+        } else {
+            result = [self storeDictionary:[event serialize] toPath:self.eventsPath];
+        }
+        [self handleFileManagerLimit:self.eventsPath maxCount:maxCount];
+        return result;
+    }
 }
 
 - (NSString *)storeBreadcrumb:(SentryBreadcrumb *)crumb {
-    return [self storeDictionary:[crumb serialize] toPath:self.breadcrumbsPath];
+    return [self storeBreadcrumb:crumb maxCount:self.maxBreadcrumbs];
 }
 
-- (NSString *)storeDictionary:(NSDictionary *)dictionary toPath:(NSString *)path {
-    if (![NSJSONSerialization isValidJSONObject:dictionary]) {
-        return nil;
+- (NSString *)storeBreadcrumb:(SentryBreadcrumb *)crumb maxCount:(NSUInteger)maxCount {
+    @synchronized (self) {
+        NSString *result = [self storeDictionary:[crumb serialize] toPath:self.breadcrumbsPath];
+        [self handleFileManagerLimit:self.breadcrumbsPath maxCount:MIN(maxCount, self.maxBreadcrumbs)];
+        return result;
     }
-    NSData *saveData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:nil];
+}
+
+- (NSString *)storeData:(NSData *)data toPath:(NSString *)path {
     @synchronized (self) {
         NSString *finalPath = [path stringByAppendingPathComponent:[self uniqueAcendingJsonName]];
         [SentryLog logWithMessage:[NSString stringWithFormat:@"Writing to file: %@", finalPath] andLevel:kSentryLogLevelDebug];
-        [saveData writeToFile:finalPath options:NSDataWritingAtomic error:nil];
+        [data writeToFile:finalPath options:NSDataWritingAtomic error:nil];
         return finalPath;
+    }
+}
+
+- (NSString *)storeDictionary:(NSDictionary *)dictionary toPath:(NSString *)path {
+    if ([NSJSONSerialization isValidJSONObject:dictionary]) {
+        NSData *saveData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:nil];
+        return [self storeData:saveData toPath:path];
+    } else {
+        [SentryLog logWithMessage:[NSString stringWithFormat:@"Invalid JSON, failed to write file %@", path]
+                         andLevel:kSentryLogLevelError];
+    }
+    return path;
+}
+
+- (void)handleFileManagerLimit:(NSString *)path maxCount:(NSUInteger)maxCount {
+    NSArray<NSString *> *files = [self allFilesInFolder:path];
+    NSInteger numbersOfFilesToRemove = ((NSInteger)files.count) - maxCount;
+    if (numbersOfFilesToRemove > 0) {
+        for (NSUInteger i = 0; i < numbersOfFilesToRemove; i++) {
+            [self removeFileAtPath:[path stringByAppendingPathComponent:[files objectAtIndex:i]]];
+        }
+        [SentryLog logWithMessage:[NSString stringWithFormat:@"Removed %ld file(s) from <%@>", (long)numbersOfFilesToRemove, [path lastPathComponent]]
+                         andLevel:kSentryLogLevelDebug];
     }
 }
 

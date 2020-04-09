@@ -35,8 +35,23 @@
     [self addEnabledCrumb];
     [self swizzleSendAction];
     [self swizzleViewDidAppear];
+    [self trackApplicationUIKitNotifications];
 }
 
+- (void)trackApplicationUIKitNotifications {
+#if SENTRY_HAS_UIKIT
+    [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidReceiveMemoryWarningNotification
+                                                    object:nil
+                                                     queue:nil
+                                                usingBlock:^(NSNotification *notification) {
+                                                    SentryBreadcrumb *crumb = [[SentryBreadcrumb alloc] initWithLevel:kSentrySeverityWarning category:@"Device"];
+                                                    crumb.type = @"system";
+                                                    crumb.message = @"Memory Warning";
+                                                    [SentryClient.sharedClient.breadcrumbs addBreadcrumb:crumb];
+                                                }];
+#endif
+}
+     
 - (void)addEnabledCrumb {
     if (nil != SentryClient.sharedClient) {
         SentryBreadcrumb *crumb = [[SentryBreadcrumb alloc] initWithLevel:kSentrySeverityInfo category:@"started"];
@@ -77,7 +92,6 @@
 - (void)swizzleViewDidAppear {
 #if SENTRY_HAS_UIKIT
     static const void *swizzleViewDidAppearKey = &swizzleViewDidAppearKey;
-    // -(void)viewDidAppear:(BOOL)animated
     SEL selector = NSSelectorFromString(@"viewDidAppear:");
     SentrySwizzleInstanceMethod(UIViewController.class,
             selector,
@@ -88,12 +102,39 @@
                         SentryBreadcrumb *crumb = [[SentryBreadcrumb alloc] initWithLevel:kSentrySeverityInfo category:@"UIViewController"];
                         crumb.type = @"navigation";
                         crumb.message = @"viewDidAppear";
-                        crumb.data = @{@"controller": [NSString stringWithFormat:@"%@", self]};
+                        NSString *viewControllerName = [SentryBreadcrumbTracker sanitizeViewControllerName:[NSString stringWithFormat:@"%@", self]];
+                        crumb.data = @{@"controller": viewControllerName};
                         [SentryClient.sharedClient.breadcrumbs addBreadcrumb:crumb];
+                        NSMutableDictionary *prevExtra = SentryClient.sharedClient.extra.mutableCopy;
+                        [prevExtra setValue:viewControllerName forKey:@"__sentry_transaction"];
+                        SentryClient.sharedClient.extra = prevExtra;
                     }
                     SentrySWCallOriginal(animated);
             }), SentrySwizzleModeOncePerClassAndSuperclasses, swizzleViewDidAppearKey);
 #endif
+}
+
++ (NSRegularExpression *)viewControllerRegex {
+    static dispatch_once_t onceTokenRegex;
+    static NSRegularExpression *regex = nil;
+    dispatch_once(&onceTokenRegex, ^{
+        NSString *pattern = @"[<.](\\w+)";
+        regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
+    });
+    return regex;
+}
+
++ (NSString *)sanitizeViewControllerName:(NSString *)controller {
+    NSRange searchedRange = NSMakeRange(0, [controller length]);
+    NSArray *matches = [[self.class viewControllerRegex] matchesInString:controller options:0 range:searchedRange];
+    NSMutableArray *strings = [NSMutableArray array];
+    for (NSTextCheckingResult *match in matches) {
+        [strings addObject:[controller substringWithRange:[match rangeAtIndex:1]]];
+    }
+    if ([strings count] > 0) {
+        return [strings componentsJoinedByString:@"."];
+    }
+    return controller;
 }
 
 @end
