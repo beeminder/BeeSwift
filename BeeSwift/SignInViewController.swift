@@ -311,7 +311,9 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
     }
     
     @objc func handleFailedSignIn(_ notification : Notification) {
-        UIAlertView(title: "Could not sign in", message: "Invalid credentials", delegate: self, cancelButtonTitle: "OK").show()
+        let failureAC = UIAlertController(title: "Could not sign in", message: "Invalid credentials", preferredStyle: .alert)
+        failureAC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        self.present(failureAC, animated: true, completion: nil)
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
     }
     

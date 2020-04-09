@@ -47,6 +47,7 @@ class RequestManager {
                     }
                     errorHandler?(response.error)
                     print(error)
+                    return
                 }
                 errorHandler?(response.error)
                 print(e)

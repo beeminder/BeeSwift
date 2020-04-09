@@ -223,6 +223,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func handleSignOut() {
         self.goals = []
         self.collectionView?.reloadData()
+        if self.presentedViewController != nil {
+            if type(of: self.presentedViewController!) == SignInViewController.self { return }
+        }
         let signInVC = SignInViewController()
         signInVC.modalPresentationStyle = .fullScreen
         self.present(signInVC, animated: true, completion: nil)
