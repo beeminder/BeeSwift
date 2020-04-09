@@ -77,6 +77,10 @@ class CurrentUserManager : NSObject {
         return UserDefaults.standard.object(forKey: deadbeatKey) != nil
     }
     
+    func timezone() -> String {
+        return UserDefaults.standard.object(forKey: beemTZKey) as? String ?? "Unknown"
+    }
+    
     func setDeadbeat(_ deadbeat: Bool) {
         if deadbeat {
             UserDefaults.standard.set(true, forKey: deadbeatKey)

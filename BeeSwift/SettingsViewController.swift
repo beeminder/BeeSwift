@@ -89,7 +89,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         return 20
     }
     func numberOfSections(in tableView: UITableView) -> Int {
-        return HKHealthStore.isHealthDataAvailable() ? 4 : 3
+        return HKHealthStore.isHealthDataAvailable() ? 5 : 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -117,6 +117,10 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             cell.title = "Emergency notifications: \(RemoteNotificationsManager.sharedManager.on() ? "on" : "off")"
             cell.imageName = "Notifications"
         case 2:
+            cell.title = "Time zone: \(CurrentUserManager.sharedManager.timezone())"
+            cell.imageName = "Clock"
+            cell.accessoryType = .none
+        case 3:
             cell.title = "Sign out"
             cell.imageName = "SignOut"
             cell.accessoryType = .none
@@ -142,6 +146,8 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         case 1:
             self.navigationController?.pushViewController(ConfigureNotificationsViewController(), animated: true)
         case 2:
+            print("nothing")
+        case 3:
             self.signOutButtonPressed()
         default:
             break

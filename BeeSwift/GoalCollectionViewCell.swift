@@ -87,7 +87,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.setThumbnailImage()
     }
     
-    func refreshCountdown() {
+    @objc func refreshCountdown() {
         if self.goal == nil { return }
         self.deltasLabel.text = self.goal!.baremin! + " " + self.goal!.countdownHelperText + "\n" + String(self.goal!.countdownText)
     }

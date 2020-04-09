@@ -73,7 +73,7 @@ class RequestManager {
     
     
     class func authedParams(_ params: [String: Any]?) -> Parameters? {
-        if params == nil { return ["access_token" : CurrentUserManager.sharedManager.accessToken!] }
+        if params == nil { return ["access_token" : CurrentUserManager.sharedManager.accessToken ?? ""] }
         if CurrentUserManager.sharedManager.accessToken != nil {
             var localParams = params!
             localParams["access_token"] = CurrentUserManager.sharedManager.accessToken!
