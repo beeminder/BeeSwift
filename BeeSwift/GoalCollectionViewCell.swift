@@ -12,9 +12,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     var slugLabel :BSLabel = BSLabel()
     var titleLabel :BSLabel = BSLabel()
     var thumbnailImageView :UIImageView = UIImageView()
-    var deltasLabel :BSLabel = BSLabel()
-    var countdownView :UIView = UIView()
-    var countdownLabel :BSLabel = BSLabel()
+    var safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
     override init(frame: CGRect) {
@@ -23,9 +21,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(self.slugLabel)
         self.contentView.addSubview(self.titleLabel)
         self.contentView.addSubview(self.thumbnailImageView)
-        self.contentView.addSubview(self.deltasLabel)
-        self.contentView.addSubview(self.countdownView)
-        self.countdownView.addSubview(self.countdownLabel)
+        self.contentView.addSubview(self.safesumLabel)
         if #available(iOS 13.0, *) {
             self.contentView.backgroundColor = .systemBackground
         }
@@ -49,47 +45,26 @@ class GoalCollectionViewCell: UICollectionViewCell {
             make.width.lessThanOrEqualTo(self.contentView).multipliedBy(0.6)
         }
         self.titleLabel.textAlignment = .right
-        
-        self.countdownView.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(8)
-            make.top.equalTo(self.slugLabel.snp.bottom).offset(5)
-            make.bottom.equalTo(self.thumbnailImageView)
-            make.width.equalTo(75)
-        }
-        
-        self.countdownView.addSubview(self.countdownLabel)
-        self.countdownLabel.textColor = UIColor.white
-        self.countdownLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
-        self.countdownLabel.snp.makeConstraints { (make) -> Void in
-            make.center.equalTo(self.countdownView)
-        }
 
         self.thumbnailImageView.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.countdownView.snp.right).offset(self.margin)
-            make.top.equalTo(self.countdownView)
+            make.left.equalTo(0).offset(self.margin)
+            make.top.equalTo(self.slugLabel.snp.bottom).offset(5)
             make.height.equalTo(Constants.thumbnailHeight)
             make.width.equalTo(Constants.thumbnailWidth)
         }
 
-        self.deltasLabel.textAlignment = NSTextAlignment.center
-        self.deltasLabel.font = UIFont(name: "Avenir-Black", size: 13)
-        self.deltasLabel.numberOfLines = 0
-        self.deltasLabel.snp.makeConstraints { (make) -> Void in
+        self.safesumLabel.textAlignment = NSTextAlignment.center
+        self.safesumLabel.font = UIFont(name: "Avenir-Black", size: 13)
+        self.safesumLabel.numberOfLines = 0
+        self.safesumLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
             make.centerY.equalTo(self.thumbnailImageView.snp.centerY)
             make.right.equalTo(-self.margin)
         }
-        
-        Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GoalCollectionViewCell.refreshCountdown), userInfo: nil, repeats: true)
     }
         
     func deadbeatChanged() {
         self.setThumbnailImage()
-    }
-    
-    @objc func refreshCountdown() {
-        if self.goal == nil { return }
-        self.deltasLabel.text = self.goal!.baremin! + " " + self.goal!.countdownHelperText + "\n" + String(self.goal!.countdownText)
     }
     
     func setThumbnailImage() {
@@ -113,19 +88,11 @@ class GoalCollectionViewCell: UICollectionViewCell {
         didSet {
             self.thumbnailImageView.image = nil
             self.setThumbnailImage()
-            
-            if goal == nil {
-                self.countdownLabel.text = ""
-                self.countdownView.backgroundColor = UIColor.beeGrayColor()
-            } else {
-                self.countdownLabel.text = goal!.briefLosedate
-                self.countdownView.backgroundColor = goal!.countdownColor
-            }
-            
             self.titleLabel.text = goal?.title
             self.slugLabel.text = goal?.slug
             self.titleLabel.isHidden = goal?.title == goal?.slug
-            self.deltasLabel.text = goal!.baremin! + " " + goal!.countdownHelperText + "\n" + String(goal!.countdownText)
+            self.safesumLabel.text = goal!.safesum ?? ""
+            self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.beeGrayColor()            
         }
     }
 }

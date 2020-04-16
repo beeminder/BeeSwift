@@ -30,9 +30,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     fileprivate var goalImageScrollView = UIScrollView()
     fileprivate var datapointsTableView = DatapointsTableView()
     fileprivate var pollTimer : Timer?
-    fileprivate var deltasLabel = BSLabel()
     fileprivate var countdownLabel = BSLabel()
-    fileprivate var pledgeLabel = BSLabel()
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
@@ -70,33 +68,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.width.equalTo(self.scrollView)
         }
         
-        deltasView.addSubview(self.pledgeLabel)
-        deltasView.addSubview(self.deltasLabel)
         deltasView.addSubview(self.countdownLabel)
-        
-        self.pledgeLabel.font = UIFont(name:"Avenir-Heavy", size:Constants.defaultFontSize)
-        self.pledgeLabel.textAlignment = .left
-        self.pledgeLabel.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.countdownLabel.snp.right)
-            make.centerY.equalTo(deltasView)
-        }
-        
-        self.deltasLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
-        self.deltasLabel.textAlignment = .right
-        self.deltasLabel.snp.makeConstraints { (make) -> Void in
-            make.right.equalTo(self.countdownLabel.snp.left)
-            make.centerY.equalTo(deltasView)
-            make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
-        }
 
         self.countdownLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
         self.countdownLabel.textAlignment = .center
         self.countdownLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.centerX.equalTo(deltasView)
-            make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
+            make.width.equalTo(deltasView)
         }
-        
-        Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GoalViewController.refreshCountdown), userInfo: nil, repeats: true)
         
         self.scrollView.addSubview(self.goalImageScrollView)
         self.goalImageScrollView.showsHorizontalScrollIndicator = false
@@ -401,15 +380,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         if (!CurrentUserManager.sharedManager.signedIn()) { return }
         if keyPath == "graph_url" {
             self.setGraphImage()
-        } else if keyPath == "delta_text" || keyPath == "safebump" {
-            self.deltasLabel.text = self.goal.baremin! + " " + self.goal.countdownHelperText
+        } else if keyPath == "delta_text" || keyPath == "safebump" || keyPath == "safesum" {
+            self.refreshCountdown()
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         self.setGraphImage()
         self.refreshCountdown()
-        self.pledgeLabel.text = " or pay $\(self.goal.pledge)"
     }
     
     @objc func timerButtonPressed() {
@@ -453,8 +431,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @objc func refreshCountdown() {
         self.countdownLabel.textColor = self.goal.countdownColor
-        self.countdownLabel.text = self.goal.countdownText as String
-        self.deltasLabel.text = self.goal.baremin! + " " + self.goal.countdownHelperText
+        self.countdownLabel.text = self.goal.safesum ?? ""
+        self.countdownLabel.text = self.countdownLabel.text! + " or pay $\(self.goal.pledge)"
     }
     
     func setGraphImage() {

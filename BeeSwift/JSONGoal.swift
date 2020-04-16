@@ -32,9 +32,11 @@ class JSONGoal {
     var yaw: NSNumber = 0
     var dir: NSNumber = 0
     var safebump: NSNumber?
+    var safebuf: NSNumber?
     var curval: NSNumber?
     var baremin: String?
     var limsum: String?
+    var safesum: String?
     var deadline: NSNumber = 0
     var leadtime: NSNumber?
     var alertstart: NSNumber?
@@ -72,6 +74,8 @@ class JSONGoal {
         self.yaw = json["yaw"].number!
         self.dir = json["dir"].number!
         if json["limsum"].string != nil { self.limsum = json["limsum"].string! }
+        if json["safesum"].string != nil { self.safesum = json["safesum"].string! }
+        if json["safebuf"].number != nil { self.safebuf = json["safebuf"].number! }
         self.use_defaults = json["use_defaults"].bool! as NSNumber
         if let safebump = json["safebump"].number {
             self.safebump = safebump
@@ -168,22 +172,14 @@ class JSONGoal {
     }
     
     var countdownColor :UIColor {
-        let losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
-        if losedateDate.timeIntervalSinceNow < 0 {
-            if self.won.boolValue {
-                return UIColor.beeGreenColor()
-            }
-            else {
-                return UIColor.red
-            }
-        }
-        else if self.relativeLane.intValue <= -2 {
+        guard let buf = self.safebuf?.intValue else { return UIColor.beeGrayColor() }
+        if buf < 1 {
             return UIColor.red
         }
-        else if self.relativeLane == -1 {
+        else if buf < 2 {
             return UIColor.orange
         }
-        else if self.relativeLane == 1 {
+        else if buf < 3 {
             return UIColor.blue
         }
         return UIColor.beeGreenColor()
