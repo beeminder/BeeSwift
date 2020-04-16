@@ -12,7 +12,7 @@ import MBProgressHUD
 import SwiftyJSON
 import HealthKit
 
-class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
+class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate {
     
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewLayout?
@@ -25,9 +25,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var outofdateView = UIView()
     let noGoalsLabel = BSLabel()
     let outofdateLabel = BSLabel()
+    let searchBar = UISearchBar()
     var lastUpdated : Date?
+    let maxSearchBarHeight: Int = 50
     
     var goals : Array<JSONGoal> = []
+    var filteredGoals : Array<JSONGoal> = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,7 +59,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         self.title = "Goals"
         
-        let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(GalleryViewController.settingsButtonPressed))
+        let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.settingsButtonPressed))
         self.navigationItem.rightBarButtonItem = item
         
         self.view.addSubview(self.lastUpdatedView)
@@ -126,6 +129,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.right.equalTo(-10)
         }
         
+        self.view.addSubview(self.searchBar)
+        self.searchBar.delegate = self
+        self.searchBar.placeholder = "Filter goals by slug"
+        self.searchBar.isHidden = true
+        self.searchBar.snp.makeConstraints { (make) in
+            make.left.right.equalTo(0)
+            make.top.equalTo(self.outofdateView.snp.bottom)
+            make.height.equalTo(0)
+        }
+        
         self.collectionView!.delegate = self
         self.collectionView!.dataSource = self
         self.collectionView!.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
@@ -136,7 +149,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView!.addSubview(self.refreshControl)
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.outofdateView.snp.bottom)
+            make.top.equalTo(self.searchBar.snp.bottom)
             if #available(iOS 11.0, *) {
                 make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
                 make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
@@ -208,6 +221,27 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.navigationController?.pushViewController(SettingsViewController(), animated: true)
     }
     
+    @objc func searchButtonPressed() {
+        self.searchBar.isHidden = !self.searchBar.isHidden
+        if searchBar.isHidden {
+            self.searchBar.searchTextField.text = ""
+            self.filteredGoals = self.goals
+            self.searchBar.searchTextField.resignFirstResponder()
+            self.collectionView?.reloadData()
+        } else {
+            self.searchBar.searchTextField.becomeFirstResponder()
+        }
+        self.searchBar.snp.remakeConstraints { (make) in
+            make.left.right.equalTo(0)
+            make.top.equalTo(self.outofdateView.snp.bottom)
+            if self.searchBar.isHidden {
+                make.height.equalTo(0)
+            } else {
+                make.height.equalTo(self.maxSearchBarHeight)
+            }
+        }
+    }
+    
     @objc func userDefaultsDidChange() {
         self.sortGoals()
         DispatchQueue.main.async {
@@ -222,6 +256,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc func handleSignOut() {
         self.goals = []
+        self.filteredGoals = []
         self.collectionView?.reloadData()
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
@@ -229,6 +264,23 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let signInVC = SignInViewController()
         signInVC.modalPresentationStyle = .fullScreen
         self.present(signInVC, animated: true, completion: nil)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchGoals(searchText: searchText)
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.searchTextField.text else { return }
+        self.searchBar.searchTextField.resignFirstResponder()
+        self.searchGoals(searchText: searchText)
+    }
+    
+    func searchGoals(searchText : String) {
+        self.filteredGoals = self.goals.filter { (goal) -> Bool in
+            return goal.slug.lowercased().contains(searchText.lowercased())
+        }
+        self.collectionView?.reloadData()
     }
     
     func updateDeadbeatHeight() {
@@ -292,6 +344,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.noGoalsLabel.isHidden = true
             self.collectionView?.isHidden = false
         }
+        if self.goals.count > 10 {
+            let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
+            self.navigationItem.leftBarButtonItem = searchItem
+        } else {
+            self.navigationItem.leftBarButtonItem = nil
+        }
     }
     
     func setupHealthKit() {
@@ -313,6 +371,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             self.goals = goals
+            self.filteredGoals = goals
             self.didFetchGoals()
         }) { (error) in
             if let errorString = error?.localizedDescription {
@@ -349,7 +408,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return VersionManager.sharedManager.updateRequired() ? 0 : self.goals.count + 1
+        return VersionManager.sharedManager.updateRequired() ? 0 : self.filteredGoals.count + 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -361,13 +420,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if (indexPath as NSIndexPath).row >= self.goals.count {
+        if (indexPath as NSIndexPath).row >= self.filteredGoals.count {
             let cell:NewGoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.newGoalCellReuseIdentifier, for: indexPath) as! NewGoalCollectionViewCell
             return cell
         }
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let goal:JSONGoal = self.goals[(indexPath as NSIndexPath).row]
+        let goal:JSONGoal = self.filteredGoals[(indexPath as NSIndexPath).row]
         
         cell.goal = goal
         
