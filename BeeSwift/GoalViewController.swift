@@ -431,8 +431,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @objc func refreshCountdown() {
         self.countdownLabel.textColor = self.goal.countdownColor
-        self.countdownLabel.text = self.goal.safesum ?? ""
-        self.countdownLabel.text = self.countdownLabel.text! + " or pay $\(self.goal.pledge)"
+        self.countdownLabel.text = self.goal.capitalSafesum() + " or pay $\(self.goal.pledge)"
     }
     
     func setGraphImage() {

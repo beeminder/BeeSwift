@@ -220,6 +220,11 @@ class JSONGoal {
         return "week"
     }
     
+    func capitalSafesum() -> String {
+        guard let safe = self.safesum else { return "" }
+        return safe.prefix(1).uppercased() + safe.dropFirst(1)
+    }
+    
     func humanizedAutodata() -> String? {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
