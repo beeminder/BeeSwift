@@ -348,12 +348,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.noGoalsLabel.isHidden = true
             self.collectionView?.isHidden = false
         }
-        if self.goals.count > 10 {
-            let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
-            self.navigationItem.leftBarButtonItem = searchItem
-        } else {
-            self.navigationItem.leftBarButtonItem = nil
-        }
+        let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
+        self.navigationItem.leftBarButtonItem = searchItem
     }
     
     func setupHealthKit() {
