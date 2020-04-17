@@ -117,7 +117,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.top.equalTo(self.goalImageScrollView.snp.bottom)
             make.left.right.equalTo(0)
         }
-        self.deltasLabel.text = self.goal!.baremin! + " " + self.goal!.countdownHelperText + "\n" + String(self.goal!.countdownText)
+        self.deltasLabel.attributedText = self.goal!.attributedDeltaText
+        self.deltasLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
+        self.deltasLabel.textAlignment = .center
+        
         
         self.datapointsTableView.dataSource = self
         self.datapointsTableView.delegate = self
