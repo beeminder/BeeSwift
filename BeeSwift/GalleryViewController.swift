@@ -277,6 +277,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func searchGoals(searchText : String) {
+        if searchText == "" {
+            self.filteredGoals = self.goals
+            return
+        }
         self.filteredGoals = self.goals.filter { (goal) -> Bool in
             return goal.slug.lowercased().contains(searchText.lowercased())
         }
