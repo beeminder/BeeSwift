@@ -31,6 +31,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     fileprivate var datapointsTableView = DatapointsTableView()
     fileprivate var pollTimer : Timer?
     fileprivate var countdownLabel = BSLabel()
+    fileprivate var deltasLabel = BSLabel()
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
@@ -58,9 +59,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.bottom.equalTo(0)
         }
         
-        let deltasView = UIView()
-        self.scrollView.addSubview(deltasView)
-        deltasView.snp.makeConstraints { (make) -> Void in
+        let countdownView = UIView()
+        self.scrollView.addSubview(countdownView)
+        countdownView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(0)
             make.left.equalTo(0)
             make.right.equalTo(0)
@@ -68,13 +69,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.width.equalTo(self.scrollView)
         }
         
-        deltasView.addSubview(self.countdownLabel)
+        countdownView.addSubview(self.countdownLabel)
 
         self.countdownLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
         self.countdownLabel.textAlignment = .center
         self.countdownLabel.snp.makeConstraints { (make) -> Void in
-            make.centerY.centerX.equalTo(deltasView)
-            make.width.equalTo(deltasView)
+            make.centerY.centerX.equalTo(countdownView)
+            make.width.equalTo(countdownView)
         }
         
         self.scrollView.addSubview(self.goalImageScrollView)
@@ -93,7 +94,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 make.right.lessThanOrEqualTo(0)
             }
             
-            make.top.equalTo(deltasView.snp.bottom)
+            make.top.equalTo(countdownView.snp.bottom)
             make.width.equalTo(self.scrollView)
             make.height.equalTo(self.goalImageScrollView.snp.width).multipliedBy(Float(Constants.graphHeight)/Float(Constants.graphWidth))
         }
@@ -111,6 +112,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.right.equalTo(self.goalImageScrollView)
         }
         
+        self.view.addSubview(self.deltasLabel)
+        self.deltasLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(self.goalImageScrollView.snp.bottom)
+            make.left.right.equalTo(0)
+        }
+        self.deltasLabel.text = self.goal!.baremin! + " " + self.goal!.countdownHelperText + "\n" + String(self.goal!.countdownText)
+        
         self.datapointsTableView.dataSource = self
         self.datapointsTableView.delegate = self
         self.datapointsTableView.separatorStyle = .none
@@ -118,7 +126,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.datapointsTableView.register(DatapointTableViewCell.self, forCellReuseIdentifier: self.cellIdentifier)
         self.scrollView.addSubview(self.datapointsTableView)
         self.datapointsTableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.goalImageScrollView.snp.bottom)
+            make.top.equalTo(self.deltasLabel.snp.bottom)
             make.left.equalTo(self.goalImageScrollView).offset(10)
             make.right.equalTo(self.goalImageScrollView).offset(-10)
         }
@@ -573,7 +581,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return 4
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
