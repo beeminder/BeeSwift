@@ -392,7 +392,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     return goal1.slug < goal2.slug
                 }
                 else if selectedGoalSort == Constants.recentDataGoalSortString {
-                    return goal1.lasttouch!.intValue > goal2.lasttouch!.intValue
+                    return goal1.lasttouch?.intValue ?? 0 > goal2.lasttouch?.intValue ?? 0
                 }
                 else if selectedGoalSort == Constants.pledgeGoalSortString {
                     return goal1.pledge.intValue > goal2.pledge.intValue
@@ -400,6 +400,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
             return goal1.losedate.intValue < goal2.losedate.intValue
         })
+        self.filteredGoals = self.goals
     }
 
     override func didReceiveMemoryWarning() {
