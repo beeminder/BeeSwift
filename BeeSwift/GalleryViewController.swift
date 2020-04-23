@@ -224,12 +224,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func searchButtonPressed() {
         self.searchBar.isHidden = !self.searchBar.isHidden
         if searchBar.isHidden {
-            self.searchBar.searchTextField.text = ""
+            self.searchBar.text = ""
             self.filteredGoals = self.goals
-            self.searchBar.searchTextField.resignFirstResponder()
+            self.searchBar.resignFirstResponder()
             self.collectionView?.reloadData()
         } else {
-            self.searchBar.searchTextField.becomeFirstResponder()
+            self.searchBar.becomeFirstResponder()
         }
         self.searchBar.snp.remakeConstraints { (make) in
             make.left.right.equalTo(0)
@@ -271,18 +271,24 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let searchText = searchBar.searchTextField.text else { return }
-        self.searchBar.searchTextField.resignFirstResponder()
+        guard let searchText = searchBar.text else { return }
+        self.searchBar.resignFirstResponder()
         self.searchGoals(searchText: searchText)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.filteredGoals = self.goals
+        self.searchBar.resignFirstResponder()
+        self.collectionView?.reloadData()
     }
     
     func searchGoals(searchText : String) {
         if searchText == "" {
             self.filteredGoals = self.goals
-            return
-        }
-        self.filteredGoals = self.goals.filter { (goal) -> Bool in
-            return goal.slug.lowercased().contains(searchText.lowercased())
+        } else {
+            self.filteredGoals = self.goals.filter { (goal) -> Bool in
+                return goal.slug.lowercased().contains(searchText.lowercased())
+            }
         }
         self.collectionView?.reloadData()
     }
@@ -371,7 +377,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             self.goals = goals
-            self.filteredGoals = goals
+            self.searchGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
         }) { (error) in
             if let errorString = error?.localizedDescription {
@@ -400,7 +406,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
             return goal1.losedate.intValue < goal2.losedate.intValue
         })
-        self.filteredGoals = self.goals
+        self.searchGoals(searchText: self.searchBar.text ?? "")
     }
 
     override func didReceiveMemoryWarning() {
