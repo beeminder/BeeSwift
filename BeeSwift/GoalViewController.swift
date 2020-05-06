@@ -556,6 +556,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
             self.goal = JSONGoal(json: JSON(responseObject!))
             self.datapointsTableView.reloadData()
+            self.refreshCountdown()
+            self.deltasLabel.attributedText = self.goal!.attributedDeltaText
             if (!self.goal.queued!) {
                 self.setGraphImage()
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
