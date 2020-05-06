@@ -15,19 +15,15 @@ enum VersionError: Error {
 
 class VersionManager : NSObject {
     static let sharedManager = VersionManager()
-    var minRequiredVersion : Decimal = 1.0
+    var minRequiredVersion : String = "1.0"
     
-    func currentVersion() -> Decimal? {
-        let formatter = NumberFormatter()
-        formatter.generatesDecimalNumbers = true
-        formatter.numberStyle = NumberFormatter.Style.decimal
-        guard let v = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String else { return nil }
-        return formatter.number(from: v) as? Decimal
+    func currentVersion() -> String? {
+        return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
     }
     
     func updateRequired() -> Bool {
         guard let version = VersionManager.sharedManager.currentVersion() else { return false }
-        return version < VersionManager.sharedManager.minRequiredVersion
+        return version.compare(VersionManager.sharedManager.minRequiredVersion, options: .numeric) == .orderedAscending
     }
     
     func checkIfUpdateRequired(completion: @escaping (Bool, Error?) -> Void) {        
@@ -35,15 +31,15 @@ class VersionManager : NSObject {
             guard let response = JSON(responseJSON!).dictionary else { return }
             if let minVersion = response["min_ios"]?.number?.decimalValue,
                 let currentVersion = VersionManager.sharedManager.currentVersion() {
-                VersionManager.sharedManager.minRequiredVersion = minVersion
-                completion(currentVersion < minVersion, nil)
+                VersionManager.sharedManager.minRequiredVersion = "\(minVersion)"
+                completion(currentVersion.compare("\(minVersion)", options: .numeric) == .orderedAscending, nil)
             }
         }) { (responseError) in
             completion(false, responseError)
         }
     }
     
-    func appStoreVersion(completion: @escaping (Decimal?, Error?) -> Void) throws -> URLSessionDataTask {
+    func appStoreVersion(completion: @escaping (String?, Error?) -> Void) throws -> URLSessionDataTask {
         guard let info = Bundle.main.infoDictionary,
             let identifier = info["CFBundleIdentifier"] as? String,
             let url = URL(string: "http://itunes.apple.com/lookup?bundleId=\(identifier)") else {
@@ -57,14 +53,7 @@ class VersionManager : NSObject {
                 guard let result = (json?["results"] as? [Any])?.first as? [String: Any], let version = result["version"] as? String else {
                     throw VersionError.invalidResponse
                 }
-                let formatter = NumberFormatter()
-                formatter.generatesDecimalNumbers = true
-                formatter.numberStyle = NumberFormatter.Style.decimal
-                if let decimalVersion = formatter.number(from: version) as? Decimal  {
-                    completion(decimalVersion, nil)
-                } else {
-                    throw VersionError.invalidResponse
-                }
+                completion(version, nil)
             } catch {
                 completion(nil, error)
             }
