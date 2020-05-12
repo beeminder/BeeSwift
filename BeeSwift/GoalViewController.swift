@@ -201,10 +201,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.top.equalTo(0)
         }
         
-        if let lastDatapoint = self.goal!.recent_data?.last as? JSON {
-            self.valueTextField.text = "\(String(describing: lastDatapoint["value"]))"
-        }
-        
+        self.setValueTextField()
         self.valueTextFieldValueChanged()
         
         let commentLeftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 1))
@@ -470,6 +467,12 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.dateTextField.text = formatter.string(from: newDate!)
     }
     
+    func setValueTextField() {
+        if let lastDatapoint = self.goal!.recent_data?.last as? JSON {
+            self.valueTextField.text = "\(String(describing: lastDatapoint["value"]))"
+        }
+    }
+    
     @objc func valueStepperValueChanged() {
         var valueString = ""
         let formatter = NumberFormatter()
@@ -558,6 +561,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.goal = JSONGoal(json: JSON(responseObject!))
             self.datapointsTableView.reloadData()
             self.refreshCountdown()
+            self.setValueTextField()
             self.deltasLabel.attributedText = self.goal!.attributedDeltaText
             if (!self.goal.queued!) {
                 self.setGraphImage()
