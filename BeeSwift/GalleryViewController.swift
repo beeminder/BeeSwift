@@ -267,13 +267,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.searchGoals(searchText: searchText)
+        self.updateFilteredGoals(searchText: searchText)
+        self.collectionView?.reloadData()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
         self.searchBar.resignFirstResponder()
-        self.searchGoals(searchText: searchText)
+        self.updateFilteredGoals(searchText: searchText)
+        self.collectionView?.reloadData()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -282,7 +284,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView?.reloadData()
     }
     
-    func searchGoals(searchText : String) {
+    func updateFilteredGoals(searchText : String) {
         if searchText == "" {
             self.filteredGoals = self.goals
         } else {
@@ -290,7 +292,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 return goal.slug.lowercased().contains(searchText.lowercased())
             }
         }
-        self.collectionView?.reloadData()
     }
     
     func updateDeadbeatHeight() {
@@ -377,7 +378,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             self.goals = goals
-            self.searchGoals(searchText: self.searchBar.text ?? "")
+            self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
         }) { (error) in
             if let errorString = error?.localizedDescription {
@@ -406,7 +407,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
             return goal1.losedate.intValue < goal2.losedate.intValue
         })
-        self.searchGoals(searchText: self.searchBar.text ?? "")
+        self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
     }
 
     override func didReceiveMemoryWarning() {
