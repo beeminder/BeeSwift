@@ -213,9 +213,6 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
             hud?.hide(true, afterDelay: 2)
-            if let goalVC = self.navigationController?.viewControllers[1] as? GoalViewController {
-                goalVC.refreshGoal()
-            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 self.navigationController?.popViewController(animated: true)
             }

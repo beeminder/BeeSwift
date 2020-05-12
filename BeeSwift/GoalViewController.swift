@@ -394,8 +394,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        self.setGraphImage()
-        self.refreshCountdown()
+        self.refreshGoal()
     }
     
     @objc func timerButtonPressed() {
@@ -562,6 +561,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.datapointsTableView.reloadData()
             self.refreshCountdown()
             self.setValueTextField()
+            self.valueTextFieldValueChanged()
             self.deltasLabel.attributedText = self.goal!.attributedDeltaText
             if (!self.goal.queued!) {
                 self.setGraphImage()
