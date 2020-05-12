@@ -474,6 +474,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         var valueString = ""
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US")
+        formatter.groupingSeparator = ""
         formatter.numberStyle = .decimal
         
         if self.valueStepper.value < 0 {
