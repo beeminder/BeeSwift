@@ -243,8 +243,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func userDefaultsDidChange() {
-        self.sortGoals()
         DispatchQueue.main.async {
+            self.sortGoals()
             self.collectionView?.reloadData()
         }
     }
