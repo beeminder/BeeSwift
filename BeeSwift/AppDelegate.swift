@@ -69,7 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-        
+        NotificationCenter.default.post(name: Notification.Name.UIApplicationWillEnterForeground, object: nil)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -121,17 +121,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         return true
     }
-
-    func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
-        RemoteNotificationsManager.sharedManager.didRegisterUserNotificationSettings(notificationSettings)
-    }
-
+    
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        RemoteNotificationsManager.sharedManager.didRegisterForRemoteNotificationsWithDeviceToken(deviceToken)
+        let token = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+
+        SignedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: ["device_token" : token], success: { (responseObject) -> Void in
+            //foo
+        }) { (error) -> Void in
+            //bar
+        }
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        RemoteNotificationsManager.sharedManager.didFailToRegisterForRemoteNotificationsWithError(error)
+//        RemoteNotificationsManager.sharedManager.didFailToRegisterForRemoteNotificationsWithError(error)
     }
     
     @objc func updateBadgeCount() {

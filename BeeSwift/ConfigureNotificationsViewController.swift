@@ -14,7 +14,7 @@ class ConfigureNotificationsViewController: UIViewController {
     fileprivate var goals : [JSONGoal] = []
     fileprivate var cellReuseIdentifier = "configureNotificationsTableViewCell"
     fileprivate var tableView = UITableView()
-    fileprivate var emergencyRemindersSwitch = UISwitch()
+    fileprivate let settingsButton = BSButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,59 +24,71 @@ class ConfigureNotificationsViewController: UIViewController {
         } else {
             self.view.backgroundColor = .white
         }
-    
-        let emergencyRemindersLabel = BSLabel()
-        self.view.addSubview(emergencyRemindersLabel)
-        emergencyRemindersLabel.text = "Goal emergency notifications"
-        emergencyRemindersLabel.snp.makeConstraints { (make) -> Void in
-            if #available(iOS 11.0, *) {
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(10)
-                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(15)
-            } else {
-                make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
-                make.left.equalTo(self.view).offset(15)
-            }
-        }
         
-        self.view.addSubview(self.emergencyRemindersSwitch)
-        self.emergencyRemindersSwitch.addTarget(self, action: #selector(self.emergencyRemindersSwitchChanged), for: .valueChanged)
-        self.emergencyRemindersSwitch.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(emergencyRemindersLabel)
-            if #available(iOS 11.0, *) {
-                make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-15)
-            } else {
-                make.right.equalTo(-15)
-            }
+        self.view.addSubview(self.settingsButton)
+        self.settingsButton.isHidden = true
+        self.settingsButton.setTitle("Open Settings to Enable Notifications", for: .normal)
+        self.settingsButton.titleLabel?.textAlignment = .center
+        self.settingsButton.titleLabel?.numberOfLines = 0
+        self.settingsButton.snp.makeConstraints { (make) in
+            make.center.equalTo(self.view)
+            make.leftMargin.rightMargin.equalTo(20)
+            make.height.equalTo(84)
         }
-        self.emergencyRemindersSwitch.isOn = RemoteNotificationsManager.sharedManager.on()
+        self.settingsButton.addTarget(self, action: #selector(self.settingsButtonTapped), for: .touchUpInside)
     
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
-            make.top.equalTo(emergencyRemindersLabel.snp.bottom).offset(10)
             if #available(iOS 11.0, *) {
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(10)
                 make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
             } else {
+                make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
                 make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
             }
         }
-        self.tableView.isHidden = !RemoteNotificationsManager.sharedManager.on()
+        self.tableView.isHidden = true
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.tableFooterView = UIView()
         self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.fetchGoals()
+        self.updateHiddenElements()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.foregroundEntered), name: .UIApplicationWillEnterForeground, object: nil)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
+    @objc func settingsButtonTapped() {
+        UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!)
+    }
+    
     func sortGoals() {
         self.goals.sort { (goal1, goal2) -> Bool in
             return goal1.slug > goal2.slug
         }
+    }
+    
+    func updateHiddenElements() {
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            DispatchQueue.main.async {
+                if settings.authorizationStatus == .authorized {
+                    self.settingsButton.isHidden = true
+                    self.tableView.isHidden = false
+                } else {
+                    self.settingsButton.isHidden = false
+                    self.tableView.isHidden = true
+                }
+            }
+        }
+    }
+    
+    @objc func foregroundEntered() {
+        self.updateHiddenElements()
     }
     
     func fetchGoals() {
@@ -92,16 +104,6 @@ class ConfigureNotificationsViewController: UIViewController {
                 self.present(alert, animated: true, completion: nil)
             }
             self.tableView.reloadData()
-        }
-    }
-    
-    @objc func emergencyRemindersSwitchChanged() {
-        self.tableView.isHidden = !self.emergencyRemindersSwitch.isOn
-        if self.emergencyRemindersSwitch.isOn {
-            RemoteNotificationsManager.sharedManager.turnNotificationsOn()
-        }
-        else {
-            RemoteNotificationsManager.sharedManager.turnNotificationsOff()
         }
     }
 }

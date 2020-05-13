@@ -200,6 +200,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 self.collectionView?.isHidden = true
             }
         }
+        
+        if CurrentUserManager.sharedManager.signedIn() {
+            UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
+                print(success)
+            }
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -252,6 +258,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func handleSignIn() {
         self.dismiss(animated: true, completion: nil)
         self.fetchGoals()
+        
+        UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
+            print(success)
+        }
     }
     
     @objc func handleSignOut() {

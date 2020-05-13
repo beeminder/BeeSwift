@@ -60,7 +60,6 @@
 		A1BD0D1C1AEB34E0001EDE8B /* GalleryNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BD0D1B1AEB34E0001EDE8B /* GalleryNavigationController.swift */; };
 		A1BE73AA1E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */; };
 		A1BE73AC1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */; };
-		A1BEEB511AFDC0DE00E7081F /* RemoteNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEEB501AFDC0DE00E7081F /* RemoteNotificationsManager.swift */; };
 		A1C11B481B06F5D100D22871 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
 		A1C170E01BEEB3110018D32B /* UIFontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */; };
 		A1D853261EB0332D00FC75DE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
@@ -176,7 +175,6 @@
 		A1BD3E021AE41AE400B1390A /* BeeSwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeeSwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChooseHKMetricViewController.swift; sourceTree = "<group>"; };
 		A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitMetricTableViewCell.swift; sourceTree = "<group>"; };
-		A1BEEB501AFDC0DE00E7081F /* RemoteNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteNotificationsManager.swift; sourceTree = "<group>"; };
 		A1C11B471B06F5D100D22871 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFontExtension.swift; sourceTree = "<group>"; };
 		A1D853271EB0DE0700FC75DE /* TodayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodayTableViewCell.swift; sourceTree = "<group>"; };
@@ -252,7 +250,6 @@
 			children = (
 				A1BCE9841AFFFB3A007322CC /* RequestManager.swift */,
 				A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */,
-				A1BEEB501AFDC0DE00E7081F /* RemoteNotificationsManager.swift */,
 				A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */,
 				A14249221FD07631007736B3 /* OAuthSignInManager.swift */,
 				A142492C1FD079B4007736B3 /* SignedRequestManager.swift */,
@@ -779,7 +776,6 @@
 				A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */,
 				A149B3721AEF54D100F19A09 /* BSButton.swift in Sources */,
 				A1C170E01BEEB3110018D32B /* UIFontExtension.swift in Sources */,
-				A1BEEB511AFDC0DE00E7081F /* RemoteNotificationsManager.swift in Sources */,
 				A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */,
 				A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */,
 				A142492D1FD079B4007736B3 /* SignedRequestManager.swift in Sources */,
@@ -870,7 +866,7 @@
 					"$(PROJECT_DIR)/build/Debug-iphoneos",
 				);
 				INFOPLIST_FILE = BeeSwiftToday/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 5.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeminderToday;
@@ -899,7 +895,7 @@
 					"$(PROJECT_DIR)/build/Debug-iphoneos",
 				);
 				INFOPLIST_FILE = BeeSwiftToday/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 5.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeminderToday;
@@ -961,7 +957,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "";
@@ -1013,7 +1009,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -1042,7 +1038,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = BeeSwift/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 5.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder;
@@ -1078,7 +1074,7 @@
 				);
 				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = BeeSwift/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 5.6.4;
 				ONLY_ACTIVE_ARCH = NO;

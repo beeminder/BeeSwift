@@ -114,7 +114,11 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             cell.title = "Sort goals by: \(selectedGoalSort ?? "")"
             cell.imageName = "Sort"
         case 1:
-            cell.title = "Emergency notifications: \(RemoteNotificationsManager.sharedManager.on() ? "on" : "off")"
+            UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+                DispatchQueue.main.async {
+                    cell.title = "Emergency notifications: \(settings.authorizationStatus == .authorized ? "on" : "off")"
+                }
+            }
             cell.imageName = "Notifications"
         case 2:
             cell.title = "Time zone: \(CurrentUserManager.sharedManager.timezone())"
