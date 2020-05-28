@@ -204,6 +204,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if CurrentUserManager.sharedManager.signedIn() {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
+                if success {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
+                }
             }
         }
     }
