@@ -396,10 +396,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
         }) { (error) in
-            if let errorString = error?.localizedDescription {
-                let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+            if UIApplication.shared.applicationState == .active {
+                if let errorString = error?.localizedDescription {
+                    let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                }
             }
             self.refreshControl.endRefreshing()
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
