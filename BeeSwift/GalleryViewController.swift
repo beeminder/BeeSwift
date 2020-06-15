@@ -468,13 +468,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     @objc func openGoalFromNotification(_ notification: Notification) {
-        let slug = (notification as NSNotification).userInfo!["slug"] as! String
+        guard let slug = (notification as NSNotification).userInfo?["slug"] as? String else {
+            return
+        }
+        
         let matchingGoal = self.goals.filter({ (goal) -> Bool in
             return goal.slug == slug
         }).last
+        
         if matchingGoal != nil {
-            self.navigationController?.popToRootViewController(animated: false)
-            self.openGoal(matchingGoal!)
+            DispatchQueue.main.async {
+                self.navigationController?.popToRootViewController(animated: false)
+                self.openGoal(matchingGoal!)
+            }
         }
     }
     
