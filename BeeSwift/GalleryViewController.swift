@@ -472,13 +472,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             return
         }
         
-        let matchingGoal = self.goals.last(where: { $0.slug == slug })
+        guard let matchingGoal = self.goals.last(where: { $0.slug == slug }) else {
+            return
+        }
         
-        if matchingGoal != nil {
-            DispatchQueue.main.async {
-                self.navigationController?.popToRootViewController(animated: false)
-                self.openGoal(matchingGoal!)
-            }
+        DispatchQueue.main.async {
+            self.navigationController?.popToRootViewController(animated: false)
+            self.openGoal(matchingGoal)
         }
     }
     
