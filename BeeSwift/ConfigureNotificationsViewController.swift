@@ -67,12 +67,6 @@ class ConfigureNotificationsViewController: UIViewController {
         UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!)
     }
     
-    func sortGoals() {
-        self.goals.sort { (goal1, goal2) -> Bool in
-            return goal1.slug < goal2.slug
-        }
-    }
-    
     func updateHiddenElements() {
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in
             DispatchQueue.main.async {
@@ -93,8 +87,7 @@ class ConfigureNotificationsViewController: UIViewController {
     
     func fetchGoals() {
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
-            self.goals = goals
-            self.sortGoals()
+            self.goals = goals.sorted()
             self.tableView.reloadData()
         }) { (error) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)

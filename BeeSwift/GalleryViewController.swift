@@ -255,7 +255,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc func userDefaultsDidChange() {
         DispatchQueue.main.async {
-            self.sortGoals()
+            self.goals.sort()
+            self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.collectionView?.reloadData()
         }
     }
@@ -355,7 +356,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func didFetchGoals() {
-        self.sortGoals()
+        self.goals.sort()
+        self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
         self.setupHealthKit()
         self.refreshControl.endRefreshing()
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
@@ -407,24 +409,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             self.collectionView!.reloadData()
         }
-    }
-    
-    func sortGoals() {
-        self.goals.sort(by: { (goal1, goal2) -> Bool in
-            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
-                if selectedGoalSort == Constants.nameGoalSortString {
-                    return goal1.slug < goal2.slug
-                }
-                else if selectedGoalSort == Constants.recentDataGoalSortString {
-                    return goal1.lasttouch?.intValue ?? 0 > goal2.lasttouch?.intValue ?? 0
-                }
-                else if selectedGoalSort == Constants.pledgeGoalSortString {
-                    return goal1.pledge.intValue > goal2.pledge.intValue
-                }
-            }
-            return goal1.losedate.intValue < goal2.losedate.intValue
-        })
-        self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
     }
 
     override func didReceiveMemoryWarning() {

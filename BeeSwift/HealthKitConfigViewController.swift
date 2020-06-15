@@ -66,14 +66,7 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-        self.goals = CurrentUserManager.sharedManager.goals
-        self.sortGoals()
-    }
-    
-    func sortGoals() {
-        self.goals.sort { (goal1, goal2) -> Bool in
-            return goal1.slug < goal2.slug
-        }
+        self.goals = CurrentUserManager.sharedManager.goals.sorted()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -100,8 +93,7 @@ class HealthKitConfigViewController: UIViewController {
         MBProgressHUD.showAdded(to: self.view, animated: true)
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            self.goals = goals
-            self.sortGoals()
+            self.goals = goals.sorted()
             self.tableView.reloadData()
         }) { (error) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
