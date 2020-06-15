@@ -472,9 +472,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             return
         }
         
-        let matchingGoal = self.goals.filter({ (goal) -> Bool in
-            return goal.slug == slug
-        }).last
+        let matchingGoal = self.goals.last(where: { $0.slug == slug })
         
         if matchingGoal != nil {
             DispatchQueue.main.async {
