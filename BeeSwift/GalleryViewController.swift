@@ -445,13 +445,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if (indexPath as NSIndexPath).row >= self.filteredGoals.count {
+        if indexPath.row >= self.filteredGoals.count {
             let cell:NewGoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.newGoalCellReuseIdentifier, for: indexPath) as! NewGoalCollectionViewCell
             return cell
         }
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let goal:JSONGoal = self.filteredGoals[(indexPath as NSIndexPath).row]
+        let goal:JSONGoal = self.filteredGoals[indexPath.row]
         
         cell.goal = goal
         
@@ -463,7 +463,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let row = (indexPath as NSIndexPath).row
+        let row = indexPath.row
         if row < self.filteredGoals.count { self.openGoal(self.filteredGoals[row]) }
     }
 

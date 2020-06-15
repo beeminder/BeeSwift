@@ -597,8 +597,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.view.endEditing(true)
         if (self.goal.hideDataEntry()) { return }
-        if ((indexPath as NSIndexPath).row >= self.goal!.recent_data!.count) { return }
-        let datapointJSON : JSON = (self.goal!.recent_data![(indexPath as NSIndexPath).row] as? JSON)!
+        if (indexPath.row >= self.goal!.recent_data!.count) { return }
+        let datapointJSON : JSON = (self.goal!.recent_data![indexPath.row] as? JSON)!
         let editDatapointViewController = EditDatapointViewController()
         editDatapointViewController.datapointJSON = datapointJSON
         editDatapointViewController.goalSlug = self.goal.slug
@@ -607,9 +607,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier) as! DatapointTableViewCell
-        if (indexPath as NSIndexPath).row < self.goal!.recent_data!.count {
+        if indexPath.row < self.goal!.recent_data!.count {
             
-            let datapoint : JSON = (self.goal!.recent_data![(indexPath as NSIndexPath).row] as? JSON)!
+            let datapoint : JSON = (self.goal!.recent_data![indexPath.row] as? JSON)!
             let text = datapoint["canonical"].string
             cell.datapointText = text
         }

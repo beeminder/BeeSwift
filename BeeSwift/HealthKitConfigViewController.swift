@@ -133,14 +133,14 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitConfigTableViewCell!
 
-        let goal = self.goals[(indexPath as NSIndexPath).row]
+        let goal = self.goals[indexPath.row]
         cell!.goal = goal
         
         return cell!
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let goal = self.goals[(indexPath as NSIndexPath).row]
+        let goal = self.goals[indexPath.row]
         
         if goal.autodata.count == 0 {
             let chooseHKMetricViewController = ChooseHKMetricViewController()

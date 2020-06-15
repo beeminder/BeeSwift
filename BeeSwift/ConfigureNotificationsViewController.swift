@@ -122,19 +122,20 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! SettingsTableViewCell!
-        if (indexPath as NSIndexPath).section == 0 {
+        if indexPath.section == 0 {
             cell?.title = "Default notification settings"
             return cell!
         }
-        let goal = self.goals[(indexPath as NSIndexPath).row]
+        let goal = self.goals[indexPath.row]
         cell?.title = goal.slug
         return cell!
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (indexPath as NSIndexPath).section == 0 {        self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
+        if indexPath.section == 0 {
+            self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
         } else {
-            let goal = self.goals[(indexPath as NSIndexPath).row]
+            let goal = self.goals[indexPath.row]
             self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
         }
         self.tableView.deselectRow(at: indexPath, animated: true)
