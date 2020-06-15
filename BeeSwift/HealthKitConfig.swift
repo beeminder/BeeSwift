@@ -42,11 +42,11 @@ class HealthKitConfig : NSObject {
             HealthKitMetric.init(humanText: "Dietary sodium", databaseString: "dietarySodium", hkIdentifier: HKQuantityTypeIdentifier.dietarySodium, hkCategoryTypeIdentifier: nil),
             
         ]
-        if #available(iOS 10.0, *) {
-            mets.append(HealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", hkIdentifier: HKQuantityTypeIdentifier.swimmingStrokeCount, hkCategoryTypeIdentifier: nil))
-            mets.append(HealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceSwimming, hkCategoryTypeIdentifier: nil))
-            mets.append(HealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.mindfulSession))
-        }
+        
+        mets.append(HealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", hkIdentifier: HKQuantityTypeIdentifier.swimmingStrokeCount, hkCategoryTypeIdentifier: nil))
+        mets.append(HealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceSwimming, hkCategoryTypeIdentifier: nil))
+        mets.append(HealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.mindfulSession))
+
         return mets
     }
 }
