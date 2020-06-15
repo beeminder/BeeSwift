@@ -72,7 +72,7 @@ class HealthKitConfigViewController: UIViewController {
     
     func sortGoals() {
         self.goals.sort { (goal1, goal2) -> Bool in
-            return goal1.slug > goal2.slug
+            return goal1.slug < goal2.slug
         }
     }
     
