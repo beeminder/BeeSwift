@@ -351,10 +351,8 @@ class JSONGoal {
             } else if self.hkCategoryTypeIdentifier() == .sleepAnalysis {
                 return s.endDate.timeIntervalSince(s.startDate)/3600.0
             }
-            if #available(iOS 10.0, *) {
-                if self.hkCategoryTypeIdentifier() == .mindfulSession {
-                    return s.endDate.timeIntervalSince(s.startDate)/60.0
-                }
+            if self.hkCategoryTypeIdentifier() == .mindfulSession {
+                return s.endDate.timeIntervalSince(s.startDate)/60.0
             }
         }
         return 0
@@ -533,38 +531,34 @@ class JSONGoal {
     
     func setUnlockNotification() {
         if UserDefaults.standard.bool(forKey: Constants.healthSyncRemindersPreferenceKey) == false { return }
-        if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-            let content = UNMutableNotificationContent()
-            content.title = "Health Sync"
-            content.body = "Unlock your phone to sync your Health data with Beeminder."
-            let date = Date()
-            let calendar = Calendar.current
-            let hour = calendar.component(.hour, from: date)
-            
-            var trigger : UNNotificationTrigger
-            if hour < 9 {
-                // data synced before 9 am. Schedule for nine hours from now.
-                trigger = UNTimeIntervalNotificationTrigger(timeInterval: 32400.0, repeats: false)
-            }
-            else if hour >= 9 && hour < 17 {
-                // data synced during the day, before 5 pm. schedule for 8 pm.
-                var components = DateComponents()
-                components.hour = 20
-                trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-            } else {
-                // data synced after 5 pm. Schedule for 9 am next morning.
-                var components = DateComponents()
-                components.hour = 9
-                trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-            }
-            
-            let notification = UNNotificationRequest.init(identifier: "foo", content: content, trigger: trigger)
-            UNUserNotificationCenter.current().add(notification, withCompletionHandler: nil)
+        
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        let content = UNMutableNotificationContent()
+        content.title = "Health Sync"
+        content.body = "Unlock your phone to sync your Health data with Beeminder."
+        let date = Date()
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: date)
+        
+        var trigger : UNNotificationTrigger
+        if hour < 9 {
+            // data synced before 9 am. Schedule for nine hours from now.
+            trigger = UNTimeIntervalNotificationTrigger(timeInterval: 32400.0, repeats: false)
+        }
+        else if hour >= 9 && hour < 17 {
+            // data synced during the day, before 5 pm. schedule for 8 pm.
+            var components = DateComponents()
+            components.hour = 20
+            trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         } else {
-            //            update please!
+            // data synced after 5 pm. Schedule for 9 am next morning.
+            var components = DateComponents()
+            components.hour = 9
+            trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         }
         
+        let notification = UNNotificationRequest.init(identifier: "foo", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(notification, withCompletionHandler: nil)
     }
     
     func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection, success: (() -> ())?, errorCompletion: (() -> ())?) {

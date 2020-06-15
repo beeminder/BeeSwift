@@ -88,11 +88,7 @@ class HealthKitConfigViewController: UIViewController {
     @objc func syncRemindersSwitchValueChanged() {
         UserDefaults.standard.set(self.syncRemindersSwitch.isOn, forKey: Constants.healthSyncRemindersPreferenceKey)
         if self.syncRemindersSwitch.isOn == false {
-            if #available(iOS 10.0, *) {
-                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-            } else {
-                // Fallback on earlier versions
-            }
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         }
     }
     
