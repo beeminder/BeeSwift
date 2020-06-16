@@ -195,3 +195,10 @@ class TimerViewController: UIViewController {
         
     }
 }
+
+extension TimerViewController {
+    convenience init(for goal: JSONGoal) {
+        self.init()
+        self.goal = goal
+    }
+}
