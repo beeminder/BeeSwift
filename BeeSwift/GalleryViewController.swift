@@ -17,6 +17,7 @@ import SafariServices
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {    
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewLayout?
+    var segmentedControl: UISegmentedControl!
     let lastUpdatedView = UIView()
     let lastUpdatedLabel = BSLabel()
     let cellReuseIdentifier = "Cell"
@@ -41,6 +42,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleCreateGoalButtonPressed), name: NSNotification.Name(rawValue: "createGoalButtonPressed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
+        
+        self.segmentedControl = UISegmentedControl(items: Constants.goalSortOptions)
+        self.segmentedControl.selectedSegmentIndex = self.selectedSegmentIndexBasedOnPref
+        
+        self.segmentedControl.addTarget(self, action: #selector(self.segmentedControlValueChanged(_:)), for: .valueChanged)
+        self.view.addSubview(self.segmentedControl)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
@@ -153,7 +160,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }()
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.searchBar.snp.bottom)
+            make.top.equalTo(self.segmentedControl.snp.bottom)
             if #available(iOS 11.0, *) {
                 make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
                 make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
@@ -162,6 +169,17 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 make.right.equalTo(0)
             }
             make.bottom.equalTo(0)
+        }
+        
+        self.segmentedControl.snp.makeConstraints { make in
+            make.top.equalTo(self.searchBar.snp.bottom)
+            if #available(iOS 11.0, *) {
+                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
+                make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
+            } else {
+                make.left.equalTo(0)
+                make.right.equalTo(0)
+            }
         }
         
         self.view.addSubview(self.noGoalsLabel)
@@ -267,11 +285,26 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
+    @objc func segmentedControlValueChanged(_ segmentedControl: UISegmentedControl) {
+        if let value = self.segmentedControl.titleForSegment(at: self.segmentedControl.selectedSegmentIndex) {
+            UserDefaults.standard.set(value, forKey: Constants.selectedGoalSortKey)
+        }
+    }
+    
     @objc func userDefaultsDidChange() {
         DispatchQueue.main.async {
+            self.segmentedControl.selectedSegmentIndex = self.selectedSegmentIndexBasedOnPref
             self.sortGoals()
             self.collectionView?.reloadData()
         }
+    }
+    
+    private var selectedSegmentIndexBasedOnPref: Int {
+        guard let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String,
+            let index = Constants.goalSortOptions.firstIndex(of: selectedGoalSort) else {
+            return -1
+        }
+        return index
     }
     
     @objc func handleSignIn() {
