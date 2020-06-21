@@ -841,3 +841,9 @@ private extension JSONGoal {
         return cacheBustingUrlStr
     }
 }
+
+extension JSONGoal {
+    var isDataProvidedAutomatically: Bool {
+        return !self.autodata.isEmpty
+    }
+}

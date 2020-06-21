@@ -117,25 +117,42 @@ class HealthKitConfigViewController: UIViewController {
 
 extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 3 // manual, auto but apple (editable), auto
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.goals.count
+        if section == 0 { // first section, modifiable
+            return self.manualSourced.count
+        } else if section == 1 {
+            return self.autoSourcedModifiable.count
+        } else {
+            return self.autoSourcedUnmodifiable.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitConfigTableViewCell!
         
-        let goal = self.goals[(indexPath as NSIndexPath).row]
+        let goal = self.goalAt(indexPath)
+        
         cell!.goal = goal
         
         return cell!
     }
     
+    private func goalAt(_ indexPath: IndexPath) -> JSONGoal {
+        if indexPath.section == 0 {
+            return self.manualSourced[indexPath.row]
+        } else if indexPath.section == 1 {
+            return self.autoSourcedModifiable[indexPath.row]
+        } else {
+            return self.autoSourcedUnmodifiable[indexPath.row]
+        }
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let goal = self.goals[(indexPath as NSIndexPath).row]
-        
+        let goal = self.goalAt(indexPath)
+
         if goal.autodata.count == 0 {
             let chooseHKMetricViewController = ChooseHKMetricViewController()
             chooseHKMetricViewController.goal = goal
@@ -144,6 +161,35 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
             let controller = RemoveHKMetricViewController()
             controller.goal = goal
             self.navigationController?.pushViewController(controller, animated: true)
+        } else {
+            let alert: UIAlertController = {
+                let alert = UIAlertController(title: "Auto-data Goal", message: "At the moment we don't have a way for you to swap data source here yourself for auto-data goals", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                return alert
+            }()
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+}
+
+extension HealthKitConfigViewController {
+    var autoSourced: [JSONGoal] {
+        return self.goals.filter { $0.isDataProvidedAutomatically }
+    }
+    
+    var manualSourced: [JSONGoal] {
+        return self.goals.filter { !$0.isDataProvidedAutomatically }
+    }
+    
+    var autoSourcedModifiable: [JSONGoal] {
+        return self.autoSourced.filter { goal -> Bool in
+            return "Apple".localizedCaseInsensitiveCompare(goal.autodata) == ComparisonResult.orderedSame
+        }
+    }
+    
+    var autoSourcedUnmodifiable: [JSONGoal] {
+        return self.autoSourced.filter { goal -> Bool in
+            return "Apple".localizedCaseInsensitiveCompare(goal.autodata) != ComparisonResult.orderedSame
         }
     }
 }
