@@ -18,7 +18,7 @@ class HealthKitConfigViewController: UIViewController {
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
     var syncRemindersSwitch = UISwitch()
     let margin = 12
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         if #available(iOS 13.0, *) {
@@ -71,15 +71,13 @@ class HealthKitConfigViewController: UIViewController {
     }
     
     func sortGoals() {
-        self.goals.sort { (goal1, goal2) -> Bool in
-            return goal1.slug > goal2.slug
-        }
+        self.goals.sort { $0.slug < $1.slug }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         self.fetchGoals()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -112,12 +110,12 @@ class HealthKitConfigViewController: UIViewController {
         }
     }
     
-    @objc func handleMetricRemovedNotification(notification : Notification) {
+    @objc func handleMetricRemovedNotification(notification: Notification) {
         self.fetchGoals()
     }
 }
 
-extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSource {
+extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -128,7 +126,7 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitConfigTableViewCell!
-
+        
         let goal = self.goals[(indexPath as NSIndexPath).row]
         cell!.goal = goal
         
