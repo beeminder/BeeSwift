@@ -99,9 +99,9 @@ class CurrentUserManager : NSObject {
     
     func signInWithEmail(_ email: String, password: String) {
         RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, success: { (responseObject) in
-                self.handleSuccessfulSignin(JSON(responseObject))
-            }) { (responseError, errorMessage) in
-                if responseError != nil { self.handleFailedSignin(responseError!, errorMessage: errorMessage) }
+            self.handleSuccessfulSignin(JSON(responseObject))
+        }) { (responseError, errorMessage) in
+            if responseError != nil { self.handleFailedSignin(responseError!, errorMessage: errorMessage) }
         }
     }
     
@@ -154,29 +154,53 @@ class CurrentUserManager : NSObject {
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
     }
     
+    // MARK: fetching user
+    
+    func fetchUser(success: ((_ user: JSONUser) -> Void)? = nil, error: ((_ error : Error?, _ errorMessage : String?) -> Void)? = nil) {
+        RequestManager.get(url: "api/v1/users/me.json",
+                           parameters: nil,
+                           success: { responseJSON in
+
+                            let json = JSON(responseJSON!)
+                            let responseUser = JSONUser(json: json)!
+                            
+                            success?(responseUser)
+                           }, errorHandler: { (responseError, errorMessage) in
+                            error?(responseError, errorMessage)
+                           }
+        )
+    }
+
+    
+    // MARK: fetching goals
+    
     func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, error: ((_ error : Error?, _ errorMessage : String?) -> ())?) {
         guard let username = self.username else {
             CurrentUserManager.sharedManager.signOut()
             success?([])
             return
         }
-        RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
-            guard let responseGoals = JSON(responseJSON!).array else { return }
-            var jGoals : [JSONGoal] = []
-            responseGoals.forEach({ (goalJSON) in
-                let g = JSONGoal(json: goalJSON)
-                jGoals.append(g)
-            })
-            self.goals = jGoals
-            self.updateTodayWidget()
-            self.goalsFetchedAt = Date()
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
-            success?(jGoals)
-        }) { (responseError, errorMessage) in
-            error?(responseError, errorMessage)
-        }
-    }
 
+        self.fetchUser(success: { user in
+
+            RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
+                guard let responseGoals = JSON(responseJSON!).array else { return }
+                var jGoals : [JSONGoal] = []
+                responseGoals.forEach({ (goalJSON) in
+                    let g = JSONGoal(json: goalJSON)
+                    jGoals.append(g)
+                })
+                self.goals = jGoals
+                self.updateTodayWidget()
+                self.goalsFetchedAt = Date()
+                NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
+                success?(jGoals)
+            }) { (responseError, errorMessage) in
+                error?(responseError, errorMessage)
+            }
+        })
+    }
+    
     func updateTodayWidget() {
         if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder") {
             sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
