@@ -154,28 +154,50 @@ class CurrentUserManager : NSObject {
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
     }
     
+    // MARK: fetching user
+    
+    func fetchUser(success: ((_ user: JSONUser) -> Void)? = nil, error: ((_ error: Error?) -> Void)? = nil) {
+        RequestManager.get(url: "api/v1/users/me.json",
+                           parameters: nil,
+                           success: { responseJSON in
+
+                            let json = JSON(responseJSON!)
+                            let responseUser = JSONUser(json: json)!
+                            
+                            success?(responseUser)
+        }, errorHandler: { responseError in
+            error?(responseError)
+        })
+    }
+    
+    // MARK: fetching goals
+    
     func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, error: ((_ error : Error?) -> ())?) {
         guard let username = self.username else {
             success?([])
             return
         }
-        RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
-            guard let responseGoals = JSON(responseJSON!).array else { return }
-            var jGoals : [JSONGoal] = []
-            responseGoals.forEach({ (goalJSON) in
-                let g = JSONGoal(json: goalJSON)
-                jGoals.append(g)
-            })
-            self.goals = jGoals
-            self.updateTodayWidget()
-            self.goalsFetchedAt = Date()
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
-            success?(jGoals)
-        }) { (responseError) in
-            error?(responseError)
-        }
-    }
 
+        self.fetchUser(success: { user in
+
+            RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
+                guard let responseGoals = JSON(responseJSON!).array else { return }
+                var jGoals : [JSONGoal] = []
+                responseGoals.forEach({ (goalJSON) in
+                    let g = JSONGoal(json: goalJSON)
+                    jGoals.append(g)
+                })
+                self.goals = jGoals
+                self.updateTodayWidget()
+                self.goalsFetchedAt = Date()
+                NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
+                success?(jGoals)
+            }) { (responseError) in
+                error?(responseError)
+            }
+        })
+    }
+    
     func updateTodayWidget() {
         if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder") {
             sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
