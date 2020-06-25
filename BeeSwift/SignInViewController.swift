@@ -27,6 +27,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
     var backToSignUpButton = BSButton()
     var signInButton = BSButton()
     var facebookLoginButton : FBSDKLoginButton = FBSDKLoginButton()
+    var twitterLoginButton : TWTRLogInButton = TWTRLogInButton()
     var divider = UIView()
     
     override func viewDidLoad() {
@@ -133,12 +134,31 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
         self.divider.isHidden = true
         self.divider.backgroundColor = UIColor.beeGrayColor()
         
+        
+        self.twitterLoginButton = TWTRLogInButton { (session, error) in
+            if error == nil {
+                OAuthSignInManager.sharedManager.loginWithTwitterSession(session)
+            }
+            else {
+                // show error
+            }
+        }
+        
+        self.twitterLoginButton.isHidden = true
+        scrollView.addSubview(self.twitterLoginButton)
+        self.twitterLoginButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.divider.snp.bottom).offset(15)
+            make.centerX.equalTo(self.signInButton)
+            make.width.equalTo(self.signInButton)
+            make.height.equalTo(self.signInButton)
+        }
+        
         scrollView.addSubview(self.facebookLoginButton)
         self.facebookLoginButton.alpha = 0.0
         self.facebookLoginButton.readPermissions = ["public_profile", "email", "user_friends"]
         self.facebookLoginButton.delegate = self
         self.facebookLoginButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.divider.snp.bottom).offset(15)
+            make.top.equalTo(self.twitterLoginButton.snp.bottom).offset(15)
             make.centerX.equalTo(self.signInButton)
             make.width.equalTo(self.signInButton)
             make.height.equalTo(self.signInButton)
@@ -226,6 +246,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
         CurrentUserManager.sharedManager.signingUp = false
         self.beeImageView.isHidden = true
         self.divider.isHidden = false
+        self.twitterLoginButton.isHidden = false
         self.facebookLoginButton.alpha = 1.0
         self.backToSignUpButton.isHidden = false
         self.emailTextField.isHidden = false
@@ -252,6 +273,7 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
         CurrentUserManager.sharedManager.signingUp = true
         self.beeImageView.isHidden = true
         self.divider.isHidden = false
+        self.twitterLoginButton.isHidden = true
         self.facebookLoginButton.alpha = 0.0
         self.backToSignUpButton.isHidden = true
         self.emailTextField.isHidden = true
