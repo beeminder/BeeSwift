@@ -11,9 +11,10 @@ import SnapKit
 import MBProgressHUD
 import SwiftyJSON
 import HealthKit
+import SafariServices
 
-class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate {
-    
+
+class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {    
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewLayout?
     let lastUpdatedView = UIView()
@@ -26,12 +27,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let noGoalsLabel = BSLabel()
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
-    var lastUpdated : Date?
+    var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
     var goals : Array<JSONGoal> = []
     var filteredGoals : Array<JSONGoal> = []
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -312,7 +313,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if searchText == "" {
             self.filteredGoals = self.goals
         } else {
-            self.filteredGoals = self.goals.filter { (goal) -> Bool in
+        self.filteredGoals = self.goals.filter { (goal) -> Bool in
                 return goal.slug.lowercased().contains(searchText.lowercased())
             }
         }
@@ -330,7 +331,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleCreateGoalButtonPressed() {
-        self.navigationController?.pushViewController(CreateGoalViewController(), animated: true)
+        guard let username = CurrentUserManager.sharedManager.username,
+            let access_token = CurrentUserManager.sharedManager.accessToken,
+            let createGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(access_token)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true") else { return }
+        
+        let safariVC = SFSafariViewController(url: createGoalUrl)
+        safariVC.delegate = self
+        self.showDetailViewController(safariVC, sender: self)
     }
     
     @objc func updateLastUpdatedLabel() {
@@ -343,7 +350,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
             else if lastUpdated.timeIntervalSinceNow < -120 {
                 color = UIColor.black
-                lastTextString = "Last updated: \(-1*Int(lastUpdated.timeIntervalSinceNow/60)) minutes ago"
+                lastTextString = "Last updated: \(-1 * Int(lastUpdated.timeIntervalSinceNow / 60)) minutes ago"
             }
             else if lastUpdated.timeIntervalSinceNow < -60 {
                 color = UIColor.black
@@ -358,7 +365,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             color = UIColor.red
             lastTextString = "Last updated: a long time ago..."
         }
-        let lastText :NSMutableAttributedString = NSMutableAttributedString(string: lastTextString)
+        let lastText: NSMutableAttributedString = NSMutableAttributedString(string: lastTextString)
         lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: color, range: NSRange(location: 0, length: lastText.string.count))
         self.lastUpdatedLabel.attributedText = lastText
     }
@@ -475,7 +482,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let row = (indexPath as NSIndexPath).row
         if row < self.filteredGoals.count { self.openGoal(self.filteredGoals[row]) }
     }
-
+    
     @objc func openGoalFromNotification(_ notification: Notification) {
         let slug = (notification as NSNotification).userInfo!["slug"] as! String
         let matchingGoal = self.goals.filter({ (goal) -> Bool in
@@ -491,6 +498,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let goalViewController = GoalViewController()
         goalViewController.goal = goal
         self.navigationController?.pushViewController(goalViewController, animated: true)
+    }
+    
+    // MARK: - SFSafariViewControllerDelegate
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true, completion: nil)
+        self.fetchGoals()
     }
 }
 
