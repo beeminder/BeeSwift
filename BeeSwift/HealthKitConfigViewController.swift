@@ -91,6 +91,8 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.goals = CurrentUserManager.sharedManager.goals
         self.sortGoals()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricRemovedNotification(notification:)), name: NSNotification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: nil)
     }
     
     func sortGoals() {

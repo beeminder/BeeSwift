@@ -7,14 +7,15 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 class RemoveHKMetricViewController: UIViewController {
     
     var goal : JSONGoal!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         if #available(iOS 13.0, *) {
             self.view.backgroundColor = .systemBackground
         } else {
@@ -44,7 +45,7 @@ class RemoveHKMetricViewController: UIViewController {
         removeButton.setTitle("Disconnect", for: .normal)
         removeButton.addTarget(self, action: #selector(self.removeButtonPressed), for: .touchUpInside)
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -53,14 +54,20 @@ class RemoveHKMetricViewController: UIViewController {
     @objc func removeButtonPressed() {
         guard self.goal != nil else { return }
         self.goal?.autodata = ""
-        var params : [String : [String : String]] = [:]
-        params = ["ii_params" : ["name" : "", "metric" : ""]]
+        var params: [String: [String: String]] = [:]
+        params = ["ii_params": ["name": "", "metric": ""]]
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
+            
+            self.goal = JSONGoal(json: JSON(responseObject!))
+
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+            
+            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: self, userInfo: ["goal": self.goal])
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 hud?.hide(true, afterDelay: 2)
                 self.navigationController?.popViewController(animated: true)

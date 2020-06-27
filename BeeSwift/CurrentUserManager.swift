@@ -20,6 +20,8 @@ class CurrentUserManager : NSObject {
     static let resetNotificationName        = "com.beeminder.resetNotification"
     static let willResetNotificationName    = "com.beeminder.willResetNotification"
     static let goalsFetchedNotificationName = "com.beeminder.goalsFetchedNotification"
+    static let healthKitMetricRemovedNotificationName = "com.beeminder.healthKitMetricRemovedNotification"
+    
     fileprivate let accessTokenKey = "access_token"
     fileprivate let usernameKey = "username"
     fileprivate let deadbeatKey = "deadbeat"
