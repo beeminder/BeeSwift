@@ -221,7 +221,7 @@ class JSONGoal {
         return safe.prefix(1).uppercased() + safe.dropFirst(1)
     }
     
-    func humanizedAutodata() -> String? {
+    var humanizedAutodata: String? {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
         if self.autodata == "apple" {

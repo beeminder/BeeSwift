@@ -13,7 +13,7 @@ class HealthKitConfigTableViewCell: UITableViewCell {
     var goal : JSONGoal? {
         didSet {
             self.goalnameLabel.text = self.goal?.slug
-            self.autodataNameLabel.text = self.goal?.humanizedAutodata()
+            self.autodataNameLabel.text = self.goal?.humanizedAutodata
             
             self.addMetricLabel.isHidden = false
             self.autodataNameLabel.layer.opacity = 1.0

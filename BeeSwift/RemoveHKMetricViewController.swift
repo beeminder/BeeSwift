@@ -24,7 +24,7 @@ class RemoveHKMetricViewController: UIViewController {
         
         let currentMetricLabel = BSLabel()
         self.view.addSubview(currentMetricLabel)
-        currentMetricLabel.text = "This goal (\(goal.slug)) obtains its data from Apple Health (\(self.goal.humanizedAutodata()!)). You can disconnect the goal with the button below."
+        currentMetricLabel.text = "This goal (\(goal.slug)) obtains its data from Apple Health (\(self.goal.humanizedAutodata!)). You can disconnect the goal with the button below."
         currentMetricLabel.snp.makeConstraints { (make) in
             make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
             make.centerX.equalTo(self.view)
