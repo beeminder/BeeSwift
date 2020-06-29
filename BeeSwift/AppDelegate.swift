@@ -110,6 +110,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if url.scheme == Config.facebookUrlScheme {
             return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
         }
+        else if url.scheme == Config.twitterUrlScheme {
+            return Twitter.sharedInstance().application(application, open: url, options: [:])
+        }
         else if url.scheme == "beeminder" {
             if let query = url.query {
                 let slugKeyIndex = query.components(separatedBy: "=").index(of: "slug")
