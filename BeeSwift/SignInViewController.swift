@@ -11,7 +11,7 @@ import TwitterKit
 import FBSDKLoginKit
 import MBProgressHUD
 
-class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextFieldDelegate, UIAlertViewDelegate {
+class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextFieldDelegate {
     
     var headerLabel = BSLabel()
     var emailTextField = BSTextField()
@@ -133,7 +133,8 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
         scrollView.addSubview(self.divider)
         self.divider.isHidden = true
         self.divider.backgroundColor = UIColor.beeGrayColor()
-
+        
+        
         self.twitterLoginButton = TWTRLogInButton { (session, error) in
             if error == nil {
                 OAuthSignInManager.sharedManager.loginWithTwitterSession(session)
@@ -295,12 +296,6 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
         }
     }
     
-    func alertView(_ alertView: UIAlertView, clickedButtonAt buttonIndex: Int) {
-        if buttonIndex == 1 {
-            UIApplication.shared.openURL(URL(string: "https://www.beeminder.com")!)
-        }
-    }
-    
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
         // show message if error
         OAuthSignInManager.sharedManager.loginButton(loginButton, didCompleteWith: result, error: error as NSError!)
@@ -311,12 +306,16 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
     }
     
     @objc func handleFailedSignIn(_ notification : Notification) {
-        UIAlertView(title: "Could not sign in", message: "Invalid credentials", delegate: self, cancelButtonTitle: "OK").show()
+        let failureAC = UIAlertController(title: "Could not sign in", message: "Invalid credentials", preferredStyle: .alert)
+        failureAC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        self.present(failureAC, animated: true, completion: nil)
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
     }
     
     @objc func handleFailedSignUp(_ notification : Notification) {
-        UIAlertView(title: "Could not sign up", message: "Username or email is already taken", delegate: self, cancelButtonTitle: "OK").show()
+        let failureAC = UIAlertController(title: "Could not sign up", message: "Username or email is already taken", preferredStyle: .alert)
+        failureAC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        self.present(failureAC, animated: true, completion: nil)
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
     }
     

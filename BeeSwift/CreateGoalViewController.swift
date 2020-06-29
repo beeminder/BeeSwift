@@ -9,21 +9,22 @@
 import UIKit
 import SnapKit
 import MBProgressHUD
+import WebKit
 
 class CreateGoalViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let webView = UIWebView()
+        let webView = WKWebView()
         self.view.addSubview(webView)
         webView.snp.makeConstraints { (make) in
             make.edges.equalTo(0)
         }
-        webView.delegate = self
+        webView.navigationDelegate = self
         
         let url = URL.init(string: "\(RequestManager.baseURLString)/api/v1/users/\(CurrentUserManager.sharedManager.username!).json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true")
-        webView.loadRequest(URLRequest(url: url!))
+        webView.load(URLRequest(url: url!))
     }
     
     func doneButtonPressed() {
@@ -36,16 +37,16 @@ class CreateGoalViewController: UIViewController {
     }
 }
 
-extension CreateGoalViewController: UIWebViewDelegate {
-    func webViewDidStartLoad(_ webView: UIWebView) {
+extension CreateGoalViewController: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         MBProgressHUD.showAdded(to: self.view, animated: true)
     }
     
-    func webViewDidFinishLoad(_ webView: UIWebView) {
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
     }
     
-    func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
         let alert = UIAlertController(title: "Error creating a goal", message: error.localizedDescription, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))

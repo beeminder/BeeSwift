@@ -60,7 +60,6 @@
 		A1BD0D1C1AEB34E0001EDE8B /* GalleryNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BD0D1B1AEB34E0001EDE8B /* GalleryNavigationController.swift */; };
 		A1BE73AA1E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */; };
 		A1BE73AC1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */; };
-		A1BEEB511AFDC0DE00E7081F /* RemoteNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEEB501AFDC0DE00E7081F /* RemoteNotificationsManager.swift */; };
 		A1C11B481B06F5D100D22871 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
 		A1C170E01BEEB3110018D32B /* UIFontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */; };
 		A1D853261EB0332D00FC75DE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
@@ -82,8 +81,7 @@
 		D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */; };
 		E55FEE6B23FF7552007C20B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
 		E55FEE6C23FF7552007C20B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
-		E55FEE6E23FF78E8007C20B2 /* Sentry.sh in Resources */ = {isa = PBXBuildFile; fileRef = E55FEE6D23FF78E8007C20B2 /* Sentry.sh */; };
-		E55FEE6F23FF78E8007C20B2 /* Sentry.sh in Resources */ = {isa = PBXBuildFile; fileRef = E55FEE6D23FF78E8007C20B2 /* Sentry.sh */; };
+		E5C161942423CEA00045C90D /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C161932423CE9F0045C90D /* VersionManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,7 +175,6 @@
 		A1BD3E021AE41AE400B1390A /* BeeSwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeeSwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChooseHKMetricViewController.swift; sourceTree = "<group>"; };
 		A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitMetricTableViewCell.swift; sourceTree = "<group>"; };
-		A1BEEB501AFDC0DE00E7081F /* RemoteNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteNotificationsManager.swift; sourceTree = "<group>"; };
 		A1C11B471B06F5D100D22871 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFontExtension.swift; sourceTree = "<group>"; };
 		A1D853271EB0DE0700FC75DE /* TodayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodayTableViewCell.swift; sourceTree = "<group>"; };
@@ -195,6 +192,7 @@
 		E029CC25A4BEE8E42BD37670 /* Pods-BeeSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwift/Pods-BeeSwift.release.xcconfig"; sourceTree = "<group>"; };
 		E55FEE6A23FF7552007C20B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		E55FEE6D23FF78E8007C20B2 /* Sentry.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Sentry.sh; sourceTree = "<group>"; };
+		E5C161932423CE9F0045C90D /* VersionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,10 +250,10 @@
 			children = (
 				A1BCE9841AFFFB3A007322CC /* RequestManager.swift */,
 				A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */,
-				A1BEEB501AFDC0DE00E7081F /* RemoteNotificationsManager.swift */,
 				A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */,
 				A14249221FD07631007736B3 /* OAuthSignInManager.swift */,
 				A142492C1FD079B4007736B3 /* SignedRequestManager.swift */,
+				E5C161932423CE9F0045C90D /* VersionManager.swift */,
 			);
 			name = Managers;
 			sourceTree = "<group>";
@@ -445,7 +443,6 @@
 				A1B53C401B2D04EB00AF266F /* Embed App Extensions */,
 				65ECC2B46631C152D41E5ED7 /* [CP] Embed Pods Frameworks */,
 				7F4939A2A22FFE5EEDA4890F /* [CP] Copy Pods Resources */,
-				A1C02F631FCE1C2C00D08E6E /* Run Script - Sentry */,
 			);
 			buildRules = (
 			);
@@ -560,7 +557,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E55FEE6F23FF78E8007C20B2 /* Sentry.sh in Resources */,
 				A12E69541BD3EF0200AB94C2 /* MainInterface.storyboard in Resources */,
 				A1D853311EB3E0A300FC75DE /* Images.xcassets in Resources */,
 			);
@@ -573,7 +569,6 @@
 				A196CB221AE4142F00B90A3E /* Main.storyboard in Resources */,
 				A196CB271AE4142F00B90A3E /* LaunchScreen.xib in Resources */,
 				A196CB241AE4142F00B90A3E /* Images.xcassets in Resources */,
-				E55FEE6E23FF78E8007C20B2 /* Sentry.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -647,7 +642,6 @@
 				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
 				"${BUILT_PRODUCTS_DIR}/IQKeyboardManager/IQKeyboardManager.framework",
-				"${BUILT_PRODUCTS_DIR}/KSCrash/KSCrash.framework",
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/MagicalRecord/MagicalRecord.framework",
 				"${BUILT_PRODUCTS_DIR}/Sentry/Sentry.framework",
@@ -663,7 +657,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManager.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KSCrash.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MagicalRecord.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sentry.framework",
@@ -694,20 +687,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BeeSwift/Pods-BeeSwift-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		A1C02F631FCE1C2C00D08E6E /* Run Script - Sentry */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script - Sentry";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/BeeSwift/Sentry.sh\"\n";
 		};
 		E2D92A94933DBD2D5D5F3943 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -797,7 +776,6 @@
 				A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */,
 				A149B3721AEF54D100F19A09 /* BSButton.swift in Sources */,
 				A1C170E01BEEB3110018D32B /* UIFontExtension.swift in Sources */,
-				A1BEEB511AFDC0DE00E7081F /* RemoteNotificationsManager.swift in Sources */,
 				A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */,
 				A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */,
 				A142492D1FD079B4007736B3 /* SignedRequestManager.swift in Sources */,
@@ -814,6 +792,7 @@
 				A12BA9541AFFF21800AFEF32 /* Crypto.swift in Sources */,
 				A1A8BDE61FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift in Sources */,
 				A14249231FD07631007736B3 /* OAuthSignInManager.swift in Sources */,
+				E5C161942423CEA00045C90D /* VersionManager.swift in Sources */,
 				A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -875,9 +854,10 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CODE_SIGN_ENTITLEMENTS = BeeSwiftToday/BeeSwiftToday.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_TESTABILITY = YES;
@@ -886,9 +866,9 @@
 					"$(PROJECT_DIR)/build/Debug-iphoneos",
 				);
 				INFOPLIST_FILE = BeeSwiftToday/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 5.6;
+				MARKETING_VERSION = 5.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeminderToday;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -905,18 +885,19 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CODE_SIGN_ENTITLEMENTS = BeeSwiftToday/BeeSwiftToday.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/build/Debug-iphoneos",
 				);
 				INFOPLIST_FILE = BeeSwiftToday/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 5.6;
+				MARKETING_VERSION = 5.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeminderToday;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -976,7 +957,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "";
@@ -1028,7 +1009,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -1046,19 +1027,20 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BeeSwift/BeeSwift.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = BeeSwift/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 5.6;
+				MARKETING_VERSION = 5.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder;
 				PRODUCT_NAME = BeeSwift;
 				PROVISIONING_PROFILE = "";
@@ -1080,10 +1062,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BeeSwift/BeeSwift.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1091,9 +1074,9 @@
 				);
 				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = BeeSwift/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 5.6;
+				MARKETING_VERSION = 5.6.4;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder;
 				PRODUCT_NAME = BeeSwift;

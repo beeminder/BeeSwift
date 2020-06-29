@@ -57,6 +57,21 @@ NS_SWIFT_NAME(Client)
 @property(nonatomic, strong) NSDictionary<NSString *, id> *_Nullable extra;
 
 /**
+ * This property will be filled before the event is sent.
+ */
+@property(nonatomic, copy) NSString *_Nullable releaseName;
+
+/**
+ * This property will be filled before the event is sent.
+ */
+@property(nonatomic, copy) NSString *_Nullable dist;
+
+/**
+ * The environment used for this event
+ */
+@property(nonatomic, copy) NSString *_Nullable environment;
+    
+/**
  * This will be filled on every startup with a dictionary with extra, tags, user which will be used
  * when sending the crashreport
  */
@@ -68,9 +83,14 @@ NS_SWIFT_NAME(Client)
 @property(nonatomic, strong) SentryEvent *_Nullable lastEvent;
 
 /**
- * Contains the last successfully sent event
+ * Contains the breadcrumbs which will be sent with the event
  */
 @property(nonatomic, strong) SentryBreadcrumbStore *breadcrumbs;
+    
+/**
+ * Is the client enabled?. Default is @YES, if set @NO sending of events will be prevented.
+ */
+@property(nonatomic, copy) NSNumber *enabled;
 
 /**
  * This block can be used to modify the event before it will be serialized and sent
@@ -102,6 +122,24 @@ NS_SWIFT_NAME(Client)
 @property(nonatomic) float sampleRate;
 
 /**
+ * This block can be used to prevent the event from being deleted after a failed send attempt.
+ * Default is it will only be stored once after you hit a rate limit or there is no internet connect/cannot connect.
+ * Also note that if an event fails to be sent again after it was queued, it will be discarded regardless.
+ * @return BOOL YES = store and try again later, NO = delete
+ */
+@property(nonatomic, copy) SentryShouldQueueEvent _Nullable shouldQueueEvent;
+
+/**
+ * Increase the max number of events we store offline.
+ * Be careful with this setting since too high numbers may cause your quota to exceed.
+ */
+@property(nonatomic, assign) NSUInteger maxEvents;
+/**
+ * Increase the max number of breadcrumbs we store offline.
+ */
+@property(nonatomic, assign) NSUInteger maxBreadcrumbs;
+
+/**
  * Initializes a SentryClient. Pass your private DSN string.
  *
  * @param dsn DSN string of sentry
@@ -110,12 +148,27 @@ NS_SWIFT_NAME(Client)
  */
 - (_Nullable instancetype)initWithDsn:(NSString *)dsn
                      didFailWithError:(NSError *_Nullable *_Nullable)error;
+    
+/**
+ * Initializes a SentryClient. Pass in an dictionary of options.
+ *
+ * @param options Options dictionary
+ * @param error NSError reference object
+ * @return SentryClient
+ */
+- (_Nullable instancetype)initWithOptions:(NSDictionary<NSString *, id> *)options
+                         didFailWithError:(NSError *_Nullable *_Nullable)error;
 
 /**
  * This automatically adds breadcrumbs for different user actions.
  */
 - (void)enableAutomaticBreadcrumbTracking;
-    
+
+/**
+ * Track memory pressure notification on UIApplications and send an event for it to Sentry.
+ */
+- (void)trackMemoryPressureAsEvent;
+
 /**
  * Sends and event to sentry. Internally calls @selector(sendEvent:useClientProperties:withCompletionHandler:) with
  * useClientProperties: YES. CompletionHandler will be called if set.
@@ -126,37 +179,37 @@ NS_SWIFT_NAME(Client)
 NS_SWIFT_NAME(send(event:completion:));
 
 /**
- * This function stores an event to disk. It will be send with the next batch.
+ * This function stores an event to disk. It will be sent with the next batch.
  * This function is mainly used for react native.
  * @param event SentryEvent that should be sent
  */
 - (void)storeEvent:(SentryEvent *)event;
 
 /**
- * Clears all context related variables tags, extra and user
+ * Clears all context related variables: tags, extra and user
  */
 - (void)clearContext;
 
-/// KSCrash
-/// Functions below will only do something if KSCrash is linked
+/// SentryCrash
+/// Functions below will only do something if SentryCrash is linked
 
 /**
- * This forces a crash, useful to test the KSCrash integration
+ * This forces a crash, useful to test the SentryCrash integration
  *
  */
 - (void)crash;
 
 /**
- * This function tries to start the KSCrash handler, return YES if successfully started
+ * This function tries to start the SentryCrash handler, return YES if successfully started
  * otherwise it will return false and set error
  *
- * @param error if KSCrash is not available error will be set
+ * @param error if SentryCrash is not available error will be set
  * @return successful
  */
 - (BOOL)startCrashHandlerWithError:(NSError *_Nullable *_Nullable)error;
 
-/** 
- * Report a custom, user defined exception. Only works if KSCrash is linked.
+/**
+ * Report a custom, user defined exception. Only works if SentryCrash is linked.
  * This can be useful when dealing with scripting languages.
  *
  * If terminateProgram is true, all sentries will be uninstalled and the application will

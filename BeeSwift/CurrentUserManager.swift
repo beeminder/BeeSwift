@@ -26,6 +26,7 @@ class CurrentUserManager : NSObject {
     fileprivate let defaultLeadtimeKey = "default_leadtime"
     fileprivate let defaultAlertstartKey = "default_alertstart"
     fileprivate let defaultDeadlineKey = "default_deadline"
+    fileprivate let beemTZKey = "timezone"
     fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
     
     var goals : [JSONGoal] = []
@@ -76,6 +77,10 @@ class CurrentUserManager : NSObject {
         return UserDefaults.standard.object(forKey: deadbeatKey) != nil
     }
     
+    func timezone() -> String {
+        return UserDefaults.standard.object(forKey: beemTZKey) as? String ?? "Unknown"
+    }
+    
     func setDeadbeat(_ deadbeat: Bool) {
         if deadbeat {
             UserDefaults.standard.set(true, forKey: deadbeatKey)
@@ -107,6 +112,7 @@ class CurrentUserManager : NSObject {
         UserDefaults.standard.set(responseJSON[defaultAlertstartKey].number!, forKey: defaultAlertstartKey)
         UserDefaults.standard.set(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
         UserDefaults.standard.set(responseJSON[defaultLeadtimeKey].number!, forKey: defaultLeadtimeKey)
+        UserDefaults.standard.set(responseJSON[beemTZKey].string!, forKey: beemTZKey)
         UserDefaults.standard.synchronize()
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
     }
@@ -179,7 +185,8 @@ class CurrentUserManager : NSObject {
     func todayGoalDictionaries() -> Array<Any> {
         let todayGoals = self.goals.map { (goal) -> Any? in
             let shortSlug = goal.slug.prefix(20)
-            return ["deadline" : goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(goal.limsum!)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
+            let limsum = goal.limsum ?? ""
+            return ["deadline" : goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
         }
         return Array(todayGoals.prefix(3)) as Array<Any>
     }

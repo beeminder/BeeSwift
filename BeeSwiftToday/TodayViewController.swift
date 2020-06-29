@@ -24,12 +24,8 @@ class TodayViewController: UIViewController {
         
         self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight)
         
-        if #available(iOSApplicationExtension 10.0, *) {
-            if self.goalDictionaries.count > 1 {
-                self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
-            }
-        } else {
-            
+        if self.goalDictionaries.count > 1 {
+            self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
         }
         
         self.updateDataSource()
@@ -55,7 +51,6 @@ class TodayViewController: UIViewController {
 }
 
 extension TodayViewController : NCWidgetProviding {
-    @available(iOSApplicationExtension 10.0, *)
     func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
         if activeDisplayMode == .expanded {
             self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight * self.goalDictionaries.count)

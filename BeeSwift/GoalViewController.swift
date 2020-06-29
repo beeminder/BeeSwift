@@ -30,9 +30,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     fileprivate var goalImageScrollView = UIScrollView()
     fileprivate var datapointsTableView = DatapointsTableView()
     fileprivate var pollTimer : Timer?
-    fileprivate var deltasLabel = BSLabel()
     fileprivate var countdownLabel = BSLabel()
-    fileprivate var pledgeLabel = BSLabel()
+    fileprivate var deltasLabel = BSLabel()
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
@@ -60,9 +59,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.bottom.equalTo(0)
         }
         
-        let deltasView = UIView()
-        self.scrollView.addSubview(deltasView)
-        deltasView.snp.makeConstraints { (make) -> Void in
+        let countdownView = UIView()
+        self.scrollView.addSubview(countdownView)
+        countdownView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(0)
             make.left.equalTo(0)
             make.right.equalTo(0)
@@ -70,33 +69,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.width.equalTo(self.scrollView)
         }
         
-        deltasView.addSubview(self.pledgeLabel)
-        deltasView.addSubview(self.deltasLabel)
-        deltasView.addSubview(self.countdownLabel)
-        
-        self.pledgeLabel.font = UIFont(name:"Avenir-Heavy", size:Constants.defaultFontSize)
-        self.pledgeLabel.textAlignment = .left
-        self.pledgeLabel.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.countdownLabel.snp.right)
-            make.centerY.equalTo(deltasView)
-        }
-        
-        self.deltasLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
-        self.deltasLabel.textAlignment = .right
-        self.deltasLabel.snp.makeConstraints { (make) -> Void in
-            make.right.equalTo(self.countdownLabel.snp.left)
-            make.centerY.equalTo(deltasView)
-            make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
-        }
+        countdownView.addSubview(self.countdownLabel)
 
         self.countdownLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
         self.countdownLabel.textAlignment = .center
         self.countdownLabel.snp.makeConstraints { (make) -> Void in
-            make.centerY.centerX.equalTo(deltasView)
-            make.width.equalTo(deltasView).multipliedBy(self.headerWidth)
+            make.centerY.centerX.equalTo(countdownView)
+            make.width.equalTo(countdownView)
         }
-        
-        Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GoalViewController.refreshCountdown), userInfo: nil, repeats: true)
         
         self.scrollView.addSubview(self.goalImageScrollView)
         self.goalImageScrollView.showsHorizontalScrollIndicator = false
@@ -114,7 +94,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 make.right.lessThanOrEqualTo(0)
             }
             
-            make.top.equalTo(deltasView.snp.bottom)
+            make.top.equalTo(countdownView.snp.bottom)
             make.width.equalTo(self.scrollView)
             make.height.equalTo(self.goalImageScrollView.snp.width).multipliedBy(Float(Constants.graphHeight)/Float(Constants.graphWidth))
         }
@@ -132,6 +112,16 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.right.equalTo(self.goalImageScrollView)
         }
         
+        self.view.addSubview(self.deltasLabel)
+        self.deltasLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(self.goalImageScrollView.snp.bottom)
+            make.left.right.equalTo(0)
+        }
+        self.deltasLabel.attributedText = self.goal!.attributedDeltaText
+        self.deltasLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
+        self.deltasLabel.textAlignment = .center
+        
+        
         self.datapointsTableView.dataSource = self
         self.datapointsTableView.delegate = self
         self.datapointsTableView.separatorStyle = .none
@@ -139,7 +129,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.datapointsTableView.register(DatapointTableViewCell.self, forCellReuseIdentifier: self.cellIdentifier)
         self.scrollView.addSubview(self.datapointsTableView)
         self.datapointsTableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.goalImageScrollView.snp.bottom)
+            make.top.equalTo(self.deltasLabel.snp.bottom)
             make.left.equalTo(self.goalImageScrollView).offset(10)
             make.right.equalTo(self.goalImageScrollView).offset(-10)
         }
@@ -211,10 +201,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.top.equalTo(0)
         }
         
-        if let lastDatapoint = self.goal!.recent_data?.last as? JSON {
-            self.valueTextField.text = "\(String(describing: lastDatapoint["value"]))"
-        }
-        
+        self.setValueTextField()
         self.valueTextFieldValueChanged()
         
         let commentLeftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 1))
@@ -261,7 +248,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let calendar = Calendar.current
         let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
         let currentHour = components.hour
-        if self.goal.deadline.intValue > 0 && currentHour! < 6 && self.goal.deadline.intValue/3600 < currentHour! {
+        if self.goal.deadline.intValue > 0 && currentHour! < 6 && currentHour! < self.goal.deadline.intValue/3600 {
             self.dateStepper.value = -1
         }
         
@@ -401,15 +388,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         if (!CurrentUserManager.sharedManager.signedIn()) { return }
         if keyPath == "graph_url" {
             self.setGraphImage()
-        } else if keyPath == "delta_text" || keyPath == "safebump" {
-            self.deltasLabel.text = self.goal.baremin! + " " + self.goal.countdownHelperText
+        } else if keyPath == "delta_text" || keyPath == "safebump" || keyPath == "safesum" {
+            self.refreshCountdown()
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        self.setGraphImage()
-        self.refreshCountdown()
-        self.pledgeLabel.text = " or pay $\(self.goal.pledge)"
+        self.refreshGoal()
     }
     
     @objc func timerButtonPressed() {
@@ -453,8 +438,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @objc func refreshCountdown() {
         self.countdownLabel.textColor = self.goal.countdownColor
-        self.countdownLabel.text = self.goal.countdownText as String
-        self.deltasLabel.text = self.goal.baremin! + " " + self.goal.countdownHelperText
+        self.countdownLabel.text = self.goal.capitalSafesum() + " or pay $\(self.goal.pledge)"
     }
     
     func setGraphImage() {
@@ -482,10 +466,17 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.dateTextField.text = formatter.string(from: newDate!)
     }
     
+    func setValueTextField() {
+        if let lastDatapoint = self.goal!.recent_data?.last as? JSON {
+            self.valueTextField.text = "\(String(describing: lastDatapoint["value"]))"
+        }
+    }
+    
     @objc func valueStepperValueChanged() {
         var valueString = ""
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US")
+        formatter.groupingSeparator = ""
         formatter.numberStyle = .decimal
         
         if self.valueStepper.value < 0 {
@@ -568,6 +559,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
             self.goal = JSONGoal(json: JSON(responseObject!))
             self.datapointsTableView.reloadData()
+            self.refreshCountdown()
+            self.setValueTextField()
+            self.valueTextFieldValueChanged()
+            self.deltasLabel.attributedText = self.goal!.attributedDeltaText
             if (!self.goal.queued!) {
                 self.setGraphImage()
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)

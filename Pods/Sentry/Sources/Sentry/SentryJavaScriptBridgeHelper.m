@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (ravenFrame[@"lineno"] != NSNull.null) {
             [frame addEntriesFromDictionary:@{@"column": [formatter numberFromString:[NSString stringWithFormat:@"%@", ravenFrame[@"colno"]]],
                                               @"lineNumber": [formatter numberFromString:[NSString stringWithFormat:@"%@", ravenFrame[@"lineno"]]]}];
-            
+
         }
         [frames addObject:frame];
     }
@@ -103,7 +103,12 @@ NS_ASSUME_NONNULL_BEGIN
     SentryBreadcrumb *breadcrumb = [[SentryBreadcrumb alloc] initWithLevel:[self.class sentrySeverityFromLevel:level]
                                                              category:jsonBreadcrumb[@"category"]];
     breadcrumb.message = jsonBreadcrumb[@"message"];
-    breadcrumb.timestamp = [NSDate dateWithTimeIntervalSince1970:[jsonBreadcrumb[@"timestamp"] integerValue]];
+    if ([jsonBreadcrumb[@"timestamp"] integerValue] > 0) {
+        breadcrumb.timestamp = [NSDate dateWithTimeIntervalSince1970:[jsonBreadcrumb[@"timestamp"] integerValue]];
+    } else {
+        breadcrumb.timestamp = [NSDate date];
+    }
+
     breadcrumb.type = jsonBreadcrumb[@"type"];
     breadcrumb.data = jsonBreadcrumb[@"data"];
     return breadcrumb;
@@ -115,17 +120,34 @@ NS_ASSUME_NONNULL_BEGIN
     if (jsonEvent[@"event_id"]) {
         event.eventId = jsonEvent[@"event_id"];
     }
-    event.message = jsonEvent[@"message"];
-    event.logger = jsonEvent[@"logger"];
+    if (jsonEvent[@"message"]) {
+        event.message = jsonEvent[@"message"];
+    }
+    if (jsonEvent[@"logger"]) {
+        event.logger = jsonEvent[@"logger"];
+    }
+    if (jsonEvent[@"fingerprint"]) {
+        event.fingerprint = jsonEvent[@"fingerprint"];
+    }
+    if (jsonEvent[@"environment"]) {
+        event.environment = jsonEvent[@"environment"];
+    }
     event.tags = [self.class sanitizeDictionary:jsonEvent[@"tags"]];
-    event.extra = jsonEvent[@"extra"];
+    if (jsonEvent[@"extra"]) {
+        event.extra = jsonEvent[@"extra"];
+    }
     event.user = [self.class createSentryUserFromJavaScriptUser:jsonEvent[@"user"]];
     if (jsonEvent[@"exception"] || (jsonEvent[@"stacktrace"] && jsonEvent[@"stacktrace"][@"frames"])) {
-        NSArray *jsStacktrace = nil;
+        NSArray *jsStacktrace = @[];
         NSString *exceptionType = @"";
         NSString *exceptionValue = @"";
         if (jsonEvent[@"exception"]) {
-            NSDictionary *exception = jsonEvent[@"exception"][@"values"][0];
+            NSDictionary *exception;
+            if ([jsonEvent valueForKeyPath:@"exception.values"] && [jsonEvent valueForKeyPath:@"exception.values"][0] != NSNull.null) {
+                exception = jsonEvent[@"exception"][@"values"][0];
+            } else {
+                exception = jsonEvent[@"exception"][0];
+            }
             jsStacktrace = exception[@"stacktrace"][@"frames"];
             exceptionType = exception[@"type"];
             exceptionValue = exception[@"value"];

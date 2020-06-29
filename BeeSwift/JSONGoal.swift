@@ -32,9 +32,11 @@ class JSONGoal {
     var yaw: NSNumber = 0
     var dir: NSNumber = 0
     var safebump: NSNumber?
+    var safebuf: NSNumber?
     var curval: NSNumber?
     var baremin: String?
     var limsum: String?
+    var safesum: String?
     var deadline: NSNumber = 0
     var leadtime: NSNumber?
     var alertstart: NSNumber?
@@ -72,6 +74,8 @@ class JSONGoal {
         self.yaw = json["yaw"].number!
         self.dir = json["dir"].number!
         if json["limsum"].string != nil { self.limsum = json["limsum"].string! }
+        if json["safesum"].string != nil { self.safesum = json["safesum"].string! }
+        if json["safebuf"].number != nil { self.safebuf = json["safebuf"].number! }
         self.use_defaults = json["use_defaults"].bool! as NSNumber
         if let safebump = json["safebump"].number {
             self.safebump = safebump
@@ -168,29 +172,21 @@ class JSONGoal {
     }
     
     var countdownColor :UIColor {
-        let losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
-        if losedateDate.timeIntervalSinceNow < 0 {
-            if self.won.boolValue {
-                return UIColor.beeGreenColor()
-            }
-            else {
-                return UIColor.red
-            }
-        }
-        else if self.relativeLane.intValue <= -2 {
+        guard let buf = self.safebuf?.intValue else { return UIColor.beeGrayColor() }
+        if buf < 1 {
             return UIColor.red
         }
-        else if self.relativeLane == -1 {
+        else if buf < 2 {
             return UIColor.orange
         }
-        else if self.relativeLane == 1 {
+        else if buf < 3 {
             return UIColor.blue
         }
         return UIColor.beeGreenColor()
     }
     
     var relativeLane : NSNumber {
-        return NSNumber(value: self.lane!.int32Value * self.yaw.int32Value as Int32)
+        return self.lane != nil ? NSNumber(value: self.lane!.int32Value * self.yaw.int32Value as Int32) : 0
     }
     
     var countdownHelperText :String {
@@ -224,6 +220,11 @@ class JSONGoal {
         return "week"
     }
     
+    func capitalSafesum() -> String {
+        guard let safe = self.safesum else { return "" }
+        return safe.prefix(1).uppercased() + safe.dropFirst(1)
+    }
+    
     func humanizedAutodata() -> String? {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
@@ -235,6 +236,55 @@ class JSONGoal {
         }
         if self.autodata.count > 0 { return self.autodata.capitalized }
         return nil
+    }
+    
+    var attributedDeltaText :NSAttributedString {
+        if self.delta_text.count == 0 { return NSAttributedString.init(string: "") }
+        let modelName = UIDevice.current.modelName
+        if modelName.contains("iPhone 5") || modelName.contains("iPad Mini") || modelName.contains("iPad 4") {
+            return NSAttributedString(string: self.delta_text)
+        }
+        if self.delta_text.components(separatedBy: "✔").count == 4 {
+            if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
+                let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
+                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.count))
+                return attString
+            }
+            return NSMutableAttributedString(string: "")
+        }
+        var spaceIndices :Array<Int> = [0]
+        
+        for i in 0...self.delta_text.count - 1 {
+            if self.delta_text[delta_text.index(delta_text.startIndex, offsetBy: i)] == " " {
+                spaceIndices.append(i)
+            }
+        }
+        
+        spaceIndices.append(self.delta_text.count)
+        
+        let attString :NSMutableAttributedString = NSMutableAttributedString(string: self.delta_text)
+        
+        for i in 0..<spaceIndices.count {
+            if i + 1 >= spaceIndices.count {
+                continue
+            }
+            var color = self.deltaColors.first
+            if i < self.deltaColors.count {
+                color = self.deltaColors[i]
+            }
+            attString.addAttribute(NSAttributedStringKey.foregroundColor, value: color as Any, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
+        }
+        
+        attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.count))
+        
+        return attString
+    }
+    
+    var deltaColors :Array<UIColor> {
+        if self.yaw == 1 {
+            return [UIColor.orange, UIColor.blue, UIColor.beeGreenColor()]
+        }
+        return [UIColor.beeGreenColor(), UIColor.blue, UIColor.orange]
     }
     
     func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
@@ -301,10 +351,8 @@ class JSONGoal {
             } else if self.hkCategoryTypeIdentifier() == .sleepAnalysis {
                 return s.endDate.timeIntervalSince(s.startDate)/3600.0
             }
-            if #available(iOS 10.0, *) {
-                if self.hkCategoryTypeIdentifier() == .mindfulSession {
-                    return s.endDate.timeIntervalSince(s.startDate)/60.0
-                }
+            if self.hkCategoryTypeIdentifier() == .mindfulSession {
+                return s.endDate.timeIntervalSince(s.startDate)/60.0
             }
         }
         return 0
@@ -483,38 +531,34 @@ class JSONGoal {
     
     func setUnlockNotification() {
         if UserDefaults.standard.bool(forKey: Constants.healthSyncRemindersPreferenceKey) == false { return }
-        if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-            let content = UNMutableNotificationContent()
-            content.title = "Health Sync"
-            content.body = "Unlock your phone to sync your Health data with Beeminder."
-            let date = Date()
-            let calendar = Calendar.current
-            let hour = calendar.component(.hour, from: date)
-            
-            var trigger : UNNotificationTrigger
-            if hour < 9 {
-                // data synced before 9 am. Schedule for nine hours from now.
-                trigger = UNTimeIntervalNotificationTrigger(timeInterval: 32400.0, repeats: false)
-            }
-            else if hour >= 9 && hour < 17 {
-                // data synced during the day, before 5 pm. schedule for 8 pm.
-                var components = DateComponents()
-                components.hour = 20
-                trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-            } else {
-                // data synced after 5 pm. Schedule for 9 am next morning.
-                var components = DateComponents()
-                components.hour = 9
-                trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-            }
-            
-            let notification = UNNotificationRequest.init(identifier: "foo", content: content, trigger: trigger)
-            UNUserNotificationCenter.current().add(notification, withCompletionHandler: nil)
+        
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        let content = UNMutableNotificationContent()
+        content.title = "Health Sync"
+        content.body = "Unlock your phone to sync your Health data with Beeminder."
+        let date = Date()
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: date)
+        
+        var trigger : UNNotificationTrigger
+        if hour < 9 {
+            // data synced before 9 am. Schedule for nine hours from now.
+            trigger = UNTimeIntervalNotificationTrigger(timeInterval: 32400.0, repeats: false)
+        }
+        else if hour >= 9 && hour < 17 {
+            // data synced during the day, before 5 pm. schedule for 8 pm.
+            var components = DateComponents()
+            components.hour = 20
+            trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         } else {
-            //            update please!
+            // data synced after 5 pm. Schedule for 9 am next morning.
+            var components = DateComponents()
+            components.hour = 9
+            trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         }
         
+        let notification = UNNotificationRequest.init(identifier: "foo", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(notification, withCompletionHandler: nil)
     }
     
     func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection, success: (() -> ())?, errorCompletion: (() -> ())?) {

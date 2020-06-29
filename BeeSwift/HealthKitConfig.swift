@@ -37,14 +37,16 @@ class HealthKitConfig : NSObject {
             HealthKitMetric.init(humanText: "Dietary protein", databaseString: "dietaryProtein", hkIdentifier: HKQuantityTypeIdentifier.dietaryProtein, hkCategoryTypeIdentifier: nil),
             HealthKitMetric.init(humanText: "Dietary sugar", databaseString: "dietarySugar", hkIdentifier: HKQuantityTypeIdentifier.dietarySugar, hkCategoryTypeIdentifier: nil),
             HealthKitMetric.init(humanText: "Dietary carbs", databaseString: "dietaryCarbs", hkIdentifier: HKQuantityTypeIdentifier.dietaryCarbohydrates, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Dietary fat", databaseString: "dietaryFat", hkIdentifier: HKQuantityTypeIdentifier.dietaryFatTotal, hkCategoryTypeIdentifier: nil)
+            HealthKitMetric.init(humanText: "Dietary fat", databaseString: "dietaryFat", hkIdentifier: HKQuantityTypeIdentifier.dietaryFatTotal, hkCategoryTypeIdentifier: nil),
+            HealthKitMetric.init(humanText: "Dietary saturated fat", databaseString: "dietarySaturatedFat", hkIdentifier: HKQuantityTypeIdentifier.dietaryFatSaturated, hkCategoryTypeIdentifier: nil),
+            HealthKitMetric.init(humanText: "Dietary sodium", databaseString: "dietarySodium", hkIdentifier: HKQuantityTypeIdentifier.dietarySodium, hkCategoryTypeIdentifier: nil),
             
         ]
-        if #available(iOS 10.0, *) {
-            mets.append(HealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", hkIdentifier: HKQuantityTypeIdentifier.swimmingStrokeCount, hkCategoryTypeIdentifier: nil))
-            mets.append(HealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceSwimming, hkCategoryTypeIdentifier: nil))
-            mets.append(HealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.mindfulSession))
-        }
+        
+        mets.append(HealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", hkIdentifier: HKQuantityTypeIdentifier.swimmingStrokeCount, hkCategoryTypeIdentifier: nil))
+        mets.append(HealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceSwimming, hkCategoryTypeIdentifier: nil))
+        mets.append(HealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.mindfulSession))
+
         return mets
     }
 }
