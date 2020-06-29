@@ -133,6 +133,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.searchBar.delegate = self
         self.searchBar.placeholder = "Filter goals by slug"
         self.searchBar.isHidden = true
+        self.searchBar.showsCancelButton = true
         self.searchBar.snp.makeConstraints { (make) in
             make.left.right.equalTo(0)
             make.top.equalTo(self.outofdateView.snp.bottom)
@@ -233,7 +234,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func searchButtonPressed() {
-        self.searchBar.isHidden = !self.searchBar.isHidden
+        self.toggleSearchBar()
+    }
+    
+    private func toggleSearchBar() {
+        self.searchBar.isHidden.toggle()
+        
         if searchBar.isHidden {
             self.searchBar.text = ""
             self.filteredGoals = self.goals
@@ -242,6 +248,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         } else {
             self.searchBar.becomeFirstResponder()
         }
+        
+        self.updateSearchBarConstraints()
+    }
+    
+    private func updateSearchBarConstraints() {
         self.searchBar.snp.remakeConstraints { (make) in
             make.left.right.equalTo(0)
             make.top.equalTo(self.outofdateView.snp.bottom)
@@ -294,9 +305,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        self.filteredGoals = self.goals
-        self.searchBar.resignFirstResponder()
-        self.collectionView?.reloadData()
+        self.toggleSearchBar()
     }
     
     func updateFilteredGoals(searchText : String) {
