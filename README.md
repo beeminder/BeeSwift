@@ -1,6 +1,13 @@
 # BeeSwift
 Official Beeminder for iOS app
 
+## Download Beeminder for iOS 
+
+* [App Store](https://itunes.apple.com/us/app/beeminder/id551869729?mt=8)
+
+
+## Development
+
 ### Installation/Setup
 The file `BeeSwift/Config.swift` is ignored by git since it has sensitive info like keys in it. Copy `BeeSwift/Config.sample.swift` to `BeeSwift/Config.swift` and uncomment the struct it contains so that the project can reference the struct.
 
