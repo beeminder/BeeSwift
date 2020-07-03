@@ -1,6 +1,17 @@
 # BeeSwift
 Official Beeminder for iOS app
 
+## Features
+ - native iOS app
+ - [integration with iOS Health App](https://blog.beeminder.com/apple/)
+ - today widget, displaying up to three goals and allowing quick data entry
+ - gallery view of all of a user's active goals
+ - facilitates viewing one's goals and their status
+ - provides notifications of pending goal deadlines
+ - provides a means to easily add data manually for a goal
+ - login via any of the following combinations: email/password, username/password, facebook, twitter
+
+
 ## Download Beeminder for iOS 
 
 * [App Store](https://itunes.apple.com/us/app/beeminder/id551869729?mt=8)
