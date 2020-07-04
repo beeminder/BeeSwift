@@ -111,6 +111,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.left.equalTo(self.goalImageScrollView)
             make.right.equalTo(self.goalImageScrollView)
         }
+        self.goalImageView.image = UIImage(named: "GraphPlaceholder")
+
         
         self.view.addSubview(self.deltasLabel)
         self.deltasLabel.snp.makeConstraints { (make) in
@@ -394,6 +396,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         self.refreshGoal()
     }
     
