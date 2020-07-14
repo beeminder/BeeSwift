@@ -22,13 +22,13 @@ class TodayViewController: UIViewController {
     override func viewDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateDataSource), name: UserDefaults.didChangeNotification, object: nil)
         
+        self.updateDataSource()
+        
         self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight)
         
         if self.goalDictionaries.count > 1 {
             self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
         }
-        
-        self.updateDataSource()
         
         self.view.addSubview(self.tableView)
         self.tableView.dataSource = self
