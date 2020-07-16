@@ -557,7 +557,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }) { (error) in
             self.submitButton.isUserInteractionEnabled = true
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
+            self.present(self.failedToAddDatapointAlert, animated: true, completion: nil)
         }
     }
     
@@ -644,5 +644,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
+    }
+}
+
+
+extension GoalViewController {
+    var failedToAddDatapointAlert: UIAlertController {
+        let alert = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        return alert
     }
 }
