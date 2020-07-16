@@ -190,8 +190,17 @@ class TimerViewController: UIViewController {
             self.resetButtonPressed()
         }) { (error, errorMessage) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
+
+            self.present(self.failedToAddDatapointAlert, animated: true, completion: nil)
         }
         
+    }
+}
+
+extension TimerViewController {
+    var failedToAddDatapointAlert: UIAlertController {
+        let alert = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        return alert
     }
 }
