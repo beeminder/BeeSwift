@@ -569,14 +569,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshGoal() {
-        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
-            self.goal = JSONGoal(json: JSON(responseObject!))
+        CurrentUserManager.sharedManager.fetchGoal(self.goal.slug, success: { jsonGoal in
+            self.goal = jsonGoal
             self.datapointsTableView.reloadData()
             self.refreshCountdown()
             self.setValueTextField()
             self.valueTextFieldValueChanged()
             self.deltasLabel.attributedText = self.goal!.attributedDeltaText
-            if (!self.goal.queued!) {
+            if (!(jsonGoal.queued ?? false)) {
                 self.setGraphImage()
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 self.pollTimer?.invalidate()
