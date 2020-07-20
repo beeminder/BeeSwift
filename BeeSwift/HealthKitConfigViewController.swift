@@ -140,6 +140,16 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
         return cell!
     }
     
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "manually beeminded goals"
+        } else if section == 1 {
+            return "modifiable, Apple Health goals"
+        } else {
+            return "unmodifiable Auto-data goals"
+        }
+    }
+    
     private func goalAt(_ indexPath: IndexPath) -> JSONGoal {
         if indexPath.section == 0 {
             return self.manualSourced[indexPath.row]
