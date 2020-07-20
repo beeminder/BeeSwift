@@ -63,6 +63,11 @@ class HealthKitConfigViewController: UIViewController {
         
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        self.tableView.refreshControl = {
+            let refresh = UIRefreshControl()
+            refresh.addTarget(self, action: #selector(fetchGoals), for: .valueChanged)
+            return refresh
+        }()
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
@@ -90,7 +95,9 @@ class HealthKitConfigViewController: UIViewController {
         }
     }
     
-    func fetchGoals() {
+    @objc func fetchGoals() {
+        self.tableView.refreshControl?.endRefreshing()
+
         MBProgressHUD.showAdded(to: self.view, animated: true)
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
