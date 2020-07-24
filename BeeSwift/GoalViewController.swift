@@ -219,6 +219,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.commentTextField.delegate = self
         self.commentTextField.placeholder = "Comment"
         self.commentTextField.returnKeyType = .send
+        self.commentTextField.clearButtonMode = .always
         self.commentTextField.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.valueTextField.snp.right).offset(10).priority(.high)
             make.height.equalTo(Constants.defaultTextFieldHeight)
@@ -229,6 +230,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             make.top.equalTo(0)
         }
+        self.setInitialCommentTextField()
         
         dataEntryView.addSubview(self.submitButton)
         self.submitButton.setTitle("Submit", for: UIControlState())
@@ -480,6 +482,12 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.valueTextField.text = "\(String(describing: lastDatapoint["value"]))"
         }
     }
+    
+    func setInitialCommentTextField() {
+        guard let lastDatapoint = self.goal?.recent_data?.last as? JSON, let comment = lastDatapoint["comment"].string else { return }
+        
+        self.commentTextField.text = comment
+    }    
     
     @objc func valueStepperValueChanged() {
         var valueString = ""
