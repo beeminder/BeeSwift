@@ -53,7 +53,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            make.top.equalToSuperview()
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.bottom.equalTo(0)
