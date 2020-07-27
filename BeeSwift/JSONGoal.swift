@@ -55,10 +55,20 @@ class JSONGoal {
         self.leadtime = json["leadtime"].number!
         self.alertstart = json["alertstart"].number!
         if let lasttouchString = json["lasttouch"].string {
-            let formatter = DateFormatter.init()
-            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-            if let lasttouchDate = formatter.date(from: lasttouchString) {
-                self.lasttouch = NSNumber(value: lasttouchDate.timeIntervalSince1970)
+            let lastTouchDate: Date? = {
+                if #available(iOS 11.0, *) {
+                    let df = ISO8601DateFormatter()
+                    df.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                    return df.date(from: lasttouchString)
+                } else {
+                    let df = DateFormatter()
+                    df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                    return df.date(from: lasttouchString)
+                }
+            }()
+            
+            if let date = lastTouchDate {
+                self.lasttouch = NSNumber(value: date.timeIntervalSince1970)
             }
         }
         self.queued = json["queued"].bool!
