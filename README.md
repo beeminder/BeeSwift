@@ -42,8 +42,7 @@ Using Apple Health as a source, data can be syncronized from the Apple Health ap
 
 ## Download Beeminder for iOS 
 
-* [App Store](https://itunes.apple.com/us/app/beeminder/id551869729?mt=8)
-
+[![Download on the App Store](https://linkmaker.itunes.apple.com/en-us/badge-lrg.svg?releaseDate=2012-08-30&kind=iossoftware&bubble=ios_apps)](https://apps.apple.com/us/app/beeminder/id551869729?mt=8)
 
 ## Development
 
