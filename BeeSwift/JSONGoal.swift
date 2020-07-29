@@ -817,7 +817,7 @@ private extension JSONGoal {
         
         let queryCharacter = originUrlStr.range(of: "&") == nil ? "?" : "&"
         
-        let cacheBustingUrlStr = "\(originUrlStr)\(queryCharacter)=\(lastTouch)"
+        let cacheBustingUrlStr = "\(originUrlStr)\(queryCharacter)proctime=\(lastTouch)"
         
         return cacheBustingUrlStr
     }
