@@ -43,7 +43,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         }
         
         
-        self.beeImageView.image = UIImage(named: "GraphPlaceholder")
+        self.beeImageView.image = UIImage(named: "website_logo_mid")
         scrollView.addSubview(self.beeImageView)
         self.beeImageView.snp.makeConstraints { (make) in
             make.centerX.equalTo(scrollView)
