@@ -8,11 +8,8 @@ target 'BeeSwift' do
 	pod 'AlamofireNetworkActivityIndicator', '~> 2.4'
 	pod 'SnapKit', '~> 4.0'
 	pod "SwiftyJSON"	
-	pod "FBSDKCoreKit"
-	pod "FBSDKLoginKit"
 	pod "MBProgressHUD"
 	pod 'IQKeyboardManager'
-	pod 'TwitterKit'
 	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '4.5.0'
 end
 target 'BeeSwiftToday' do

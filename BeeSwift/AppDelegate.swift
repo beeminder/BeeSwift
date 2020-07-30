@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import TwitterKit
 import IQKeyboardManager
 import HealthKit
 import Sentry
@@ -21,7 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Avenir", size: 20)!]
         UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedStringKey.font : UIFont(name: "Avenir", size: 18)!], for: UIControlState())
-        Twitter.sharedInstance().start(withConsumerKey: Config.twitterConsumerKey, consumerSecret: Config.twitterConsumerSecret)
         IQKeyboardManager.shared().isEnableAutoToolbar = false
 
         if HKHealthStore.isHealthDataAvailable() {
@@ -89,30 +87,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
-        if url.scheme == Config.facebookUrlScheme {
-            return FBSDKApplicationDelegate.sharedInstance().application(app, open: url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplicationOpenURLOptionsKey.annotation])
-        }
-        else if url.scheme == "beeminder" {
+        if url.scheme == "beeminder" {
             if let query = url.query {
                 let slugKeyIndex = query.components(separatedBy: "=").index(of: "slug")
                 let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
             }
-        } else if url.scheme == Config.twitterUrlScheme {
-            return Twitter.sharedInstance().application(app, open: url, options: options)
         }
         return true
     }
 
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-        if url.scheme == Config.facebookUrlScheme {
-            return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
-        }
-        else if url.scheme == Config.twitterUrlScheme {
-            return Twitter.sharedInstance().application(application, open: url, options: [:])
-        }
-        else if url.scheme == "beeminder" {
+        if url.scheme == "beeminder" {
             if let query = url.query {
                 let slugKeyIndex = query.components(separatedBy: "=").index(of: "slug")
                 let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
