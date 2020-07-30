@@ -1,3 +1,6 @@
+[![GitHub](https://img.shields.io/github/license/beeminder/BeeSwift)](https://github.com/beeminder/BeeSwift/)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/beeminder/BeeSwift?sort=semver)](https://github.com/beeminder/BeeSwift/tags)
+
 # BeeSwift
 Official Beeminder for iOS app
 
@@ -39,8 +42,7 @@ Using Apple Health as a source, data can be syncronized from the Apple Health ap
 
 ## Download Beeminder for iOS 
 
-* [App Store](https://itunes.apple.com/us/app/beeminder/id551869729?mt=8)
-
+[![Download on the App Store](https://linkmaker.itunes.apple.com/en-us/badge-lrg.svg?releaseDate=2012-08-30&kind=iossoftware&bubble=ios_apps)](https://apps.apple.com/us/app/beeminder/id551869729?mt=8)
 
 ## Development
 
