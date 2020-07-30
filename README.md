@@ -13,6 +13,7 @@ Official Beeminder for iOS app
  - provides notifications of pending goal deadlines
  - provides a means to easily add data manually for a goal
  - login via any of the following combinations: email/password, username/password, facebook, twitter
+ - less bright white while in Dark Mode
 
 ## Apple Health integration
 
@@ -40,7 +41,7 @@ Using Apple Health as a source, data can be syncronized from the Apple Health ap
  - Mindful minutes
  - ~Stand hours~ _(currently disabled/unavailable)_
 
-## Download Beeminder for iOS 
+## Download Beeminder for iOS
 
 [![Download on the App Store](https://linkmaker.itunes.apple.com/en-us/badge-lrg.svg?releaseDate=2012-08-30&kind=iossoftware&bubble=ios_apps)](https://apps.apple.com/us/app/beeminder/id551869729?mt=8)
 
