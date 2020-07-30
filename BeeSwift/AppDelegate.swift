@@ -14,8 +14,7 @@ import Sentry
 import AlamofireNetworkActivityIndicator
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -142,5 +141,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UIApplication.shared.applicationIconBadgeNumber = CurrentUserManager.sharedManager.goals.filter({ (goal: JSONGoal) -> Bool in
             return goal.relativeLane.intValue < -1
         }).count
+    }
+    
+    // MARK: - UNUserNotificationCenterDelegate
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        switch notification.request.identifier {
+        case JSONGoal.unlockNotificationIdentifier:
+            // about to present a notification, a reminder to unlock the device
+            // yet the app is active, thus we can abandon the notification
+            completionHandler([])
+        default:
+            completionHandler([.alert, .sound, .badge])
+        }
     }
 }

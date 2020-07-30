@@ -515,8 +515,10 @@ class JSONGoal {
         healthStore.execute(query)
     }
     
+    public static let unlockNotificationIdentifier: String = "health sync unlock reminder"
+    
     func setUnlockNotification() {
-        if UserDefaults.standard.bool(forKey: Constants.healthSyncRemindersPreferenceKey) == false { return }
+        guard UserDefaults.standard.bool(forKey: Constants.healthSyncRemindersPreferenceKey) else { return }
         
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         let content = UNMutableNotificationContent()
@@ -543,7 +545,7 @@ class JSONGoal {
             trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         }
         
-        let notification = UNNotificationRequest.init(identifier: "foo", content: content, trigger: trigger)
+        let notification = UNNotificationRequest.init(identifier: JSONGoal.unlockNotificationIdentifier, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(notification, withCompletionHandler: nil)
     }
     
