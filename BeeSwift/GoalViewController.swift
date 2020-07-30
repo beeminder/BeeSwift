@@ -53,7 +53,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            make.top.equalToSuperview()
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.bottom.equalTo(0)
@@ -114,7 +114,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.goalImageView.image = UIImage(named: "GraphPlaceholder")
 
         
-        self.view.addSubview(self.deltasLabel)
+        self.scrollView.addSubview(self.deltasLabel)
         self.deltasLabel.snp.makeConstraints { (make) in
             make.top.equalTo(self.goalImageScrollView.snp.bottom)
             make.left.right.equalTo(0)
@@ -311,7 +311,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if self.goal.autodata == "apple" {
             let appleSyncView = UIView()
-            self.view.addSubview(appleSyncView)
+            self.scrollView.addSubview(appleSyncView)
             appleSyncView.snp.makeConstraints({ (make) in
                 make.top.equalTo(self.datapointsTableView.snp.bottom).offset(10)
                 if #available(iOS 11.0, *) {
