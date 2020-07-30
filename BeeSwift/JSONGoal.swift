@@ -106,20 +106,6 @@ class JSONGoal {
         return "\(formatter.string(from: r)!)/\(self.humanizedRunits)"
     }
     
-    var cacheBustingThumbUrl :String {
-        if self.thumb_url!.range(of: "&") == nil {
-            return "\(self.thumb_url!)?t=\(Date().timeIntervalSince1970)"
-        }
-        return "\(self.thumb_url!)&t=\(Date().timeIntervalSince1970)"
-    }
-    
-    var cacheBustingGraphUrl :String {
-        if self.graph_url!.range(of: "&") == nil {
-            return "\(self.graph_url!)?t=\(Date().timeIntervalSince1970)"
-        }
-        return "\(self.graph_url!)&t=\(Date().timeIntervalSince1970)"
-    }
-    
     var briefLosedate :String {
         var losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
         if losedateDate.timeIntervalSinceNow < 0 {
@@ -808,5 +794,31 @@ class JSONGoal {
     
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?) -> Void)?) {
         RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
+    }
+}
+
+extension JSONGoal {
+    var cacheBustingThumbUrl: String {
+        let thumbUrlStr = self.thumb_url!
+        return cacheBuster(thumbUrlStr)
+    }
+    
+    var cacheBustingGraphUrl: String {
+        let graphUrlStr = self.graph_url!
+        return cacheBuster(graphUrlStr)
+    }
+}
+
+private extension JSONGoal {
+    func cacheBuster(_ originUrlStr: String) -> String {
+        guard let lastTouch = self.lasttouch else {
+            return originUrlStr
+        }
+        
+        let queryCharacter = originUrlStr.range(of: "&") == nil ? "?" : "&"
+        
+        let cacheBustingUrlStr = "\(originUrlStr)\(queryCharacter)proctime=\(lastTouch)"
+        
+        return cacheBustingUrlStr
     }
 }
