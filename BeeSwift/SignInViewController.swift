@@ -7,11 +7,9 @@
 //
 
 import Foundation
-import TwitterKit
-import FBSDKLoginKit
 import MBProgressHUD
 
-class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextFieldDelegate {
+class SignInViewController : UIViewController, UITextFieldDelegate {
     
     var headerLabel = BSLabel()
     var emailTextField = BSTextField()
@@ -26,8 +24,6 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
     var backToSignInButton = BSButton()
     var backToSignUpButton = BSButton()
     var signInButton = BSButton()
-    var facebookLoginButton : FBSDKLoginButton = FBSDKLoginButton()
-    var twitterLoginButton : TWTRLogInButton = TWTRLogInButton()
     var divider = UIView()
     
     override func viewDidLoad() {
@@ -134,44 +130,11 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
         self.divider.isHidden = true
         self.divider.backgroundColor = UIColor.beeGrayColor()
         
-        
-        self.twitterLoginButton = TWTRLogInButton { (session, error) in
-            if error == nil {
-                OAuthSignInManager.sharedManager.loginWithTwitterSession(session)
-            }
-            else {
-                // show error
-            }
-        }
-        
-        self.twitterLoginButton.isHidden = true
-        scrollView.addSubview(self.twitterLoginButton)
-        self.twitterLoginButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.divider.snp.bottom).offset(15)
-            make.centerX.equalTo(self.signInButton)
-            make.width.equalTo(self.signInButton)
-            make.height.equalTo(self.signInButton)
-        }
-        
-        scrollView.addSubview(self.facebookLoginButton)
-        self.facebookLoginButton.alpha = 0.0
-        self.facebookLoginButton.readPermissions = ["public_profile", "email", "user_friends"]
-        self.facebookLoginButton.delegate = self
-        self.facebookLoginButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.twitterLoginButton.snp.bottom).offset(15)
-            make.centerX.equalTo(self.signInButton)
-            make.width.equalTo(self.signInButton)
-            make.height.equalTo(self.signInButton)
-        }
-        if FBSDKAccessToken.current() != nil {
-            FBSDKAccessToken.setCurrent(nil)
-        }
-        
         scrollView.addSubview(self.backToSignUpButton)
         self.backToSignUpButton.isHidden = true
         self.backToSignUpButton.setTitle("Back to Sign Up", for: .normal)
         self.backToSignUpButton.snp.makeConstraints { (make) in
-            make.top.equalTo(self.facebookLoginButton.snp.bottom).offset(15)
+            make.top.equalTo(self.signInButton.snp.bottom).offset(15)
             make.centerX.equalTo(scrollView)
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.width.equalTo(self.view).multipliedBy(0.75)
@@ -246,8 +209,6 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
         CurrentUserManager.sharedManager.signingUp = false
         self.beeImageView.isHidden = true
         self.divider.isHidden = false
-        self.twitterLoginButton.isHidden = false
-        self.facebookLoginButton.alpha = 1.0
         self.backToSignUpButton.isHidden = false
         self.emailTextField.isHidden = false
         self.passwordTextField.isHidden = false
@@ -273,8 +234,6 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
         CurrentUserManager.sharedManager.signingUp = true
         self.beeImageView.isHidden = true
         self.divider.isHidden = false
-        self.twitterLoginButton.isHidden = true
-        self.facebookLoginButton.alpha = 0.0
         self.backToSignUpButton.isHidden = true
         self.emailTextField.isHidden = true
         self.passwordTextField.isHidden = true
@@ -294,15 +253,6 @@ class SignInViewController : UIViewController, FBSDKLoginButtonDelegate, UITextF
             make.height.equalTo(1)
             make.top.equalTo(self.signUpButton.snp.bottom).offset(15)
         }
-    }
-    
-    func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
-        // show message if error
-        OAuthSignInManager.sharedManager.loginButton(loginButton, didCompleteWith: result, error: error as NSError!)
-    }
-    
-    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
-        OAuthSignInManager.sharedManager.loginButtonDidLogOut(loginButton)
     }
     
     @objc func handleFailedSignIn(_ notification : Notification) {
