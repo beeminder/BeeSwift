@@ -42,7 +42,7 @@ class VersionManager : NSObject {
     func appStoreVersion(completion: @escaping (String?, Error?) -> Void) throws -> URLSessionDataTask {
         guard let info = Bundle.main.infoDictionary,
             let identifier = info["CFBundleIdentifier"] as? String,
-            let url = URL(string: "http://itunes.apple.com/lookup?bundleId=\(identifier)") else {
+            let url = URL(string: "https://itunes.apple.com/lookup?bundleId=\(identifier)") else {
                 throw VersionError.invalidBundleInfo
         }
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
