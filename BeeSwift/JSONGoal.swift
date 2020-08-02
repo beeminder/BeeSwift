@@ -276,11 +276,18 @@ class JSONGoal {
         return attString
     }
     
-    var deltaColors :Array<UIColor> {
-        if self.yaw == 1 {
-            return [UIColor.orange, UIColor.blue, UIColor.beeminder.green]
-        }
+    var deltaColors: [UIColor] {
+        // yaw (number): Good side of the road (+1/-1 = above/below)
+    
+        return self.yaw == 1 ? deltaColorsWhenAboveIsGoodSide : deltaColorsWhenBelowIsGoodSide
+    }
+    
+    var deltaColorsWhenBelowIsGoodSide: [UIColor] {
         return [UIColor.beeminder.green, UIColor.blue, UIColor.orange]
+    }
+    
+    var deltaColorsWhenAboveIsGoodSide: [UIColor] {
+        return deltaColorsWhenBelowIsGoodSide.reversed()
     }
     
     func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
