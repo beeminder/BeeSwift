@@ -156,8 +156,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         dataEntryView.addSubview(self.dateTextField)
         self.dateTextField.font = UIFont(name: "Avenir", size: 16)
-        self.dateTextField.tintColor = UIColor.beeGrayColor()
-        self.dateTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
+        self.dateTextField.tintColor = UIColor.beeminder.gray
+        self.dateTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.dateTextField.layer.borderWidth = 1
         self.dateTextField.isUserInteractionEnabled = false
         self.dateTextField.textAlignment = .center
@@ -171,8 +171,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         dataEntryView.addSubview(self.valueTextField)
         self.valueTextField.font = UIFont(name: "Avenir", size: 16)
-        self.valueTextField.tintColor = UIColor.beeGrayColor()
-        self.valueTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
+        self.valueTextField.tintColor = UIColor.beeminder.gray
+        self.valueTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.valueTextField.layer.borderWidth = 1
         self.valueTextField.delegate = self
         self.valueTextField.textAlignment = .center
@@ -192,7 +192,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         colonButton.setTitle(":", for: UIControlState())
         colonButton.layer.borderWidth = 1
-        colonButton.layer.borderColor = UIColor.beeGrayColor().cgColor
+        colonButton.layer.borderColor = UIColor.beeminder.gray.cgColor
         colonButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 26)
         colonButton.setTitleColor(UIColor.black, for: UIControlState())
         colonButton.addTarget(self, action: #selector(self.colonButtonPressed), for: .touchUpInside)
@@ -212,8 +212,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.commentTextField.font = UIFont(name: "Avenir", size: 16)
         self.commentTextField.leftView = commentLeftPaddingView
         self.commentTextField.leftViewMode = .always
-        self.commentTextField.tintColor = UIColor.beeGrayColor()
-        self.commentTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
+        self.commentTextField.tintColor = UIColor.beeminder.gray
+        self.commentTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.commentTextField.layer.borderWidth = 1
         self.commentTextField.delegate = self
         self.commentTextField.placeholder = "Comment"
@@ -238,7 +238,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.right.equalTo(self.commentTextField)
         }
         
-        self.dateStepper.tintColor = UIColor.beeGrayColor()
+        self.dateStepper.tintColor = UIColor.beeminder.gray
         dataEntryView.addSubview(self.dateStepper)
         self.dateStepper.addTarget(self, action: #selector(GoalViewController.dateStepperValueChanged), for: .valueChanged)
         self.dateStepper.value = 0
@@ -286,7 +286,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.top.equalTo(self.dateStepper.snp.bottom).offset(10)
         }
         
-        self.valueStepper.tintColor = UIColor.beeGrayColor()
+        self.valueStepper.tintColor = UIColor.beeminder.gray
         dataEntryView.addSubview(self.valueStepper)
         self.valueStepper.addTarget(self, action: #selector(GoalViewController.valueStepperValueChanged), for: .valueChanged)
         self.valueStepper.snp.makeConstraints { (make) -> Void in

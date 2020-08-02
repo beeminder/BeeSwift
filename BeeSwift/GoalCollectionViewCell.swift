@@ -92,7 +92,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.slugLabel.text = goal?.slug
             self.titleLabel.isHidden = goal?.title == goal?.slug
             self.safesumLabel.text = goal!.capitalSafesum()
-            self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.beeGrayColor()            
+            self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.beeminder.gray            
         }
     }
 }

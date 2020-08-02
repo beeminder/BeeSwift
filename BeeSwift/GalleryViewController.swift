@@ -63,7 +63,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.navigationItem.rightBarButtonItem = item
         
         self.view.addSubview(self.lastUpdatedView)
-        self.lastUpdatedView.backgroundColor = UIColor.beeGrayColor()
+        self.lastUpdatedView.backgroundColor = UIColor.beeminder.gray
         self.lastUpdatedView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.topLayoutGuide.snp.bottom)
             make.left.equalTo(0)
@@ -85,7 +85,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GalleryViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
         self.view.addSubview(self.deadbeatView)
-        self.deadbeatView.backgroundColor = UIColor.beeGrayColor()
+        self.deadbeatView.backgroundColor = UIColor.beeminder.gray
         self.deadbeatView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
@@ -109,7 +109,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         
         self.view.addSubview(self.outofdateView)
-        self.outofdateView.backgroundColor = UIColor.beeGrayColor()
+        self.outofdateView.backgroundColor = UIColor.beeminder.gray
         self.outofdateView.snp.makeConstraints { (make) in
             make.right.left.equalTo(0)
             make.top.equalTo(self.deadbeatView.snp.bottom)

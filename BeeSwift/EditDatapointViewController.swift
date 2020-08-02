@@ -88,7 +88,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         }
         colonButton.setTitle(":", for: UIControlState())
         colonButton.layer.borderWidth = 1
-        colonButton.layer.borderColor = UIColor.beeGrayColor().cgColor
+        colonButton.layer.borderColor = UIColor.beeminder.gray.cgColor
         colonButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 26)
         colonButton.setTitleColor(UIColor.black, for: UIControlState())
         colonButton.addTarget(self, action: #selector(self.colonButtonPressed), for: .touchUpInside)
