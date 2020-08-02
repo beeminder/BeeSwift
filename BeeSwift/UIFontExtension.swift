@@ -10,11 +10,25 @@ import Foundation
 import UIKit
 
 extension UIFont {
-    class func beeminderDefaultFont() -> UIFont {
-        return UIFont(name: "Avenir-Light", size: 18)!
-    }
-    
-    class func beeminderDefaultBoldFont() -> UIFont {
-        return UIFont(name: "Avenir-Black", size: 18)!
+    struct beeminder {
+        static var defaultFont: UIFont {
+            return defaultFontLight
+        }
+        
+        static var defaultFontLight: UIFont {
+            return UIFont(name: "Avenir-Light", size: 18)!
+        }
+        
+        static var defaultFontHeavy: UIFont {
+            return UIFont(name: "Avenir-Heavy", size: 18)!
+        }
+        
+        static var defaultBoldFont: UIFont {
+            return UIFont(name: "Avenir-Black", size: 18)!
+        }
+        
+        static var defaultFontPlain: UIFont {
+            return UIFont(name: "Avenir", size: 18)!
+        }
     }
 }

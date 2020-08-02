@@ -13,7 +13,7 @@ class BSTextField : UITextField {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.font = UIFont.beeminderDefaultFont()
+        self.font = UIFont.beeminder.defaultFont
         self.layer.borderColor = UIColor.beeGrayColor().cgColor
         self.tintColor = UIColor.beeGrayColor()
         self.layer.borderWidth = 1
@@ -22,7 +22,7 @@ class BSTextField : UITextField {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.font = UIFont(name: "Avenir-Light", size: 18)
+        self.font = UIFont.beeminder.defaultFont
         self.layer.borderColor = UIColor.beeGrayColor().cgColor
         self.tintColor = UIColor.beeGrayColor()
         self.layer.borderWidth = 1

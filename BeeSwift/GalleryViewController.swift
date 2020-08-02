@@ -99,7 +99,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.deadbeatView.addSubview(deadbeatLabel)
         deadbeatLabel.textColor = UIColor.red
         deadbeatLabel.numberOfLines = 0
-        deadbeatLabel.font = UIFont(name: "Avenir-Heavy", size: 13)
+        deadbeatLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(13)
         deadbeatLabel.text = "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
         deadbeatLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(3)
@@ -119,7 +119,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.outofdateView.addSubview(self.outofdateLabel)
         self.outofdateLabel.textColor = .red
         self.outofdateLabel.numberOfLines = 0
-        self.outofdateLabel.font = UIFont(name: "Avenir-Heavy", size: 12)
+        self.outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
         self.outofdateLabel.textAlignment = .center
         self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
         self.outofdateLabel.snp.makeConstraints { (make) in

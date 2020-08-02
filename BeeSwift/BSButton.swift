@@ -22,7 +22,7 @@ class BSButton : UIButton {
     }
     
     func setup() {
-        self.titleLabel?.font = UIFont(name: "Avenir-Light", size: 18)
+        self.titleLabel?.font = UIFont.beeminder.defaultFont
         self.setTitleColor(UIColor.white, for: UIControlState())
         self.backgroundColor = UIColor.beeGrayColor()
     }

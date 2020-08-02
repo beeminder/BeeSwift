@@ -71,7 +71,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         countdownView.addSubview(self.countdownLabel)
 
-        self.countdownLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
+        self.countdownLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(Constants.defaultFontSize)
         self.countdownLabel.textAlignment = .center
         self.countdownLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.centerX.equalTo(countdownView)
@@ -120,7 +120,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.left.right.equalTo(0)
         }
         self.deltasLabel.attributedText = self.goal!.attributedDeltaText
-        self.deltasLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
+        self.deltasLabel.font = UIFont.beeminder.defaultBoldFont.withSize(Constants.defaultFontSize)
         self.deltasLabel.textAlignment = .center
         
         
