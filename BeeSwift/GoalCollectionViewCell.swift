@@ -25,7 +25,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         if #available(iOS 13.0, *) {
             self.contentView.backgroundColor = .systemBackground
         }
-        self.slugLabel.font = UIFont(name: "Avenir-Heavy", size: 18)
+        self.slugLabel.font = UIFont.beeminder.defaultFontHeavy
         self.slugLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.margin)
             make.top.equalTo(10)
@@ -35,7 +35,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.slugLabel.textColor = .label
         }
         
-        self.titleLabel.font = UIFont(name: "Avenir-Light", size: 18)
+        self.titleLabel.font = UIFont.beeminder.defaultFont
         if #available(iOS 13.0, *) {
             self.titleLabel.textColor = .label
         }
@@ -54,7 +54,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         }
 
         self.safesumLabel.textAlignment = NSTextAlignment.center
-        self.safesumLabel.font = UIFont(name: "Avenir-Black", size: 13)
+        self.safesumLabel.font = UIFont.beeminder.defaultBoldFont.withSize(13)
         self.safesumLabel.numberOfLines = 0
         self.safesumLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
@@ -92,7 +92,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.slugLabel.text = goal?.slug
             self.titleLabel.isHidden = goal?.title == goal?.slug
             self.safesumLabel.text = goal!.capitalSafesum()
-            self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.beeGrayColor()            
+            self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.beeminder.gray            
         }
     }
 }

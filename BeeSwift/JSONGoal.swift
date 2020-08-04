@@ -168,7 +168,7 @@ class JSONGoal {
     }
     
     var countdownColor :UIColor {
-        guard let buf = self.safebuf?.intValue else { return UIColor.beeGrayColor() }
+        guard let buf = self.safebuf?.intValue else { return UIColor.beeminder.gray }
         if buf < 1 {
             return UIColor.red
         }
@@ -178,7 +178,7 @@ class JSONGoal {
         else if buf < 3 {
             return UIColor.blue
         }
-        return UIColor.beeGreenColor()
+        return UIColor.beeminder.green
     }
     
     var relativeLane : NSNumber {
@@ -243,7 +243,7 @@ class JSONGoal {
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
-                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.count))
+                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeminder.green, range: NSRange(location: 0, length: attString.string.count))
                 return attString
             }
             return NSMutableAttributedString(string: "")
@@ -276,11 +276,18 @@ class JSONGoal {
         return attString
     }
     
-    var deltaColors :Array<UIColor> {
-        if self.yaw == 1 {
-            return [UIColor.orange, UIColor.blue, UIColor.beeGreenColor()]
-        }
-        return [UIColor.beeGreenColor(), UIColor.blue, UIColor.orange]
+    var deltaColors: [UIColor] {
+        // yaw (number): Good side of the road (+1/-1 = above/below)
+    
+        return self.yaw == 1 ? deltaColorsWhenAboveIsGoodSide : deltaColorsWhenBelowIsGoodSide
+    }
+    
+    var deltaColorsWhenBelowIsGoodSide: [UIColor] {
+        return [UIColor.beeminder.green, UIColor.blue, UIColor.orange]
+    }
+    
+    var deltaColorsWhenAboveIsGoodSide: [UIColor] {
+        return deltaColorsWhenBelowIsGoodSide.reversed()
     }
     
     func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {

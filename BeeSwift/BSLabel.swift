@@ -13,12 +13,12 @@ class BSLabel : UILabel {
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.font = UIFont.beeminderDefaultFont()
+        self.font = UIFont.beeminder.defaultFont
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.font = UIFont(name: "Avenir-Light", size: 18)
+        self.font = UIFont.beeminder.defaultFont
     }
     
     

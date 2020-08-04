@@ -109,7 +109,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         scrollView.addSubview(self.signInButton)
         self.signInButton.isHidden = true
         self.signInButton.setTitle("Sign In", for: UIControlState())
-        self.signInButton.backgroundColor = UIColor.beeGrayColor()
+        self.signInButton.backgroundColor = UIColor.beeminder.gray
         self.signInButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
         self.signInButton.titleLabel?.textColor = UIColor.white
         self.signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControlEvents.touchUpInside)
@@ -122,7 +122,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         
         scrollView.addSubview(self.divider)
         self.divider.isHidden = true
-        self.divider.backgroundColor = UIColor.beeGrayColor()
+        self.divider.backgroundColor = UIColor.beeminder.gray
         
         scrollView.addSubview(self.backToSignUpButton)
         self.backToSignUpButton.isHidden = true

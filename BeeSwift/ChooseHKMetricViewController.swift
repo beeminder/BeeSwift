@@ -78,7 +78,6 @@ class ChooseHKMetricViewController: UIViewController {
         params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
         
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
-                self.tableView.reloadData()
                 let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
@@ -87,6 +86,7 @@ class ChooseHKMetricViewController: UIViewController {
                     self.navigationController?.popViewController(animated: true)
                 }
         }) { (responseError) -> Void in
+            self.tableView.reloadData()
             if let errorString = responseError?.localizedDescription {
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
