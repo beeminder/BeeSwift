@@ -74,7 +74,6 @@
 		A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */; };
 		A1E619001E86980900D8ED93 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
 		A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */; };
-		A1EFB5401F0F2E57005C75AE /* CreateGoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EFB53F1F0F2E57005C75AE /* CreateGoalViewController.swift */; };
 		A1F8F07B232C05410060B83E /* JSONGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* JSONGoal.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
 		A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */; };
@@ -182,7 +181,6 @@
 		A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfigTableViewCell.swift; sourceTree = "<group>"; };
 		A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfig.swift; sourceTree = "<group>"; };
 		A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCell.swift; sourceTree = "<group>"; };
-		A1EFB53F1F0F2E57005C75AE /* CreateGoalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateGoalViewController.swift; sourceTree = "<group>"; };
 		A1F8F07A232C05410060B83E /* JSONGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONGoal.swift; sourceTree = "<group>"; };
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
 		A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGoalCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -338,7 +336,6 @@
 				A1F8F07A232C05410060B83E /* JSONGoal.swift */,
 				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
 				A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */,
-				A1EFB53F1F0F2E57005C75AE /* CreateGoalViewController.swift */,
 				A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */,
 				A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */,
 				A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */,
@@ -757,7 +754,6 @@
 				A11BA9A41FCE54E3004BB425 /* HealthStoreManager.swift in Sources */,
 				A15FF4201AEB621000A9AD22 /* GoalCollectionViewCell.swift in Sources */,
 				A1619EA61BEECC6700E14B3A /* EditGoalNotificationsViewController.swift in Sources */,
-				A1EFB5401F0F2E57005C75AE /* CreateGoalViewController.swift in Sources */,
 				A12BA9541AFFF21800AFEF32 /* Crypto.swift in Sources */,
 				A1A8BDE61FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift in Sources */,
 				A14249231FD07631007736B3 /* OAuthSignInManager.swift in Sources */,
