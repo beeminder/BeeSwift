@@ -121,7 +121,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             }
             cell.imageName = "Notifications"
         case 2:
-            cell.title = "Time zone: \(CurrentUserManager.sharedManager.timezone())"
+            cell.title = "Time zone: \(CurrentUserManager.sharedManager.timezone)"
             cell.imageName = "Clock"
             cell.accessoryType = .none
         case 3:

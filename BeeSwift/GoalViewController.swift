@@ -455,7 +455,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setGraphImage() {
-        if CurrentUserManager.sharedManager.isDeadbeat() {
+        if CurrentUserManager.sharedManager.deadbeat {
             self.goalImageView.image = UIImage(named: "GraphPlaceholder")
         } else {
             self.goalImageView.af_setImage(withURL: URL(string: self.goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)

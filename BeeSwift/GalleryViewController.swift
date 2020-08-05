@@ -90,7 +90,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !CurrentUserManager.sharedManager.isDeadbeat() {
+            if !CurrentUserManager.sharedManager.deadbeat {
                 make.height.equalTo(0)
             }
         }
@@ -326,7 +326,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !CurrentUserManager.sharedManager.isDeadbeat() {
+            if !CurrentUserManager.sharedManager.deadbeat {
                 make.height.equalTo(0)
             }
         }

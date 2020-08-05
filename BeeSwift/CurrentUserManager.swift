@@ -35,67 +35,105 @@ class CurrentUserManager : NSObject {
     var goalsFetchedAt : Date = Date()
     var userUpdatedAt: TimeInterval = 0
     
-    var accessToken :String? {
-        return UserDefaults.standard.object(forKey: accessTokenKey) as! String?
-    }
     
-    var username :String? {
-        return UserDefaults.standard.object(forKey: usernameKey) as! String?
-    }
     
     var signingUp : Bool = false
     
-    func defaultLeadTime() -> NSNumber {
-        return (UserDefaults.standard.object(forKey: self.defaultLeadtimeKey) ?? 0) as! NSNumber
+    var username: String? {
+        get {
+            UserDefaults.standard.string(forKey: usernameKey)
+        }
+        set {
+            UserDefaults.standard.removeObject(forKey: usernameKey)
+            if let name = newValue {
+                UserDefaults.standard.set(name, forKey: usernameKey)
+            }
+            UserDefaults.standard.synchronize()
+        }
     }
     
-    func setDefaultLeadTime(_ leadtime : NSNumber) {
-        UserDefaults.standard.set(leadtime, forKey: self.defaultLeadtimeKey)
-        UserDefaults.standard.synchronize()
+    var defaultLeadTime: NSNumber {
+        get {
+            (UserDefaults.standard.object(forKey: self.defaultLeadtimeKey) ?? 0) as! NSNumber
+        }
+        set {
+             UserDefaults.standard.set(newValue, forKey: self.defaultLeadtimeKey)
+             UserDefaults.standard.synchronize()
+        }
     }
     
-    func defaultAlertstart() -> NSNumber {
-        return (UserDefaults.standard.object(forKey: self.defaultAlertstartKey) ?? 0) as! NSNumber
+    var defaultAlertStart: NSNumber {
+        get {
+            (UserDefaults.standard.object(forKey: self.defaultAlertstartKey) ?? 0) as! NSNumber
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: self.defaultAlertstartKey)
+            UserDefaults.standard.synchronize()
+        }
     }
     
-    func setDefaultAlertstart(_ alertstart : NSNumber) {
-        UserDefaults.standard.set(alertstart, forKey: self.defaultAlertstartKey)
-        UserDefaults.standard.synchronize()
-    }
-    
-    func defaultDeadline() -> NSNumber {
-        return (UserDefaults.standard.object(forKey: self.defaultDeadlineKey) ?? 0) as! NSNumber
-    }
-    
-    func setDefaultDeadline(_ deadline : NSNumber) {
-        UserDefaults.standard.set(deadline, forKey: self.defaultDeadlineKey)
-        UserDefaults.standard.synchronize()
+    var defaultDeadline: NSNumber {
+        get {
+            (UserDefaults.standard.object(forKey: self.defaultDeadlineKey) ?? 0) as! NSNumber
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: self.defaultDeadlineKey)
+            UserDefaults.standard.synchronize()
+        }
     }
     
     var isSignedIn: Bool {
         return self.accessToken != nil && self.username != nil
     }
-    
-    func isDeadbeat() -> Bool {
-        return UserDefaults.standard.object(forKey: deadbeatKey) != nil
-    }
-    
-    func timezone() -> String {
-        return UserDefaults.standard.object(forKey: beemTZKey) as? String ?? "Unknown"
-    }
-    
-    func setDeadbeat(_ deadbeat: Bool) {
-        if deadbeat {
-            UserDefaults.standard.set(true, forKey: deadbeatKey)
-        } else {
-            UserDefaults.standard.removeObject(forKey: deadbeatKey)
+
+    var timezone: String {
+        get {
+            return UserDefaults.standard.object(forKey: beemTZKey) as? String ?? "Unknown"
         }
-        UserDefaults.standard.synchronize()
+        set {
+            UserDefaults.standard.set(newValue, forKey: self.beemTZKey)
+            UserDefaults.standard.synchronize()
+        }
     }
     
-    func setAccessToken(_ accessToken: String) {
-        UserDefaults.standard.set(accessToken, forKey: accessTokenKey)
-        UserDefaults.standard.synchronize()
+    
+    var urgency_load: Double {
+        get {
+            return UserDefaults.standard.double(forKey: "urgency_load")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "urgency_load")
+            UserDefaults.standard.synchronize()
+        }
+    }
+    
+    var deadbeat: Bool {
+        get {
+            return UserDefaults.standard.object(forKey: deadbeatKey) != nil
+        }
+        set {
+            if newValue {
+                UserDefaults.standard.set(newValue, forKey: deadbeatKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: deadbeatKey)
+            }
+            UserDefaults.standard.synchronize()
+        }
+    }
+    
+    var accessToken: String? {
+        get {
+            UserDefaults.standard.string(forKey: accessTokenKey)
+        }
+        set {
+            guard let token = newValue else {
+                UserDefaults.standard.removeObject(forKey: accessTokenKey)
+                UserDefaults.standard.synchronize()
+                return
+            }
+            UserDefaults.standard.set(token, forKey: accessTokenKey)
+            UserDefaults.standard.synchronize()
+        }
     }
     
     func signInWithEmail(_ email: String, password: String) {
@@ -122,14 +160,16 @@ class CurrentUserManager : NSObject {
     func handleSuccessfulSignin(_ responseJSON: JSON) {
         
         if responseJSON["deadbeat"].boolValue {
-            self.setDeadbeat(true)
+            self.deadbeat = true
         }
         UserDefaults.standard.set(responseJSON[accessTokenKey].string!, forKey: accessTokenKey)
-        UserDefaults.standard.set(responseJSON[usernameKey].string!, forKey: usernameKey)
+        self.username = responseJSON[usernameKey].string!
         UserDefaults.standard.set(responseJSON[defaultAlertstartKey].number!, forKey: defaultAlertstartKey)
         UserDefaults.standard.set(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
         UserDefaults.standard.set(responseJSON[defaultLeadtimeKey].number!, forKey: defaultLeadtimeKey)
         UserDefaults.standard.set(responseJSON[beemTZKey].string!, forKey: beemTZKey)
+        UserDefaults.standard.set(responseJSON["urgency_load"].number!, forKey: "urgency_load")
+        
         UserDefaults.standard.synchronize()
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
     }
@@ -186,7 +226,7 @@ class CurrentUserManager : NSObject {
                             self.userUpdatedAt = responseUser.updated_at
                             UserDefaults.standard.set(responseUser.updated_at, forKey: "user_updated_at")
                             
-                            self.setDeadbeat(responseUser.deadbeat)
+                            self.deadbeat = responseUser.deadbeat
                                                         
                             success?(responseUser)
         }, errorHandler: { responseError in
