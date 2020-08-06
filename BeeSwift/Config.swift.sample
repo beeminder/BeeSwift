@@ -1,0 +1,17 @@
+//
+//  Config.swift
+//  BeeSwift
+//
+//  Created by Andrew Brett on 2/20/20.
+//  Copyright © 2020 APB. All rights reserved.
+//
+
+import Foundation
+
+
+import Foundation
+struct Config {
+    static let sentryClientDSN = ""
+    static let requestSigningKey = ""
+    static let baseURLString = "https://www.beeminder.com"
+}

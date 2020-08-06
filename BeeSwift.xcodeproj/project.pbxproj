@@ -81,6 +81,9 @@
 		E55FEE6B23FF7552007C20B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
 		E55FEE6C23FF7552007C20B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
 		E5C161942423CEA00045C90D /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C161932423CE9F0045C90D /* VersionManager.swift */; };
+		E5DF493724DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
+		E5DF493824DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
+		E5DF493924DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -191,6 +194,7 @@
 		E55FEE6A23FF7552007C20B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		E55FEE6D23FF78E8007C20B2 /* Sentry.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Sentry.sh; sourceTree = "<group>"; };
 		E5C161932423CE9F0045C90D /* VersionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionManager.swift; sourceTree = "<group>"; };
+		E5DF493624DC69A200260560 /* Config.swift.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = Config.swift.sample; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -288,6 +292,7 @@
 				A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */,
 				A11488BD1EE9B0CE003316E1 /* UIDevice.swift */,
 				E55FEE6A23FF7552007C20B2 /* Config.swift */,
+				E5DF493624DC69A200260560 /* Config.swift.sample */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -553,6 +558,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5DF493924DC69A200260560 /* Config.swift.sample in Resources */,
 				A12E69541BD3EF0200AB94C2 /* MainInterface.storyboard in Resources */,
 				A1D853311EB3E0A300FC75DE /* Images.xcassets in Resources */,
 			);
@@ -562,6 +568,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5DF493724DC69A200260560 /* Config.swift.sample in Resources */,
 				A196CB221AE4142F00B90A3E /* Main.storyboard in Resources */,
 				9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */,
 				A196CB241AE4142F00B90A3E /* Images.xcassets in Resources */,
@@ -572,6 +579,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5DF493824DC69A200260560 /* Config.swift.sample in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
