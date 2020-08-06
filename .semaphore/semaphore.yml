@@ -16,7 +16,7 @@ blocks:
           - cache restore
           - bundle install --path vendor/bundle
           - cache store
-          - cp /Users/semaphore/BeeSwift/BeeSwift/Config.swift.sample /Users/semaphore/BeeSwift/BeeSwift/Config.swift
+          - cp BeeSwift/BeeSwift/Config.swift.sample BeeSwift/BeeSwift/Config.swift
       jobs:
         - name: bundle exec fastlane test
           commands:
@@ -33,8 +33,6 @@ blocks:
           - cache restore
           - bundle install --path vendor/bundle
           - cache store
-          - cp /Users/semaphore/BeeSwift/BeeSwift/Config.swift.sample /Users/semaphore/BeeSwift/BeeSwift/Config.swift
-      jobs:
       jobs:
         - name: bundle exec fastlane build
           commands:
