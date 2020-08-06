@@ -23,4 +23,10 @@ platform :ios do
   lane :test do
     run_tests(scheme: "BeeSwiftTests")
   end
+  lane :build do
+    build_app(scheme: "BeeSwift")
+  end
+  lane :beta do
+    build_app(scheme: "BeeSwift")
+  end
 end
