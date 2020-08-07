@@ -13,7 +13,7 @@ Official Beeminder for iOS app
  - facilitates viewing one's goals and their status
  - provides notifications of pending goal deadlines
  - provides a means to easily add data manually for a goal
- - login via any of the following combinations: email/password, username/password, facebook, twitter
+ - login via any of the following combinations: email/password, username/password
  - less bright white while in Dark Mode
 
 ## Apple Health integration
