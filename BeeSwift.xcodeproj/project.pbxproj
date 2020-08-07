@@ -149,7 +149,6 @@
 		A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		A149B3711AEF54D100F19A09 /* BSButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSButton.swift; sourceTree = "<group>"; };
-		A14AF4CA1FCEF4B1006EFCCD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A158DDB51E46EEA10031BD4F /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		A15FF41F1AEB621000A9AD22 /* GoalCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoalCollectionViewCell.swift; sourceTree = "<group>"; };
 		A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDefaultNotificationsViewController.swift; sourceTree = "<group>"; };
@@ -355,7 +354,6 @@
 		A196CB171AE4142E00B90A3E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				A14AF4CA1FCEF4B1006EFCCD /* GoogleService-Info.plist */,
 				A1BD3E021AE41AE400B1390A /* BeeSwift-Bridging-Header.h */,
 				A196CB181AE4142E00B90A3E /* Info.plist */,
 				E55FEE6D23FF78E8007C20B2 /* Sentry.sh */,
