@@ -60,7 +60,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         var userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
         let leadtime = userInfo["leadtime"]
         let params = [ "leadtime" : leadtime, "use_defaults" : false ]
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
+        RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
             success: { (responseObject) -> Void in
                 self.goal!.leadtime = leadtime!
                 self.goal!.use_defaults = NSNumber(value: false as Bool)
@@ -74,7 +74,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         if self.timePickerEditingMode == .alertstart {
             self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
             let params = ["alertstart" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
+            RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
                 success: { (responseObject) -> Void in
                     self.goal!.alertstart = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
@@ -86,7 +86,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         if self.timePickerEditingMode == .deadline {
             self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
             let params = ["deadline" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
+            RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
                 success: { (responseObject) -> Void in
                     self.goal?.deadline = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
@@ -107,7 +107,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             let alertController = UIAlertController(title: "Confirm", message: "This will wipe out your current settings for this goal. Are you sure?", preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                 let params = ["use_defaults" : true]
-                RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
+                RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
                     success: { (responseObject) -> Void in
                         self.goal?.use_defaults = NSNumber(value: true as Bool)
                         CurrentUserManager.sharedManager.syncNotificationDefaults({ () -> Void in
@@ -133,7 +133,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         }
         else {
             let params = ["use_defaults" : false]
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
+            RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params,
                 success: { (responseObject) -> Void in
                     self.goal?.use_defaults = NSNumber(value: false as Bool)
                 }) { (error) -> Void in

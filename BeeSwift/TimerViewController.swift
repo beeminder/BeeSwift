@@ -177,7 +177,7 @@ class TimerViewController: UIViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug!)/datapoints.json", parameters: params, success: { (responseObject) in
+        RequestManager.post(url: "api/v1/users/me/goals/\(self.slug!)/datapoints.json", parameters: params, success: { (responseObject) in
             hud?.mode = .text
             hud?.labelText = "Added!"
             DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {

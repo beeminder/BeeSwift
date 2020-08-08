@@ -12,10 +12,10 @@ import SwiftyJSON
 class RemoveHKMetricViewController: UIViewController {
     
     var goal : JSONGoal!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         if #available(iOS 13.0, *) {
             self.view.backgroundColor = .systemBackground
         } else {
@@ -60,7 +60,7 @@ class RemoveHKMetricViewController: UIViewController {
         removeButton.setTitle("Disconnect", for: .normal)
         removeButton.addTarget(self, action: #selector(self.removeButtonPressed), for: .touchUpInside)
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -73,7 +73,7 @@ class RemoveHKMetricViewController: UIViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
+        RequestManager.put(url: "api/v1/users/me/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
             
             self.goal = JSONGoal(json: JSON(responseObject!))
 

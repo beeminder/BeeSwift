@@ -120,7 +120,7 @@ class CurrentUserManager : NSObject {
     }
     
     func syncNotificationDefaults(_ success: (() -> Void)?, failure: (() -> Void)?) {
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: [:],
+        RequestManager.get(url: "api/v1/users/me.json", parameters: [:],
             success: { (responseObject) -> Void in
                 let responseJSON = JSON(responseObject!)
                 UserDefaults.standard.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")

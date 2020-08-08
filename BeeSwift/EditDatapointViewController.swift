@@ -191,7 +191,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             "access_token": CurrentUserManager.sharedManager.accessToken!,
             "urtext": self.urtext()
         ]
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
+        RequestManager.put(url: "api/v1/users/me/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
             let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
@@ -208,7 +208,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         ]
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
+        RequestManager.delete(url: "api/v1/users/me/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
             let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))

@@ -421,12 +421,12 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func safariButtonPressed() {
-        let url = "\(RequestManager.baseURLString)/api/v1/users/\(CurrentUserManager.sharedManager.username!).json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(RequestManager.baseURLString)/\(CurrentUserManager.sharedManager.username!)/\(self.goal!.slug)"
+        let url = "\(RequestManager.baseURLString)/api/v1/users/me.json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(RequestManager.baseURLString)/me/\(self.goal!.slug)"
         UIApplication.shared.openURL(URL(string: url)!)
     }
     
     @objc func refreshButtonPressed() {
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
+        RequestManager.get(url: "api/v1/users/me/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
             self.pollUntilGraphUpdates()
         }) { (error) in
             let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
@@ -537,7 +537,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
         let params = ["urtext": self.urtextFromTextFields(), "requestid": UUID().uuidString]
         
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (responseObject) in
+        RequestManager.post(url: "api/v1/users/me/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (responseObject) in
             self.commentTextField.text = ""
             self.refreshGoal()
             self.pollUntilGraphUpdates()
@@ -559,7 +559,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshGoal() {
-        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
+        RequestManager.get(url: "/api/v1/users/me/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
             self.goal = JSONGoal(json: JSON(responseObject!))
             self.datapointsTableView.reloadData()
             self.refreshCountdown()
