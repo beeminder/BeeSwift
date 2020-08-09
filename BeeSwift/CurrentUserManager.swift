@@ -98,14 +98,28 @@ class CurrentUserManager : NSObject {
     }
     
     func signInWithEmail(_ email: String, password: String) {
-        RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, success: { (responseObject) in
-                self.handleSuccessfulSignin(JSON(responseObject))
-            }) { (responseError) in
-                if responseError != nil { self.handleFailedSignin(responseError!) }
-        }
+        let parameters: [String: Any] =
+            [
+                "user":
+                    [
+                        "login": email,
+                        "password": password
+                ],
+                "beemios_secret":
+                    self.beemiosSecret
+        ]
+        
+        RequestManager.post(url: "api/private/sign_in",
+                            parameters: parameters,
+                            success: { (responseObject) in
+                                self.handleSuccessfulSignin(JSON(responseObject))
+        }, errorHandler: { (responseError) in
+            if responseError != nil { self.handleFailedSignin(responseError!) }
+        })
     }
     
     func handleSuccessfulSignin(_ responseJSON: JSON) {
+        
         if responseJSON["deadbeat"].boolValue {
             self.setDeadbeat(true)
         }
