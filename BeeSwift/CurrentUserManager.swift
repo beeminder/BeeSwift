@@ -171,6 +171,8 @@ class CurrentUserManager : NSObject {
                                 error?(ApiError.jsonDeserializationError)
                                 return
                             }
+
+                            self.setDeadbeat(responseUser.deadbeat)
                             
                             success?(responseUser)
         }, errorHandler: { responseError in
