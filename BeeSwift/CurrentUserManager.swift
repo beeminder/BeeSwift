@@ -164,18 +164,16 @@ class CurrentUserManager : NSObject {
     func fetchUser(success: ((_ user: JSONUser) -> Void)? = nil, error: ((_ error: Error?) -> Void)? = nil) {
         RequestManager.get(url: "api/v1/users/me.json",
                            parameters: nil,
-                           success: { (responseJSON) -> Void in
+                           success: { responseJSON -> Void in
                             
-                            guard let responseJSON = responseJSON else {
-                                // error?()
-                                return
-                            }
-                            
-                            let json = JSON(responseJSON)
+                            let json = JSON(responseJSON!)
                             let responseUser = JSONUser(json: json)!
                             
                             self.userUpdatedAt = responseUser.updated_at
                             UserDefaults.standard.set(responseUser.updated_at, forKey: "user_updated_at")
+                            
+                            self.setDeadbeat(responseUser.deadbeat)
+                                                        
                             success?(responseUser)
         }, errorHandler: { responseError in
             error?(responseError)
@@ -194,7 +192,6 @@ class CurrentUserManager : NSObject {
         
         self.fetchUser(success: { user in
             guard prevLastUpdated < user.updated_at else {
-                print("nothing new; using local goals")
                 success?(self.goals)
                 return
             }
@@ -230,9 +227,8 @@ class CurrentUserManager : NSObject {
         let goalMatchingSlug = self.goals.first(where: {$0.slug == slug})
         
         self.fetchUser(success: { user in
-            
+
             if let goal = goalMatchingSlug, prevLastUpdated >= user.updated_at {
-                print("nothing new; using local goal")
                 success?(goal)
                 return
             }
