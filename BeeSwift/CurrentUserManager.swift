@@ -98,14 +98,28 @@ class CurrentUserManager : NSObject {
     }
     
     func signInWithEmail(_ email: String, password: String) {
-        RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, success: { (responseObject) in
-            self.handleSuccessfulSignin(JSON(responseObject))
+        let parameters: [String: Any] =
+            [
+                "user":
+                    [
+                        "login": email,
+                        "password": password
+                ],
+                "beemios_secret":
+                    self.beemiosSecret
+        ]
+        
+        RequestManager.post(url: "api/private/sign_in",
+                            parameters: parameters,
+                            success: { (responseObject) in
+                                self.handleSuccessfulSignin(JSON(responseObject))
         }) { (responseError, errorMessage) in
             if responseError != nil { self.handleFailedSignin(responseError!, errorMessage: errorMessage) }
         }
     }
     
     func handleSuccessfulSignin(_ responseJSON: JSON) {
+        
         if responseJSON["deadbeat"].boolValue {
             self.setDeadbeat(true)
         }
@@ -162,13 +176,13 @@ class CurrentUserManager : NSObject {
                            success: { responseJSON in
                             
                             guard let responseJSON = responseJSON else {
-                                error?(ApiError.jsonDeserializationError)
+                                error?(ApiError.jsonDeserializationError, nil)
                                 return
                             }
 
                             let json = JSON(responseJSON)
                             guard let responseUser = JSONUser(json: json) else {
-                                error?(ApiError.jsonDeserializationError)
+                                error?(ApiError.jsonDeserializationError, nil)
                                 return
                             }
 
