@@ -121,17 +121,19 @@ class CurrentUserManager : NSObject {
     }
     
     func syncNotificationDefaults(_ success: (() -> Void)?, failure: (() -> Void)?) {
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: [:],
-            success: { (responseObject) -> Void in
-                let responseJSON = JSON(responseObject!)
-                UserDefaults.standard.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
-                UserDefaults.standard.set(responseJSON["default_deadline"].number!, forKey: "default_deadline")
-                UserDefaults.standard.set(responseJSON["default_leadtime"].number!, forKey: "default_leadtime")
-                UserDefaults.standard.synchronize()
-                if (success != nil) { success!() }
-        }, errorHandler: { (error) -> Void in
-                if (failure != nil) { failure!() }
-        })
+        self.fetchUser(success: { jsonUser in
+            
+            UserDefaults.standard.set(jsonUser.default_alertstart, forKey: "default_alertstart")
+            UserDefaults.standard.set(jsonUser.default_deadline, forKey: "default_deadline")
+            UserDefaults.standard.set(jsonUser.default_deadline, forKey: "default_leadtime")
+            
+            UserDefaults.standard.synchronize()
+            
+            success?()
+            
+        }) { error in
+            failure?()
+        }
     }
     
     func handleFailedSignin(_ responseError: Error) {
