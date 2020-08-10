@@ -160,7 +160,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         dataEntryView.addSubview(self.dateTextField)
-        self.dateTextField.font = UIFont(name: "Avenir", size: 16)
+        self.dateTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
         self.dateTextField.tintColor = UIColor.beeminder.gray
         self.dateTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.dateTextField.layer.borderWidth = 1
@@ -175,7 +175,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         dataEntryView.addSubview(self.valueTextField)
-        self.valueTextField.font = UIFont(name: "Avenir", size: 16)
+        self.valueTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
         self.valueTextField.tintColor = UIColor.beeminder.gray
         self.valueTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.valueTextField.layer.borderWidth = 1
@@ -214,7 +214,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let commentLeftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 1))
         
         dataEntryView.addSubview(self.commentTextField)
-        self.commentTextField.font = UIFont(name: "Avenir", size: 16)
+        self.commentTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
         self.commentTextField.leftView = commentLeftPaddingView
         self.commentTextField.leftViewMode = .always
         self.commentTextField.tintColor = UIColor.beeminder.gray
@@ -283,7 +283,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let dateLabel = BSLabel()
         dataEntryView.addSubview(dateLabel)
         dateLabel.text = "Date"
-        dateLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
+        dateLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         dateLabel.textAlignment = .center
         dateLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.dateStepper)
@@ -305,7 +305,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let valueLabel = BSLabel()
         dataEntryView.addSubview(valueLabel)
         valueLabel.text = "Value"
-        valueLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
+        valueLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         valueLabel.textAlignment = .center
         valueLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.valueStepper)
