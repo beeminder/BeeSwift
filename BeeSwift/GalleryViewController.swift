@@ -486,18 +486,18 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func openGoalFromNotification(_ notification: Notification) {
-        guard let slug = (notification as NSNotification).userInfo?["slug"] as? String else {
+        self.navigationController?.popToRootViewController(animated: false)
+
+        guard let slug = notification.userInfo?["slug"] as? String,
+            let matchingGoal = self.goals.last(where: { $0.slug == slug }) else {
+                
+                let alert = UIAlertController(title: "Goal not found", message: "no goal matching notification's goal was found", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
             return
         }
-        
-        guard let matchingGoal = self.goals.last(where: { $0.slug == slug }) else {
-            return
-        }
-        
-        DispatchQueue.main.async {
-            self.navigationController?.popToRootViewController(animated: false)
-            self.openGoal(matchingGoal)
-        }
+
+        self.openGoal(matchingGoal)
     }
     
     func openGoal(_ goal: JSONGoal) {
