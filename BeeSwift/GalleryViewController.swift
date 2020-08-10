@@ -205,7 +205,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         
-        if CurrentUserManager.sharedManager.signedIn() {
+        if CurrentUserManager.sharedManager.isSignedIn {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
                 if success {
@@ -218,7 +218,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !CurrentUserManager.sharedManager.signedIn() {
+        if !CurrentUserManager.sharedManager.isSignedIn {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)

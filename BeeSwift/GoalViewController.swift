@@ -389,7 +389,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if (!CurrentUserManager.sharedManager.signedIn()) { return }
+        if (!CurrentUserManager.sharedManager.isSignedIn) { return }
         if keyPath == "graph_url" {
             self.setGraphImage()
         } else if keyPath == "delta_text" || keyPath == "safebump" || keyPath == "safesum" {
