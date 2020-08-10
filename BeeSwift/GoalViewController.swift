@@ -10,8 +10,9 @@ import Foundation
 import SwiftyJSON
 import MBProgressHUD
 import AlamofireImage
+import SafariServices
 
-class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate {
+class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     
     var goal : JSONGoal! {
         didSet {
@@ -345,7 +346,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             syncWeekButton.addTarget(self, action: #selector(self.syncWeekButtonPressed), for: .touchUpInside)
         }
         
-        var items = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(self.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.safariButtonPressed))]
+        var items = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(self.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
         
         if (!self.goal.hideDataEntry()) {
             items.append(UIBarButtonItem.init(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
@@ -420,9 +421,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.present(controller, animated: true, completion: nil)
     }
     
-    @objc func safariButtonPressed() {
-        let url = "\(RequestManager.baseURLString)/api/v1/users/\(CurrentUserManager.sharedManager.username!).json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(RequestManager.baseURLString)/\(CurrentUserManager.sharedManager.username!)/\(self.goal!.slug)"
-        UIApplication.shared.openURL(URL(string: url)!)
+    @objc func actionButtonPressed() {
+        guard let username = CurrentUserManager.sharedManager.username,
+            let accessToken = CurrentUserManager.sharedManager.accessToken,
+            let viewGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(RequestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
+        
+        let safariVC = SFSafariViewController(url: viewGoalUrl)
+        safariVC.delegate = self
+        self.showDetailViewController(safariVC, sender: self)
     }
     
     @objc func refreshButtonPressed() {
@@ -617,5 +623,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell.datapointText = text
         }
         return cell
+    }
+    
+    // MARK: - SFSafariViewControllerDelegate
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true, completion: nil)
     }
 }
