@@ -43,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
 
-        application.setMinimumBackgroundFetchInterval(60)
+        application.setMinimumBackgroundFetchInterval(15 * 60)
         
         return true
     }
