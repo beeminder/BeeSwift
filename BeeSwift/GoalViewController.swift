@@ -353,25 +353,20 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func syncTodayButtonPressed() {
-        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
-        self.goal.hkQueryForLast(days: 1, success: {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
-            })
-        }) {
-            DispatchQueue.main.async {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            }
-        }
+        self.syncHealthDataButtonPressed(numDays: 1)
     }
     
     @objc func syncWeekButtonPressed() {
+        self.syncHealthDataButtonPressed(numDays: 7)
+    }
+    
+    /// expecting 1 for today button and 7 for week button
+    private func syncHealthDataButtonPressed(numDays: Int) {
+        precondition(numDays == 1 || numDays == 7, "only designed to handle the values 1 and 7")
+        
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        self.goal.hkQueryForLast(days: 7, success: {
+        self.goal.hkQueryForLast(days: numDays, success: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
