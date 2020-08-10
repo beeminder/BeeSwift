@@ -71,7 +71,7 @@ class CurrentUserManager : NSObject {
         UserDefaults.standard.synchronize()
     }
     
-    func signedIn() -> Bool {
+    var isSignedIn: Bool {
         return self.accessToken != nil && self.username != nil
     }
     
