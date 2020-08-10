@@ -447,7 +447,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func colonButtonPressed() {
-        self.valueTextField.text = "\(self.valueTextField.text!):"
+        self.valueTextField.text?.append(":")
     }
     
     @objc func refreshCountdown() {
