@@ -350,13 +350,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             syncWeekButton.addTarget(self, action: #selector(self.syncWeekButtonPressed), for: .touchUpInside)
         }
         
-        var items = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
-        
+        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
         if (!self.goal.hideDataEntry()) {
-            items.append(UIBarButtonItem.init(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
+            self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
         
-        self.navigationItem.rightBarButtonItems = items
     }
     
     @objc func syncTodayButtonPressed() {
@@ -440,7 +438,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     @objc func refreshButtonPressed() {
         self.scrollView.refreshControl?.endRefreshing()
         MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
-
+        
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
             self.pollUntilGraphUpdates()
         }) { (error) in
