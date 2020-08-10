@@ -14,11 +14,7 @@ import SafariServices
 
 class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     
-    var goal : JSONGoal! {
-        didSet {
-            
-        }
-    }
+    var goal : JSONGoal!
     
     fileprivate var cellIdentifier = "datapointCell"
     fileprivate var goalImageView = UIImageView()
