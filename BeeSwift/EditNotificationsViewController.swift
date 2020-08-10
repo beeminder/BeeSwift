@@ -222,7 +222,7 @@ extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerView
             make.left.equalTo(10)
             make.right.equalTo(-20)
         }
-        label.font = UIFont(name: "Avenir", size: 17)
+        label.font = UIFont.beeminder.defaultFontPlain.withSize(17)
         
         var text = ""
         var alignment = NSTextAlignment.center
