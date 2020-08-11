@@ -12,7 +12,7 @@ import HealthKit
 class ChooseHKMetricViewController: UIViewController {
     fileprivate let cellReuseIdentifier = "hkMetricTableViewCell"
     fileprivate var tableView = UITableView()
-    var goal : JSONGoal?
+    var goal : JSONGoal!
 
     override func viewDidLoad() {
         super.viewDidLoad()
