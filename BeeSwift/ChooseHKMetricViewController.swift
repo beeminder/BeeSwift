@@ -54,7 +54,7 @@ class ChooseHKMetricViewController: UIViewController {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        let metric = HealthKitConfig.shared.metrics[selectedRow]
+        let metric = self.sortedHKMetrics[selectedRow]
         if metric.hkIdentifier != nil {
             let metricType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
             healthStore.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
@@ -103,18 +103,25 @@ class ChooseHKMetricViewController: UIViewController {
 }
 
 extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSource {
+    
+    var sortedHKMetrics: [HealthKitMetric] {
+        HealthKitConfig.shared.metrics.sorted { (lhs, rhs) -> Bool in
+            lhs.humanText < rhs.humanText
+        }
+    }
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return HealthKitConfig.shared.metrics.count
+        return self.sortedHKMetrics.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitMetricTableViewCell!
         
-        cell!.metric = HealthKitConfig.shared.metrics[indexPath.row].humanText
+        cell.metric = self.sortedHKMetrics[indexPath.row].humanText
         if tableView.indexPathForSelectedRow == indexPath {
             cell?.accessoryType = .checkmark
         } else {
