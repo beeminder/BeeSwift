@@ -13,7 +13,7 @@ Official Beeminder for iOS app
  - facilitates viewing one's goals and their status
  - provides notifications of pending goal deadlines
  - provides a means to easily add data manually for a goal
- - login via any of the following combinations: email/password, username/password, facebook, twitter
+ - login via any of the following combinations: email/password, username/password
  - less bright white while in Dark Mode
 
 ## Apple Health integration
@@ -53,11 +53,7 @@ The file `BeeSwift/Config.swift` is ignored by git since it has sensitive info l
 
 There's a Run Script build phase that references `BeeSwift/Sentry.sh`, which is also ignored by git since it has an auth token. Either create an empty shell script at that location (preferable) or delete the `Run Script - Sentry` build phase (if you do delete it, make sure not to check in the modified `project.pbxproj` file).
 
-The project should build at this point. If not, check on the following two items:
-
-If it complains about `GoogleService-Info.plist`, try copying `GoogleService-Info.sample.plist` to that location. You can also get a sample plist file from [Google's documentation](https://developers.google.com/identity/sign-in/ios/start-integrating).
-
-Code signing/provisioning profiles settings.
+The project should build at this point and run in the simulator.
 
 If it's still not building, or if you find other noteworthy dependencies not listed here, please create a new issue! Or a pull request with a modified Readme.
 
@@ -67,4 +63,4 @@ Since the Beeminder backend/web application isn't open source (yet), you'll need
 
 ### Contributing
 
-Read and sign [beeminder.com/cla](http://beeminder.com/cla). Then make a branch off of master and send a pull request!
+Read and sign [beeminder.com/cla](https://beeminder.com/cla). Then make a branch off of master and send a pull request!
