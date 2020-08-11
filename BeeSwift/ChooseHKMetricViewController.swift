@@ -24,6 +24,32 @@ class ChooseHKMetricViewController: UIViewController {
         }
         self.title = "Choose metric"
         
+        let instructionsLabel = BSLabel()
+        self.view.addSubview(instructionsLabel)
+        
+        instructionsLabel.attributedText = {
+            let attrString = NSMutableAttributedString()
+            
+            attrString.append(NSMutableAttributedString(string: "Configuring goal ",
+                                                        attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFont]))
+            
+            attrString.append(NSMutableAttributedString(string: "\(self.goal.slug)\n",
+                attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultBoldFont]))
+            
+            attrString.append(NSMutableAttributedString(string: "Associate a HealthKit metric with your goal.\nWhile configured as the source for this goal, Apple Health will periodically provide Beeminder for iOS with the corresponding data. Beeminder for iOS will add that data as datapoints to your goal automatically.\nTap a metric from the list below, then tap save to update your goal.",
+                                                        attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
+            return attrString
+        }()
+        
+        instructionsLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
+            make.centerX.equalTo(self.view)
+            make.width.equalTo(self.view).multipliedBy(0.85)
+        }
+        instructionsLabel.numberOfLines = 0
+        instructionsLabel.textAlignment = .center
+        
+        
         let saveButton = BSButton()
         self.view.addSubview(saveButton)
         saveButton.snp.makeConstraints { (make) in
@@ -39,7 +65,7 @@ class ChooseHKMetricViewController: UIViewController {
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.snp.makeConstraints { (make) in
-            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
+            make.top.equalTo(instructionsLabel.snp_bottom).offset(20)
             make.centerX.equalTo(self.view)
             make.left.equalTo(0)
             make.right.equalTo(0)
