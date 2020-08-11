@@ -22,7 +22,7 @@ class ChooseHKMetricViewController: UIViewController {
         } else {
             self.view.backgroundColor = .white
         }
-        self.title = "Choose metric"
+        self.title = "Choose HK Metric"
         
         let instructionsLabel = BSLabel()
         self.view.addSubview(instructionsLabel)

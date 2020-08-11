@@ -21,7 +21,7 @@ class RemoveHKMetricViewController: UIViewController {
         } else {
             self.view.backgroundColor = .white
         }
-        self.title = ""
+        self.title = "Remove HK Metric"
         
         let currentMetricLabel = BSLabel()
         self.view.addSubview(currentMetricLabel)
