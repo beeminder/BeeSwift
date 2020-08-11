@@ -119,15 +119,15 @@ extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitMetricTableViewCell!
+        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitMetricTableViewCell
         
         cell.metric = self.sortedHKMetrics[indexPath.row].humanText
         if tableView.indexPathForSelectedRow == indexPath {
-            cell?.accessoryType = .checkmark
+            cell.accessoryType = .checkmark
         } else {
-            cell?.accessoryType = .none
+            cell.accessoryType = .none
         }
-        return cell!
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
