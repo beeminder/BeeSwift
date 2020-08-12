@@ -43,6 +43,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
 
+        application.setMinimumBackgroundFetchInterval(15 * 60)
+        
         return true
     }
 
@@ -78,6 +80,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    /// https://developer.apple.com/documentation/uikit/app_and_environment/scenes/preparing_your_ui_to_run_in_the_background/updating_your_app_with_background_app_refresh
+    ///
+    /// and for iOS 13 and over: https://developer.apple.com/documentation/backgroundtasks/bgapprefreshtask
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             completionHandler(.newData)
@@ -85,6 +90,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             completionHandler(.failed)
         }
     }
+    
+    
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
         if url.scheme == "beeminder" {
