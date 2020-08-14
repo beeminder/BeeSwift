@@ -22,6 +22,7 @@ platform :ios do
   end
   lane :test do
     run_tests(scheme: "BeeSwiftTests")
+    run_tests(scheme: "BeeSwiftUITests")
   end
   lane :build do
     sync_code_signing
