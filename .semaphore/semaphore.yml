@@ -16,8 +16,26 @@ blocks:
           - cache restore
           - bundle install --path vendor/bundle
           - cache store
+          - cp /Users/semaphore/BeeSwift/BeeSwift/Config.swift.sample /Users/semaphore/BeeSwift/BeeSwift/Config.swift
       jobs:
         - name: bundle exec fastlane test
           commands:
-            - bundle exec xcversion select 10.2.1
+            - bundle exec xcversion select 11.3.1
             - bundle exec fastlane test
+  - name: Fastlane Build
+    task:
+      env_vars:
+        - name: LANG
+          value: en_US.UTF-8
+      prologue:
+        commands:
+          - checkout
+          - cache restore
+          - bundle install --path vendor/bundle
+          - cache store
+          - cp /Users/semaphore/BeeSwift/BeeSwift/Config.swift.sample /Users/semaphore/BeeSwift/BeeSwift/Config.swift
+      jobs:
+        - name: bundle exec fastlane build
+          commands:
+            - bundle exec xcversion select 11.3.1
+            - bundle exec fastlane build
