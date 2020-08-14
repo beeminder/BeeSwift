@@ -84,6 +84,8 @@
 		E5DF493724DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
 		E5DF493824DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
 		E5DF493924DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
+		E5FEFB3824E6FAC800A076BB /* BeeSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FEFB3724E6FAC800A076BB /* BeeSwiftUITests.swift */; };
+		E5FEFB4124E6FAFC00A076BB /* LaunchScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +97,13 @@
 			remoteInfo = BeeSwiftToday;
 		};
 		A196CB2D1AE4142F00B90A3E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A196CB131AE4142E00B90A3E;
+			remoteInfo = BeeSwift;
+		};
+		E5FEFB3A24E6FAC800A076BB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
 			proxyType = 1;
@@ -193,6 +202,10 @@
 		E55FEE6D23FF78E8007C20B2 /* Sentry.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Sentry.sh; sourceTree = "<group>"; };
 		E5C161932423CE9F0045C90D /* VersionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionManager.swift; sourceTree = "<group>"; };
 		E5DF493624DC69A200260560 /* Config.swift.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = Config.swift.sample; sourceTree = "<group>"; };
+		E5FEFB3524E6FAC800A076BB /* BeeSwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeeSwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E5FEFB3724E6FAC800A076BB /* BeeSwiftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeSwiftUITests.swift; sourceTree = "<group>"; };
+		E5FEFB3924E6FAC800A076BB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +239,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				6E72E1F82DDC41E7CD79BEE4 /* Pods_BeeSwiftTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E5FEFB3224E6FAC800A076BB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,7 +320,9 @@
 			children = (
 				A196CB161AE4142E00B90A3E /* BeeSwift */,
 				A196CB2F1AE4142F00B90A3E /* BeeSwiftTests */,
+				E5FEFB3F24E6FAD900A076BB /* BeeSwiftUITests */,
 				A12E694F1BD3EF0200AB94C2 /* BeeSwiftToday */,
+				E5FEFB3624E6FAC800A076BB /* BeeSwiftUITests */,
 				A196CB151AE4142E00B90A3E /* Products */,
 				C039E8389CFF5C0D8CF85D8D /* Frameworks */,
 				3A029811DF302A79CBF63611 /* Pods */,
@@ -313,6 +335,7 @@
 				A196CB141AE4142E00B90A3E /* BeeSwift.app */,
 				A196CB2C1AE4142F00B90A3E /* BeeSwiftTests.xctest */,
 				A12E694D1BD3EF0200AB94C2 /* BeeSwiftToday.appex */,
+				E5FEFB3524E6FAC800A076BB /* BeeSwiftUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -409,6 +432,24 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E5FEFB3624E6FAC800A076BB /* BeeSwiftUITests */ = {
+			isa = PBXGroup;
+			children = (
+				E5FEFB3724E6FAC800A076BB /* BeeSwiftUITests.swift */,
+				E5FEFB3924E6FAC800A076BB /* Info.plist */,
+			);
+			path = BeeSwiftUITests;
+			sourceTree = "<group>";
+		};
+		E5FEFB3F24E6FAD900A076BB /* BeeSwiftUITests */ = {
+			isa = PBXGroup;
+			children = (
+				E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */,
+			);
+			name = BeeSwiftUITests;
+			path = BeeSwift/BeeSwiftUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -471,6 +512,24 @@
 			productReference = A196CB2C1AE4142F00B90A3E /* BeeSwiftTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		E5FEFB3424E6FAC800A076BB /* BeeSwiftUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E5FEFB3C24E6FAC800A076BB /* Build configuration list for PBXNativeTarget "BeeSwiftUITests" */;
+			buildPhases = (
+				E5FEFB3124E6FAC800A076BB /* Sources */,
+				E5FEFB3224E6FAC800A076BB /* Frameworks */,
+				E5FEFB3324E6FAC800A076BB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E5FEFB3B24E6FAC800A076BB /* PBXTargetDependency */,
+			);
+			name = BeeSwiftUITests;
+			productName = BeeSwiftUITests;
+			productReference = E5FEFB3524E6FAC800A076BB /* BeeSwiftUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -478,7 +537,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftMigration = 0710;
-				LastSwiftUpdateCheck = 0710;
+				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = APB;
 				TargetAttributes = {
@@ -526,6 +585,12 @@
 						CreatedOnToolsVersion = 6.3;
 						TestTargetID = A196CB131AE4142E00B90A3E;
 					};
+					E5FEFB3424E6FAC800A076BB = {
+						CreatedOnToolsVersion = 11.3.1;
+						DevelopmentTeam = 8TW9V9HVES;
+						ProvisioningStyle = Automatic;
+						TestTargetID = A196CB131AE4142E00B90A3E;
+					};
 				};
 			};
 			buildConfigurationList = A196CB0F1AE4142E00B90A3E /* Build configuration list for PBXProject "BeeSwift" */;
@@ -545,6 +610,7 @@
 				A196CB131AE4142E00B90A3E /* BeeSwift */,
 				A196CB2B1AE4142F00B90A3E /* BeeSwiftTests */,
 				A12E694C1BD3EF0200AB94C2 /* BeeSwiftToday */,
+				E5FEFB3424E6FAC800A076BB /* BeeSwiftUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -576,6 +642,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				E5DF493824DC69A200260560 /* Config.swift.sample in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E5FEFB3324E6FAC800A076BB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -774,6 +847,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E5FEFB3124E6FAC800A076BB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5FEFB4124E6FAFC00A076BB /* LaunchScreenTests.swift in Sources */,
+				E5FEFB3824E6FAC800A076BB /* BeeSwiftUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -786,6 +868,11 @@
 			isa = PBXTargetDependency;
 			target = A196CB131AE4142E00B90A3E /* BeeSwift */;
 			targetProxy = A196CB2D1AE4142F00B90A3E /* PBXContainerItemProxy */;
+		};
+		E5FEFB3B24E6FAC800A076BB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A196CB131AE4142E00B90A3E /* BeeSwift */;
+			targetProxy = E5FEFB3A24E6FAC800A076BB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1071,6 +1158,7 @@
 				PRODUCT_NAME = BeeSwiftTests;
 				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BeeSwift.app/BeeSwift";
+				TEST_TARGET_NAME = BeeSwiftTests;
 			};
 			name = Debug;
 		};
@@ -1090,6 +1178,58 @@
 				PRODUCT_NAME = BeeSwiftTests;
 				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BeeSwift.app/BeeSwift";
+				TEST_TARGET_NAME = BeeSwiftTests;
+			};
+			name = Release;
+		};
+		E5FEFB3D24E6FAC800A076BB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 8TW9V9HVES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BeeSwiftUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.BeeSwiftUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BeeSwift;
+			};
+			name = Debug;
+		};
+		E5FEFB3E24E6FAC800A076BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8TW9V9HVES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BeeSwiftUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.BeeSwiftUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BeeSwift;
 			};
 			name = Release;
 		};
@@ -1128,6 +1268,15 @@
 			buildConfigurations = (
 				A196CB3A1AE4142F00B90A3E /* Debug */,
 				A196CB3B1AE4142F00B90A3E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E5FEFB3C24E6FAC800A076BB /* Build configuration list for PBXNativeTarget "BeeSwiftUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E5FEFB3D24E6FAC800A076BB /* Debug */,
+				E5FEFB3E24E6FAC800A076BB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
