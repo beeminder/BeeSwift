@@ -14,9 +14,9 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A196CB2B1AE4142F00B90A3E"
-               BuildableName = "BeeSwiftTests.xctest"
-               BlueprintName = "BeeSwiftTests"
+               BlueprintIdentifier = "E5FEFB3424E6FAC800A076BB"
+               BuildableName = "BeeSwiftUITests.xctest"
+               BlueprintName = "BeeSwiftUITests"
                ReferencedContainer = "container:BeeSwift.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,16 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A196CB2B1AE4142F00B90A3E"
-               BuildableName = "BeeSwiftTests.xctest"
-               BlueprintName = "BeeSwiftTests"
-               ReferencedContainer = "container:BeeSwift.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference
@@ -70,9 +60,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A196CB2B1AE4142F00B90A3E"
-            BuildableName = "BeeSwiftTests.xctest"
-            BlueprintName = "BeeSwiftTests"
+            BlueprintIdentifier = "E5FEFB3424E6FAC800A076BB"
+            BuildableName = "BeeSwiftUITests.xctest"
+            BlueprintName = "BeeSwiftUITests"
             ReferencedContainer = "container:BeeSwift.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
