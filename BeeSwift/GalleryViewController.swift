@@ -428,6 +428,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func sortGoals() {
+        UserDefaults.standard.removeObject(forKey: Constants.selectedGoalSortKey)
         self.goals.sort(by: { (goal1, goal2) -> Bool in
             if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
                 if selectedGoalSort == Constants.nameGoalSortString {
@@ -440,7 +441,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     return goal1.pledge.intValue > goal2.pledge.intValue
                 }
             }
-            return goal1.losedate.intValue < goal2.losedate.intValue
+            
+            guard let user = CurrentUserManager.sharedManager.user,
+                let lhs = user.goals.index(of: goal1.slug),
+                let rhs = user.goals.index(of: goal2.slug)
+            else {
+                return goal1.losedate.intValue < goal2.losedate.intValue
+            }
+            
+            return lhs < rhs
+
         })
         self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
     }

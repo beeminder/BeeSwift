@@ -35,7 +35,7 @@ class CurrentUserManager : NSObject {
     var goalsFetchedAt : Date = Date()
     var userUpdatedAt: TimeInterval = 0
     
-    
+    var user: JSONUser?
     
     var signingUp : Bool = false
     
@@ -227,6 +227,8 @@ class CurrentUserManager : NSObject {
                             UserDefaults.standard.set(responseUser.updated_at, forKey: "user_updated_at")
                             
                             self.deadbeat = responseUser.deadbeat
+                            
+                            self.user = responseUser
                                                         
                             success?(responseUser)
         }, errorHandler: { responseError in
