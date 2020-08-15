@@ -80,12 +80,16 @@ class TodayTableViewCell: UITableViewCell {
             make.right.equalTo(-10)
         }
         
-        var addTitle = "Add"
-        // small screen hack
-        if (UIDevice.current.orientation == .landscapeRight || UIDevice.current.orientation == .landscapeLeft && UIScreen.main.bounds.height >= 375) ||
-           (UIScreen.main.bounds.width >= 375) {
-            addTitle = "Add data"
-        }
+        let addTitle: String = {
+            // small screen hack
+            if (UIDevice.current.orientation == .landscapeRight || UIDevice.current.orientation == .landscapeLeft && UIScreen.main.bounds.height >= 375) ||
+                (UIScreen.main.bounds.width >= 375) {
+                return "Add data"
+            } else {
+                return "Add"
+            }
+        }()
+        
         self.addDataButton.setTitle(addTitle, for: .normal)
         self.addDataButton.setTitleColor(UIColor.black, for: .normal)
         self.addDataButton.addTarget(self, action: #selector(self.addDataButtonPressed), for: .touchUpInside)
