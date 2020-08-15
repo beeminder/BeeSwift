@@ -21,7 +21,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let lastUpdatedLabel = BSLabel()
     let cellReuseIdentifier = "Cell"
     let newGoalCellReuseIdentifier = "NewGoalCell"
-    var refreshControl = UIRefreshControl()
     var deadbeatView = UIView()
     var outofdateView = UIView()
     let noGoalsLabel = BSLabel()
@@ -147,8 +146,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView!.register(NewGoalCollectionViewCell.self, forCellWithReuseIdentifier: self.newGoalCellReuseIdentifier)
         self.view.addSubview(self.collectionView!)
         
-        self.refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
-        self.collectionView!.addSubview(self.refreshControl)
+        self.collectionView?.refreshControl = {
+            let refreshControl = UIRefreshControl()
+            refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
+            return refreshControl
+        }()
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.searchBar.snp.bottom)
@@ -373,7 +375,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func didFetchGoals() {
         self.sortGoals()
         self.setupHealthKit()
-        self.refreshControl.endRefreshing()
+        self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
         self.collectionView!.reloadData()
         self.updateDeadbeatHeight()
@@ -419,7 +421,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     self.present(alert, animated: true, completion: nil)
                 }
             }
-            self.refreshControl.endRefreshing()
+            self.collectionView?.refreshControl?.endRefreshing()
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             self.collectionView!.reloadData()
         }
