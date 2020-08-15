@@ -108,6 +108,8 @@ class TodayTableViewCell: UITableViewCell {
     }
     
     @objc func addDataButtonPressed() {
+        guard let slug = self.goalDictionary["slug"] as? String else { return }
+
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
         hud?.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
@@ -146,7 +148,6 @@ class TodayTableViewCell: UITableViewCell {
         formatter.dateFormat = "d"
         
         let params = ["access_token": token, "urtext": "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
-        guard let slug = self.goalDictionary["slug"] as? String else { return }
         
         RequestManager.post(url: "api/v1/users/\(username)/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
             self.pollUntilGraphUpdates()
