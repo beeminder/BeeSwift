@@ -116,14 +116,12 @@ class TodayTableViewCell: UITableViewCell {
     
     @objc func addDataButtonPressed() {
         guard let slug = self.goalDictionary["slug"] as? String else { return }
-
+        guard let token = self.defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let username = self.defaults?.object(forKey: "username") as? String else { return }
+        
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
         hud?.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
-
-        guard let token = self.defaults?.object(forKey: "accessToken") as? String else { return }
-        guard let username = self.defaults?.object(forKey: "username") as? String else { return }
-
         
         // if the goal's deadline is after midnight, and it's after midnight,
         // but before the deadline,
