@@ -46,6 +46,10 @@ Using Apple Health as a source, data can be syncronized from the Apple Health ap
 
 [![Download on the App Store](https://linkmaker.itunes.apple.com/en-us/badge-lrg.svg?releaseDate=2012-08-30&kind=iossoftware&bubble=ios_apps)](https://apps.apple.com/us/app/beeminder/id551869729?mt=8)
 
+## Bug reports and feature requests
+
+For bug reports, feel free to look through the existing [list of issues](https://github.com/beeminder/BeeSwift/issues) and add your own if it's not already there, using the BUG template. Feature requests can also go there using the RFE template. For more general questions or to discuss ideas for features try the [Beeminder Forum](https://forum.beeminder.com).
+
 ## Development
 
-See [Getting Started](GETTING_STARTED.md) and [Contributing](CONTRIBUTING.md) for details. 
+See [Getting Started](GETTING_STARTED.md) and [Contributing](CONTRIBUTING.md) for details.

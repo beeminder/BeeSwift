@@ -1,8 +1,10 @@
 ## Contributing
 
+We love getting contributions to the app, in any form. If you're interested in committing code, read on. For bug reports, feel free to look through the existing [list of issues](https://github.com/beeminder/BeeSwift/issues) and add your own if it's not already there, using the BUG template. Feature requests can also go there using the RFE template. For more general questions or to discuss ideas for features try the [Beeminder Forum](https://forum.beeminder.com).
+
 #### Legal Schmegal
 
-First, please read and sign [beeminder.com/cla](https://beeminder.com/cla).
+Before contributing code, please read and sign [beeminder.com/cla](https://beeminder.com/cla).
 
 #### Set up
 
@@ -26,4 +28,4 @@ We have a (currently very limited) suite of tests set up on [Semaphore CI](https
 
 #### Deployment
 
-We have [Fastlane](https://fastlane.tools) set up to manage uploading builds to TestFlight and the App Store and tagging commits as appropriate. 
+We have [Fastlane](https://fastlane.tools) set up to manage uploading builds to TestFlight and the App Store and tagging commits as appropriate.
