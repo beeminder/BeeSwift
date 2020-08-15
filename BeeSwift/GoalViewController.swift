@@ -56,6 +56,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.bottom.equalTo(0)
         }
         
+        
+        self.scrollView.refreshControl = {
+            let refreshControl = UIRefreshControl()
+            refreshControl.addTarget(self, action: #selector(refreshButtonPressed), for: .valueChanged)
+            return refreshControl
+        }()
+        
         let countdownView = UIView()
         self.scrollView.addSubview(countdownView)
         countdownView.snp.makeConstraints { (make) -> Void in
@@ -342,7 +349,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             syncWeekButton.addTarget(self, action: #selector(self.syncWeekButtonPressed), for: .touchUpInside)
         }
         
-        var items = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(self.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
+        var items = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
         
         if (!self.goal.hideDataEntry()) {
             items.append(UIBarButtonItem.init(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
@@ -430,6 +437,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshButtonPressed() {
+        self.scrollView.refreshControl?.endRefreshing()
+        MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
+
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
             self.pollUntilGraphUpdates()
         }) { (error) in
