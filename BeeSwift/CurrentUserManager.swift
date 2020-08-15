@@ -180,6 +180,7 @@ class CurrentUserManager : NSObject {
         if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder") {
             sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
             sharedDefaults.set(CurrentUserManager.sharedManager.accessToken, forKey: "accessToken")
+            sharedDefaults.set(CurrentUserManager.sharedManager.username, forKey: "username")
             sharedDefaults.synchronize()
         }
     }
