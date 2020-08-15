@@ -65,7 +65,7 @@ class TodayTableViewCell: UITableViewCell {
             make.right.equalTo(-10)
         })
         
-        if self.goalDictionary["hideDataEntry"] as! Bool {
+        if let hide = self.goalDictionary["hideDataEntry"] as? Bool, hide {
             self.limitLabel.snp.remakeConstraints({ (make) in
                 make.left.equalTo(self.graphImageView.snp.right).offset(10)
                 make.centerY.equalTo(self.graphImageView)
