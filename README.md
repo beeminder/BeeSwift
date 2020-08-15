@@ -46,21 +46,10 @@ Using Apple Health as a source, data can be syncronized from the Apple Health ap
 
 [![Download on the App Store](https://linkmaker.itunes.apple.com/en-us/badge-lrg.svg?releaseDate=2012-08-30&kind=iossoftware&bubble=ios_apps)](https://apps.apple.com/us/app/beeminder/id551869729?mt=8)
 
+## Bug reports and feature requests
+
+For bug reports, feel free to look through the existing [list of issues](https://github.com/beeminder/BeeSwift/issues) and add your own if it's not already there, using the BUG template. Feature requests can also go there using the RFE template. For more general questions or to discuss ideas for features try the [Beeminder Forum](https://forum.beeminder.com).
+
 ## Development
 
-### Installation/Setup
-The file `BeeSwift/Config.swift` is ignored by git since it has sensitive info like keys in it. Copy `BeeSwift/Config.sample.swift` to `BeeSwift/Config.swift` and uncomment the struct it contains so that the project can reference the struct.
-
-There's a Run Script build phase that references `BeeSwift/Sentry.sh`, which is also ignored by git since it has an auth token. Either create an empty shell script at that location (preferable) or delete the `Run Script - Sentry` build phase (if you do delete it, make sure not to check in the modified `project.pbxproj` file).
-
-The project should build at this point and run in the simulator.
-
-If it's still not building, or if you find other noteworthy dependencies not listed here, please create a new issue! Or a pull request with a modified Readme.
-
-### Testing
-
-Since the Beeminder backend/web application isn't open source (yet), you'll need to ask us to be added to the private repo if you want to be able to point the iOS app at `localhost:3000`. You can also create a test account/goal on beeminder.com to test against.
-
-### Contributing
-
-Read and sign [beeminder.com/cla](https://beeminder.com/cla). Then make a branch off of master and send a pull request!
+See [Getting Started](GETTING_STARTED.md) and [Contributing](CONTRIBUTING.md) for details.
