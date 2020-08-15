@@ -112,9 +112,8 @@ class TodayTableViewCell: UITableViewCell {
         hud?.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
 
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
-        guard let username = defaults?.object(forKey: "username") as? String else { return }
+        guard let token = self.defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let username = self.defaults?.object(forKey: "username") as? String else { return }
 
         
         // if the goal's deadline is after midnight, and it's after midnight,
@@ -163,9 +162,8 @@ class TodayTableViewCell: UITableViewCell {
     
     @objc func refreshGoal() {
         guard let slug = self.goalDictionary["slug"] as? String else { return }
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
-        guard let username = defaults?.object(forKey: "username") as? String else { return }
+        guard let token = self.defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let username = self.defaults?.object(forKey: "username") as? String else { return }
         
         let parameters = ["access_token": token]
         RequestManager.get(url: "api/v1/users/\(username)/goals/\(slug)", parameters: parameters, success: { (responseObject) in
@@ -200,5 +198,10 @@ class TodayTableViewCell: UITableViewCell {
         }
         
         self.graphImageView.af_setImage(withURL: thumbUrl, placeholderImage: thumbnailPlaceholder, progressQueue: DispatchQueue.global(qos: .background), imageTransition: .crossDissolve(0.4), runImageTransitionIfCached: false)
+    }
+    
+    /// UserDefaults shared between app and extension
+    var defaults: UserDefaults? {
+        return UserDefaults(suiteName: "group.beeminder.beeminder")
     }
 }
