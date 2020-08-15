@@ -114,6 +114,8 @@ class TodayTableViewCell: UITableViewCell {
 
         let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
         guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let username = defaults?.object(forKey: "username") as? String else { return }
+
         
         // if the goal's deadline is after midnight, and it's after midnight,
         // but before the deadline,
@@ -147,7 +149,7 @@ class TodayTableViewCell: UITableViewCell {
         let params = ["access_token": token, "urtext": "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
         guard let slug = self.goalDictionary["slug"] as? String else { return }
         
-        RequestManager.post(url: "api/v1/users/me/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
+        RequestManager.post(url: "api/v1/users/\(username)/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
             self.pollUntilGraphUpdates()
         }) { (responseError) in
             self.addDataButton.setTitle("oops!", for: .normal)
@@ -163,9 +165,10 @@ class TodayTableViewCell: UITableViewCell {
         guard let slug = self.goalDictionary["slug"] as? String else { return }
         let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
         guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let username = defaults?.object(forKey: "username") as? String else { return }
         
         let parameters = ["access_token": token]
-        RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters, success: { (responseObject) in
+        RequestManager.get(url: "api/v1/users/\(username)/goals/\(slug)", parameters: parameters, success: { (responseObject) in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
                 self.pollTimer?.invalidate()
