@@ -163,7 +163,7 @@ class TodayTableViewCell: UITableViewCell {
     }
     
     func pollUntilGraphUpdates() {
-        if self.pollTimer != nil { return }
+        guard self.pollTimer == nil else { return }
         self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.refreshGoal), userInfo: nil, repeats: true)
     }
     
