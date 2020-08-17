@@ -198,7 +198,9 @@ class JSONGoal {
     }
     
     var relativeLane : NSNumber {
-        return self.lane != nil ? NSNumber(value: self.lane!.int32Value * self.yaw.int32Value as Int32) : 0
+        guard let lane = self.lane else { return 0 }
+        
+        return NSNumber(value: lane.int32Value * self.yaw.int32Value as Int32)
     }
     
     var countdownHelperText :String {
