@@ -81,8 +81,7 @@ class ChooseHKMetricViewController: UIViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         let metric = self.sortedHKMetrics[selectedRow]
-        if metric.hkIdentifier != nil {
-            let metricType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
+        if let metricId = metric.hkIdentifier, let metricType = HKObjectType.quantityType(forIdentifier: metricId) {
             healthStore.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
                 self.saveMetric(databaseString: metric.databaseString!)
             })
