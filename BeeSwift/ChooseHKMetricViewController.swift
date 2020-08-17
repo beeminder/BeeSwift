@@ -85,9 +85,8 @@ class ChooseHKMetricViewController: UIViewController {
             healthStore.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
                 self.saveMetric(databaseString: metric.databaseString!)
             })
-        } else if metric.hkCategoryTypeIdentifier != nil {
-            let categoryType = HKObjectType.categoryType(forIdentifier: metric.hkCategoryTypeIdentifier!)
-            healthStore.requestAuthorization(toShare: nil, read: [categoryType!], completion: { (success, error) in
+        } else if let metricCategoryId = metric.hkCategoryTypeIdentifier, let categoryType = HKObjectType.categoryType(forIdentifier: metricCategoryId) {
+            healthStore.requestAuthorization(toShare: nil, read: [categoryType], completion: { (success, error) in
                 self.saveMetric(databaseString: metric.databaseString!)
             })
         }
