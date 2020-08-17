@@ -285,9 +285,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.goals = []
         self.filteredGoals = []
         self.collectionView?.reloadData()
-        if self.presentedViewController != nil {
-            if type(of: self.presentedViewController!) == SignInViewController.self { return }
-        }
+
+        guard self.presentedViewController as? SignInViewController == nil else { return }
+    
         let signInVC = SignInViewController()
         signInVC.modalPresentationStyle = .fullScreen
         self.present(signInVC, animated: true, completion: nil)
