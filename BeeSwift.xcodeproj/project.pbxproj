@@ -599,8 +599,8 @@
 			projectRoot = "";
 			targets = (
 				A196CB131AE4142E00B90A3E /* BeeSwift */,
-				A196CB2B1AE4142F00B90A3E /* BeeSwiftTests */,
 				A12E694C1BD3EF0200AB94C2 /* BeeSwiftToday */,
+				A196CB2B1AE4142F00B90A3E /* BeeSwiftTests */,
 				E5FEFB3424E6FAC800A076BB /* BeeSwiftUITests */,
 			);
 		};
