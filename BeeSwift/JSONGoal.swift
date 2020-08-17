@@ -214,20 +214,18 @@ class JSONGoal {
     }
     
     var humanizedRunits :String {
-        if self.runits == "d" {
+        switch self.runits {
+        case "d":
             return "day"
-        }
-        if self.runits == "m" {
+        case "m":
             return "month"
-        }
-        if self.runits == "h" {
+        case "h":
             return "hour"
-        }
-        if self.runits == "y" {
+        case "y":
             return "year"
+        default:
+            return "week"
         }
-        
-        return "week"
     }
     
     func capitalSafesum() -> String {
