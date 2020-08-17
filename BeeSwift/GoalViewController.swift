@@ -14,11 +14,7 @@ import SafariServices
 
 class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     
-    var goal : JSONGoal! {
-        didSet {
-            
-        }
-    }
+    var goal : JSONGoal!
     
     fileprivate var cellIdentifier = "datapointCell"
     fileprivate var goalImageView = UIImageView()
@@ -59,6 +55,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.right.equalTo(0)
             make.bottom.equalTo(0)
         }
+        
+        
+        self.scrollView.refreshControl = {
+            let refreshControl = UIRefreshControl()
+            refreshControl.addTarget(self, action: #selector(refreshButtonPressed), for: .valueChanged)
+            return refreshControl
+        }()
         
         let countdownView = UIView()
         self.scrollView.addSubview(countdownView)
@@ -138,9 +141,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         let dataEntryView = UIView()
-        if (self.goal.hideDataEntry()) {
-            dataEntryView.isHidden = true
-        }
+        dataEntryView.isHidden = self.goal.hideDataEntry()
 
         self.scrollView.addSubview(dataEntryView)
         dataEntryView.snp.makeConstraints { (make) -> Void in
@@ -156,7 +157,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         dataEntryView.addSubview(self.dateTextField)
-        self.dateTextField.font = UIFont(name: "Avenir", size: 16)
+        self.dateTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
         self.dateTextField.tintColor = UIColor.beeminder.gray
         self.dateTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.dateTextField.layer.borderWidth = 1
@@ -171,7 +172,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         dataEntryView.addSubview(self.valueTextField)
-        self.valueTextField.font = UIFont(name: "Avenir", size: 16)
+        self.valueTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
         self.valueTextField.tintColor = UIColor.beeminder.gray
         self.valueTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.valueTextField.layer.borderWidth = 1
@@ -210,7 +211,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let commentLeftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 1))
         
         dataEntryView.addSubview(self.commentTextField)
-        self.commentTextField.font = UIFont(name: "Avenir", size: 16)
+        self.commentTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
         self.commentTextField.leftView = commentLeftPaddingView
         self.commentTextField.leftViewMode = .always
         self.commentTextField.tintColor = UIColor.beeminder.gray
@@ -279,7 +280,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let dateLabel = BSLabel()
         dataEntryView.addSubview(dateLabel)
         dateLabel.text = "Date"
-        dateLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
+        dateLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         dateLabel.textAlignment = .center
         dateLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.dateStepper)
@@ -301,7 +302,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let valueLabel = BSLabel()
         dataEntryView.addSubview(valueLabel)
         valueLabel.text = "Value"
-        valueLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
+        valueLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         valueLabel.textAlignment = .center
         valueLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.valueStepper)
@@ -346,35 +347,35 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             syncWeekButton.addTarget(self, action: #selector(self.syncWeekButtonPressed), for: .touchUpInside)
         }
         
-        var items = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(self.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
-        
+        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
         if (!self.goal.hideDataEntry()) {
-            items.append(UIBarButtonItem.init(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
+            self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
         
-        self.navigationItem.rightBarButtonItems = items
     }
     
     @objc func syncTodayButtonPressed() {
-        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
-        self.goal.hkQueryForLast(days: 1, success: {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
-            })
-        }) {
-            DispatchQueue.main.async {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            }
-        }
+        self.syncHealthDataButtonPressed(numDays: 1)
     }
     
     @objc func syncWeekButtonPressed() {
+        self.syncHealthDataButtonPressed(numDays: 7)
+    }
+    
+    private var previouslySeenSyncDayAmount: [Int] {
+        [
+            1, /*a day; today*/
+            7 /*a week; the past seven days*/
+        ]
+    }
+    /// expecting 1 for today button and 7 for week button
+    private func syncHealthDataButtonPressed(numDays: Int = 1) {
+        assert(previouslySeenSyncDayAmount.contains(numDays), "previously only handled values \(previouslySeenSyncDayAmount); hic sunt dracones!")
+        let daysBackToSync = previouslySeenSyncDayAmount.contains(numDays) ? numDays : 1
+        
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        self.goal.hkQueryForLast(days: 7, success: {
+        self.goal.hkQueryForLast(days: daysBackToSync, success: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
@@ -432,6 +433,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshButtonPressed() {
+        self.scrollView.refreshControl?.endRefreshing()
+        MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
+        
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
             self.pollUntilGraphUpdates()
         }) { (error) in
@@ -442,7 +446,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func colonButtonPressed() {
-        self.valueTextField.text = "\(self.valueTextField.text!):"
+        self.valueTextField.text?.append(":")
     }
     
     @objc func refreshCountdown() {
