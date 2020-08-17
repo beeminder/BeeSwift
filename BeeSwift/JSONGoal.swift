@@ -662,7 +662,7 @@ class JSONGoal {
                             "comment": "Automatically updated via iOS Health app",
                             "requestid": requestId
                         ]
-                        let val = datapoint["value"].double as? Double
+                        let val = datapoint["value"].double
                         if datapointValue == val { success?() }
                         else {
                             let datapointID = datapoint["id"].string
