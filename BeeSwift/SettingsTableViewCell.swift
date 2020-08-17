@@ -49,8 +49,8 @@ class SettingsTableViewCell: UITableViewCell {
             self.titleLabel.textColor = UIColor.beeminder.gray
         }
         
-        if self.imageName != nil {
-            let image = UIImage(named: self.imageName!)
+        if let imageName = self.imageName {
+            let image = UIImage(named: imageName)
             let imageView = UIImageView(image: image)
             
             
