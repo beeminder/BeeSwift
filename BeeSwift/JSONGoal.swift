@@ -617,8 +617,7 @@ class JSONGoal {
                 })
             } else if datapoints.count >= 1 {
                 var first = true
-                datapoints.forEach({ (datapoint) in
-                    guard let d = datapoint as? JSON else { return }
+                datapoints.forEach({ datapoint in
                     if first {
                         let requestId = "\(daystamp)-\(self.minuteStamp())"
                         let params = [
@@ -627,10 +626,10 @@ class JSONGoal {
                             "comment": "Auto-updated via Apple Health",
                             "requestid": requestId
                         ]
-                        let val = d["value"].double as? Double
+                        let val = datapoint["value"].double as? Double
                         if datapointValue == val { success?() }
                         else {
-                            let datapointID = d["id"].string
+                            let datapointID = datapoint["id"].string
                             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
                                 success?()
                             }, errorHandler: { (error, errorMessage) in
@@ -638,7 +637,7 @@ class JSONGoal {
                             })
                         }
                     } else {
-                        let datapointID = d["id"].string
+                        let datapointID = datapoint["id"].string
                         RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
                             //
                         }) { (error, errorMessage) in
