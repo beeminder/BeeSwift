@@ -681,18 +681,15 @@ class JSONGoal {
     }
     
     func hasRecentlyUpdatedHealthData() -> Bool {
-        var updateDictionary = UserDefaults.standard.dictionary(forKey: Constants.healthKitUpdateDictionaryKey)
-        if updateDictionary == nil {
-            updateDictionary = [:]
-        }
+        var updateDictionary = UserDefaults.standard.dictionary(forKey: Constants.healthKitUpdateDictionaryKey) ?? [:]
         
-        if updateDictionary![self.slug] != nil {
-            let lastUpdate = updateDictionary![self.slug] as! Date
+        if updateDictionary[self.slug] != nil {
+            let lastUpdate = updateDictionary[self.slug] as! Date
             if lastUpdate.timeIntervalSinceNow > -60.0 {
                 return true
             }
         }
-        updateDictionary![self.slug] = Date()
+        updateDictionary[self.slug] = Date()
         
         UserDefaults.standard.set(updateDictionary, forKey: Constants.healthKitUpdateDictionaryKey)
         UserDefaults.standard.synchronize()
