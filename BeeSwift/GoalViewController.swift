@@ -562,7 +562,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func pollUntilGraphUpdates() {
-        if self.pollTimer != nil { return }
+        guard self.pollTimer == nil else { return }
+        
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         hud?.show(true)
