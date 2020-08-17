@@ -395,7 +395,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func setupHealthKit() {
         var permissions = Set<HKObjectType>.init()
         self.goals.forEach { (goal) in
-            if goal.hkPermissionType() != nil { permissions.insert(goal.hkPermissionType()!) }
+            if let permissiontype = goal.hkPermissionType() {
+                permissions.insert(permissiontype)
+            }
         }
         guard permissions.count > 0 else { return }
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
