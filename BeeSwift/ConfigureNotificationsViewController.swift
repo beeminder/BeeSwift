@@ -132,7 +132,8 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (indexPath as NSIndexPath).section == 0 {        self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
+        if (indexPath as NSIndexPath).section == 0 {
+            self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
         } else {
             let goal = self.goals[(indexPath as NSIndexPath).row]
             self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
