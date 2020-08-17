@@ -411,10 +411,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         do {
             let hoursRegex = try NSRegularExpression(pattern: "(hr|hour)s?")
             let minutesRegex = try NSRegularExpression(pattern: "(min|minute)s?")
-            if hoursRegex.firstMatch(in: self.goal.yaxis, options: [], range: NSMakeRange(0, self.goal.yaxis.count)) != nil {
+            if hoursRegex.numberOfMatches(in: self.goal.yaxis, options: [], range: NSMakeRange(0, self.goal.yaxis.count)) > 0 {
                 controller.units = "hours"
             }
-            if minutesRegex.firstMatch(in: self.goal.yaxis, options: [], range: NSMakeRange(0, self.goal.yaxis.count)) != nil {
+            if minutesRegex.numberOfMatches(in: self.goal.yaxis, options: [], range: NSMakeRange(0, self.goal.yaxis.count)) > 0 {
                 controller.units = "minutes"
             }
         } catch {
