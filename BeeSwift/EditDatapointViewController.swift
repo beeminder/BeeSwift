@@ -12,7 +12,7 @@ import MBProgressHUD
 
 class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     
-    var datapointJSON : JSON?
+    var datapointJSON : JSON!
     var goalSlug : String?
     fileprivate var datePicker = UIDatePicker()
     fileprivate var scrollView = UIScrollView()
@@ -71,7 +71,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         self.valueField.placeholder = "Value"
         self.valueField.textAlignment = .center
         self.valueField.keyboardType = .decimalPad
-        self.valueField.text = "\(self.datapointJSON!["value"].number!)"
+        self.valueField.text = "\(self.datapointJSON["value"].number!)"
         self.valueField.addTarget(self, action: #selector(self.textFieldEditingDidBegin), for: .editingDidBegin)
         
         let accessory = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
@@ -100,7 +100,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         }
         self.commentField.placeholder = "Comment"
         self.commentField.textAlignment = .center
-        self.commentField.text = self.datapointJSON!["comment"].string
+        self.commentField.text = self.datapointJSON["comment"].string
         self.commentField.addTarget(self, action: #selector(self.textFieldEditingDidBegin), for: .editingDidBegin)
         
         let updateButton = BSButton()
@@ -121,7 +121,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         deleteButton.setTitle("Delete", for: .normal)
         deleteButton.addTarget(self, action: #selector(self.deleteButtonPressed), for: .touchUpInside)
         
-        let daystamp = self.datapointJSON!["daystamp"].string
+        let daystamp = self.datapointJSON["daystamp"].string
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
         if daystamp != nil { self.datePicker.date = dateFormatter.date(from: daystamp!)! }
@@ -191,7 +191,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             "access_token": CurrentUserManager.sharedManager.accessToken!,
             "urtext": self.urtext()
         ]
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON["id"]["$oid"].string!).json", parameters: params, success: { (response) in
             let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
@@ -208,7 +208,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         ]
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
+        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON["id"]["$oid"].string!).json", parameters: params, success: { (response) in
             let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
