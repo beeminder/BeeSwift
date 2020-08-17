@@ -315,11 +315,11 @@ class JSONGoal {
     }
     
     func hkSampleType() -> HKSampleType? {
-        if self.hkQuantityTypeIdentifier() != nil {
-            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
+        if let quantityId = self.hkQuantityTypeIdentifier() {
+            return HKObjectType.quantityType(forIdentifier: quantityId)
         }
-        if self.hkCategoryTypeIdentifier() != nil {
-            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        if let categoryId = self.hkCategoryTypeIdentifier() {
+            return HKObjectType.categoryType(forIdentifier: categoryId)
         }
         return nil
     }
@@ -335,10 +335,10 @@ class JSONGoal {
     }
     
     func hkPermissionType() -> HKObjectType? {
-        if self.hkQuantityTypeIdentifier() != nil {
-            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
-        } else if self.hkCategoryTypeIdentifier() != nil {
-            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        if let quantityId = self.hkQuantityTypeIdentifier() {
+            return HKObjectType.quantityType(forIdentifier: quantityId)
+        } else if let categoryId = self.hkCategoryTypeIdentifier() {
+            return HKObjectType.categoryType(forIdentifier: categoryId)
         }
         return nil
     }
