@@ -54,12 +54,15 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
     }
     
     override func sendLeadTimeToServer(_ timer : Timer) {
-        var userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
-        let leadtime = userInfo["leadtime"]
+        guard
+            let userInfo = timer.userInfo as? [String: NSNumber],
+            let leadtime = userInfo["leadtime"]
+            else { return }
+        
         let params = [ "leadtime" : leadtime, "use_defaults" : false ]
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug).json", parameters: params,
             success: { (responseObject) -> Void in
-                self.goal.leadtime = leadtime!
+                self.goal.leadtime = leadtime
                 self.goal.use_defaults = NSNumber(value: false as Bool)
                 self.useDefaultsSwitch.isOn = false
             }) { (error, errorMessage) -> Void in
