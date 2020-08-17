@@ -101,7 +101,9 @@ class CurrentUserManager : NSObject {
         RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, success: { (responseObject) in
                 self.handleSuccessfulSignin(JSON(responseObject))
             }) { (responseError) in
-                if responseError != nil { self.handleFailedSignin(responseError!) }
+                if let error = responseError {
+                    self.handleFailedSignin(error)
+                }
         }
     }
     
@@ -127,9 +129,9 @@ class CurrentUserManager : NSObject {
                 UserDefaults.standard.set(responseJSON["default_deadline"].number!, forKey: "default_deadline")
                 UserDefaults.standard.set(responseJSON["default_leadtime"].number!, forKey: "default_leadtime")
                 UserDefaults.standard.synchronize()
-                if (success != nil) { success!() }
+                success?()
         }, errorHandler: { (error) -> Void in
-                if (failure != nil) { failure!() }
+                failure?()
         })
     }
     

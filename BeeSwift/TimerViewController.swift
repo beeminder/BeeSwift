@@ -95,8 +95,8 @@ class TimerViewController: UIViewController {
     
     func totalSeconds() -> Double {
         var total = Double(self.accumulatedSeconds)
-        if self.timingSince != nil {
-            total += Date().timeIntervalSince(self.timingSince!)
+        if let timingSince = self.timingSince {
+            total += Date().timeIntervalSince(timingSince)
         }
         return total
     }
