@@ -106,8 +106,7 @@ class JSONGoal {
             self.curval = curval
         }
         self.pledge = json["pledge"].number!
-        let ad : String? = json["autodata"].string
-        if ad != nil { self.autodata = ad! } else { self.autodata = "" }
+        self.autodata = json["autodata"].stringValue
         
         if let graphUrl = json["graph_url"].string {
             self.graph_url = graphUrl
