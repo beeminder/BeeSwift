@@ -77,15 +77,27 @@ class JSONGoal {
         self.runits = json["runits"].string!
         self.yaxis = json["yaxis"].string!
         self.baremin = json["baremin"].string!
-        if json["rate"].number != nil { self.rate = json["rate"].number! }
-        if json["delta_text"].string != nil { self.delta_text = json["delta_text"].string! }
+        if let rate = json["rate"].number {
+            self.rate = rate
+        }
+        if let deltaText = json["delta_text"].string {
+            self.delta_text = deltaText
+        }
         self.won = json["won"].number!
-        if json["lane"].number != nil { self.lane = json["lane"].number! }
+        if let lane = json["lane"].number {
+            self.lane = lane
+        }
         self.yaw = json["yaw"].number!
         self.dir = json["dir"].number!
-        if json["limsum"].string != nil { self.limsum = json["limsum"].string! }
-        if json["safesum"].string != nil { self.safesum = json["safesum"].string! }
-        if json["safebuf"].number != nil { self.safebuf = json["safebuf"].number! }
+        if let limsum = json["limsum"].string {
+            self.limsum = limsum
+        }
+        if let safesum = json["safesum"].string {
+            self.safesum = safesum
+        }
+        if let safebuf = json["safebuf"].number {
+            self.safebuf = safebuf
+        }
         self.use_defaults = json["use_defaults"].bool! as NSNumber
         if let safebump = json["safebump"].number {
             self.safebump = safebump
@@ -97,8 +109,12 @@ class JSONGoal {
         let ad : String? = json["autodata"].string
         if ad != nil { self.autodata = ad! } else { self.autodata = "" }
         
-        if json["graph_url"].string != nil { self.graph_url = json["graph_url"].string! }
-        if json["thumb_url"].string != nil { self.thumb_url = json["thumb_url"].string! }
+        if let graphUrl = json["graph_url"].string {
+            self.graph_url = graphUrl
+        }
+        if let thumbUrl = json["thumb_url"].string {
+            self.thumb_url = thumbUrl
+        }
         
         self.healthKitMetric = json["healthkitmetric"].string
         
@@ -187,10 +203,8 @@ class JSONGoal {
     
     var countdownHelperText :String {
         if self.delta_text.components(separatedBy: "✔").count == 4 {
-            if self.safebump != nil && self.curval != nil {
-                if (self.safebump!.doubleValue - self.curval!.doubleValue <= 0) {
+            if let safeBump = self.safebump, let curVal = self.curval, safeBump.doubleValue - curVal.doubleValue <= 0 {
                     return "Ending in"
-                }
             }
         }
         if self.yaw.intValue < 0 && self.dir.intValue > 0 {
