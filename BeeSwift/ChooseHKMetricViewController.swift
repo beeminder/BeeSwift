@@ -81,14 +81,12 @@ class ChooseHKMetricViewController: UIViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         let metric = self.sortedHKMetrics[selectedRow]
-        if metric.hkIdentifier != nil {
-            let metricType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
+        if let metricId = metric.hkIdentifier, let metricType = HKObjectType.quantityType(forIdentifier: metricId) {
             healthStore.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
                 self.saveMetric(databaseString: metric.databaseString!)
             })
-        } else if metric.hkCategoryTypeIdentifier != nil {
-            let categoryType = HKObjectType.categoryType(forIdentifier: metric.hkCategoryTypeIdentifier!)
-            healthStore.requestAuthorization(toShare: nil, read: [categoryType!], completion: { (success, error) in
+        } else if let metricCategoryId = metric.hkCategoryTypeIdentifier, let categoryType = HKObjectType.categoryType(forIdentifier: metricCategoryId) {
+            healthStore.requestAuthorization(toShare: nil, read: [categoryType], completion: { (success, error) in
                 self.saveMetric(databaseString: metric.databaseString!)
             })
         }
@@ -96,14 +94,14 @@ class ChooseHKMetricViewController: UIViewController {
     }
     
     func saveMetric(databaseString : String) {
-        self.goal!.healthKitMetric = databaseString
-        self.goal!.autodata = "apple"
-        self.goal!.setupHealthKit()
+        self.goal.healthKitMetric = databaseString
+        self.goal.autodata = "apple"
+        self.goal.setupHealthKit()
         
         var params : [String : [String : String]] = [:]
-        params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
+        params = ["ii_params" : ["name" : "apple", "metric" : self.goal.healthKitMetric!]]
         
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug).json", parameters: params, success: { (responseObject) -> Void in
                 let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))

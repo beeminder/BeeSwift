@@ -31,9 +31,7 @@ class TodayTableViewCell: UITableViewCell {
         UIImage(named: "ThumbnailPlaceholder")
     }
     
-    fileprivate
-    
-    func configureCell() {
+    fileprivate func configureCell() {
         self.selectionStyle = .none
         
         self.addSubview(self.graphImageView)
@@ -155,7 +153,7 @@ class TodayTableViewCell: UITableViewCell {
     }
     
     func pollUntilGraphUpdates() {
-        if self.pollTimer != nil { return }
+        guard self.pollTimer == nil else { return }
         self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.refreshGoal), userInfo: nil, repeats: true)
     }
     
@@ -166,7 +164,7 @@ class TodayTableViewCell: UITableViewCell {
         
         let parameters = ["access_token": token]
         RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters, success: { (responseObject) in
-            var goalJSON = JSON(responseObject!)
+            let goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
                 self.pollTimer?.invalidate()
                 self.pollTimer = nil

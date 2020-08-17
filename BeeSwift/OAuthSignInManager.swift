@@ -16,7 +16,9 @@ class OAuthSignInManager: NSObject {
         SignedRequestManager.signedPOST(url: "/api/v1/users", parameters: ["email": email, "password": password, "username": username], success: { (responseObject) -> Void in
             CurrentUserManager.sharedManager.handleSuccessfulSignin(JSON(responseObject!))
         }) { (responseError) -> Void in
-            if responseError != nil  { CurrentUserManager.sharedManager.handleFailedSignup(responseError!) }
+            if let error = responseError {
+                CurrentUserManager.sharedManager.handleFailedSignup(error)
+            }
         }
     }
 }
