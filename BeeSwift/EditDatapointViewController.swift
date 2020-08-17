@@ -121,10 +121,11 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         deleteButton.setTitle("Delete", for: .normal)
         deleteButton.addTarget(self, action: #selector(self.deleteButtonPressed), for: .touchUpInside)
         
-        let daystamp = self.datapointJSON["daystamp"].string
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
-        if daystamp != nil { self.datePicker.date = dateFormatter.date(from: daystamp!)! }
+        if let daystamp = self.datapointJSON["daystamp"].string, let date = dateFormatter.date(from: daystamp) {
+            self.datePicker.date = date
+        }
         self.updateDateLabel()
     }
     
