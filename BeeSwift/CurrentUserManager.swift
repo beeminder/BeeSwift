@@ -101,7 +101,9 @@ class CurrentUserManager : NSObject {
         RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, success: { (responseObject) in
                 self.handleSuccessfulSignin(JSON(responseObject))
             }) { (responseError, errorMessage) in
-                if responseError != nil { self.handleFailedSignin(responseError!, errorMessage: errorMessage) }
+                if let error = responseError {
+                    self.handleFailedSignin(error, errorMessage: errorMessage)
+                }
         }
     }
     
