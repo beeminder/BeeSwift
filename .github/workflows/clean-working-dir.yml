@@ -1,10 +1,10 @@
 name: Working Directory lint
-# since we are including Pods, we expect there to be no changes 
+# since we are including Pods, we expect there to be no changes
 
 on: [push]
 
 jobs:
-  build:
+  check-clean-working-dir:
 
     runs-on: macos-latest
 
