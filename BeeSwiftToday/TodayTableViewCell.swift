@@ -31,9 +31,7 @@ class TodayTableViewCell: UITableViewCell {
         UIImage(named: "ThumbnailPlaceholder")
     }
     
-    fileprivate
-    
-    func configureCell() {
+    fileprivate func configureCell() {
         self.selectionStyle = .none
         
         self.addSubview(self.graphImageView)
