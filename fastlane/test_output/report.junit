@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<testsuites name='BeeSwiftTests.xctest' tests='2' failures='0'>
-  <testsuite name='BeeSwiftTests.BeeSwiftTests' tests='2' failures='0'>
-    <testcase classname='BeeSwiftTests.BeeSwiftTests' name='testExample' time='0.001'/>
-    <testcase classname='BeeSwiftTests.BeeSwiftTests' name='testPerformanceExample' time='2.788'/>
-  </testsuite>
-</testsuites>
