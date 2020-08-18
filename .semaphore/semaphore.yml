@@ -28,5 +28,6 @@ blocks:
       jobs:
         - name: Test
           commands:
+            - bundle exec pod install
             - bundle exec xcversion select 11.3.1
             - bundle exec fastlane test
