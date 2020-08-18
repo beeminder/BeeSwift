@@ -10,6 +10,10 @@ blocks:
       env_vars:
         - name: LANG
           value: en_US.UTF-8
+        - name: LANGUAGE
+          value: en_US.UTF-8
+        - name: LC_ALL
+          value: en_US.UTF-8
       prologue:
         commands:
           - checkout
@@ -36,3 +40,10 @@ blocks:
           commands:
             - bundle exec xcversion select 11.3.1
             - bundle exec fastlane test
+      env_vars:
+        - name: LANG
+          value: en_US.UTF-8
+        - name: LANGUAGE
+          value: en_US.UTF-8
+        - name: LC_ALL
+          value: en_US.UTF-8
