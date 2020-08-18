@@ -25,14 +25,14 @@ platform :ios do
     sentry_upload_dsym()
   end
   lane :beta do
-    build_app(scheme: "BeeSwift")
-    
     # Ensure that your git status is not dirty
     ensure_git_status_clean
 
     # Increment the build number (not the version number)
     # Providing the xcodeproj is optional
     increment_build_number(xcodeproj: "BeeSwift.xcodeproj")
+    
+    build_app(scheme: "BeeSwift")
 
     # Commit the version bump
     commit_version_bump(xcodeproj: "BeeSwift.xcodeproj")
@@ -43,7 +43,7 @@ platform :ios do
 
     # Push the new commit and tag back to your git remote
     push_to_git_remote
-
-    upload_to_testflight
+    
+    upload_to_testflight(username: "andy@andybrett.com")
   end
 end
