@@ -22,3 +22,16 @@ blocks:
           commands:
             - bundle exec xcversion select 11.3.1
             - bundle exec fastlane test
+  - name: Build
+    task:
+      jobs:
+        - name: Build
+          commands:
+            - bundle exec xcversion select 11.3.1
+            - bundle exec fastlane build
+      prologue:
+        commands:
+          - checkout
+          - cache restore
+          - bundle install --path vendor/bundle
+          - cache store
