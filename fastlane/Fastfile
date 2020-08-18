@@ -25,7 +25,25 @@ platform :ios do
     sentry_upload_dsym()
   end
   lane :beta do
-    sync_code_signing
     build_app(scheme: "BeeSwift")
+    
+    # Ensure that your git status is not dirty
+    ensure_git_status_clean
+
+    # Increment the build number (not the version number)
+    # Providing the xcodeproj is optional
+    increment_build_number(xcodeproj: "BeeSwift.xcodeproj")
+
+    # Commit the version bump
+    commit_version_bump(xcodeproj: "BeeSwift.xcodeproj")
+
+    # Add a git tag for this build. This will automatically
+    # use an appropriate git tag name
+    add_git_tag
+
+    # Push the new commit and tag back to your git remote
+    push_to_git_remote
+
+    upload_to_testflight
   end
 end
