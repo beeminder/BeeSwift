@@ -19,5 +19,12 @@ blocks:
       jobs:
         - name: bundle exec fastlane test
           commands:
-            - bundle exec xcversion select 10.2.1
+            - bundle exec xcversion select 11.3.1
             - bundle exec fastlane test
+  - name: Build
+    task:
+      jobs:
+        - name: 'Job #1'
+          commands:
+            - bundle exec xcversion select 11.3.1
+            - bundle exec fastlane build
