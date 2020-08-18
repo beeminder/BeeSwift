@@ -26,13 +26,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             HealthStoreManager.sharedManager.setupHealthkit()
         }
 
-        // Create a Sentry client and start crash handler
-        do {
-            Client.shared = try Client(dsn: Config.sentryClientDSN)
-            try Client.shared?.startCrashHandler()
-        } catch let error {
-            print("\(error)")
-            // Wrong DSN or KSCrash not installed
+        // start crash handler
+        SentrySDK.start { options in
+            options.dsn = Config.sentryClientDSN
+            options.debug = true
         }
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
