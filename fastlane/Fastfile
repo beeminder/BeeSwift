@@ -21,8 +21,11 @@ platform :ios do
     run_tests(scheme: "BeeSwiftUITests")
   end
   lane :build do
-    sync_code_signing
     build_app(scheme: "BeeSwift")
+    sentry_upload_dsym(
+      org_slug: 'apb-p7',
+      project_slug: 'beeswift',
+    )
   end
   lane :beta do
     sync_code_signing
