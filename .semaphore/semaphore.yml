@@ -5,11 +5,19 @@ agent:
     type: a1-standard-4
     os_image: macos-xcode11
 blocks:
-  - name: Fastlane Tests
+  - name: Fastlane Test
     task:
       env_vars:
         - name: LANG
           value: en_US.UTF-8
+        - name: LANGUAGE
+          value: en_US.UTF-8
+        - name: LC_ALL
+          value: en_US.UTF-8
+        - name: SENTRY_ORG_SLUG
+          value: apb-p7
+        - name: SENTRY_PROJECT_SLUG
+          value: beeswift
       prologue:
         commands:
           - checkout
@@ -18,7 +26,32 @@ blocks:
           - cache store
           - cp /Users/semaphore/BeeSwift/BeeSwift/Config.swift.sample /Users/semaphore/BeeSwift/BeeSwift/Config.swift
       jobs:
-        - name: bundle exec fastlane test
+        - name: Test
           commands:
             - bundle exec xcversion select 11.3.1
             - bundle exec fastlane test
+  - name: Fastlane Build
+    task:
+      prologue:
+        commands:
+          - checkout
+          - cache restore
+          - bundle install --path vendor/bundle
+          - cache store
+          - cp /Users/semaphore/BeeSwift/BeeSwift/Config.swift.sample /Users/semaphore/BeeSwift/BeeSwift/Config.swift
+      jobs:
+        - name: Build
+          commands:
+            - bundle exec xcversion select 11.3.1
+            - bundle exec fastlane build
+      env_vars:
+        - name: LANG
+          value: en_US.UTF-8
+        - name: LANGUAGE
+          value: en_US.UTF-8
+        - name: LC_ALL
+          value: en_US.UTF-8
+        - name: SENTRY_ORG_SLUG
+          value: apb-p7
+        - name: SENTRY_PROJECT_SLUG
+          value: beeswift
