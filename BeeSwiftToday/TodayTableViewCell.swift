@@ -33,7 +33,9 @@ class TodayTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
+
+        self.subviews.forEach({$0.snp.removeConstraints()})
+
         self.valueLabel.text = nil
         self.limitLabel.text = nil
         self.addDataButton.titleLabel?.text = nil
@@ -65,15 +67,15 @@ class TodayTableViewCell: UITableViewCell {
             make.right.equalTo(-10)
         })
         
-        if self.goalDictionary["hideDataEntry"] as! Bool {
+        let hideAdd = self.goalDictionary["hideDataEntry"] as! Bool
+        if hideAdd {
             self.limitLabel.snp.remakeConstraints({ (make) in
                 make.left.equalTo(self.graphImageView.snp.right).offset(10)
                 make.centerY.equalTo(self.graphImageView)
                 make.right.equalTo(-10)
             })
-            return
         }
-        
+
         self.addSubview(self.addDataButton)
         self.addDataButton.snp.makeConstraints { (make) in
             make.bottom.equalTo(self.graphImageView)
@@ -108,6 +110,8 @@ class TodayTableViewCell: UITableViewCell {
         }
         self.valueLabel.text = "0"
         self.valueLabel.textAlignment = .center
+        
+        [addDataButton, valueStepper, valueLabel].forEach({$0.isHidden = hideAdd})
     }
     
     @objc func valueStepperChanged() {
