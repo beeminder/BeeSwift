@@ -14,6 +14,10 @@ import MBProgressHUD
 import SwiftyJSON
 
 class TodayTableViewCell: UITableViewCell {
+    
+    public static let ReuseIdentifierAutogoal = "TodayCellAutogoal"
+    public static let ReuseIdentifierManualgoal = "TodayCellManualgoal"
+    
     var goalDictionary:NSDictionary = [:] {
         didSet {
             self.configureCell()
@@ -34,14 +38,12 @@ class TodayTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
 
-        self.subviews.forEach({$0.snp.removeConstraints()})
-
         self.valueLabel.text = nil
         self.limitLabel.text = nil
         self.addDataButton.titleLabel?.text = nil
         self.graphImageView.image = self.thumbnailPlaceholder
     }
-    
+
     fileprivate func configureCell() {
         self.selectionStyle = .none
         
