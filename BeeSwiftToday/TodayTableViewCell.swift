@@ -14,6 +14,10 @@ import MBProgressHUD
 import SwiftyJSON
 
 class TodayTableViewCell: UITableViewCell {
+    
+    public static let ReuseIdentifierAutogoal = "TodayCellAutogoal"
+    public static let ReuseIdentifierManualgoal = "TodayCellManualgoal"
+    
     var goalDictionary:NSDictionary = [:] {
         didSet {
             self.configureCell()
@@ -30,13 +34,7 @@ class TodayTableViewCell: UITableViewCell {
     var thumbnailPlaceholder: UIImage? {
         UIImage(named: "ThumbnailPlaceholder")
     }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
 
-        self.subviews.forEach({$0.snp.removeConstraints()})
-    }
-    
     fileprivate func configureCell() {
         self.selectionStyle = .none
         
