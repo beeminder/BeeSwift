@@ -2,12 +2,26 @@
 
 ## 5.7. (Aug 20, 2020)
 
- - There's now a cancel button in search bar to make it easier to go back to showing all goals
- - Images on the gallery screen no longer flicker
- - You can now see more than one goal in the Today widget
- - Additional images and tweaks to make dark mode look a little better
- - Updates to the process of linking a goal to Apple Health: better sorting of goals to indicate which ones can be linked, instructions on the screen, and the checkmark no longer disappears
- - Added some padding around the bee in the app icon
+ * Added some padding around the bee in the app icon [#25](https://github.com/beeminder/BeeSwift/issues/25) [#139](https://github.com/beeminder/BeeSwift/pull/139)
+ * Elaborate on contributing guidelines [#138](https://github.com/beeminder/BeeSwift/pull/138)
+ * Use SafariViewController when viewing existing goals externally (webbrowser) [#128](https://github.com/beeminder/BeeSwift/pull/128)
+ * Specify Background Fetch minimum [#129](https://github.com/beeminder/BeeSwift/pull/129)
+ * Updates to the process of linking a goal to Apple Health: better sorting of goals to indicate which ones can be linked, instructions on the screen, and the checkmark no longer disappears [#85](https://github.com/beeminder/BeeSwift/issues/25), [#122](https://github.com/beeminder/BeeSwift/pull/122)
+ * Keep selected health metric when saving [#116](https://github.com/beeminder/BeeSwift/issues/116), [#121](https://github.com/beeminder/BeeSwift/pull/121)
+ * Tweak Signin/Signup Screen [#110](https://github.com/beeminder/BeeSwift/pull/110)
+ * Use SafariViewController when creating a new goal (webbrowser) [#119](https://github.com/beeminder/BeeSwift/pull/119)
+ * Remove 3rd party logins [#67](https://github.com/beeminder/BeeSwift/issues/67), [#73](https://github.com/beeminder/BeeSwift/issues/73), [#107](https://github.com/beeminder/BeeSwift/pull/107)
+ * Fix sorting by recent data [#100](https://github.com/beeminder/BeeSwift/issues/100), [#101](https://github.com/beeminder/BeeSwift/pull/101)
+ * Do not remind user to unlock device when Beeminder is visible [#44](https://github.com/beeminder/BeeSwift/issues/44), [#78](https://github.com/beeminder/BeeSwift/pull/78)
+ * Reuse relevant graphs in gallery (avoid constant flickering) [#43](https://github.com/beeminder/BeeSwift/issues/43), [#103](https://github.com/beeminder/BeeSwift/pull/103)
+ * Fix scrolling in Goal screen of Health sourced goals [#99](https://github.com/beeminder/BeeSwift/pull/99)
+ * Additional images and tweaks to make dark mode look a little better [#95](https://github.com/beeminder/BeeSwift/pull/95)
+ * Use graph placeholder in Today Widget [#104](https://github.com/beeminder/BeeSwift/pull/104)
+ * Use httpS (no longer plaintext http) when communicating with services [#91](https://github.com/beeminder/BeeSwift/issues/91), [#105](https://github.com/beeminder/BeeSwift/pull/105)
+ * You can now see more than one goal in the Today widget [#92](https://github.com/beeminder/BeeSwift/issues/92), [#93](https://github.com/beeminder/BeeSwift/pull/93)
+ * Show graph placeholder sooner in Goal screen [#82](https://github.com/beeminder/BeeSwift/pull/82)
+ * Provide launchscreen as Storyboard [#66](https://github.com/beeminder/BeeSwift/issues/66), [#83](https://github.com/beeminder/BeeSwift/pull/83)
+ * There's now a cancel button in search bar to make it easier to go back to showing all goals [#53](https://github.com/beeminder/BeeSwift/issues/53), [#65](https://github.com/beeminder/BeeSwift/pull/65)
 
 ## 5.6.4 (June 9, 2020)
  - Bug fix (for real this time): the intermittent blank white screen is, we believe, vanquished for good.
@@ -83,7 +97,7 @@
 
 ## 4.8.1 (Nov 28, 2017)
  - Small bug fix for some people with Apple Health goals that was crashing the app for people. Sorry about that!
- 
+
 ## 4.8 (Nov 14, 2017)
  - Bug fixes for goals linked to Apple Health:
    - Mindful minutes goals should no longer overwrite data
@@ -136,4 +150,3 @@
  - Add a ":" button to allow for data input in HH:MM format
  - If a goal's deadline is after midnight, and it's after midnight the suggested day for data input is the previous day
  - Bug fix for Arabic numerals
-
