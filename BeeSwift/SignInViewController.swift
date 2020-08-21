@@ -110,7 +110,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         self.signInButton.isHidden = true
         self.signInButton.setTitle("Sign In", for: UIControlState())
         self.signInButton.backgroundColor = UIColor.beeminder.gray
-        self.signInButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
+        self.signInButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
         self.signInButton.titleLabel?.textColor = UIColor.white
         self.signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControlEvents.touchUpInside)
         self.signInButton.snp.makeConstraints { (make) -> Void in
@@ -174,7 +174,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         scrollView.addSubview(self.signUpButton)
         self.signUpButton.isHidden = true
         self.signUpButton.setTitle("Sign Up", for: .normal)
-        self.signUpButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
+        self.signUpButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
         self.signUpButton.addTarget(self, action: #selector(SignInViewController.signUpButtonPressed), for: .touchUpInside)
         self.signUpButton.snp.makeConstraints { (make) in
             make.top.equalTo(self.newPasswordTextField.snp.bottom).offset(15)
