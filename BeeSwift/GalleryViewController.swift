@@ -21,7 +21,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let lastUpdatedLabel = BSLabel()
     let cellReuseIdentifier = "Cell"
     let newGoalCellReuseIdentifier = "NewGoalCell"
-    var refreshControl = UIRefreshControl()
     var deadbeatView = UIView()
     var outofdateView = UIView()
     let noGoalsLabel = BSLabel()
@@ -73,7 +72,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.lastUpdatedView.addSubview(self.lastUpdatedLabel)
         self.lastUpdatedLabel.text = "Last updated:"
-        self.lastUpdatedLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
+        self.lastUpdatedLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         self.lastUpdatedLabel.textAlignment = NSTextAlignment.center
         self.lastUpdatedLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(3)
@@ -91,7 +90,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !CurrentUserManager.sharedManager.isDeadbeat() {
+            if !CurrentUserManager.sharedManager.deadbeat {
                 make.height.equalTo(0)
             }
         }
@@ -147,8 +146,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView!.register(NewGoalCollectionViewCell.self, forCellWithReuseIdentifier: self.newGoalCellReuseIdentifier)
         self.view.addSubview(self.collectionView!)
         
-        self.refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
-        self.collectionView!.addSubview(self.refreshControl)
+        self.collectionView?.refreshControl = {
+            let refreshControl = UIRefreshControl()
+            refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
+            return refreshControl
+        }()
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.searchBar.snp.bottom)
@@ -203,7 +205,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         
-        if CurrentUserManager.sharedManager.signedIn() {
+        if CurrentUserManager.sharedManager.isSignedIn {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
                 if success {
@@ -216,7 +218,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !CurrentUserManager.sharedManager.signedIn() {
+        if !CurrentUserManager.sharedManager.isSignedIn {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
@@ -324,7 +326,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !CurrentUserManager.sharedManager.isDeadbeat() {
+            if !CurrentUserManager.sharedManager.deadbeat {
                 make.height.equalTo(0)
             }
         }
@@ -373,7 +375,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func didFetchGoals() {
         self.sortGoals()
         self.setupHealthKit()
-        self.refreshControl.endRefreshing()
+        self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
         self.collectionView!.reloadData()
         self.updateDeadbeatHeight()
@@ -419,13 +421,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     self.present(alert, animated: true, completion: nil)
                 }
             }
-            self.refreshControl.endRefreshing()
+            self.collectionView?.refreshControl?.endRefreshing()
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             self.collectionView!.reloadData()
         }
     }
     
     func sortGoals() {
+        UserDefaults.standard.removeObject(forKey: Constants.selectedGoalSortKey)
         self.goals.sort(by: { (goal1, goal2) -> Bool in
             if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
                 if selectedGoalSort == Constants.nameGoalSortString {
@@ -438,7 +441,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     return goal1.pledge.intValue > goal2.pledge.intValue
                 }
             }
-            return goal1.losedate.intValue < goal2.losedate.intValue
+            
+            guard let user = CurrentUserManager.sharedManager.user,
+                let lhs = user.goals.index(of: goal1.slug),
+                let rhs = user.goals.index(of: goal2.slug)
+            else {
+                return goal1.losedate.intValue < goal2.losedate.intValue
+            }
+            
+            return lhs < rhs
+
         })
         self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
     }
@@ -484,14 +496,18 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func openGoalFromNotification(_ notification: Notification) {
-        let slug = (notification as NSNotification).userInfo!["slug"] as! String
-        let matchingGoal = self.goals.filter({ (goal) -> Bool in
-            return goal.slug == slug
-        }).last
-        if matchingGoal != nil {
-            self.navigationController?.popToRootViewController(animated: false)
-            self.openGoal(matchingGoal!)
+        self.navigationController?.popToRootViewController(animated: false)
+
+        guard let slug = notification.userInfo?["slug"] as? String,
+            let matchingGoal = self.goals.last(where: { $0.slug == slug }) else {
+                
+                let alert = UIAlertController(title: "Goal not found", message: "no goal matching notification's goal was found", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            return
         }
+
+        self.openGoal(matchingGoal)
     }
     
     func openGoal(_ goal: JSONGoal) {

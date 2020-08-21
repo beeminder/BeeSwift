@@ -12,9 +12,9 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     
     override init() {
         super.init()
-        self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
-        self.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-        self.deadline = CurrentUserManager.sharedManager.defaultDeadline()
+        self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime.doubleValue
+        self.alertstart = CurrentUserManager.sharedManager.defaultAlertStart
+        self.deadline = CurrentUserManager.sharedManager.defaultDeadline
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -27,7 +27,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
         let params = [ "default_leadtime" : leadtime ]
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
             success: { (responseObject) -> Void in
-                CurrentUserManager.sharedManager.setDefaultLeadTime(leadtime)
+                CurrentUserManager.sharedManager.defaultLeadTime = leadtime
             }) { (error) -> Void in
                 // show alert
         }
@@ -44,7 +44,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
             let params = ["default_alertstart" : self.midnightOffsetFromTimePickerView()]
             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
                 success: { (responseObject) -> Void in
-                    CurrentUserManager.sharedManager.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
+                    CurrentUserManager.sharedManager.defaultAlertStart = self.midnightOffsetFromTimePickerView()
                 }) { (error) -> Void in
                     //foo
             }
@@ -54,7 +54,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
             let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
                 success: { (responseObject) -> Void in
-                    CurrentUserManager.sharedManager.setDefaultDeadline(self.midnightOffsetFromTimePickerView())
+                    CurrentUserManager.sharedManager.defaultDeadline = self.midnightOffsetFromTimePickerView()
                 }) { (error) -> Void in
                     //foo
             }

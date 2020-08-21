@@ -111,13 +111,13 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     success: { (responseObject) -> Void in
                         self.goal?.use_defaults = NSNumber(value: true as Bool)
                         CurrentUserManager.sharedManager.syncNotificationDefaults({ () -> Void in
-                            self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
+                            self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime.doubleValue
                             self.updateLeadTimeLabel()
-                            self.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-                            self.deadline   = CurrentUserManager.sharedManager.defaultDeadline()
-                            self.goal!.leadtime = CurrentUserManager.sharedManager.defaultLeadTime()
-                            self.goal!.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-                            self.goal!.deadline = CurrentUserManager.sharedManager.defaultDeadline()
+                            self.alertstart = CurrentUserManager.sharedManager.defaultAlertStart
+                            self.deadline   = CurrentUserManager.sharedManager.defaultDeadline
+                            self.goal!.leadtime = CurrentUserManager.sharedManager.defaultLeadTime
+                            self.goal!.alertstart = CurrentUserManager.sharedManager.defaultAlertStart
+                            self.goal!.deadline = CurrentUserManager.sharedManager.defaultDeadline
                             self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
                             }, failure: { () -> Void in
                                 // foo
