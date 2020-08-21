@@ -1,5 +1,15 @@
 # Changelog
 
+## 5.7. (Aug 20, 2020)
+
+ - There's now a cancel button in search bar to make it easier to go back to showing all goals
+ - Images on the gallery screen no longer flicker
+ - You can now see more than one goal in the Today widget
+ - Additional images and tweaks to make dark mode look a little better
+ - Updates to the process of linking a goal to Apple Health: better sorting of goals to indicate which ones can be linked, instructions on the screen, and the checkmark no longer disappears
+ - Added some padding around the bee in the app icon
+ - Bugfix: the app badge now goes away if you log out of Beeminder
+
 ## 5.6.4 (June 9, 2020)
  - Bug fix (for real this time): the intermittent blank white screen is, we believe, vanquished for good.
  - Bug fix: for entering datapoints > 1000 (i.e., with a comma in US-style notation), the app no longer switches said comma to a decimal point
