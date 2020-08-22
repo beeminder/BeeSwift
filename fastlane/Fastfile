@@ -16,14 +16,29 @@
 default_platform(:ios)
 
 platform :ios do
+   lane :lint do
+      swiftlint(
+         mode: :lint,      # SwiftLint mode: :lint (default) or :autocorrect
+         executable: "Pods/SwiftLint/swiftlint",
+         reporter: "github-actions-logging",
+         config_file: ".swiftlint.yml",     # The path of the configuration file (optional)
+         raise_if_swiftlint_error: true,      # Allow fastlane to raise an error if swiftlint fails
+         ignore_exit_status: true    # Allow fastlane to continue even if SwiftLint returns a non-zero exit status
+      )
+   end
+
   lane :test do
     run_tests(scheme: "BeeSwiftTests")
     run_tests(scheme: "BeeSwiftUITests")
+
+    trainer(output_directory: ".")
   end
+
   lane :build do
     build_app(scheme: "BeeSwift")
     sentry_upload_dsym()
   end
+
   lane :beta do
     # Ensure that your git status is not dirty
     ensure_git_status_clean
