@@ -10,6 +10,7 @@ PODS:
     - Sentry/Core (= 5.2.0)
   - Sentry/Core (5.2.0)
   - SnapKit (4.2.0)
+  - SwiftLint (0.40.0)
   - SwiftyJSON (3.1.0)
 
 DEPENDENCIES:
@@ -20,6 +21,7 @@ DEPENDENCIES:
   - MBProgressHUD
   - Sentry (from `https://github.com/getsentry/sentry-cocoa.git`, tag `5.2.0`)
   - SnapKit (~> 4.0)
+  - SwiftLint
   - SwiftyJSON
 
 SPEC REPOS:
@@ -30,6 +32,7 @@ SPEC REPOS:
     - IQKeyboardManager
     - MBProgressHUD
     - SnapKit
+    - SwiftLint
     - SwiftyJSON
 
 EXTERNAL SOURCES:
@@ -50,8 +53,9 @@ SPEC CHECKSUMS:
   MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
   Sentry: 6e04bc3e11bf771ca79140a112de64dcfbc7d8cb
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
+  SwiftLint: 4154893c73a4c52d6240195507eb7a3e3c64087e
   SwiftyJSON: 29b9f2a64f118c07e691667c2ba1efe536acfe0b
 
-PODFILE CHECKSUM: 2cfaf3d489143f458601ff2a3122ad870d4fda73
+PODFILE CHECKSUM: 502868dc79695aad61a01c6307a74632fdf42c93
 
 COCOAPODS: 1.9.3
