@@ -160,9 +160,17 @@ class CurrentUserManager : NSObject {
         RequestManager.get(url: "api/v1/users/me.json",
                            parameters: nil,
                            success: { responseJSON in
+                            
+                            guard let responseJSON = responseJSON else {
+                                error?(ApiError.jsonDeserializationError)
+                                return
+                            }
 
-                            let json = JSON(responseJSON!)
-                            let responseUser = JSONUser(json: json)!
+                            let json = JSON(responseJSON)
+                            guard let responseUser = JSONUser(json: json) else {
+                                error?(ApiError.jsonDeserializationError)
+                                return
+                            }
                             
                             success?(responseUser)
         }, errorHandler: { responseError in
