@@ -275,7 +275,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleSignIn() {
-        self.dismiss(animated: true, completion: nil)
+        if self.presentedViewController as? SignInViewController != nil {
+            self.navigationController?.dismiss(animated: true, completion: nil)
+        }
+        
         self.fetchGoals()
         
         UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
@@ -292,7 +295,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         let signInVC = SignInViewController()
         signInVC.modalPresentationStyle = .fullScreen
-        self.present(signInVC, animated: true, completion: nil)
+        self.navigationController?.present(signInVC, animated: true, completion: nil)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
