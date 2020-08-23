@@ -107,13 +107,22 @@ class TodayTableViewCell: UITableViewCell {
         self.valueLabel.text = "\(Int(self.valueStepper.value))"
     }
     
+    var apiToken: ApiToken? {
+        guard let defaults = UserDefaults(suiteName: "group.beeminder.beeminder") else { return nil }
+        
+        guard let typeStr = defaults.string(forKey: "api-token-type"),
+            let type = ApiTokenType(typeStr),
+            let value = defaults.string(forKey: "api-token-value") else { return nil }
+        
+        return ApiToken(type: type, token: value)
+    }
+    
     @objc func addDataButtonPressed() {
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
         hud?.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
 
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let token = self.apiToken else { return }
         
         // if the goal's deadline is after midnight, and it's after midnight,
         // but before the deadline,
@@ -144,7 +153,9 @@ class TodayTableViewCell: UITableViewCell {
         formatter.locale = Locale(identifier: "en_US")
         formatter.dateFormat = "d"
         
-        let params = ["access_token": token, "urtext": "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
+        let params = [
+            token.type.rawValue: token.value,
+            "urtext": "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
         guard let slug = self.goalDictionary["slug"] as? String else { return }
         
         RequestManager.post(url: "api/v1/users/me/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
@@ -161,10 +172,9 @@ class TodayTableViewCell: UITableViewCell {
     
     @objc func refreshGoal() {
         guard let slug = self.goalDictionary["slug"] as? String else { return }
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let token = self.apiToken else { return }
         
-        let parameters = ["access_token": token]
+        let parameters = [token.type.rawValue: token.value]
         RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters, success: { (responseObject) in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {

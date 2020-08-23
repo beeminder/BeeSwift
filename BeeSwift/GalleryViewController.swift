@@ -335,8 +335,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc func handleCreateGoalButtonPressed() {
         guard let username = CurrentUserManager.sharedManager.username,
-            let access_token = CurrentUserManager.sharedManager.accessToken,
-            let createGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(access_token)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true") else { return }
+            let apiToken = CurrentUserManager.sharedManager.apiToken,
+            let createGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?\(apiToken.type.rawValue)=\(apiToken.value)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true") else { return }
         
         let safariVC = SFSafariViewController(url: createGoalUrl)
         safariVC.delegate = self
