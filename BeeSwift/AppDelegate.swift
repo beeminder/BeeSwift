@@ -37,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if UserDefaults.standard.object(forKey: Constants.healthSyncRemindersPreferenceKey) == nil {
             UserDefaults.standard.set(true, forKey: Constants.healthSyncRemindersPreferenceKey)
         }
+        self.migrateToApiToken()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
@@ -146,5 +147,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         default:
             completionHandler([.alert, .sound, .badge])
         }
+    }
+    
+    // MARK: - helper
+    func migrateToApiToken() {
+        CurrentUserManager.sharedManager.migrateToApiToken()
     }
 }

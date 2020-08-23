@@ -631,7 +631,9 @@ class JSONGoal {
             
             if datapoints.count == 0 {
                 let requestId = "\(daystamp)-\(self.minuteStamp())"
-                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
+                let params = [
+                    CurrentUserManager.sharedManager.apiToken!.type.rawValue: CurrentUserManager.sharedManager.apiToken!.value,
+                    "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
                 self.postDatapoint(params: params, success: { (responseObject) in
                     success?()
                 }, failure: { (error) in
@@ -645,7 +647,7 @@ class JSONGoal {
                     if first {
                         let requestId = "\(daystamp)-\(self.minuteStamp())"
                         let params = [
-                            "access_token": CurrentUserManager.sharedManager.accessToken!,
+                            CurrentUserManager.sharedManager.apiToken!.type.rawValue: CurrentUserManager.sharedManager.apiToken!.value,
                             "value": "\(datapointValue)",
                             "comment": "Automatically updated via iOS Health app",
                             "requestid": requestId

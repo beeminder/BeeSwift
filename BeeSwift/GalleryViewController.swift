@@ -273,7 +273,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleSignIn() {
-        self.dismiss(animated: true, completion: nil)
+        if self.presentedViewController as? SignInViewController != nil {
+            self.navigationController?.dismiss(animated: true, completion: nil)
+        }
+        
         self.fetchGoals()
         
         UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
@@ -290,7 +293,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         let signInVC = SignInViewController()
         signInVC.modalPresentationStyle = .fullScreen
-        self.present(signInVC, animated: true, completion: nil)
+        self.navigationController?.present(signInVC, animated: true, completion: nil)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -332,8 +335,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc func handleCreateGoalButtonPressed() {
         guard let username = CurrentUserManager.sharedManager.username,
-            let access_token = CurrentUserManager.sharedManager.accessToken,
-            let createGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(access_token)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true") else { return }
+            let apiToken = CurrentUserManager.sharedManager.apiToken,
+            let createGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?\(apiToken.type.rawValue)=\(apiToken.value)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true") else { return }
         
         let safariVC = SFSafariViewController(url: createGoalUrl)
         safariVC.delegate = self
