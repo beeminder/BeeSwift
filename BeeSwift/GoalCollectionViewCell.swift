@@ -73,8 +73,10 @@ class GoalCollectionViewCell: UICollectionViewCell {
             make.centerY.equalTo(self.thumbnailImageView.snp.centerY)
             make.right.equalTo(-self.margin)
         }
+        
+        setThumbnailImage()
     }
-    
+        
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -94,11 +96,9 @@ class GoalCollectionViewCell: UICollectionViewCell {
     }
     
     func setThumbnailImage() {
-        guard let _ = self.goal else { return }
-        if CurrentUserManager.sharedManager.isDeadbeat() {
+        guard !CurrentUserManager.sharedManager.isDeadbeat() else  {
             self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
-        } else {
-            self.thumbnailImageView.af_setImage(withURL: URL(string: self.goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
+            return
         }
     }
 }
