@@ -10,8 +10,9 @@ import Foundation
 import SwiftyJSON
 import MBProgressHUD
 import AlamofireImage
+import SafariServices
 
-class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate {
+class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     
     var goal : JSONGoal! {
         didSet {
@@ -53,7 +54,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            make.top.equalToSuperview()
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.bottom.equalTo(0)
@@ -71,7 +72,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         countdownView.addSubview(self.countdownLabel)
 
-        self.countdownLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
+        self.countdownLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(Constants.defaultFontSize)
         self.countdownLabel.textAlignment = .center
         self.countdownLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.centerX.equalTo(countdownView)
@@ -111,14 +112,16 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.left.equalTo(self.goalImageScrollView)
             make.right.equalTo(self.goalImageScrollView)
         }
+        self.goalImageView.image = UIImage(named: "GraphPlaceholder")
+
         
-        self.view.addSubview(self.deltasLabel)
+        self.scrollView.addSubview(self.deltasLabel)
         self.deltasLabel.snp.makeConstraints { (make) in
             make.top.equalTo(self.goalImageScrollView.snp.bottom)
             make.left.right.equalTo(0)
         }
         self.deltasLabel.attributedText = self.goal!.attributedDeltaText
-        self.deltasLabel.font = UIFont(name: "Avenir-Heavy", size: Constants.defaultFontSize)
+        self.deltasLabel.font = UIFont.beeminder.defaultBoldFont.withSize(Constants.defaultFontSize)
         self.deltasLabel.textAlignment = .center
         
         
@@ -154,8 +157,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         dataEntryView.addSubview(self.dateTextField)
         self.dateTextField.font = UIFont(name: "Avenir", size: 16)
-        self.dateTextField.tintColor = UIColor.beeGrayColor()
-        self.dateTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
+        self.dateTextField.tintColor = UIColor.beeminder.gray
+        self.dateTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.dateTextField.layer.borderWidth = 1
         self.dateTextField.isUserInteractionEnabled = false
         self.dateTextField.textAlignment = .center
@@ -169,8 +172,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         dataEntryView.addSubview(self.valueTextField)
         self.valueTextField.font = UIFont(name: "Avenir", size: 16)
-        self.valueTextField.tintColor = UIColor.beeGrayColor()
-        self.valueTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
+        self.valueTextField.tintColor = UIColor.beeminder.gray
+        self.valueTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.valueTextField.layer.borderWidth = 1
         self.valueTextField.delegate = self
         self.valueTextField.textAlignment = .center
@@ -190,7 +193,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         colonButton.setTitle(":", for: UIControlState())
         colonButton.layer.borderWidth = 1
-        colonButton.layer.borderColor = UIColor.beeGrayColor().cgColor
+        colonButton.layer.borderColor = UIColor.beeminder.gray.cgColor
         colonButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 26)
         colonButton.setTitleColor(UIColor.black, for: UIControlState())
         colonButton.addTarget(self, action: #selector(self.colonButtonPressed), for: .touchUpInside)
@@ -210,8 +213,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.commentTextField.font = UIFont(name: "Avenir", size: 16)
         self.commentTextField.leftView = commentLeftPaddingView
         self.commentTextField.leftViewMode = .always
-        self.commentTextField.tintColor = UIColor.beeGrayColor()
-        self.commentTextField.layer.borderColor = UIColor.beeGrayColor().cgColor
+        self.commentTextField.tintColor = UIColor.beeminder.gray
+        self.commentTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.commentTextField.layer.borderWidth = 1
         self.commentTextField.delegate = self
         self.commentTextField.placeholder = "Comment"
@@ -236,7 +239,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.right.equalTo(self.commentTextField)
         }
         
-        self.dateStepper.tintColor = UIColor.beeGrayColor()
+        self.dateStepper.tintColor = UIColor.beeminder.gray
         dataEntryView.addSubview(self.dateStepper)
         self.dateStepper.addTarget(self, action: #selector(GoalViewController.dateStepperValueChanged), for: .valueChanged)
         self.dateStepper.value = 0
@@ -284,7 +287,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.top.equalTo(self.dateStepper.snp.bottom).offset(10)
         }
         
-        self.valueStepper.tintColor = UIColor.beeGrayColor()
+        self.valueStepper.tintColor = UIColor.beeminder.gray
         dataEntryView.addSubview(self.valueStepper)
         self.valueStepper.addTarget(self, action: #selector(GoalViewController.valueStepperValueChanged), for: .valueChanged)
         self.valueStepper.snp.makeConstraints { (make) -> Void in
@@ -309,7 +312,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if self.goal.autodata == "apple" {
             let appleSyncView = UIView()
-            self.view.addSubview(appleSyncView)
+            self.scrollView.addSubview(appleSyncView)
             appleSyncView.snp.makeConstraints({ (make) in
                 make.top.equalTo(self.datapointsTableView.snp.bottom).offset(10)
                 if #available(iOS 11.0, *) {
@@ -343,7 +346,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             syncWeekButton.addTarget(self, action: #selector(self.syncWeekButtonPressed), for: .touchUpInside)
         }
         
-        var items = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(self.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.safariButtonPressed))]
+        var items = [UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(self.refreshButtonPressed)), UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
         
         if (!self.goal.hideDataEntry()) {
             items.append(UIBarButtonItem.init(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
@@ -394,6 +397,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         self.refreshGoal()
     }
     
@@ -417,9 +421,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.present(controller, animated: true, completion: nil)
     }
     
-    @objc func safariButtonPressed() {
-        let url = "\(RequestManager.baseURLString)/api/v1/users/\(CurrentUserManager.sharedManager.username!).json?access_token=\(CurrentUserManager.sharedManager.accessToken!)&redirect_to_url=\(RequestManager.baseURLString)/\(CurrentUserManager.sharedManager.username!)/\(self.goal!.slug)"
-        UIApplication.shared.openURL(URL(string: url)!)
+    @objc func actionButtonPressed() {
+        guard let username = CurrentUserManager.sharedManager.username,
+            let accessToken = CurrentUserManager.sharedManager.accessToken,
+            let viewGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(RequestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
+        
+        let safariVC = SFSafariViewController(url: viewGoalUrl)
+        safariVC.delegate = self
+        self.showDetailViewController(safariVC, sender: self)
     }
     
     @objc func refreshButtonPressed() {
@@ -614,5 +623,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell.datapointText = text
         }
         return cell
+    }
+    
+    // MARK: - SFSafariViewControllerDelegate
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true, completion: nil)
     }
 }

@@ -46,7 +46,7 @@ class SettingsTableViewCell: UITableViewCell {
         if #available(iOS 13.0, *) {
             self.titleLabel.textColor = .label
         } else {
-            self.titleLabel.textColor = .beeGrayColor()
+            self.titleLabel.textColor = UIColor.beeminder.gray
         }
         
         if self.imageName != nil {

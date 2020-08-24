@@ -19,14 +19,14 @@ class EditNotificationsViewController: UIViewController {
             } else if self.timePickerEditingMode == .alertstart {
                 self.timePickerView.isHidden = false
                 self.setTimePickerComponents(self.alertstart.intValue)
-                self.alertStartLabel.font = UIFont.beeminderDefaultBoldFont()
-                self.deadlineLabel.font = UIFont.beeminderDefaultFont()
+                self.alertStartLabel.font = UIFont.beeminder.defaultBoldFont
+                self.deadlineLabel.font = UIFont.beeminder.defaultFont
             }
             else if self.timePickerEditingMode == .deadline {
                 self.timePickerView.isHidden = false
                 self.setTimePickerComponents(self.deadline.intValue)
-                self.alertStartLabel.font = UIFont.beeminderDefaultFont()
-                self.deadlineLabel.font = UIFont.beeminderDefaultBoldFont()
+                self.alertStartLabel.font = UIFont.beeminder.defaultFont
+                self.deadlineLabel.font = UIFont.beeminder.defaultBoldFont
             }
         }
     }
@@ -70,7 +70,7 @@ class EditNotificationsViewController: UIViewController {
         
         self.leadTimeStepper.minimumValue = 0
         self.leadTimeStepper.maximumValue = 30
-        self.leadTimeStepper.tintColor = UIColor.beeGrayColor()
+        self.leadTimeStepper.tintColor = UIColor.beeminder.gray
         self.leadTimeStepper.addTarget(self, action: #selector(EditNotificationsViewController.leadTimeStepperValueChanged), for: .valueChanged)
         self.view.addSubview(self.leadTimeStepper)
         self.leadTimeStepper.snp.makeConstraints { (make) -> Void in

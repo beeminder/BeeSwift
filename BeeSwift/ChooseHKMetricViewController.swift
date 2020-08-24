@@ -12,7 +12,7 @@ import HealthKit
 class ChooseHKMetricViewController: UIViewController {
     fileprivate let cellReuseIdentifier = "hkMetricTableViewCell"
     fileprivate var tableView = UITableView()
-    var goal : JSONGoal?
+    var goal : JSONGoal!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +22,33 @@ class ChooseHKMetricViewController: UIViewController {
         } else {
             self.view.backgroundColor = .white
         }
-        self.title = "Choose metric"
+        self.title = "Choose HK Metric"
+        
+        let instructionsLabel = BSLabel()
+        self.view.addSubview(instructionsLabel)
+        
+        instructionsLabel.attributedText = {
+            let attrString = NSMutableAttributedString()
+            
+            attrString.append(NSMutableAttributedString(string: "Configuring goal ",
+                                                        attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFont]))
+            
+            attrString.append(NSMutableAttributedString(string: "\(self.goal.slug)\n",
+                attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultBoldFont]))
+            
+            attrString.append(NSMutableAttributedString(string: "Associate a HealthKit metric with your goal.\nWhile configured as the source for this goal, Apple Health will periodically provide Beeminder for iOS with the corresponding data. Beeminder for iOS will add that data as datapoints to your goal automatically.\nTap a metric from the list below, then tap save to update your goal.",
+                                                        attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
+            return attrString
+        }()
+        
+        instructionsLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
+            make.centerX.equalTo(self.view)
+            make.width.equalTo(self.view).multipliedBy(0.85)
+        }
+        instructionsLabel.numberOfLines = 0
+        instructionsLabel.textAlignment = .center
+        
         
         let saveButton = BSButton()
         self.view.addSubview(saveButton)
@@ -39,7 +65,7 @@ class ChooseHKMetricViewController: UIViewController {
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.snp.makeConstraints { (make) in
-            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
+            make.top.equalTo(instructionsLabel.snp_bottom).offset(20)
             make.centerX.equalTo(self.view)
             make.left.equalTo(0)
             make.right.equalTo(0)
@@ -54,7 +80,7 @@ class ChooseHKMetricViewController: UIViewController {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        let metric = HealthKitConfig.shared.metrics[selectedRow]
+        let metric = self.sortedHKMetrics[selectedRow]
         if metric.hkIdentifier != nil {
             let metricType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
             healthStore.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
@@ -78,7 +104,6 @@ class ChooseHKMetricViewController: UIViewController {
         params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
         
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
-                self.tableView.reloadData()
                 let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
@@ -87,6 +112,7 @@ class ChooseHKMetricViewController: UIViewController {
                     self.navigationController?.popViewController(animated: true)
                 }
         }) { (responseError) -> Void in
+            self.tableView.reloadData()
             if let errorString = responseError?.localizedDescription {
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
@@ -103,24 +129,31 @@ class ChooseHKMetricViewController: UIViewController {
 }
 
 extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSource {
+    
+    var sortedHKMetrics: [HealthKitMetric] {
+        HealthKitConfig.shared.metrics.sorted { (lhs, rhs) -> Bool in
+            lhs.humanText < rhs.humanText
+        }
+    }
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return HealthKitConfig.shared.metrics.count
+        return self.sortedHKMetrics.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitMetricTableViewCell!
+        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitMetricTableViewCell
         
-        cell!.metric = HealthKitConfig.shared.metrics[indexPath.row].humanText
+        cell.metric = self.sortedHKMetrics[indexPath.row].humanText
         if tableView.indexPathForSelectedRow == indexPath {
-            cell?.accessoryType = .checkmark
+            cell.accessoryType = .checkmark
         } else {
-            cell?.accessoryType = .none
+            cell.accessoryType = .none
         }
-        return cell!
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

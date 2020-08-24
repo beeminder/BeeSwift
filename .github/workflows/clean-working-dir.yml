@@ -1,0 +1,28 @@
+name: Working Directory lint
+# since we are including Pods, we expect there to be no changes 
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: build config
+      run: |
+        gem install bundler:1.17.2
+        bundle config path ~/.gems
+    - name: bundle install; pod install
+      run: |
+        bundle install
+        bundle exec pod install
+    - name: lint working directory
+      run: |
+        if output=$(git status --porcelain) && [ -z "$output" ]; then
+          echo "::debug::working dir is clean"
+        else
+          echo "::error ::dirty working directory - uncommitted changes"
+          exit 1
+        fi

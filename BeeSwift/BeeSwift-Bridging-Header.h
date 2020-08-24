@@ -7,11 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <MagicalRecord/MagicalRecord.h>
 #import <CommonCrypto/CommonCrypto.h>
 #import <CommonCrypto/CommonHMAC.h>
-#import <FBSDKCoreKit/FBSDKCoreKit.h>
-#import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import "MBProgressHUD/MBProgressHUD.h"
 
 #ifndef BeeSwift_BeeSwift_Bridge_h

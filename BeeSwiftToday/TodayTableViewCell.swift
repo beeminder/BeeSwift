@@ -27,6 +27,10 @@ class TodayTableViewCell: UITableViewCell {
     var pollTimer : Timer?
     let graphImageView = UIImageView()
     
+    var thumbnailPlaceholder: UIImage? {
+        UIImage(named: "ThumbnailPlaceholder")
+    }
+    
     fileprivate
     
     func configureCell() {
@@ -40,7 +44,8 @@ class TodayTableViewCell: UITableViewCell {
             make.top.equalTo(20)
             make.bottom.equalTo(-20)
         })
-        self.graphImageView.af_setImage(withURL: URL(string: self.goalDictionary["thumbUrl"] as! String)!)
+        self.graphImageView.image = self.thumbnailPlaceholder
+        self.setGraphImage(urlStr: self.goalDictionary["thumbUrl"] as? String)
         
         self.addSubview(self.limitLabel)
         self.limitLabel.numberOfLines = 0
@@ -174,10 +179,23 @@ class TodayTableViewCell: UITableViewCell {
                 self.addDataButton.isUserInteractionEnabled = true
                 self.limitLabel.text = "\(slug): \(goalJSON["limsum"])"
                 let urlString = "\(goalJSON["thumb_url"])"
-                self.graphImageView.af_setImage(withURL: URL(string: urlString)!)
+                self.setGraphImage(urlStr: urlString)
             }
         }) { (responseError) in
             //
         }
+    }
+    
+    /// updates the graph, setting a placeholder
+    /// and replacing it with the downloaded, updated image
+    /// provided via the urlStr
+    func setGraphImage(urlStr: String?) {
+        guard !CurrentUserManager.sharedManager.isDeadbeat(),
+        let thumbUrlStr = urlStr, let thumbUrl = URL(string: thumbUrlStr) else {
+            self.graphImageView.image = self.thumbnailPlaceholder
+            return
+        }
+        
+        self.graphImageView.af_setImage(withURL: thumbUrl, placeholderImage: thumbnailPlaceholder, progressQueue: DispatchQueue.global(qos: .background), imageTransition: .crossDissolve(0.4), runImageTransitionIfCached: false)
     }
 }

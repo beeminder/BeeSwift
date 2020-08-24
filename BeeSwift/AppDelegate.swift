@@ -7,35 +7,29 @@
 //
 
 import UIKit
-import TwitterKit
 import IQKeyboardManager
 import HealthKit
 import Sentry
 import AlamofireNetworkActivityIndicator
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Avenir", size: 20)!]
         UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedStringKey.font : UIFont(name: "Avenir", size: 18)!], for: UIControlState())
-        Twitter.sharedInstance().start(withConsumerKey: Config.twitterConsumerKey, consumerSecret: Config.twitterConsumerSecret)
         IQKeyboardManager.shared().isEnableAutoToolbar = false
 
         if HKHealthStore.isHealthDataAvailable() {
             HealthStoreManager.sharedManager.setupHealthkit()
         }
 
-        // Create a Sentry client and start crash handler
-        do {
-            Client.shared = try Client(dsn: Config.sentryClientDSN)
-            try Client.shared?.startCrashHandler()
-        } catch let error {
-            print("\(error)")
-            // Wrong DSN or KSCrash not installed
+        // start crash handler
+        SentrySDK.start { options in
+            options.dsn = Config.sentryClientDSN
+            options.debug = true
         }
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
@@ -45,7 +39,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
 
+        application.setMinimumBackgroundFetchInterval(15 * 60)
+        
         return true
     }
 
@@ -81,6 +78,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    /// https://developer.apple.com/documentation/uikit/app_and_environment/scenes/preparing_your_ui_to_run_in_the_background/updating_your_app_with_background_app_refresh
+    ///
+    /// and for iOS 13 and over: https://developer.apple.com/documentation/backgroundtasks/bgapprefreshtask
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             completionHandler(.newData)
@@ -88,29 +88,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             completionHandler(.failed)
         }
     }
+    
+    
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
-        if url.scheme == Config.facebookUrlScheme {
-            return FBSDKApplicationDelegate.sharedInstance().application(app, open: url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplicationOpenURLOptionsKey.annotation])
-        }
-        else if url.scheme == "beeminder" {
+        if url.scheme == "beeminder" {
             if let query = url.query {
                 let slugKeyIndex = query.components(separatedBy: "=").index(of: "slug")
                 let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
             }
-        } else if url.scheme == Config.twitterUrlScheme {
-            return Twitter.sharedInstance().application(app, open: url, options: options)
         }
         return true
     }
 
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-        if url.scheme == Config.facebookUrlScheme {
-            return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
-        }
-        else if url.scheme == "beeminder" {
+        if url.scheme == "beeminder" {
             if let query = url.query {
                 let slugKeyIndex = query.components(separatedBy: "=").index(of: "slug")
                 let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
@@ -139,5 +133,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UIApplication.shared.applicationIconBadgeNumber = CurrentUserManager.sharedManager.goals.filter({ (goal: JSONGoal) -> Bool in
             return goal.relativeLane.intValue < -1
         }).count
+    }
+    
+    // MARK: - UNUserNotificationCenterDelegate
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        switch notification.request.identifier {
+        case JSONGoal.unlockNotificationIdentifier:
+            // about to present a notification, a reminder to unlock the device
+            // yet the app is active, thus we can abandon the notification
+            completionHandler([])
+        default:
+            completionHandler([.alert, .sound, .badge])
+        }
     }
 }

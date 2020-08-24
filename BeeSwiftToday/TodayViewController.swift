@@ -12,8 +12,11 @@ import SnapKit
 import NotificationCenter
 
 class TodayViewController: UIViewController {
-    
-    var goalDictionaries : Array<NSDictionary> = []
+    var goalDictionaries: [NSDictionary] = [] {
+        didSet {
+            self.extensionContext?.widgetLargestAvailableDisplayMode = self.goalDictionaries.count > 1 ? .expanded : .compact
+        }
+    }
     var tableView = UITableView()
     
     fileprivate let rowHeight = Constants.thumbnailHeight + 40
@@ -22,13 +25,9 @@ class TodayViewController: UIViewController {
     override func viewDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateDataSource), name: UserDefaults.didChangeNotification, object: nil)
         
-        self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight)
-        
-        if self.goalDictionaries.count > 1 {
-            self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
-        }
-        
         self.updateDataSource()
+        
+        self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight)
         
         self.view.addSubview(self.tableView)
         self.tableView.dataSource = self

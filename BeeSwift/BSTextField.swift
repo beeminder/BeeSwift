@@ -13,18 +13,18 @@ class BSTextField : UITextField {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.font = UIFont.beeminderDefaultFont()
-        self.layer.borderColor = UIColor.beeGrayColor().cgColor
-        self.tintColor = UIColor.beeGrayColor()
+        self.font = UIFont.beeminder.defaultFont
+        self.layer.borderColor = UIColor.beeminder.gray.cgColor
+        self.tintColor = UIColor.beeminder.gray
         self.layer.borderWidth = 1
         self.textAlignment = NSTextAlignment.center
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.font = UIFont(name: "Avenir-Light", size: 18)
-        self.layer.borderColor = UIColor.beeGrayColor().cgColor
-        self.tintColor = UIColor.beeGrayColor()
+        self.font = UIFont.beeminder.defaultFont
+        self.layer.borderColor = UIColor.beeminder.gray.cgColor
+        self.tintColor = UIColor.beeminder.gray
         self.layer.borderWidth = 1
         self.textAlignment = NSTextAlignment.center
     }

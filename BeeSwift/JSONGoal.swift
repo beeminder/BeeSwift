@@ -55,10 +55,20 @@ class JSONGoal {
         self.leadtime = json["leadtime"].number!
         self.alertstart = json["alertstart"].number!
         if let lasttouchString = json["lasttouch"].string {
-            let formatter = DateFormatter.init()
-            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-            if let lasttouchDate = formatter.date(from: lasttouchString) {
-                self.lasttouch = NSNumber(value: lasttouchDate.timeIntervalSince1970)
+            let lastTouchDate: Date? = {
+                if #available(iOS 11.0, *) {
+                    let df = ISO8601DateFormatter()
+                    df.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                    return df.date(from: lasttouchString)
+                } else {
+                    let df = DateFormatter()
+                    df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                    return df.date(from: lasttouchString)
+                }
+            }()
+            
+            if let date = lastTouchDate {
+                self.lasttouch = NSNumber(value: date.timeIntervalSince1970)
             }
         }
         self.queued = json["queued"].bool!
@@ -104,20 +114,6 @@ class JSONGoal {
         formatter.numberStyle = NumberFormatter.Style.decimal
         formatter.maximumFractionDigits = 2
         return "\(formatter.string(from: r)!)/\(self.humanizedRunits)"
-    }
-    
-    var cacheBustingThumbUrl :String {
-        if self.thumb_url!.range(of: "&") == nil {
-            return "\(self.thumb_url!)?t=\(Date().timeIntervalSince1970)"
-        }
-        return "\(self.thumb_url!)&t=\(Date().timeIntervalSince1970)"
-    }
-    
-    var cacheBustingGraphUrl :String {
-        if self.graph_url!.range(of: "&") == nil {
-            return "\(self.graph_url!)?t=\(Date().timeIntervalSince1970)"
-        }
-        return "\(self.graph_url!)&t=\(Date().timeIntervalSince1970)"
     }
     
     var briefLosedate :String {
@@ -172,7 +168,7 @@ class JSONGoal {
     }
     
     var countdownColor :UIColor {
-        guard let buf = self.safebuf?.intValue else { return UIColor.beeGrayColor() }
+        guard let buf = self.safebuf?.intValue else { return UIColor.beeminder.gray }
         if buf < 1 {
             return UIColor.red
         }
@@ -182,7 +178,7 @@ class JSONGoal {
         else if buf < 3 {
             return UIColor.blue
         }
-        return UIColor.beeGreenColor()
+        return UIColor.beeminder.green
     }
     
     var relativeLane : NSNumber {
@@ -225,7 +221,7 @@ class JSONGoal {
         return safe.prefix(1).uppercased() + safe.dropFirst(1)
     }
     
-    func humanizedAutodata() -> String? {
+    var humanizedAutodata: String? {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
         if self.autodata == "apple" {
@@ -247,7 +243,7 @@ class JSONGoal {
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
-                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeGreenColor(), range: NSRange(location: 0, length: attString.string.count))
+                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeminder.green, range: NSRange(location: 0, length: attString.string.count))
                 return attString
             }
             return NSMutableAttributedString(string: "")
@@ -280,11 +276,18 @@ class JSONGoal {
         return attString
     }
     
-    var deltaColors :Array<UIColor> {
-        if self.yaw == 1 {
-            return [UIColor.orange, UIColor.blue, UIColor.beeGreenColor()]
-        }
-        return [UIColor.beeGreenColor(), UIColor.blue, UIColor.orange]
+    var deltaColors: [UIColor] {
+        // yaw (number): Good side of the road (+1/-1 = above/below)
+    
+        return self.yaw == 1 ? deltaColorsWhenAboveIsGoodSide : deltaColorsWhenBelowIsGoodSide
+    }
+    
+    var deltaColorsWhenBelowIsGoodSide: [UIColor] {
+        return [UIColor.beeminder.green, UIColor.blue, UIColor.orange]
+    }
+    
+    var deltaColorsWhenAboveIsGoodSide: [UIColor] {
+        return deltaColorsWhenBelowIsGoodSide.reversed()
     }
     
     func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
@@ -529,8 +532,10 @@ class JSONGoal {
         healthStore.execute(query)
     }
     
+    public static let unlockNotificationIdentifier: String = "health sync unlock reminder"
+    
     func setUnlockNotification() {
-        if UserDefaults.standard.bool(forKey: Constants.healthSyncRemindersPreferenceKey) == false { return }
+        guard UserDefaults.standard.bool(forKey: Constants.healthSyncRemindersPreferenceKey) else { return }
         
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         let content = UNMutableNotificationContent()
@@ -557,7 +562,7 @@ class JSONGoal {
             trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         }
         
-        let notification = UNNotificationRequest.init(identifier: "foo", content: content, trigger: trigger)
+        let notification = UNNotificationRequest.init(identifier: JSONGoal.unlockNotificationIdentifier, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(notification, withCompletionHandler: nil)
     }
     
@@ -808,5 +813,37 @@ class JSONGoal {
     
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?) -> Void)?) {
         RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
+    }
+}
+
+extension JSONGoal {
+    var cacheBustingThumbUrl: String {
+        let thumbUrlStr = self.thumb_url!
+        return cacheBuster(thumbUrlStr)
+    }
+    
+    var cacheBustingGraphUrl: String {
+        let graphUrlStr = self.graph_url!
+        return cacheBuster(graphUrlStr)
+    }
+}
+
+private extension JSONGoal {
+    func cacheBuster(_ originUrlStr: String) -> String {
+        guard let lastTouch = self.lasttouch else {
+            return originUrlStr
+        }
+        
+        let queryCharacter = originUrlStr.range(of: "&") == nil ? "?" : "&"
+        
+        let cacheBustingUrlStr = "\(originUrlStr)\(queryCharacter)proctime=\(lastTouch)"
+        
+        return cacheBustingUrlStr
+    }
+}
+
+extension JSONGoal {
+    var isDataProvidedAutomatically: Bool {
+        return !self.autodata.isEmpty
     }
 }

@@ -11,9 +11,10 @@ import SnapKit
 import MBProgressHUD
 import SwiftyJSON
 import HealthKit
+import SafariServices
 
-class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate {
-    
+
+class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {    
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewLayout?
     let lastUpdatedView = UIView()
@@ -26,12 +27,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let noGoalsLabel = BSLabel()
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
-    var lastUpdated : Date?
+    var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
     var goals : Array<JSONGoal> = []
     var filteredGoals : Array<JSONGoal> = []
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -63,7 +64,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.navigationItem.rightBarButtonItem = item
         
         self.view.addSubview(self.lastUpdatedView)
-        self.lastUpdatedView.backgroundColor = UIColor.beeGrayColor()
+        self.lastUpdatedView.backgroundColor = UIColor.beeminder.gray
         self.lastUpdatedView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.topLayoutGuide.snp.bottom)
             make.left.equalTo(0)
@@ -85,7 +86,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GalleryViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
         self.view.addSubview(self.deadbeatView)
-        self.deadbeatView.backgroundColor = UIColor.beeGrayColor()
+        self.deadbeatView.backgroundColor = UIColor.beeminder.gray
         self.deadbeatView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
@@ -99,7 +100,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.deadbeatView.addSubview(deadbeatLabel)
         deadbeatLabel.textColor = UIColor.red
         deadbeatLabel.numberOfLines = 0
-        deadbeatLabel.font = UIFont(name: "Avenir-Heavy", size: 13)
+        deadbeatLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(13)
         deadbeatLabel.text = "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
         deadbeatLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(3)
@@ -109,7 +110,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         
         self.view.addSubview(self.outofdateView)
-        self.outofdateView.backgroundColor = UIColor.beeGrayColor()
+        self.outofdateView.backgroundColor = UIColor.beeminder.gray
         self.outofdateView.snp.makeConstraints { (make) in
             make.right.left.equalTo(0)
             make.top.equalTo(self.deadbeatView.snp.bottom)
@@ -119,7 +120,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.outofdateView.addSubview(self.outofdateLabel)
         self.outofdateLabel.textColor = .red
         self.outofdateLabel.numberOfLines = 0
-        self.outofdateLabel.font = UIFont(name: "Avenir-Heavy", size: 12)
+        self.outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
         self.outofdateLabel.textAlignment = .center
         self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
         self.outofdateLabel.snp.makeConstraints { (make) in
@@ -133,6 +134,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.searchBar.delegate = self
         self.searchBar.placeholder = "Filter goals by slug"
         self.searchBar.isHidden = true
+        self.searchBar.showsCancelButton = true
         self.searchBar.snp.makeConstraints { (make) in
             make.left.right.equalTo(0)
             make.top.equalTo(self.outofdateView.snp.bottom)
@@ -233,7 +235,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func searchButtonPressed() {
-        self.searchBar.isHidden = !self.searchBar.isHidden
+        self.toggleSearchBar()
+    }
+    
+    private func toggleSearchBar() {
+        self.searchBar.isHidden.toggle()
+        
         if searchBar.isHidden {
             self.searchBar.text = ""
             self.filteredGoals = self.goals
@@ -242,6 +249,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         } else {
             self.searchBar.becomeFirstResponder()
         }
+        
+        self.updateSearchBarConstraints()
+    }
+    
+    private func updateSearchBarConstraints() {
         self.searchBar.snp.remakeConstraints { (make) in
             make.left.right.equalTo(0)
             make.top.equalTo(self.outofdateView.snp.bottom)
@@ -294,16 +306,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        self.filteredGoals = self.goals
-        self.searchBar.resignFirstResponder()
-        self.collectionView?.reloadData()
+        self.toggleSearchBar()
     }
     
     func updateFilteredGoals(searchText : String) {
         if searchText == "" {
             self.filteredGoals = self.goals
         } else {
-            self.filteredGoals = self.goals.filter { (goal) -> Bool in
+        self.filteredGoals = self.goals.filter { (goal) -> Bool in
                 return goal.slug.lowercased().contains(searchText.lowercased())
             }
         }
@@ -321,7 +331,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleCreateGoalButtonPressed() {
-        self.navigationController?.pushViewController(CreateGoalViewController(), animated: true)
+        guard let username = CurrentUserManager.sharedManager.username,
+            let access_token = CurrentUserManager.sharedManager.accessToken,
+            let createGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(access_token)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true") else { return }
+        
+        let safariVC = SFSafariViewController(url: createGoalUrl)
+        safariVC.delegate = self
+        self.showDetailViewController(safariVC, sender: self)
     }
     
     @objc func updateLastUpdatedLabel() {
@@ -334,7 +350,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
             else if lastUpdated.timeIntervalSinceNow < -120 {
                 color = UIColor.black
-                lastTextString = "Last updated: \(-1*Int(lastUpdated.timeIntervalSinceNow/60)) minutes ago"
+                lastTextString = "Last updated: \(-1 * Int(lastUpdated.timeIntervalSinceNow / 60)) minutes ago"
             }
             else if lastUpdated.timeIntervalSinceNow < -60 {
                 color = UIColor.black
@@ -349,7 +365,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             color = UIColor.red
             lastTextString = "Last updated: a long time ago..."
         }
-        let lastText :NSMutableAttributedString = NSMutableAttributedString(string: lastTextString)
+        let lastText: NSMutableAttributedString = NSMutableAttributedString(string: lastTextString)
         lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: color, range: NSRange(location: 0, length: lastText.string.count))
         self.lastUpdatedLabel.attributedText = lastText
     }
@@ -466,7 +482,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let row = (indexPath as NSIndexPath).row
         if row < self.filteredGoals.count { self.openGoal(self.filteredGoals[row]) }
     }
-
+    
     @objc func openGoalFromNotification(_ notification: Notification) {
         let slug = (notification as NSNotification).userInfo!["slug"] as! String
         let matchingGoal = self.goals.filter({ (goal) -> Bool in
@@ -482,6 +498,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let goalViewController = GoalViewController()
         goalViewController.goal = goal
         self.navigationController?.pushViewController(goalViewController, animated: true)
+    }
+    
+    // MARK: - SFSafariViewControllerDelegate
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true, completion: nil)
+        self.fetchGoals()
     }
 }
 

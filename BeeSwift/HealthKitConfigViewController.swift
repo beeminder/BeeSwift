@@ -18,7 +18,7 @@ class HealthKitConfigViewController: UIViewController {
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
     var syncRemindersSwitch = UISwitch()
     let margin = 12
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         if #available(iOS 13.0, *) {
@@ -30,22 +30,39 @@ class HealthKitConfigViewController: UIViewController {
         let backItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         self.navigationItem.backBarButtonItem = backItem
         
+        let syncRemindersContainer = UIView()
+        self.view.addSubview(syncRemindersContainer)
+        syncRemindersContainer.backgroundColor = {
+            if #available(iOS 13.0, *) {
+                return .secondarySystemBackground
+            } else {
+                return .clear
+            }
+        }()
+        syncRemindersContainer.snp.makeConstraints { make in
+            make.left.equalTo(self.margin)
+            make.right.equalTo(-self.margin)
+            
+            make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
+        }
+        
         let syncRemindersLabel = BSLabel()
-        self.view.addSubview(syncRemindersLabel)
+        syncRemindersContainer.addSubview(syncRemindersLabel)
         syncRemindersLabel.text = "Sync Health data reminders"
         if #available(iOS 13.0, *) {
             syncRemindersLabel.backgroundColor = .secondarySystemBackground
         } else {
             syncRemindersLabel.backgroundColor = .clear
         }
-        syncRemindersLabel.snp.makeConstraints { (make) in
+        syncRemindersLabel.snp.makeConstraints { make in
             make.left.equalTo(self.margin)
-            make.right.equalTo(0)
-            make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            make.right.equalTo(-self.margin)
+            
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         
-        self.view.addSubview(self.syncRemindersSwitch)
+        syncRemindersContainer.addSubview(self.syncRemindersSwitch)
         self.syncRemindersSwitch.isOn = UserDefaults.standard.bool(forKey: Constants.healthSyncRemindersPreferenceKey)
         self.syncRemindersSwitch.addTarget(self, action: #selector(self.syncRemindersSwitchValueChanged), for: .valueChanged)
         self.syncRemindersSwitch.snp.makeConstraints { (make) in
@@ -55,31 +72,37 @@ class HealthKitConfigViewController: UIViewController {
         
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-            make.top.equalTo(syncRemindersLabel.snp.bottom)
+            make.left.equalTo(self.margin)
+            make.right.equalTo(-self.margin)
+            
+            make.top.equalTo(syncRemindersContainer.snp.bottom).offset(self.margin)
             make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
         }
         
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        self.tableView.refreshControl = {
+            let refresh = UIRefreshControl()
+            refresh.addTarget(self, action: #selector(fetchGoals), for: .valueChanged)
+            return refresh
+        }()
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.goals = CurrentUserManager.sharedManager.goals
         self.sortGoals()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricRemovedNotification(notification:)), name: NSNotification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: nil)
     }
     
     func sortGoals() {
-        self.goals.sort { (goal1, goal2) -> Bool in
-            return goal1.slug > goal2.slug
-        }
+        self.goals.sort { $0.slug < $1.slug }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         self.fetchGoals()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -92,7 +115,9 @@ class HealthKitConfigViewController: UIViewController {
         }
     }
     
-    func fetchGoals() {
+    @objc func fetchGoals() {
+        self.tableView.refreshControl?.endRefreshing()
+
         MBProgressHUD.showAdded(to: self.view, animated: true)
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
@@ -112,31 +137,58 @@ class HealthKitConfigViewController: UIViewController {
         }
     }
     
-    @objc func handleMetricRemovedNotification(notification : Notification) {
+    @objc func handleMetricRemovedNotification(notification: Notification) {
         self.fetchGoals()
     }
 }
 
-extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSource {
+extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 3 // manual, auto but apple (editable), auto
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.goals.count
+        if section == 0 { // first section, modifiable
+            return self.manualSourced.count
+        } else if section == 1 {
+            return self.autoSourcedModifiable.count
+        } else {
+            return self.autoSourcedUnmodifiable.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitConfigTableViewCell!
-
-        let goal = self.goals[(indexPath as NSIndexPath).row]
-        cell!.goal = goal
+        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitConfigTableViewCell
         
-        return cell!
+        let goal = self.goalAt(indexPath)
+        
+        cell.goal = goal
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "Manual goals"
+        } else if section == 1 {
+            return "Connected to Apple Health"
+        } else {
+            return "Other auto data goals"
+        }
+    }
+    
+    private func goalAt(_ indexPath: IndexPath) -> JSONGoal {
+        if indexPath.section == 0 {
+            return self.manualSourced[indexPath.row]
+        } else if indexPath.section == 1 {
+            return self.autoSourcedModifiable[indexPath.row]
+        } else {
+            return self.autoSourcedUnmodifiable[indexPath.row]
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let goal = self.goals[(indexPath as NSIndexPath).row]
+        let goal = self.goalAt(indexPath)
         
         if goal.autodata.count == 0 {
             let chooseHKMetricViewController = ChooseHKMetricViewController()
@@ -146,6 +198,35 @@ extension HealthKitConfigViewController : UITableViewDelegate, UITableViewDataSo
             let controller = RemoveHKMetricViewController()
             controller.goal = goal
             self.navigationController?.pushViewController(controller, animated: true)
+        } else {
+            let alert: UIAlertController = {
+                let alert = UIAlertController(title: "Auto-data Goal", message: "At the moment we don't have a way for you to swap data source here yourself for auto-data goals", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                return alert
+            }()
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+}
+
+extension HealthKitConfigViewController {
+    var autoSourced: [JSONGoal] {
+        return self.goals.filter { $0.isDataProvidedAutomatically }
+    }
+    
+    var manualSourced: [JSONGoal] {
+        return self.goals.filter { !$0.isDataProvidedAutomatically }
+    }
+    
+    var autoSourcedModifiable: [JSONGoal] {
+        return self.autoSourced.filter { goal -> Bool in
+            return "Apple".localizedCaseInsensitiveCompare(goal.autodata) == ComparisonResult.orderedSame
+        }
+    }
+    
+    var autoSourcedUnmodifiable: [JSONGoal] {
+        return self.autoSourced.filter { goal -> Bool in
+            return "Apple".localizedCaseInsensitiveCompare(goal.autodata) != ComparisonResult.orderedSame
         }
     }
 }

@@ -11,11 +11,13 @@ import UIKit
 
 extension UIColor {
     
-    class func beeGreenColor() -> UIColor {
-        return UIColor(red: 81.0/255.0, green: 163.0/255.0, blue: 81.0/255.0, alpha: 1)
-    }
+    struct beeminder {
+        static var green: UIColor {
+            return UIColor(red: 81.0/255.0, green: 163.0/255.0, blue: 81.0/255.0, alpha: 1)
+        }
     
-    class func beeGrayColor() -> UIColor {
-        return UIColor(white: 0.7, alpha: 1.0)
+        static var gray: UIColor {
+            return UIColor(white: 0.7, alpha: 1.0)
+        }
     }
 }

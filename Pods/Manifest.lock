@@ -4,86 +4,54 @@ PODS:
     - Alamofire (~> 4.8)
   - AlamofireNetworkActivityIndicator (2.4.0):
     - Alamofire (~> 4.8)
-  - Bolts (1.7.0):
-    - Bolts/AppLinks (= 1.7.0)
-    - Bolts/Tasks (= 1.7.0)
-  - Bolts/AppLinks (1.7.0):
-    - Bolts/Tasks
-  - Bolts/Tasks (1.7.0)
-  - FBSDKCoreKit (4.11.0):
-    - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.11.0):
-    - FBSDKCoreKit
   - IQKeyboardManager (4.0.2)
-  - MagicalRecord (2.3.2):
-    - MagicalRecord/Core (= 2.3.2)
-  - MagicalRecord/Core (2.3.2)
   - MBProgressHUD (0.9.2)
-  - Sentry (4.5.0):
-    - Sentry/Core (= 4.5.0)
-  - Sentry/Core (4.5.0)
+  - Sentry (5.2.0):
+    - Sentry/Core (= 5.2.0)
+  - Sentry/Core (5.2.0)
   - SnapKit (4.2.0)
   - SwiftyJSON (3.1.0)
-  - TwitterCore (3.0.2)
-  - TwitterKit (3.2.1):
-    - TwitterCore (>= 3.0.2)
 
 DEPENDENCIES:
   - Alamofire (~> 4.8)
   - AlamofireImage (~> 3.5)
   - AlamofireNetworkActivityIndicator (~> 2.4)
-  - FBSDKCoreKit
-  - FBSDKLoginKit
   - IQKeyboardManager
-  - MagicalRecord
   - MBProgressHUD
-  - Sentry (from `https://github.com/getsentry/sentry-cocoa.git`, tag `4.5.0`)
+  - Sentry (from `https://github.com/getsentry/sentry-cocoa.git`, tag `5.2.0`)
   - SnapKit (~> 4.0)
   - SwiftyJSON
-  - TwitterKit
 
 SPEC REPOS:
   trunk:
     - Alamofire
     - AlamofireImage
     - AlamofireNetworkActivityIndicator
-    - Bolts
-    - FBSDKCoreKit
-    - FBSDKLoginKit
     - IQKeyboardManager
-    - MagicalRecord
     - MBProgressHUD
     - SnapKit
     - SwiftyJSON
-    - TwitterCore
-    - TwitterKit
 
 EXTERNAL SOURCES:
   Sentry:
     :git: https://github.com/getsentry/sentry-cocoa.git
-    :tag: 4.5.0
+    :tag: 5.2.0
 
 CHECKOUT OPTIONS:
   Sentry:
     :git: https://github.com/getsentry/sentry-cocoa.git
-    :tag: 4.5.0
+    :tag: 5.2.0
 
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   AlamofireImage: 63cfe3baf1370be6c498149687cf6db3e3b00999
   AlamofireNetworkActivityIndicator: 9acc3de3ca6645bf0efed462396b0df13dd3e7b8
-  Bolts: a0058fa3b331c5a1e4402d534f2dae36dbff31e4
-  FBSDKCoreKit: 686ac982723a14ec9ddb85e2f81235d7706c891b
-  FBSDKLoginKit: bade9fc78277764149ccc5bfaadbf13c83175c6a
   IQKeyboardManager: 2341089c4ae25fa2fa82ce356a259fcd267dc6b6
-  MagicalRecord: 53bed74b4323b930992a725be713e53b37d19755
   MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
-  Sentry: ab6c209f23700d1460691dbc90e19ed0a05d496b
+  Sentry: 6e04bc3e11bf771ca79140a112de64dcfbc7d8cb
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
   SwiftyJSON: 29b9f2a64f118c07e691667c2ba1efe536acfe0b
-  TwitterCore: e0420b01e02e7d20e94690e37f43e75de219ab8d
-  TwitterKit: 205ac89824bbfe9e85a16c420d30bb7bcbedac45
 
-PODFILE CHECKSUM: c7ad3e318d0fc9a072c68554dc134e8bfd2b6203
+PODFILE CHECKSUM: 2cfaf3d489143f458601ff2a3122ad870d4fda73
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.3
