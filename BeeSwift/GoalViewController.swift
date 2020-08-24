@@ -34,6 +34,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     fileprivate let headerWidth = Double(1.0/3.0)
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
         if #available(iOS 13.0, *) {
             self.view.backgroundColor = UIColor.systemBackground
         } else {
