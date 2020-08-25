@@ -78,6 +78,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.centerY.centerX.equalTo(countdownView)
             make.width.equalTo(countdownView)
         }
+        self.refreshCountdown()
         
         self.scrollView.addSubview(self.goalImageScrollView)
         self.goalImageScrollView.showsHorizontalScrollIndicator = false
