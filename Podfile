@@ -4,7 +4,7 @@ use_frameworks!
 inhibit_all_warnings!
 target 'BeeSwift' do
 	pod "Alamofire", '~> 4.9'
-	pod "AlamofireImage", '~> 3.5'
+	pod "AlamofireImage", '~> 3.6'
 	pod 'AlamofireNetworkActivityIndicator', '~> 2.4'
 	pod 'SnapKit', '~> 4.0'
 	pod "SwiftyJSON"	
@@ -14,7 +14,7 @@ target 'BeeSwift' do
 end
 target 'BeeSwiftToday' do
 	pod 'Alamofire', '~> 4.9'
-	pod 'AlamofireImage', '~>3.5'
+	pod 'AlamofireImage', '~>3.6'
 	pod 'SnapKit', '~> 4.0'
 	pod "SwiftyJSON"
 	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '5.2.0'
@@ -22,7 +22,7 @@ target 'BeeSwiftToday' do
 end
 target 'BeeSwiftTests' do
 	pod "Alamofire", '~> 4.9'
-	pod "AlamofireImage", '~> 3.5'
+	pod "AlamofireImage", '~> 3.6'
 	pod 'AlamofireNetworkActivityIndicator', '~> 2.4'
 	pod 'SnapKit', '~> 4.0'
 	pod "SwiftyJSON"
