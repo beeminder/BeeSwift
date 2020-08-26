@@ -27,6 +27,8 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
     var divider = UIView()
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+
         let scrollView = UIScrollView()
         self.view.addSubview(scrollView)
         scrollView.snp.makeConstraints { (make) -> Void in
