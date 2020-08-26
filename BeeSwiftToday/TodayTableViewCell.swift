@@ -23,12 +23,21 @@ class TodayTableViewCell: UITableViewCell {
     let valueLabel = BSLabel()
     let valueStepper = UIStepper()
     let limitLabel = BSLabel()
-    var addDataButton = BSButton()
+    let addDataButton = BSButton()
     var pollTimer : Timer?
     let graphImageView = UIImageView()
     
     var thumbnailPlaceholder: UIImage? {
         UIImage(named: "ThumbnailPlaceholder")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        self.valueLabel.text = nil
+        self.limitLabel.text = nil
+        self.addDataButton.titleLabel?.text = nil
+        self.graphImageView.image = self.thumbnailPlaceholder
     }
     
     fileprivate func configureCell() {
