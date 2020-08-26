@@ -15,6 +15,18 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
+    var goal: JSONGoal? {
+        didSet {
+            self.thumbnailImageView.image = nil
+            self.setThumbnailImage()
+            self.titleLabel.text = goal?.title
+            self.slugLabel.text = goal?.slug
+            self.titleLabel.isHidden = goal?.title == goal?.slug
+            self.safesumLabel.text = goal?.capitalSafesum()
+            self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.beeminder.gray
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -63,6 +75,10 @@ class GoalCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         
@@ -83,22 +99,6 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
         } else {
             self.thumbnailImageView.af_setImage(withURL: URL(string: self.goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
-        }
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    var goal: JSONGoal? {
-        didSet {
-            self.thumbnailImageView.image = nil
-            self.setThumbnailImage()
-            self.titleLabel.text = goal?.title
-            self.slugLabel.text = goal?.slug
-            self.titleLabel.isHidden = goal?.title == goal?.slug
-            self.safesumLabel.text = goal?.capitalSafesum()
-            self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.beeminder.gray            
         }
     }
 }
