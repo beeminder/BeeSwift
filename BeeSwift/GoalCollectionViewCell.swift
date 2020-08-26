@@ -79,11 +79,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-    }
-    
+
     var goal: JSONGoal? {
         didSet {
             self.thumbnailImageView.image = nil
