@@ -19,7 +19,7 @@ class SettingsTableViewCell: UITableViewCell {
             self.configure()
         }
     }
-    var titleLabel = BSLabel()
+    let titleLabel = BSLabel()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -29,6 +29,13 @@ class SettingsTableViewCell: UITableViewCell {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.configure()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.titleLabel.text = nil
+        self.title = nil
+        self.imageName = nil
     }
     
     func configure() {
