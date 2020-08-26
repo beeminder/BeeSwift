@@ -10,7 +10,7 @@ import Foundation
 
 class DatapointTableViewCell : UITableViewCell {
     
-    var datapointLabel = BSLabel()
+    let datapointLabel = BSLabel()
     
     var datapointText : String?
     {
@@ -27,6 +27,12 @@ class DatapointTableViewCell : UITableViewCell {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.setup()        
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.datapointLabel.text = nil
+        self.datapointText = nil
     }
     
     func setup() {

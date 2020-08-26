@@ -605,23 +605,33 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.view.endEditing(true)
-        if (self.goal.hideDataEntry()) { return }
-        if ((indexPath as NSIndexPath).row >= self.goal!.recent_data!.count) { return }
-        let datapointJSON : JSON = (self.goal!.recent_data![(indexPath as NSIndexPath).row] as? JSON)!
+        
+        guard !self.goal.hideDataEntry() else { return }
+        
+        guard let goal = self.goal, let data = goal.recent_data, indexPath.row < data.count else { return }
+        
+        guard let datapointJSON = data[indexPath.row] as? JSON else { return }
+        
         let editDatapointViewController = EditDatapointViewController()
         editDatapointViewController.datapointJSON = datapointJSON
-        editDatapointViewController.goalSlug = self.goal.slug
+        editDatapointViewController.goalSlug = goal.slug
         self.navigationController?.pushViewController(editDatapointViewController, animated: true)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier) as! DatapointTableViewCell
-        if (indexPath as NSIndexPath).row < self.goal!.recent_data!.count {
-            
-            let datapoint : JSON = (self.goal!.recent_data![(indexPath as NSIndexPath).row] as? JSON)!
-            let text = datapoint["canonical"].string
-            cell.datapointText = text
+        
+        guard let goal = self.goal, let data = goal.recent_data, indexPath.row < data.count else {
+            return cell
         }
+
+        guard let datapoint = data[indexPath.row] as? JSON else {
+            return cell
+        }
+        
+        let text = datapoint["canonical"].string
+        cell.datapointText = text
+        
         return cell
     }
     

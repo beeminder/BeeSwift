@@ -43,6 +43,15 @@ class HealthKitConfigTableViewCell: UITableViewCell {
         self.configure()
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.goalnameLabel.text = nil
+        self.autodataNameLabel.text = nil
+        self.addMetricLabel.text = "Add source..."
+
+        self.goal = nil
+    }
+    
     func configure() {
         if #available(iOS 13.0, *) {
             self.backgroundColor = UIColor.secondarySystemBackground
