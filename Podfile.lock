@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (4.8.2)
+  - Alamofire (4.9.1)
   - AlamofireImage (3.5.2):
     - Alamofire (~> 4.8)
   - AlamofireNetworkActivityIndicator (2.4.0):
@@ -13,7 +13,7 @@ PODS:
   - SwiftyJSON (3.1.0)
 
 DEPENDENCIES:
-  - Alamofire (~> 4.8)
+  - Alamofire (~> 4.9)
   - AlamofireImage (~> 3.5)
   - AlamofireNetworkActivityIndicator (~> 2.4)
   - IQKeyboardManager
@@ -43,7 +43,7 @@ CHECKOUT OPTIONS:
     :tag: 5.2.0
 
 SPEC CHECKSUMS:
-  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   AlamofireImage: 63cfe3baf1370be6c498149687cf6db3e3b00999
   AlamofireNetworkActivityIndicator: 9acc3de3ca6645bf0efed462396b0df13dd3e7b8
   IQKeyboardManager: 2341089c4ae25fa2fa82ce356a259fcd267dc6b6
@@ -52,6 +52,6 @@ SPEC CHECKSUMS:
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
   SwiftyJSON: 29b9f2a64f118c07e691667c2ba1efe536acfe0b
 
-PODFILE CHECKSUM: 2cfaf3d489143f458601ff2a3122ad870d4fda73
+PODFILE CHECKSUM: 6a10d449fc7d41c3680025f4bcc4ec06bde65124
 
 COCOAPODS: 1.9.3
