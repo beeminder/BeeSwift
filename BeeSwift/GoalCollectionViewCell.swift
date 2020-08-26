@@ -9,10 +9,10 @@
 import Foundation
 
 class GoalCollectionViewCell: UICollectionViewCell {
-    var slugLabel :BSLabel = BSLabel()
-    var titleLabel :BSLabel = BSLabel()
-    var thumbnailImageView :UIImageView = UIImageView()
-    var safesumLabel :BSLabel = BSLabel()
+    let slugLabel :BSLabel = BSLabel()
+    let titleLabel :BSLabel = BSLabel()
+    let thumbnailImageView :UIImageView = UIImageView()
+    let safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
     override init(frame: CGRect) {
@@ -62,6 +62,16 @@ class GoalCollectionViewCell: UICollectionViewCell {
             make.right.equalTo(-self.margin)
         }
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        self.slugLabel.text = nil
+        self.titleLabel.text = nil
+        self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
+        self.safesumLabel.text = nil
+        self.goal = nil
+    }
         
     func deadbeatChanged() {
         self.setThumbnailImage()
@@ -87,7 +97,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.titleLabel.text = goal?.title
             self.slugLabel.text = goal?.slug
             self.titleLabel.isHidden = goal?.title == goal?.slug
-            self.safesumLabel.text = goal!.capitalSafesum()
+            self.safesumLabel.text = goal?.capitalSafesum()
             self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.beeminder.gray            
         }
     }
