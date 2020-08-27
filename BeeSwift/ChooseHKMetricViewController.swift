@@ -36,7 +36,7 @@ class ChooseHKMetricViewController: UIViewController {
             attrString.append(NSMutableAttributedString(string: "\(self.goal.slug)\n",
                 attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultBoldFont]))
             
-            attrString.append(NSMutableAttributedString(string: "HealthKit metric as autodata!\nWith this metric as the autodata source for your goal, Apple Health will keep Beeminder up to date with your latest data automatically.\nTap a metric from the list below, then tap save to update your goal.",
+            attrString.append(NSMutableAttributedString(string: "HealthKit metric as autodata!\nWith this metric as the autodata source for your goal, Apple Health will keep Beeminder up to date with your latest data automatically.\nPick a metric from the list below, then hit save to update your goal.",
                                                         attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
             return attrString
         }()
