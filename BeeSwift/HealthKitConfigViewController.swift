@@ -169,11 +169,11 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
-            return "Manual goals"
+            return "Manual Goals"
         } else if section == 1 {
             return "Connected to Apple Health"
         } else {
-            return "Other auto data goals"
+            return "Other Autodata Goals"
         }
     }
     
