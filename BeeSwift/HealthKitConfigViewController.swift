@@ -169,11 +169,11 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
-            return "Manual goals"
+            return "Manual Goals"
         } else if section == 1 {
             return "Connected to Apple Health"
         } else {
-            return "Other auto data goals"
+            return "Other Autodata Goals"
         }
     }
     
@@ -200,7 +200,7 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
             self.navigationController?.pushViewController(controller, animated: true)
         } else {
             let alert: UIAlertController = {
-                let alert = UIAlertController(title: "Auto-data Goal", message: "At the moment we don't have a way for you to swap data source here yourself for auto-data goals", preferredStyle: .alert)
+                let alert = UIAlertController(title: "Autodata Goal", message: "At the moment we don't have a way for you to swap data sources here yourself for autodata goals", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 return alert
             }()
