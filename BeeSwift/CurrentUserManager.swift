@@ -115,9 +115,6 @@ class CurrentUserManager : NSObject {
         UserDefaults.standard.set(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
         UserDefaults.standard.set(responseJSON[defaultLeadtimeKey].number!, forKey: defaultLeadtimeKey)
         UserDefaults.standard.set(responseJSON[beemTZKey].string!, forKey: beemTZKey)
-        
-        UserDefaults.standard.set(Constants.deadlineGoalSortString, forKey: Constants.selectedGoalSortKey)
-        
         UserDefaults.standard.synchronize()
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
     }
