@@ -15,8 +15,8 @@ import SafariServices
 
 
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {    
-    var collectionView :UICollectionView?
-    var collectionViewLayout :UICollectionViewLayout?
+    var collectionView :UICollectionView!
+    var collectionViewLayout :UICollectionViewLayout!
     var segmentedControl: UISegmentedControl!
     let lastUpdatedView = UIView()
     let lastUpdatedLabel = BSLabel()
@@ -172,11 +172,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.height.equalTo(0)
         }
         
-        self.collectionView!.delegate = self
-        self.collectionView!.dataSource = self
-        self.collectionView!.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
-        self.collectionView!.register(NewGoalCollectionViewCell.self, forCellWithReuseIdentifier: self.newGoalCellReuseIdentifier)
-        self.view.addSubview(self.collectionView!)
+        self.collectionView.delegate = self
+        self.collectionView.dataSource = self
+        self.collectionView.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
+        self.collectionView.register(NewGoalCollectionViewCell.self, forCellWithReuseIdentifier: self.newGoalCellReuseIdentifier)
+        self.view.addSubview(self.collectionView)
         
         self.collectionView?.refreshControl = {
             let refreshControl = UIRefreshControl()
@@ -184,7 +184,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             return refreshControl
         }()
         
-        self.collectionView!.snp.makeConstraints { (make) -> Void in
+        self.collectionView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.segmentedControl.snp.bottom)
             if #available(iOS 11.0, *) {
                 make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
@@ -209,7 +209,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.view.addSubview(self.noGoalsLabel)
         self.noGoalsLabel.snp.makeConstraints { (make) in
-            make.top.left.right.equalTo(self.collectionView!)
+            make.top.left.right.equalTo(self.collectionView)
         }
         self.noGoalsLabel.text = "No goals yet!\n\nIn-app goal creation is coming soon, but for now, head to beeminder.com to create a goal."
         self.noGoalsLabel.textAlignment = .center
@@ -419,7 +419,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-        self.collectionView!.reloadData()
+        self.collectionView.reloadData()
         self.updateDeadbeatHeight()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
@@ -464,7 +464,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
             self.collectionView?.refreshControl?.endRefreshing()
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            self.collectionView!.reloadData()
+            self.collectionView.reloadData()
         }
     }
 
@@ -487,10 +487,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if (indexPath as NSIndexPath).row >= self.filteredGoals.count {
-            let cell:NewGoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.newGoalCellReuseIdentifier, for: indexPath) as! NewGoalCollectionViewCell
+            let cell:NewGoalCollectionViewCell = self.collectionView.dequeueReusableCell(withReuseIdentifier: self.newGoalCellReuseIdentifier, for: indexPath) as! NewGoalCollectionViewCell
             return cell
         }
-        let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
+        let cell:GoalCollectionViewCell = self.collectionView.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
         let goal:JSONGoal = self.filteredGoals[(indexPath as NSIndexPath).row]
         
