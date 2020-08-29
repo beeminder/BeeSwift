@@ -30,8 +30,33 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var goals : Array<JSONGoal> = []
-    var filteredGoals : Array<JSONGoal> = []
+    var goals : [JSONGoal] = []
+    
+    var sortedGoals: [JSONGoal] {
+        self.goals.sorted(by: { (goal1, goal2) -> Bool in
+            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
+                if selectedGoalSort == Constants.nameGoalSortString {
+                    return goal1.slug < goal2.slug
+                }
+                else if selectedGoalSort == Constants.recentDataGoalSortString {
+                    return goal1.lasttouch?.intValue ?? 0 > goal2.lasttouch?.intValue ?? 0
+                }
+                else if selectedGoalSort == Constants.pledgeGoalSortString {
+                    return goal1.pledge.intValue > goal2.pledge.intValue
+                }
+            }
+            return goal1.losedate.intValue < goal2.losedate.intValue
+        })
+    }
+    
+    var filteredGoals: [JSONGoal] {
+        self.sortedGoals.filter { (goal) -> Bool in
+            guard let searchText = self.searchBar.text, !searchText.isEmpty else {
+                return true
+            }
+            return goal.slug.lowercased().contains(searchText.lowercased())
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -263,7 +288,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         if searchBar.isHidden {
             self.searchBar.text = ""
-            self.filteredGoals = self.goals
             self.searchBar.resignFirstResponder()
             self.collectionView?.reloadData()
         } else {
@@ -294,7 +318,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func userDefaultsDidChange() {
         DispatchQueue.main.async {
             self.segmentedControl.selectedSegmentIndex = self.selectedSegmentIndexBasedOnPref
-            self.sortGoals()
             self.collectionView?.reloadData()
         }
     }
@@ -318,7 +341,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc func handleSignOut() {
         self.goals = []
-        self.filteredGoals = []
         self.collectionView?.reloadData()
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
@@ -329,31 +351,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.updateFilteredGoals(searchText: searchText)
         self.collectionView?.reloadData()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
         self.searchBar.resignFirstResponder()
-        self.updateFilteredGoals(searchText: searchText)
         self.collectionView?.reloadData()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.toggleSearchBar()
     }
-    
-    func updateFilteredGoals(searchText : String) {
-        if searchText == "" {
-            self.filteredGoals = self.goals
-        } else {
-        self.filteredGoals = self.goals.filter { (goal) -> Bool in
-                return goal.slug.lowercased().contains(searchText.lowercased())
-            }
-        }
-    }
-    
+
     func updateDeadbeatHeight() {
         self.deadbeatView.snp.remakeConstraints { (make) -> Void in
             make.left.equalTo(0)
@@ -406,7 +416,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func didFetchGoals() {
-        self.sortGoals()
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
@@ -444,7 +453,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             self.goals = goals
-            self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
         }) { (error) in
             if UIApplication.shared.applicationState == .active {
@@ -458,24 +466,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             self.collectionView!.reloadData()
         }
-    }
-    
-    func sortGoals() {
-        self.goals.sort(by: { (goal1, goal2) -> Bool in
-            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
-                if selectedGoalSort == Constants.nameGoalSortString {
-                    return goal1.slug < goal2.slug
-                }
-                else if selectedGoalSort == Constants.recentDataGoalSortString {
-                    return goal1.lasttouch?.intValue ?? 0 > goal2.lasttouch?.intValue ?? 0
-                }
-                else if selectedGoalSort == Constants.pledgeGoalSortString {
-                    return goal1.pledge.intValue > goal2.pledge.intValue
-                }
-            }
-            return goal1.losedate.intValue < goal2.losedate.intValue
-        })
-        self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
     }
 
     override func didReceiveMemoryWarning() {
