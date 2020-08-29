@@ -35,18 +35,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     var sortedGoals: [JSONGoal] {
         self.goals.sorted(by: { (goal1, goal2) -> Bool in
-            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
-                if selectedGoalSort == Constants.nameGoalSortString {
-                    return goal1.slug < goal2.slug
-                }
-                else if selectedGoalSort == Constants.recentDataGoalSortString {
-                    return goal1.lasttouch?.intValue ?? 0 > goal2.lasttouch?.intValue ?? 0
-                }
-                else if selectedGoalSort == Constants.pledgeGoalSortString {
-                    return goal1.pledge.intValue > goal2.pledge.intValue
-                }
+            switch self.sortCriteria {
+            case Constants.nameGoalSortString:
+                return goal1.slug < goal2.slug
+            case Constants.recentDataGoalSortString:
+                return goal1.lasttouch?.intValue ?? 0 > goal2.lasttouch?.intValue ?? 0
+            case Constants.pledgeGoalSortString:
+                return goal1.pledge.intValue > goal2.pledge.intValue
+            default:
+                return goal1.losedate.intValue < goal2.losedate.intValue
             }
-            return goal1.losedate.intValue < goal2.losedate.intValue
         })
     }
     
@@ -57,6 +55,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
             return goal.slug.lowercased().contains(searchText.lowercased())
         }
+    }
+    
+    /// the sort-by string-id (from collection Constants.goalSortOptions) used to sort the goals
+    /// either the one the user picked or the default
+    var sortCriteria: String {
+        guard let userSelectedSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String,
+            Constants.goalSortOptions.contains(userSelectedSort) else {
+                return Constants.deadlineGoalSortString
+        }
+        return userSelectedSort
     }
     
     override func viewDidLoad() {
@@ -321,8 +329,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     private var selectedSegmentIndexBasedOnPref: Int {
-        guard let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String,
-            let index = Constants.goalSortOptions.firstIndex(of: selectedGoalSort) else {
+        guard let index = Constants.goalSortOptions.firstIndex(of: self.sortCriteria) else {
             return -1
         }
         return index
