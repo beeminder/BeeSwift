@@ -15,8 +15,9 @@ import SafariServices
 
 
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {    
-    var collectionView :UICollectionView?
-    var collectionViewLayout :UICollectionViewLayout?
+    var collectionView :UICollectionView!
+    var collectionViewLayout :UICollectionViewLayout!
+    var segmentedControl: UISegmentedControl!
     let lastUpdatedView = UIView()
     let lastUpdatedLabel = BSLabel()
     let cellReuseIdentifier = "Cell"
@@ -30,8 +31,41 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var goals : Array<JSONGoal> = []
-    var filteredGoals : Array<JSONGoal> = []
+    var goals : [JSONGoal] = []
+    
+    var sortedGoals: [JSONGoal] {
+        self.goals.sorted(by: { (goal1, goal2) -> Bool in
+            switch self.sortCriteria {
+            case Constants.nameGoalSortString:
+                return goal1.slug < goal2.slug
+            case Constants.recentDataGoalSortString:
+                return goal1.lasttouch?.intValue ?? 0 > goal2.lasttouch?.intValue ?? 0
+            case Constants.pledgeGoalSortString:
+                return goal1.pledge.intValue > goal2.pledge.intValue
+            default:
+                return goal1.losedate.intValue < goal2.losedate.intValue
+            }
+        })
+    }
+    
+    var filteredGoals: [JSONGoal] {
+        self.sortedGoals.filter { (goal) -> Bool in
+            guard let searchText = self.searchBar.text, !searchText.isEmpty else {
+                return true
+            }
+            return goal.slug.lowercased().contains(searchText.lowercased())
+        }
+    }
+    
+    /// the sort-by string-id (from collection Constants.goalSortOptions) used to sort the goals
+    /// either the one the user picked or the default
+    var sortCriteria: String {
+        guard let userSelectedSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String,
+            Constants.goalSortOptions.contains(userSelectedSort) else {
+                return Constants.deadlineGoalSortString
+        }
+        return userSelectedSort
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,6 +76,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleCreateGoalButtonPressed), name: NSNotification.Name(rawValue: "createGoalButtonPressed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
+        
+        self.segmentedControl = UISegmentedControl(items: Constants.goalSortOptions)
+        self.segmentedControl.selectedSegmentIndex = self.selectedSegmentIndexBasedOnPref
+        
+        self.segmentedControl.addTarget(self, action: #selector(self.segmentedControlValueChanged(_:)), for: .valueChanged)
+        self.view.addSubview(self.segmentedControl)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
@@ -141,17 +181,17 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.height.equalTo(0)
         }
         
-        self.collectionView!.delegate = self
-        self.collectionView!.dataSource = self
-        self.collectionView!.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
-        self.collectionView!.register(NewGoalCollectionViewCell.self, forCellWithReuseIdentifier: self.newGoalCellReuseIdentifier)
-        self.view.addSubview(self.collectionView!)
+        self.collectionView.delegate = self
+        self.collectionView.dataSource = self
+        self.collectionView.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
+        self.collectionView.register(NewGoalCollectionViewCell.self, forCellWithReuseIdentifier: self.newGoalCellReuseIdentifier)
+        self.view.addSubview(self.collectionView)
         
         self.refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
-        self.collectionView!.addSubview(self.refreshControl)
+        self.collectionView.addSubview(self.refreshControl)
         
-        self.collectionView!.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.searchBar.snp.bottom)
+        self.collectionView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.segmentedControl.snp.bottom)
             if #available(iOS 11.0, *) {
                 make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
                 make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
@@ -162,9 +202,20 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.bottom.equalTo(0)
         }
         
+        self.segmentedControl.snp.makeConstraints { make in
+            make.top.equalTo(self.searchBar.snp.bottom)
+            if #available(iOS 11.0, *) {
+                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
+                make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
+            } else {
+                make.left.equalTo(0)
+                make.right.equalTo(0)
+            }
+        }
+        
         self.view.addSubview(self.noGoalsLabel)
         self.noGoalsLabel.snp.makeConstraints { (make) in
-            make.top.left.right.equalTo(self.collectionView!)
+            make.top.left.right.equalTo(self.collectionView)
         }
         self.noGoalsLabel.text = "No goals yet!\n\nIn-app goal creation is coming soon, but for now, head to beeminder.com to create a goal."
         self.noGoalsLabel.textAlignment = .center
@@ -243,7 +294,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         if searchBar.isHidden {
             self.searchBar.text = ""
-            self.filteredGoals = self.goals
             self.searchBar.resignFirstResponder()
             self.collectionView?.reloadData()
         } else {
@@ -265,11 +315,24 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
+    @objc func segmentedControlValueChanged(_ segmentedControl: UISegmentedControl) {
+        if let value = self.segmentedControl.titleForSegment(at: self.segmentedControl.selectedSegmentIndex) {
+            UserDefaults.standard.set(value, forKey: Constants.selectedGoalSortKey)
+        }
+    }
+    
     @objc func userDefaultsDidChange() {
         DispatchQueue.main.async {
-            self.sortGoals()
+            self.segmentedControl.selectedSegmentIndex = self.selectedSegmentIndexBasedOnPref
             self.collectionView?.reloadData()
         }
+    }
+    
+    private var selectedSegmentIndexBasedOnPref: Int {
+        guard let index = Constants.goalSortOptions.firstIndex(of: self.sortCriteria) else {
+            return -1
+        }
+        return index
     }
     
     @objc func handleSignIn() {
@@ -283,7 +346,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc func handleSignOut() {
         self.goals = []
-        self.filteredGoals = []
         self.collectionView?.reloadData()
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
@@ -294,31 +356,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.updateFilteredGoals(searchText: searchText)
         self.collectionView?.reloadData()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
         self.searchBar.resignFirstResponder()
-        self.updateFilteredGoals(searchText: searchText)
         self.collectionView?.reloadData()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.toggleSearchBar()
     }
-    
-    func updateFilteredGoals(searchText : String) {
-        if searchText == "" {
-            self.filteredGoals = self.goals
-        } else {
-        self.filteredGoals = self.goals.filter { (goal) -> Bool in
-                return goal.slug.lowercased().contains(searchText.lowercased())
-            }
-        }
-    }
-    
+
     func updateDeadbeatHeight() {
         self.deadbeatView.snp.remakeConstraints { (make) -> Void in
             make.left.equalTo(0)
@@ -371,11 +421,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func didFetchGoals() {
-        self.sortGoals()
         self.setupHealthKit()
         self.refreshControl.endRefreshing()
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-        self.collectionView!.reloadData()
+        self.collectionView.reloadData()
         self.updateDeadbeatHeight()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
@@ -409,7 +458,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             self.goals = goals
-            self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
         }) { (error) in
             if UIApplication.shared.applicationState == .active {
@@ -421,26 +469,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
             self.refreshControl.endRefreshing()
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            self.collectionView!.reloadData()
+            self.collectionView.reloadData()
         }
-    }
-    
-    func sortGoals() {
-        self.goals.sort(by: { (goal1, goal2) -> Bool in
-            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
-                if selectedGoalSort == Constants.nameGoalSortString {
-                    return goal1.slug < goal2.slug
-                }
-                else if selectedGoalSort == Constants.recentDataGoalSortString {
-                    return goal1.lasttouch?.intValue ?? 0 > goal2.lasttouch?.intValue ?? 0
-                }
-                else if selectedGoalSort == Constants.pledgeGoalSortString {
-                    return goal1.pledge.intValue > goal2.pledge.intValue
-                }
-            }
-            return goal1.losedate.intValue < goal2.losedate.intValue
-        })
-        self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
     }
 
     override func didReceiveMemoryWarning() {
@@ -462,10 +492,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if (indexPath as NSIndexPath).row >= self.filteredGoals.count {
-            let cell:NewGoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.newGoalCellReuseIdentifier, for: indexPath) as! NewGoalCollectionViewCell
+            let cell:NewGoalCollectionViewCell = self.collectionView.dequeueReusableCell(withReuseIdentifier: self.newGoalCellReuseIdentifier, for: indexPath) as! NewGoalCollectionViewCell
             return cell
         }
-        let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
+        let cell:GoalCollectionViewCell = self.collectionView.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
         let goal:JSONGoal = self.filteredGoals[(indexPath as NSIndexPath).row]
         
