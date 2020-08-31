@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         IQKeyboardManager.shared().isEnableAutoToolbar = false
 
         if HKHealthStore.isHealthDataAvailable() {
-            HealthStoreManager.sharedManager.setupHealthkit()
+            HealthStoreManager.shared.setupHealthkit()
         }
 
         // start crash handler

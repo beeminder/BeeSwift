@@ -77,7 +77,7 @@ class ChooseHKMetricViewController: UIViewController {
     
     @objc func saveButtonPressed() {
         guard let selectedRow = self.tableView.indexPathForSelectedRow?.row else { return }
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         let metric = self.sortedHKMetrics[selectedRow]

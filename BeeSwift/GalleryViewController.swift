@@ -398,7 +398,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             if goal.hkPermissionType() != nil { permissions.insert(goal.hkPermissionType()!) }
         }
         guard permissions.count > 0 else { return }
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         
         healthStore.requestAuthorization(toShare: nil, read: permissions, completion: { (success, error) in
             self.goals.forEach { (goal) in goal.setupHealthKit() }
