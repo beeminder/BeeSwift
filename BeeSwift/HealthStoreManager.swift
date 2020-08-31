@@ -11,7 +11,7 @@ import HealthKit
 
 class HealthStoreManager :NSObject {
     
-    static let sharedManager = HealthStoreManager()
+    static let shared = HealthStoreManager()
     var healthStore : HKHealthStore?
     
     func setupHealthkit() {
