@@ -95,7 +95,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     
     func setThumbnailImage() {
         guard let _ = self.goal else { return }
-        if CurrentUserManager.sharedManager.isDeadbeat() {
+        if CurrentUserManager.shared.isDeadbeat() {
             self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
         } else {
             self.thumbnailImageView.af_setImage(withURL: URL(string: self.goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)

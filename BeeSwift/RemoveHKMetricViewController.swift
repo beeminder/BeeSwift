@@ -73,7 +73,7 @@ class RemoveHKMetricViewController: UIViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
             
             self.goal = JSONGoal(json: JSON(responseObject!))
 

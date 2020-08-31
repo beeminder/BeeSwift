@@ -90,7 +90,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !CurrentUserManager.sharedManager.isDeadbeat() {
+            if !CurrentUserManager.shared.isDeadbeat() {
                 make.height.equalTo(0)
             }
         }
@@ -205,7 +205,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         
-        if CurrentUserManager.sharedManager.signedIn() {
+        if CurrentUserManager.shared.signedIn() {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
                 if success {
@@ -218,7 +218,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !CurrentUserManager.sharedManager.signedIn() {
+        if !CurrentUserManager.shared.signedIn() {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
@@ -227,8 +227,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleGoalsFetchedNotification() {
-        self.goals = CurrentUserManager.sharedManager.goals
-        self.lastUpdated = CurrentUserManager.sharedManager.goalsFetchedAt
+        self.goals = CurrentUserManager.shared.goals
+        self.lastUpdated = CurrentUserManager.shared.goalsFetchedAt
         self.didFetchGoals()
     }
     
@@ -326,15 +326,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !CurrentUserManager.sharedManager.isDeadbeat() {
+            if !CurrentUserManager.shared.isDeadbeat() {
                 make.height.equalTo(0)
             }
         }
     }
     
     @objc func handleCreateGoalButtonPressed() {
-        guard let username = CurrentUserManager.sharedManager.username,
-            let access_token = CurrentUserManager.sharedManager.accessToken,
+        guard let username = CurrentUserManager.shared.username,
+            let access_token = CurrentUserManager.shared.accessToken,
             let createGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(access_token)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true") else { return }
         
         let safariVC = SFSafariViewController(url: createGoalUrl)
@@ -409,7 +409,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if self.goals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
+        CurrentUserManager.shared.fetchGoals(success: { (goals) in
             self.goals = goals
             self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
