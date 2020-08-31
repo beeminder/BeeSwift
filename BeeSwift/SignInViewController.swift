@@ -234,7 +234,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         }
 
         MBProgressHUD.showAdded(to: self.view, animated: true)
-        OAuthSignInManager.sharedManager.signUpWith(email: newEmail, password: newPassword, username: newUsername)
+        OAuthSignInManager.shared.signUpWith(email: newEmail, password: newPassword, username: newUsername)
     }
     
     @objc func chooseSignInButtonPressed() {
