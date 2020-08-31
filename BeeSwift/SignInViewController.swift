@@ -8,8 +8,9 @@
 
 import Foundation
 import MBProgressHUD
+import SafariServices
 
-class SignInViewController : UIViewController, UITextFieldDelegate {
+class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariViewControllerDelegate {
     
     var headerLabel = BSLabel()
     var emailTextField = BSTextField()
@@ -25,6 +26,22 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
     var backToSignUpButton = BSButton()
     var signInButton = BSButton()
     var divider = UIView()
+    let resetPasswordButton: BSButton = {
+        let button = BSButton()
+        button.setTitle("Reset your password", for: .normal)
+        button.titleLabel?.font = UIFont.beeminder.defaultFontHeavy
+        button.setTitleColor(.blue, for: .normal)
+        
+        if #available(iOS 13.0, *) {
+            button.backgroundColor = UIColor.systemBackground
+        } else {
+            button.backgroundColor = UIColor.white
+        }
+        
+        button.addTarget(self, action: #selector(SignInViewController.resetPasswordTapped), for: .touchUpInside)
+
+        return button
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -107,6 +124,15 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
             make.width.equalTo(self.emailTextField)
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }
+
+        scrollView.addSubview(self.resetPasswordButton)
+        self.resetPasswordButton.isHidden = true
+        self.resetPasswordButton.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.passwordTextField)
+            make.right.equalTo(self.passwordTextField)
+            make.top.equalTo(self.passwordTextField.snp.bottom).offset(15)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
+        }
         
         scrollView.addSubview(self.signInButton)
         self.signInButton.isHidden = true
@@ -118,7 +144,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         self.signInButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.passwordTextField)
             make.right.equalTo(self.passwordTextField)
-            make.top.equalTo(self.passwordTextField.snp.bottom).offset(15)
+            make.top.equalTo(self.resetPasswordButton.snp.bottom).offset(15)
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         
@@ -223,6 +249,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         self.headerLabel.isHidden = false
         self.signInButton.isHidden = false
         self.signUpButton.isHidden = true
+        self.resetPasswordButton.isHidden = false
         self.divider.snp.remakeConstraints { (make) -> Void in
             make.left.equalTo(self.signInButton)
             make.right.equalTo(self.signInButton)
@@ -248,6 +275,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         self.headerLabel.isHidden = false
         self.signInButton.isHidden = true
         self.signUpButton.isHidden = false
+        self.resetPasswordButton.isHidden = true
         self.divider.snp.remakeConstraints { (make) -> Void in
             make.left.equalTo(self.signUpButton)
             make.right.equalTo(self.signUpButton)
@@ -308,4 +336,19 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         return true
     }
     
+    @objc func resetPasswordTapped() {
+        let safariVC = SFSafariViewController(url: self.passwordResetUrl, entersReaderIfAvailable: true)
+        self.present(safariVC, animated: true, completion: nil)
+    }
+    
+    
+    var passwordResetUrl: URL {
+        return URL(string: "https://www.beeminder.com/users/password/new")!
+    }
+    
+    // MARK: - SFSafariViewControllerDelegate
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true, completion: nil)
+    }
 }
