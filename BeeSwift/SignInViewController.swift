@@ -28,9 +28,13 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     var divider = UIView()
     let resetPasswordButton: BSButton = {
         let button = BSButton()
-        button.setTitle("Reset your password", for: .normal)
+        button.setTitle("Forgot password?", for: .normal)
         button.titleLabel?.font = UIFont.beeminder.defaultFontHeavy
-        button.setTitleColor(.blue, for: .normal)
+        if #available(iOS 13.0, *) {
+            button.setTitleColor(UIColor.label, for: .normal)
+        } else {
+            button.setTitleColor(UIColor.beeminder.gray, for: .normal)
+        }
         
         if #available(iOS 13.0, *) {
             button.backgroundColor = UIColor.systemBackground
