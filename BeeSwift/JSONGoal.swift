@@ -401,7 +401,7 @@ class JSONGoal {
     }
     
     func setupActivitySummaryQuery() {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         guard let categoryType = self.hkCategoryTypeIdentifier() else { return }
         if categoryType != .appleStandHour { return }
         
@@ -472,7 +472,7 @@ class JSONGoal {
     }
     
     func setupHKStatisticsCollectionQuery() {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
         
@@ -530,7 +530,7 @@ class JSONGoal {
     }
     
     func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         
         let endDate = Date()
         let calendar = Calendar.current
@@ -664,7 +664,7 @@ class JSONGoal {
     }
     
     func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
         if self.hasRecentlyUpdatedHealthData() {
             success?()
@@ -750,7 +750,7 @@ class JSONGoal {
     }
     
     func setupHealthKit() {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
         
         healthStore.requestAuthorization(toShare: nil, read: [sampleType], completion: { (success, error) in
