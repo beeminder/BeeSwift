@@ -390,7 +390,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if (!CurrentUserManager.sharedManager.signedIn()) { return }
+        if (!CurrentUserManager.shared.signedIn()) { return }
         if keyPath == "graph_url" {
             self.setGraphImage()
         } else if keyPath == "delta_text" || keyPath == "safebump" || keyPath == "safesum" {
@@ -424,8 +424,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func actionButtonPressed() {
-        guard let username = CurrentUserManager.sharedManager.username,
-            let accessToken = CurrentUserManager.sharedManager.accessToken,
+        guard let username = CurrentUserManager.shared.username,
+            let accessToken = CurrentUserManager.shared.accessToken,
             let viewGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(RequestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
         
         let safariVC = SFSafariViewController(url: viewGoalUrl)
@@ -437,7 +437,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.scrollView.refreshControl?.endRefreshing()
         MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
         
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
             self.pollUntilGraphUpdates()
         }) { (error) in
             let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
@@ -456,7 +456,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setGraphImage() {
-        if CurrentUserManager.sharedManager.isDeadbeat() {
+        if CurrentUserManager.shared.isDeadbeat() {
             self.goalImageView.image = UIImage(named: "GraphPlaceholder")
         } else {
             self.goalImageView.af_setImage(withURL: URL(string: self.goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
@@ -548,12 +548,12 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
         let params = ["urtext": self.urtextFromTextFields(), "requestid": UUID().uuidString]
         
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (responseObject) in
+        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (responseObject) in
             self.commentTextField.text = ""
             self.refreshGoal()
             self.pollUntilGraphUpdates()
             self.submitButton.isUserInteractionEnabled = true
-            CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
+            CurrentUserManager.shared.fetchGoals(success: nil, error: nil)
         }) { (error) in
             self.submitButton.isUserInteractionEnabled = true
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
@@ -570,7 +570,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshGoal() {
-        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
+        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.shared.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
             self.goal = JSONGoal(json: JSON(responseObject!))
             self.datapointsTableView.reloadData()
             self.refreshCountdown()
@@ -634,8 +634,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             return cell
         }
         
-        let text = datapoint["canonical"].string
-        cell.datapointText = text
+            let text = datapoint["canonical"].string
+            cell.datapointText = text
         
         return cell
     }

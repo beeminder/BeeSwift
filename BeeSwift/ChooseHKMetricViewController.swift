@@ -103,7 +103,7 @@ class ChooseHKMetricViewController: UIViewController {
         var params : [String : [String : String]] = [:]
         params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
         
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
                 let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))

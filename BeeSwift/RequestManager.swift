@@ -32,7 +32,7 @@ class RequestManager {
                             print("Response content type: \(responseContentType) was unacceptable: \(acceptableContentTypes)")
                         case .unacceptableStatusCode(let code):
                             if code == 401 {
-                                CurrentUserManager.sharedManager.signOut()
+                                CurrentUserManager.shared.signOut()
                             }
                             print("Response status code was unacceptable: \(code)")
                         }
@@ -74,10 +74,10 @@ class RequestManager {
     
     
     class func authedParams(_ params: [String: Any]?) -> Parameters? {
-        if params == nil { return ["access_token" : CurrentUserManager.sharedManager.accessToken ?? ""] }
-        if CurrentUserManager.sharedManager.accessToken != nil {
+        if params == nil { return ["access_token" : CurrentUserManager.shared.accessToken ?? ""] }
+        if CurrentUserManager.shared.accessToken != nil {
             var localParams = params!
-            localParams["access_token"] = CurrentUserManager.sharedManager.accessToken!
+            localParams["access_token"] = CurrentUserManager.shared.accessToken!
             return localParams
         }
         return params

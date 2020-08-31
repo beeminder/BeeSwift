@@ -92,7 +92,7 @@ class ConfigureNotificationsViewController: UIViewController {
     }
     
     func fetchGoals() {
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
+        CurrentUserManager.shared.fetchGoals(success: { (goals) in
             self.goals = goals
             self.sortGoals()
             self.tableView.reloadData()
