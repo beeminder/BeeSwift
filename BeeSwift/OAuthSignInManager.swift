@@ -10,7 +10,7 @@ import Foundation
 import SwiftyJSON
 
 class OAuthSignInManager: NSObject {
-    static let sharedManager = OAuthSignInManager()
+    static let shared = OAuthSignInManager()
     
     func signUpWith(email: String, password: String, username: String) {
         SignedRequestManager.signedPOST(url: "/api/v1/users", parameters: ["email": email, "password": password, "username": username], success: { (responseObject) -> Void in
