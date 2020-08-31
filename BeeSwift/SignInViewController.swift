@@ -130,7 +130,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         self.backToSignUpButton.isHidden = true
         self.backToSignUpButton.setTitle("Back to Sign Up", for: .normal)
         self.backToSignUpButton.snp.makeConstraints { (make) in
-            make.top.equalTo(self.signInButton.snp.bottom).offset(15)
+            make.top.equalTo(divider.snp.bottom).offset(15)
             make.centerX.equalTo(scrollView)
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.width.equalTo(self.view).multipliedBy(0.75)
