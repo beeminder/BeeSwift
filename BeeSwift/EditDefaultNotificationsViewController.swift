@@ -12,9 +12,9 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     
     override init() {
         super.init()
-        self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
-        self.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-        self.deadline = CurrentUserManager.sharedManager.defaultDeadline()
+        self.leadTimeStepper.value = CurrentUserManager.shared.defaultLeadTime().doubleValue
+        self.alertstart = CurrentUserManager.shared.defaultAlertstart()
+        self.deadline = CurrentUserManager.shared.defaultDeadline()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -25,9 +25,9 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
         var userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
         guard let leadtime = userInfo["leadtime"] as? NSNumber else { return }
         let params = [ "default_leadtime" : leadtime ]
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.shared.username!).json", parameters: params,
             success: { (responseObject) -> Void in
-                CurrentUserManager.sharedManager.setDefaultLeadTime(leadtime)
+                CurrentUserManager.shared.setDefaultLeadTime(leadtime)
             }) { (error, errorMessage) -> Void in
                 // show alert
         }
@@ -42,9 +42,9 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
         if self.timePickerEditingMode == .alertstart {
             self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
             let params = ["default_alertstart" : self.midnightOffsetFromTimePickerView()]
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
+            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.shared.username!).json", parameters: params,
                 success: { (responseObject) -> Void in
-                    CurrentUserManager.sharedManager.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
+                    CurrentUserManager.shared.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
                 }) { (error, errorMessage) -> Void in
                     //foo
             }
@@ -52,9 +52,9 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
         if self.timePickerEditingMode == .deadline {
             self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
             let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
+            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.shared.username!).json", parameters: params,
                 success: { (responseObject) -> Void in
-                    CurrentUserManager.sharedManager.setDefaultDeadline(self.midnightOffsetFromTimePickerView())
+                    CurrentUserManager.shared.setDefaultDeadline(self.midnightOffsetFromTimePickerView())
                 }) { (error, errorMessage) -> Void in
                     //foo
             }

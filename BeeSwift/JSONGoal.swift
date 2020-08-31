@@ -583,7 +583,7 @@ class JSONGoal {
         
         let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
         
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (response) in
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (response) in
             let responseJSON = JSON(response)
             var datapoints = responseJSON.array!
             datapoints = datapoints.filter { (datapoint) -> Bool in
@@ -596,7 +596,7 @@ class JSONGoal {
             
             if datapoints.count == 0 {
                 let requestId = "\(daystamp)-\(self.minuteStamp())"
-                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
+                let params = ["access_token": CurrentUserManager.shared.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
                 self.postDatapoint(params: params, success: { (responseObject) in
                     success?()
                 }, failure: { (error, errorMessage) in
@@ -610,7 +610,7 @@ class JSONGoal {
                     if first {
                         let requestId = "\(daystamp)-\(self.minuteStamp())"
                         let params = [
-                            "access_token": CurrentUserManager.sharedManager.accessToken!,
+                            "access_token": CurrentUserManager.shared.accessToken!,
                             "value": "\(datapointValue)",
                             "comment": "Auto-updated via Apple Health",
                             "requestid": requestId
@@ -619,7 +619,7 @@ class JSONGoal {
                         if datapointValue == val { success?() }
                         else {
                             let datapointID = d["id"].string
-                            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
+                            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
                                 success?()
                             }, errorHandler: { (error, errorMessage) in
                                 errorCompletion?()
@@ -627,7 +627,7 @@ class JSONGoal {
                         }
                     } else {
                         let datapointID = d["id"].string
-                        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
+                        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
                             //
                         }) { (error, errorMessage) in
                             //
@@ -777,7 +777,7 @@ class JSONGoal {
     }
     
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
+        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
     }
 }
 
