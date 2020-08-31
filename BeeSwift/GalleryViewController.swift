@@ -175,10 +175,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.fetchGoals()
         
-        _ = try? VersionManager.sharedManager.appStoreVersion { (version, error) in
+        _ = try? VersionManager.shared.appStoreVersion { (version, error) in
             if let error = error {
                 print(error)
-            } else if let appStoreVersion = version, let currentVersion = VersionManager.sharedManager.currentVersion() {
+            } else if let appStoreVersion = version, let currentVersion = VersionManager.shared.currentVersion() {
                 if currentVersion < appStoreVersion {
                     DispatchQueue.main.sync {
                         self.outofdateView.snp.remakeConstraints { (make) -> Void in
@@ -192,7 +192,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         
-        VersionManager.sharedManager.checkIfUpdateRequired { (required, error) in
+        VersionManager.shared.checkIfUpdateRequired { (required, error) in
             if required && error == nil {
                 self.outofdateView.snp.remakeConstraints { (make) -> Void in
                     make.left.equalTo(0)
@@ -451,7 +451,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return VersionManager.sharedManager.updateRequired() ? 0 : self.filteredGoals.count + 1
+        return VersionManager.shared.updateRequired() ? 0 : self.filteredGoals.count + 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
