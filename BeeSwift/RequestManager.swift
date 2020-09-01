@@ -84,3 +84,10 @@ class RequestManager {
     }
 
 }
+
+// MARK: - Error types when interacting with the API
+
+/// Error types describing errors when interacting with the API
+public enum ApiError: Error {
+    case jsonDeserializationError
+}
