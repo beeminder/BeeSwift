@@ -587,17 +587,18 @@ class JSONGoal {
                     fatalError("*** Unable to create a quantity type ***")
                 }
 
-                var datapointValue : Double?
+                let value: Double? = {
+                    switch quantityType.aggregationStyle {
+                    case .cumulative:
+                        return statistics.sumQuantity()?.doubleValue(for: unit)
+                    case .discrete:
+                        return statistics.minimumQuantity()?.doubleValue(for: unit)
+                    default:
+                        return nil
+                    }
+                }()
                 
-                if quantityType.aggregationStyle == .cumulative {
-                    let quantity = statistics.sumQuantity()
-                    datapointValue = quantity?.doubleValue(for: unit)
-                } else if quantityType.aggregationStyle == .discrete {
-                    let quantity = statistics.minimumQuantity()
-                    datapointValue = quantity?.doubleValue(for: unit)
-                }
-                
-                guard datapointValue != nil else { return }
+                guard let datapointValue = value else { return }
                 
                 let startDate = statistics.startDate
                 let endDate = statistics.endDate
@@ -607,7 +608,7 @@ class JSONGoal {
                 let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
                 let daystamp = formatter.string(from: datapointDate)
                 
-                self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
+                self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
             })
         }
     }
