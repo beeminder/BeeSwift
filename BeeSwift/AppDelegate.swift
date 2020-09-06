@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         IQKeyboardManager.shared().isEnableAutoToolbar = false
 
         if HKHealthStore.isHealthDataAvailable() {
-            HealthStoreManager.sharedManager.setupHealthkit()
+            HealthStoreManager.shared.setupHealthkit()
         }
 
         // start crash handler
@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
+        CurrentUserManager.shared.fetchGoals(success: { (goals) in
             //
         }) { (error) in
             //
@@ -72,7 +72,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
+        CurrentUserManager.shared.fetchGoals(success: nil, error: nil)
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -83,7 +83,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     ///
     /// and for iOS 13 and over: https://developer.apple.com/documentation/backgroundtasks/bgapprefreshtask
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
+        CurrentUserManager.shared.fetchGoals(success: { (goals) in
             completionHandler(.newData)
         }) { (error) in
             completionHandler(.failed)
@@ -131,7 +131,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     @objc func updateBadgeCount() {
-        UIApplication.shared.applicationIconBadgeNumber = CurrentUserManager.sharedManager.goals.filter({ (goal: JSONGoal) -> Bool in
+        UIApplication.shared.applicationIconBadgeNumber = CurrentUserManager.shared.goals.filter({ (goal: JSONGoal) -> Bool in
             return goal.relativeLane.intValue < -1
         }).count
     }

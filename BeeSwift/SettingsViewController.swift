@@ -70,7 +70,7 @@ class SettingsViewController: UIViewController {
     }
     
     func signOutButtonPressed() {
-        CurrentUserManager.sharedManager.signOut()
+        CurrentUserManager.shared.signOut()
         self.navigationController?.popViewController(animated: true)
     }    
 }
@@ -121,7 +121,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             }
             cell.imageName = "Notifications"
         case 2:
-            cell.title = "Time zone: \(CurrentUserManager.sharedManager.timezone())"
+            cell.title = "Time zone: \(CurrentUserManager.shared.timezone())"
             cell.imageName = "Clock"
             cell.accessoryType = .none
         case 3:

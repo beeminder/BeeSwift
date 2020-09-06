@@ -11,6 +11,7 @@ target 'BeeSwift' do
 	pod "MBProgressHUD"
 	pod 'IQKeyboardManager'
 	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '5.2.0'
+	pod 'SwiftLint'
 end
 target 'BeeSwiftToday' do
 	pod 'Alamofire', '~> 4.9'
@@ -19,6 +20,7 @@ target 'BeeSwiftToday' do
 	pod "SwiftyJSON"
 	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '5.2.0'
 	pod "MBProgressHUD"	
+	pod 'SwiftLint'
 end
 target 'BeeSwiftTests' do
 	pod "Alamofire", '~> 4.9'

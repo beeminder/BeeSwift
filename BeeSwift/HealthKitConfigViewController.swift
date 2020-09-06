@@ -89,7 +89,7 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-        self.goals = CurrentUserManager.sharedManager.goals
+        self.goals = CurrentUserManager.shared.goals
         self.sortGoals()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricRemovedNotification(notification:)), name: NSNotification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: nil)
@@ -119,7 +119,7 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.refreshControl?.endRefreshing()
 
         MBProgressHUD.showAdded(to: self.view, animated: true)
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
+        CurrentUserManager.shared.fetchGoals(success: { (goals) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             self.goals = goals
             self.sortGoals()
