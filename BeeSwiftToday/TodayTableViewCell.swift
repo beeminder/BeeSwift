@@ -119,8 +119,11 @@ class TodayTableViewCell: UITableViewCell {
         hud.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
 
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let defaults = UserDefaults(suiteName: "group.beeminder.beeminder"),
+            let token = defaults.object(forKey: "accessToken") as? String else {
+            hud.hide(animated: true)
+            return
+        }
         
         // if the goal's deadline is after midnight, and it's after midnight,
         // but before the deadline,
@@ -171,8 +174,8 @@ class TodayTableViewCell: UITableViewCell {
         
         guard let slug = self.goalDictionary["slug"] as? String else { return }
         
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let defaults = UserDefaults(suiteName: "group.beeminder.beeminder"),
+            let token = defaults.object(forKey: "accessToken") as? String else { return }
 
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
         hud.mode = .customView
