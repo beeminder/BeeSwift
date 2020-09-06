@@ -116,7 +116,7 @@ class TodayTableViewCell: UITableViewCell {
     
     @objc func addDataButtonPressed() {
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
-        hud?.mode = .indeterminate
+        hud.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
 
         let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
@@ -177,10 +177,10 @@ class TodayTableViewCell: UITableViewCell {
             if (!goalJSON["queued"].bool!) {
                 self.pollTimer?.invalidate()
                 self.pollTimer = nil
-                let hud = MBProgressHUD.allHUDs(for: self).first as? MBProgressHUD
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
+                let hud = MBProgressHUD.showAdded(to: self, animated: true)
+                hud.mode = .customView
+                hud.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud.hide(animated: true, afterDelay: 2)
                 self.valueStepper.value = 0
                 self.valueLabel.text = "0"
                 self.addDataButton.isUserInteractionEnabled = true

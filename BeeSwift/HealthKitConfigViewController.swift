@@ -120,12 +120,12 @@ class HealthKitConfigViewController: UIViewController {
 
         MBProgressHUD.showAdded(to: self.view, animated: true)
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            MBProgressHUD.hide(for: self.view, animated: true)
             self.goals = goals
             self.sortGoals()
             self.tableView.reloadData()
         }) { (error) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            MBProgressHUD.hide(for: self.view, animated: true)
             if UIApplication.shared.applicationState == .active {
                 if let errorString = error?.localizedDescription {
                     let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
