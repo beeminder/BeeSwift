@@ -182,9 +182,9 @@ class TodayTableViewCell: UITableViewCell {
         hud.customView = UIImageView(image: UIImage(named: "checkmark"))
         
         let parameters = ["access_token": token]
-        RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters, success: { [weak hud] (responseObject) in
-            var goalJSON = JSON(responseObject!)
-            if (!goalJSON["queued"].bool!) {
+        RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters, success: { [weak hud] responseObject in
+            let goalJSON = JSON(responseObject!)
+            if (!goalJSON["queued"].boolValue) {
                 self.pollTimer?.invalidate()
                 self.pollTimer = nil
                 hud?.hide(animated: true, afterDelay: 2)
@@ -192,11 +192,10 @@ class TodayTableViewCell: UITableViewCell {
                 self.valueLabel.text = "0"
                 self.addDataButton.isUserInteractionEnabled = true
                 self.limitLabel.text = "\(slug): \(goalJSON["limsum"])"
-                let urlString = "\(goalJSON["thumb_url"])"
+                let urlString = goalJSON["thumb_url"].stringValue
                 self.setGraphImage(urlStr: urlString)
             }
-        }) { [weak hud] (responseError) in
-            //
+        }) { [weak hud] responseError in
             hud?.hide(animated: true, afterDelay: 2)
         }
     }
