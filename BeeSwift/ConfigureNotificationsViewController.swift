@@ -96,7 +96,7 @@ class ConfigureNotificationsViewController: UIViewController {
             self.goals = goals
             self.sortGoals()
             self.tableView.reloadData()
-        }) { (error) in
+        }, error: { (error) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             if UIApplication.shared.applicationState == .active {
                 if let errorString = error?.localizedDescription {
@@ -106,7 +106,7 @@ class ConfigureNotificationsViewController: UIViewController {
                 }
             }
             self.tableView.reloadData()
-        }
+        })
     }
 }
 

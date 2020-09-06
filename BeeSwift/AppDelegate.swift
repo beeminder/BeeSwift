@@ -50,9 +50,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             //
-        }) { (error) in
+        }, error: { (error) in
             //
-        }
+        })
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -85,9 +85,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             completionHandler(.newData)
-        }) { (error) in
+        }, error: { (error) in
             completionHandler(.failed)
-        }
+        })
     }
     
     

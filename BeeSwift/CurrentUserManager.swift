@@ -196,14 +196,30 @@ class CurrentUserManager : NSObject {
     
     // MARK: fetching goals
     
-    func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, error: ((_ error : Error?) -> ())?) {
+    var userUpdatedAtTimestampWhenGoalsLastFetched: TimeInterval = 0
+    
+    
+    /// fetch the user's goals
+    /// - Parameters:
+    ///   - success: callback in case of success
+    ///   - error: callback in case of error
+    ///   - userInvoked: true if the user invoked the request to fetch goals
+    func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, error: ((_ error : Error?) -> ())?, userInvoked: Bool = false) {
         guard let username = self.username else {
             success?([])
             return
         }
 
         self.fetchUser(success: { user in
-
+            let neverFetched = self.userUpdatedAtTimestampWhenGoalsLastFetched == 0
+            let newerGoalDataAvailable = user.updated_at > self.userUpdatedAtTimestampWhenGoalsLastFetched
+            let shouldFetchGoals: Bool = userInvoked || neverFetched || newerGoalDataAvailable
+            
+            guard shouldFetchGoals else {
+                success?(self.goals)
+                return
+            }
+            
             RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
                 guard let responseGoals = JSON(responseJSON!).array else { return }
                 var jGoals : [JSONGoal] = []
@@ -214,6 +230,7 @@ class CurrentUserManager : NSObject {
                 self.goals = jGoals
                 self.updateTodayWidget()
                 self.goalsFetchedAt = Date()
+                self.userUpdatedAtTimestampWhenGoalsLastFetched = user.updated_at
                 NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
                 success?(jGoals)
             }) { (responseError) in
