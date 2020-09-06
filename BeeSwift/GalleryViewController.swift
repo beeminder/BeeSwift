@@ -148,7 +148,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.collectionView?.refreshControl = {
             let refreshControl = UIRefreshControl()
-            refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
+            refreshControl.addTarget(self, action: #selector(self.userRequestedTableRefresh), for: UIControlEvents.valueChanged)
             return refreshControl
         }()
         
@@ -205,7 +205,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         
-        if CurrentUserManager.sharedManager.signedIn() {
+        if CurrentUserManager.sharedManager.isSignedIn {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
                 if success {
@@ -218,7 +218,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !CurrentUserManager.sharedManager.signedIn() {
+        if !CurrentUserManager.sharedManager.isSignedIn {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
@@ -405,7 +405,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         })
     }
     
-    @objc func fetchGoals() {
+    @objc func userRequestedTableRefresh() {
+        self.fetchGoals(userInitiated: true)
+    }
+    
+    func fetchGoals(userInitiated: Bool = false) {
         if self.goals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
@@ -413,7 +417,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.goals = goals
             self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
-        }) { (error) in
+        }, error: { (error) in
             if UIApplication.shared.applicationState == .active {
                 if let errorString = error?.localizedDescription {
                     let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
@@ -424,7 +428,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.collectionView?.refreshControl?.endRefreshing()
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             self.collectionView!.reloadData()
-        }
+        }, userInvoked: userInitiated)
     }
     
     func sortGoals() {
