@@ -175,13 +175,13 @@ class TimerViewController: UIViewController {
     @objc func addDatapointButtonPressed() {
         if self.slug == nil { return }
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
+        hud.mode = .indeterminate
         let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
         RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug!)/datapoints.json", parameters: params, success: { (responseObject) in
-            hud?.mode = .text
-            hud?.labelText = "Added!"
+            hud.mode = .text
+            hud.label.text = "Added!"
             DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
             })
             if let goalVC = self.presentingViewController?.childViewControllers.last as? GoalViewController {
                 goalVC.refreshGoal()
@@ -189,7 +189,7 @@ class TimerViewController: UIViewController {
             }
             self.resetButtonPressed()
         }) { (error) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            MBProgressHUD.hide(for: self.view, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
         }
         
