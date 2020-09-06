@@ -97,7 +97,7 @@ class ConfigureNotificationsViewController: UIViewController {
             self.sortGoals()
             self.tableView.reloadData()
         }) { (error) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            MBProgressHUD.hide(for: self.view, animated: true)
             if UIApplication.shared.applicationState == .active {
                 if let errorString = error?.localizedDescription {
                     let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
