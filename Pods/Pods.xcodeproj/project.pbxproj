@@ -83,7 +83,6 @@
 		2B3C65EB96B8237408B8CFC1586F406E /* IQKeyboardManagerConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 8DC78BB8847B9AF3983EE177D13FF70A /* IQKeyboardManagerConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B665693A2A11BB038EB64196C0312F7 /* SentryEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 7548C1D428DD3AA3CA5FD7FFC75F930F /* SentryEvent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		2BF6FBC0A64BF107C5D64C61F1397770 /* SwiftyJSON-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FD3C33FC58E634B580E8039D3A9DBFE5 /* SwiftyJSON-dummy.m */; };
-		2C568D4824B4DB3A642A05EAEE6F1587 /* MBProgressHUD.h in Headers */ = {isa = PBXBuildFile; fileRef = F0888F369E47A98EC6A1C8C791592418 /* MBProgressHUD.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2C5F1D7D906D50ED615AB1169282A8CA /* NSDate+SentryExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AC54F295706AB22B959C45A8FE15579 /* NSDate+SentryExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2C61B040BA6A9A7AE66C4D9BA26D5520 /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EFD6E6EC8AFD7613D3C865F26A90C38 /* SessionDelegate.swift */; };
 		2C9C2FEE5994C214DB877C159E63DE26 /* SentryCrashAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B400C11DD39146E65935F5EBDFD425 /* SentryCrashAdapter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -118,7 +117,6 @@
 		40AD629DC248DD9F8AE636A2DB0C5F95 /* IQToolbar.h in Headers */ = {isa = PBXBuildFile; fileRef = 1084CC0EFB9D8D8EFE3FF9FFEA27E744 /* IQToolbar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		413F00A4C07064BC1C9BA0AF1D46E35B /* SentryQueueableRequestManager.m in Sources */ = {isa = PBXBuildFile; fileRef = EC7D10F632A58A275FB573E8390674A2 /* SentryQueueableRequestManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		4153FE6A5FA375E819855DC569F90F91 /* IQUITextFieldView+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA97796F1750E91DC37D73719BA192D /* IQUITextFieldView+Additions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4228EA069538DD40CD3ABE26985BAB1B /* MBProgressHUD-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8D60DA4305771628582BE9C1935B4A90 /* MBProgressHUD-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4268E348E6D5E9037A640ADC8E065009 /* ConstraintMakerEditable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A53DC6846C762CAFBE74ACA83B966374 /* ConstraintMakerEditable.swift */; };
 		4316AFE9567C66D7E338F985AF2AE18C /* SentryCrashJSONCodecObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = B8968A82EC94E013DBB4FE6BC5E648C3 /* SentryCrashJSONCodecObjC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		464450D037D17ED5EE2322E180A6A9F5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50FB3EEA1EDEDD2AF0555955ACE493ED /* Foundation.framework */; };
@@ -144,7 +142,6 @@
 		5B33ED5C3232D20E12CE55AE0614704C /* SentryDsn.h in Headers */ = {isa = PBXBuildFile; fileRef = 4856935E37D41AD56B6F83DFCBEA25A3 /* SentryDsn.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5B49301DB474FFCE74CAD6BD0B2892A0 /* Pods-BeeSwiftTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 164B512BD4F4840A8FCA069FCAFD5472 /* Pods-BeeSwiftTests-dummy.m */; };
 		5C376607904258A10F4DDD6D42EFC491 /* ConstraintMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D332B12A587FFBBEEF82F6B760051E26 /* ConstraintMaker.swift */; };
-		5C544F957B64C1B5786FEBB198F37BCC /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AFBA683E66E0E4BFBED423EE65D22930 /* MBProgressHUD.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		5C64A5DB225CA49CDF462EA679C09E71 /* SentryCrashMachineContextWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5707DA248DCE1B07FE2ABCE8B6ACAA4 /* SentryCrashMachineContextWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5CB6B38AB6F0E37F8910BE3B658CBD59 /* IQPreviousNextView.h in Headers */ = {isa = PBXBuildFile; fileRef = E67B3DA81251CE7BCAB2A4BC25C4F8B5 /* IQPreviousNextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5DBFB9A0499F04CBE806486211A4ABD0 /* SnapKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B985CF46E2CCAE8F20B96A2568A13DD4 /* SnapKit-dummy.m */; };
@@ -157,6 +154,7 @@
 		6341A355EB48A18DC67112B2CF89316A /* SentryNSURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 893A301F8A9EF23999F475C28660E246 /* SentryNSURLRequest.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		64744C911253C3E01461FAD7C935C8D7 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE80198B799F3C94C457A8EDA3A08395 /* Result.swift */; };
 		64DB5C1DFF39A56CA9741650B829B3B9 /* SentrySdkInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 648FFEF8D7F2E12143B9BF222F4197BA /* SentrySdkInfo.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		64F46B6A8DBA885AF570A54A082D1BAA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D26A60DD4DDAEDF7C151571FE42DDE9F /* QuartzCore.framework */; };
 		65A0897D42EF7586B26C3BB521825812 /* SentryCrashC.h in Headers */ = {isa = PBXBuildFile; fileRef = E0C1D1AC866029013EEF55D7DC3A1E1E /* SentryCrashC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		65A161117DC1C41192916756704D99F8 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E14D2936CC11AAF938BE4101EC2C2160 /* Alamofire.framework */; };
 		65D8439C982D24FBCE8EB51B4E0CF32E /* NSString+SentryNSUIntegerValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DE647E442B47EEA63E88C17FD42916A /* NSString+SentryNSUIntegerValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -173,7 +171,6 @@
 		6D9B8A23F798AB3467A67BAA33488A42 /* Container+SentryDeepSearch.h in Headers */ = {isa = PBXBuildFile; fileRef = D2A68DFD8E59DDA4E59EFE4CA0243DBE /* Container+SentryDeepSearch.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6DE2CEB1A8494A0A81ACB142B5C5285C /* SentryEnvelope.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D295E744D1C88CC4E74A9AC107771CA /* SentryEnvelope.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6E2871D2E21D7FEB2A26C0296E786DD4 /* SentryFileContents.h in Headers */ = {isa = PBXBuildFile; fileRef = 80D6469DEC8E71638DE00D971AD0D446 /* SentryFileContents.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		6E36C785301064939F23C267568F9B29 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C62625AECA77A95B14259776C44CD4BE /* CoreGraphics.framework */; };
 		6F8E2FA778D62979991AAEC19B9EE9E9 /* IQUIView+IQKeyboardToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = D54CBC8EFE6202B6106D8A0B470C3277 /* IQUIView+IQKeyboardToolbar.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		6FD12ED497919D3244E9C5581EB98687 /* SentryTransportFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E883DD626AF153758DFF809F1E227B9 /* SentryTransportFactory.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		6FDC8E6382DEAC6022E7625E66F15A8E /* SentryCrashInstallation.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A343496EAFF4E7EB8A2D4F0E4EE1059 /* SentryCrashInstallation.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -204,6 +201,7 @@
 		7ED12926E82C9D1DE457504DA75B80A9 /* LayoutConstraintItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0925D4A2854E6A97465DD7FC856DCC10 /* LayoutConstraintItem.swift */; };
 		815CC655D47F39AB84798974D81CF43C /* SentryDefaultCurrentDateProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 398409E7406B808F159B499A8C4F23DF /* SentryDefaultCurrentDateProvider.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		81A7457A39476DD4FE90293AAD1F6F6C /* SentryCrashInstallationReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A83FC8080277818F3B79BCC37212CB /* SentryCrashInstallationReporter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		81B9E2F21B1EF9FE4E769103108DEA8A /* MBProgressHUD-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8D60DA4305771628582BE9C1935B4A90 /* MBProgressHUD-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		826BF7E9D9404CCAFA09C517DD2F94E1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50FB3EEA1EDEDD2AF0555955ACE493ED /* Foundation.framework */; };
 		83497A890B9CB920B1725BFCA09464F6 /* IQUIView+Hierarchy.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6BF46BAAE7BD1BC1F9DEFB5514DB71 /* IQUIView+Hierarchy.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		83956E20859CDBBE7BC38ABADE0170FB /* AFError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34843084DED9171F6C6FC361D9D7B612 /* AFError.swift */; };
@@ -233,7 +231,6 @@
 		9432185152350A4A90F6DD19C33AC057 /* Debugging.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ECE9CBCF57F8B9D3D2701625FA13AF /* Debugging.swift */; };
 		943CBC246693050F5446A6D70C7245A8 /* SentryCrashObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 12D6AB36410592D67400C49D23642DBA /* SentryCrashObjC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		95A59B7188C714AC0A8F8E4C8FBB9380 /* SentryCrashMonitor_Zombie.c in Sources */ = {isa = PBXBuildFile; fileRef = 92EDCF8AA33995A1BD0D180094717C29 /* SentryCrashMonitor_Zombie.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		95F63E693F9F4900BE8D25A2B20C17EF /* MBProgressHUD-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 415DA41113E8AFE81C6E98BDFF959DC9 /* MBProgressHUD-dummy.m */; };
 		96714F61DC1D50C4401B81593C8FCECC /* SentryCrashMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F221AFB10F5E11BEBDE4C5876304A58 /* SentryCrashMonitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		970E02C6A37B79D67941C72D513AF85E /* SentryCrashString.c in Sources */ = {isa = PBXBuildFile; fileRef = C5A5D53750BB4E96A12C5079A18BE02F /* SentryCrashString.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		98A929C8E9012AB167672714FFD2113C /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F420A84AAE9E410D83DBC08A123CE20 /* Request.swift */; };
@@ -266,6 +263,7 @@
 		A482F623A133B7E947C01456C779622A /* ConstraintPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4EF19890CDA3C451ACCD0403C733CA /* ConstraintPriority.swift */; };
 		A4C973A837BDBD03A415B515C46C64B8 /* SentryHttpTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = E622DFAFDAD3DDA5028EF9F3DE5F49DB /* SentryHttpTransport.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A5BB612B33D3C5FB1175AA276AF9BC21 /* SentryRateLimitCategoryMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 261CC98D9515A62D0214E0F17E73DA96 /* SentryRateLimitCategoryMapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A601994621C892656F60D1A1292A9565 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C62625AECA77A95B14259776C44CD4BE /* CoreGraphics.framework */; };
 		A8D75A3E653E2BAE1832E34614027BB8 /* Container+SentryDeepSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7F134345EB96BD5669F5EBDA18259 /* Container+SentryDeepSearch.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A9471039B8A91ECAF955568C12CB4537 /* SentrySystemEventsBreadcrumbs.m in Sources */ = {isa = PBXBuildFile; fileRef = D104465061FD88170C98BB0493B94D28 /* SentrySystemEventsBreadcrumbs.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A995C4CB88129960208C1D1D03F08AEB /* IQUIViewController+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = A862F80F6B1B2702324EE37FEF0F983A /* IQUIViewController+Additions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -309,6 +307,7 @@
 		CA0FAE669FAB7067D09F7007AD838E19 /* ConstraintItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A369F799424179732DEA7D73238C9682 /* ConstraintItem.swift */; };
 		CA1A522719F56F1FB8368A37A350430D /* IQKeyboardReturnKeyHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CB4E3307AD49F39526C822738D85E43E /* IQKeyboardReturnKeyHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CAA38E9007BB52F3A1FE533656B9CFDE /* SentryEnvelopeItemType.h in Headers */ = {isa = PBXBuildFile; fileRef = 130173A79C08C97CA028DE6A1566CD6B /* SentryEnvelopeItemType.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CB27A06C7EAFBFA04873E499B2030BA3 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AFBA683E66E0E4BFBED423EE65D22930 /* MBProgressHUD.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CC0EA5861C302FB11369E12E4BF3CA4C /* SentryHttpDateParser.h in Headers */ = {isa = PBXBuildFile; fileRef = BB485400CA4A937D87E4AF789B43BE89 /* SentryHttpDateParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CCC1944B5C608C9622F1F53691343604 /* SentryCrashDefaultMachineContextWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 280A7EB30F89C366834E195EBB66581B /* SentryCrashDefaultMachineContextWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CCC307DB9053CAD0DC5E3D6DD3B6B149 /* SentryRateLimits.h in Headers */ = {isa = PBXBuildFile; fileRef = 573FD57B64CA9973F15701F13D011A64 /* SentryRateLimits.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -317,6 +316,7 @@
 		CF2E3778463AF7F7B8935E07BB42A237 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50FB3EEA1EDEDD2AF0555955ACE493ED /* Foundation.framework */; };
 		D1B6FD3FBF24F5E7E792396A9C97CF15 /* SentryFileContents.m in Sources */ = {isa = PBXBuildFile; fileRef = CF8A3E86127C2A8A81464BA2D91DE63C /* SentryFileContents.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D2A2A0D045D2FFCBD84DCEBA0D408E36 /* SentryEnvelope.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAA89D5EA979943D7B126DB0CFE2CC7 /* SentryEnvelope.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D2E47E0488FA37A14E6CB2A8C402902A /* MBProgressHUD-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 415DA41113E8AFE81C6E98BDFF959DC9 /* MBProgressHUD-dummy.m */; };
 		D3128ED03F80CAF4612E4B4AA9F2EAC4 /* NSDate+SentryExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = 732E52CA02D225AF0990CBA4CAC321E8 /* NSDate+SentryExtras.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D3D8C379C6E4FB487E5ABD6800AD7B7E /* DispatchQueue+Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D94ED23B49B16580D36885D3AB5CEA3 /* DispatchQueue+Alamofire.swift */; };
 		D5A0CFEC492D2DFAC897D5F84D0CA101 /* SentryCrashReport.c in Sources */ = {isa = PBXBuildFile; fileRef = 2C169E3A59DC3215C59EAB0FB1F119EB /* SentryCrashReport.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -341,7 +341,6 @@
 		DDD7EBD4C5FE968184D2B419DF026B84 /* SentrySession.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C129D5F30AD8501D769CB2BE08D8303 /* SentrySession.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DEAF73BF7CBA0EED3602258D49BF3712 /* SentrySystemEventsBreadcrumbs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C87FE0DA227AE2F6750582F526BF851 /* SentrySystemEventsBreadcrumbs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DEC3E541DB551729EC407FA6566CEE54 /* ConstraintViewDSL.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5DB18044AC1A2CA87FE9C5196552CA /* ConstraintViewDSL.swift */; };
-		DF5D6DD808182199242573C3EEC1AD06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50FB3EEA1EDEDD2AF0555955ACE493ED /* Foundation.framework */; };
 		DF863D0778AF5610D798329AF8F1D41B /* SentryAutoSessionTrackingIntegration.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C945472487E78CF2D7FB4519A23DD2E /* SentryAutoSessionTrackingIntegration.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		DFCFFE2A32F2B64F227F5242776E65F3 /* Pods-BeeSwiftToday-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BF9378EF98060EAAB0FF306A9CD1B1F3 /* Pods-BeeSwiftToday-dummy.m */; };
 		E005FFF828D810F35612291AF837C494 /* SentryDebugMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EA06F60D6A8635BB3EAA6247EE8071C /* SentryDebugMeta.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -352,6 +351,7 @@
 		E85BBB972867783044ADCD772438150F /* ConstraintRelatableTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3332A24AB28E59D9CA63890B8A4E4D /* ConstraintRelatableTarget.swift */; };
 		E9249F064A6FAE14BBC8F4BD4B523A52 /* SentryAutoSessionTrackingIntegration.h in Headers */ = {isa = PBXBuildFile; fileRef = 425907089A8B85AE2B00DE0EC93DE529 /* SentryAutoSessionTrackingIntegration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E98C31E6AAFD10EF4FB8ADA460BEF764 /* SentryCrashReport.h in Headers */ = {isa = PBXBuildFile; fileRef = F3CA30CB3726E18E089073ED52B7B2DB /* SentryCrashReport.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EB2A4C29BE958CCB03B3FD9FAB927F1F /* MBProgressHUD.h in Headers */ = {isa = PBXBuildFile; fileRef = F0888F369E47A98EC6A1C8C791592418 /* MBProgressHUD.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EBA9579529EA5B50DE02F4364DF58F68 /* SentryCrashMach.h in Headers */ = {isa = PBXBuildFile; fileRef = AF4AA632ECD78690125A56C4A120BD7B /* SentryCrashMach.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EBC63B97363717B324A4AD221CAE4F95 /* SentryCrashStackCursor_SelfThread.h in Headers */ = {isa = PBXBuildFile; fileRef = EF243848DF170363738361AF041ED4D8 /* SentryCrashStackCursor_SelfThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EBE954F84CCE43690C2B6647A3F68FB4 /* NSData+SentryCompression.h in Headers */ = {isa = PBXBuildFile; fileRef = 900062D644DFBEA7AB13521AB5853B7B /* NSData+SentryCompression.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -387,6 +387,7 @@
 		FC640DCCC636ACE960B80A6469F93335 /* SentryException.h in Headers */ = {isa = PBXBuildFile; fileRef = BDDC4F0F35BE1149AB0801E950C152DA /* SentryException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FEA0C3871432D6CAB5EC6A18E9A99D91 /* SentryCrashDefaultBinaryImageProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AA35812CD87FBAFE61528C80F1FD2F7 /* SentryCrashDefaultBinaryImageProvider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FF0E3F8B3FB568ACBB1BC433D67ED093 /* ConstraintMakerExtendable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F863AAC994C14FFE9426258ABCB8D4 /* ConstraintMakerExtendable.swift */; };
+		FF0EE7E6F869E55DA268F25622674EB9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50FB3EEA1EDEDD2AF0555955ACE493ED /* Foundation.framework */; };
 		FF5E3816B79B00BB96053097F22DAA2F /* SentryCrashMonitor_System.h in Headers */ = {isa = PBXBuildFile; fileRef = 32B569EF553FC9736028136FEC15C801 /* SentryCrashMonitor_System.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FF968A27674E5A786C8728DB03B9C23E /* SentryCrashExceptionApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = F0CB184DF41B3C2AADD6F552488B9135 /* SentryCrashExceptionApplication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FFE7A02118B5288BC94F7422D6CFEB3F /* ConstraintLayoutGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFBE5A01014A79A8165AA6F8927CC64 /* ConstraintLayoutGuide.swift */; };
@@ -1005,6 +1006,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1AA3C16B4B3AB40CA74BDDADEF5C143A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A601994621C892656F60D1A1292A9565 /* CoreGraphics.framework in Frameworks */,
+				FF0EE7E6F869E55DA268F25622674EB9 /* Foundation.framework in Frameworks */,
+				64F46B6A8DBA885AF570A54A082D1BAA /* QuartzCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		25BFBD2A3337B7E0758439AA65167CE9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1046,15 +1057,6 @@
 			files = (
 				65A161117DC1C41192916756704D99F8 /* Alamofire.framework in Frameworks */,
 				2D59A856EA1200F7CB8F97466F71D9E9 /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A76F3841CE069595D76892819F591F6C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				6E36C785301064939F23C267568F9B29 /* CoreGraphics.framework in Frameworks */,
-				DF5D6DD808182199242573C3EEC1AD06 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1965,20 +1967,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8F0EBAB2761523F18BB73EB4DC5CBEC3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81B9E2F21B1EF9FE4E769103108DEA8A /* MBProgressHUD-umbrella.h in Headers */,
+				EB2A4C29BE958CCB03B3FD9FAB927F1F /* MBProgressHUD.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		904F16B6D04CA4E9101672EEDE1E9F01 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				0876E17D41D87092799F1A77AFE4BC46 /* AlamofireNetworkActivityIndicator-umbrella.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A0672E4B8E30EA2B9E824D729824FFFC /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4228EA069538DD40CD3ABE26985BAB1B /* MBProgressHUD-umbrella.h in Headers */,
-				2C568D4824B4DB3A642A05EAEE6F1587 /* MBProgressHUD.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2045,12 +2047,12 @@
 		};
 		82B0A41D3031FF27D78E17B0A9A46FB0 /* MBProgressHUD */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 89D45252971E089433B1166F8845E03D /* Build configuration list for PBXNativeTarget "MBProgressHUD" */;
+			buildConfigurationList = 70191416B9573C7ABB42333A08FA2DE4 /* Build configuration list for PBXNativeTarget "MBProgressHUD" */;
 			buildPhases = (
-				A0672E4B8E30EA2B9E824D729824FFFC /* Headers */,
-				1AC789491EB84CC776E585E2DA053892 /* Sources */,
-				A76F3841CE069595D76892819F591F6C /* Frameworks */,
-				0BD01ACB64DC0F80B80B9D4FD04DF4E3 /* Resources */,
+				8F0EBAB2761523F18BB73EB4DC5CBEC3 /* Headers */,
+				A139D4C63A1E1EDD89903B9B6D93A3AC /* Sources */,
+				1AA3C16B4B3AB40CA74BDDADEF5C143A /* Frameworks */,
+				435BF4D16B2F9CAB6E7F883F30E32B74 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -2258,13 +2260,6 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		0BD01ACB64DC0F80B80B9D4FD04DF4E3 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		1BBCAA36277BF4877B19328CB2D58AB9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2287,6 +2282,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		338BBB964CADA76EE4FC5900CA0E2F82 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		435BF4D16B2F9CAB6E7F883F30E32B74 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2361,15 +2363,6 @@
 			files = (
 				2BF6FBC0A64BF107C5D64C61F1397770 /* SwiftyJSON-dummy.m in Sources */,
 				7B4CE5C84161E2BFE477F42DFD634382 /* SwiftyJSON.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1AC789491EB84CC776E585E2DA053892 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				95F63E693F9F4900BE8D25A2B20C17EF /* MBProgressHUD-dummy.m in Sources */,
-				5C544F957B64C1B5786FEBB198F37BCC /* MBProgressHUD.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2454,6 +2447,15 @@
 				5DBFB9A0499F04CBE806486211A4ABD0 /* SnapKit-dummy.m in Sources */,
 				0D7A7F3919AE48736753181756DE8AE8 /* Typealiases.swift in Sources */,
 				98AE4E2F24A858A47B5A1B405CEAD8FD /* UILayoutSupport+Extensions.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A139D4C63A1E1EDD89903B9B6D93A3AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2E47E0488FA37A14E6CB2A8C402902A /* MBProgressHUD-dummy.m in Sources */,
+				CB27A06C7EAFBFA04873E499B2030BA3 /* MBProgressHUD.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2812,6 +2814,37 @@
 			};
 			name = Release;
 		};
+		0D85C49A05BEA8CEDD3EF5F3999210C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 83CADCD41F748C5A06723CB6DAC09AED /* MBProgressHUD.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/MBProgressHUD/MBProgressHUD-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/MBProgressHUD/MBProgressHUD-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/MBProgressHUD/MBProgressHUD.modulemap";
+				PRODUCT_MODULE_NAME = MBProgressHUD;
+				PRODUCT_NAME = MBProgressHUD;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
 		0F7F2617CB9213807F3580F9D0E29112 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C4B217F8B887E2C64FA94EA565B06A6A /* Alamofire.release.xcconfig */;
@@ -2929,37 +2962,6 @@
 				MODULEMAP_FILE = "Target Support Files/AlamofireNetworkActivityIndicator/AlamofireNetworkActivityIndicator.modulemap";
 				PRODUCT_MODULE_NAME = AlamofireNetworkActivityIndicator;
 				PRODUCT_NAME = AlamofireNetworkActivityIndicator;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		2CACBC2AA4824214AE23C5FC6E575B8E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 83CADCD41F748C5A06723CB6DAC09AED /* MBProgressHUD.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/MBProgressHUD/MBProgressHUD-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/MBProgressHUD/MBProgressHUD-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/MBProgressHUD/MBProgressHUD.modulemap";
-				PRODUCT_MODULE_NAME = MBProgressHUD;
-				PRODUCT_NAME = MBProgressHUD;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
@@ -3237,6 +3239,38 @@
 			};
 			name = Debug;
 		};
+		836A2BDF603CF2F5A87DC860AE4846F9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EA0B16003B90691294A5B147E6753885 /* MBProgressHUD.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/MBProgressHUD/MBProgressHUD-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/MBProgressHUD/MBProgressHUD-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/MBProgressHUD/MBProgressHUD.modulemap";
+				PRODUCT_MODULE_NAME = MBProgressHUD;
+				PRODUCT_NAME = MBProgressHUD;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		890184F376870E1BB794A94A65014D1B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C2DC1C823C260AB3898198DCF9A762AD /* Pods-BeeSwiftTests.debug.xcconfig */;
@@ -3459,38 +3493,6 @@
 			};
 			name = Release;
 		};
-		D4354FC6061976F1D9CA7DA6B6D289AF /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = EA0B16003B90691294A5B147E6753885 /* MBProgressHUD.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/MBProgressHUD/MBProgressHUD-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/MBProgressHUD/MBProgressHUD-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/MBProgressHUD/MBProgressHUD.modulemap";
-				PRODUCT_MODULE_NAME = MBProgressHUD;
-				PRODUCT_NAME = MBProgressHUD;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
 		DCF2A675300A39FB75EF2148FDA80268 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BD8FE663A86896FC581E63787D2D3D6D /* IQKeyboardManager.release.xcconfig */;
@@ -3638,11 +3640,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		89D45252971E089433B1166F8845E03D /* Build configuration list for PBXNativeTarget "MBProgressHUD" */ = {
+		70191416B9573C7ABB42333A08FA2DE4 /* Build configuration list for PBXNativeTarget "MBProgressHUD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2CACBC2AA4824214AE23C5FC6E575B8E /* Debug */,
-				D4354FC6061976F1D9CA7DA6B6D289AF /* Release */,
+				0D85C49A05BEA8CEDD3EF5F3999210C0 /* Debug */,
+				836A2BDF603CF2F5A87DC860AE4846F9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
