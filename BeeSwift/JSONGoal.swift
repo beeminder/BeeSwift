@@ -168,7 +168,7 @@ class JSONGoal {
     }
     
     var countdownColor :UIColor {
-        guard let buf = self.safebuf?.intValue else { return UIColor.beeminder.gray }
+        guard let buf = self.safebuf?.intValue else { return UIColor.Beeminder.gray }
         if buf < 1 {
             return UIColor.red
         }
@@ -178,7 +178,7 @@ class JSONGoal {
         else if buf < 3 {
             return UIColor.blue
         }
-        return UIColor.beeminder.green
+        return UIColor.Beeminder.green
     }
     
     var relativeLane : NSNumber {
@@ -243,7 +243,7 @@ class JSONGoal {
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
-                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeminder.green, range: NSRange(location: 0, length: attString.string.count))
+                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.Beeminder.green, range: NSRange(location: 0, length: attString.string.count))
                 return attString
             }
             return NSMutableAttributedString(string: "")
@@ -283,7 +283,7 @@ class JSONGoal {
     }
     
     var deltaColorsWhenBelowIsGoodSide: [UIColor] {
-        return [UIColor.beeminder.green, UIColor.blue, UIColor.orange]
+        return [UIColor.Beeminder.green, UIColor.blue, UIColor.orange]
     }
     
     var deltaColorsWhenAboveIsGoodSide: [UIColor] {
