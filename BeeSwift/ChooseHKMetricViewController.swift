@@ -79,7 +79,7 @@ class ChooseHKMetricViewController: UIViewController {
         guard let selectedRow = self.tableView.indexPathForSelectedRow?.row else { return }
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
+        hud.mode = .indeterminate
         let metric = self.sortedHKMetrics[selectedRow]
         if metric.hkIdentifier != nil {
             let metricType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
@@ -104,17 +104,17 @@ class ChooseHKMetricViewController: UIViewController {
         params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
         
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
-                let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+                let hud = MBProgressHUD.forView(self.view)
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
+                hud?.hide(animated: true, afterDelay: 2)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.navigationController?.popViewController(animated: true)
                 }
         }) { (responseError) -> Void in
             self.tableView.reloadData()
             if let errorString = responseError?.localizedDescription {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
                 let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)

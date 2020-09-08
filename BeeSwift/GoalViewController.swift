@@ -375,16 +375,16 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let daysBackToSync = previouslySeenSyncDayAmount.contains(numDays) ? numDays : 1
         
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
+        hud.mode = .indeterminate
         self.goal.hkQueryForLast(days: daysBackToSync, success: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
+                hud.mode = .customView
+                hud.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud.hide(animated: true, afterDelay: 2)
             })
         }) {
             DispatchQueue.main.async {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
             }
         }
     }
@@ -435,11 +435,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @objc func refreshButtonPressed() {
         self.scrollView.refreshControl?.endRefreshing()
-        MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hud.mode = .indeterminate
         
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { [weak hud] (responseObject) in
+            hud?.hide(animated: true)
             self.pollUntilGraphUpdates()
-        }) { (error) in
+        }) { [weak hud] (error) in
+            hud?.hide(animated: true)
             let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
@@ -543,20 +546,21 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     @objc func submitDatapoint() {
         self.view.endEditing(true)
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
+        hud.mode = .indeterminate
         self.submitButton.isUserInteractionEnabled = false
         self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
         let params = ["urtext": self.urtextFromTextFields(), "requestid": UUID().uuidString]
         
         RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (responseObject) in
             self.commentTextField.text = ""
+            hud.hide(animated: true)
             self.refreshGoal()
             self.pollUntilGraphUpdates()
             self.submitButton.isUserInteractionEnabled = true
             CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
         }) { (error) in
             self.submitButton.isUserInteractionEnabled = true
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            hud.hide(animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
         }
     }
@@ -564,8 +568,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func pollUntilGraphUpdates() {
         if self.pollTimer != nil { return }
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
-        hud?.show(true)
+        hud.mode = .indeterminate
+        hud.show(animated: true)
         self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.refreshGoal), userInfo: nil, repeats: true)
     }
     
@@ -577,9 +581,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.setValueTextField()
             self.valueTextFieldValueChanged()
             self.deltasLabel.attributedText = self.goal!.attributedDeltaText
+            
             if (!self.goal.queued!) {
                 self.setGraphImage()
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
                 self.pollTimer?.invalidate()
                 self.pollTimer = nil
             }

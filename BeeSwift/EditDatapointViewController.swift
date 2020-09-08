@@ -186,18 +186,18 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     @objc func updateButtonPressed() {
         self.view.endEditing(true)
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
+        hud.mode = .indeterminate
         let params = [
             "access_token": CurrentUserManager.sharedManager.accessToken!,
             "urtext": self.urtext()
         ]
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
-            let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+            let hud = MBProgressHUD.forView(self.view)
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-            hud?.hide(true, afterDelay: 2)
+            hud?.hide(animated: true, afterDelay: 2)
         }) { (error) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            MBProgressHUD.hide(for: self.view, animated: true)
             // alert
         }
     }
@@ -207,12 +207,12 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             "access_token": CurrentUserManager.sharedManager.accessToken!
         ]
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
+        hud.mode = .indeterminate
         RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
-            let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+            let hud = MBProgressHUD.forView(self.view)
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-            hud?.hide(true, afterDelay: 2)
+            hud?.hide(animated: true, afterDelay: 2)
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 self.navigationController?.popViewController(animated: true)
             }

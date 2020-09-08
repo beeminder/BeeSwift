@@ -116,11 +116,14 @@ class TodayTableViewCell: UITableViewCell {
     
     @objc func addDataButtonPressed() {
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
-        hud?.mode = .indeterminate
+        hud.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
 
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let defaults = UserDefaults(suiteName: "group.beeminder.beeminder"),
+            let token = defaults.object(forKey: "accessToken") as? String else {
+            hud.hide(animated: true)
+            return
+        }
         
         // if the goal's deadline is after midnight, and it's after midnight,
         // but before the deadline,
@@ -167,29 +170,33 @@ class TodayTableViewCell: UITableViewCell {
     }
     
     @objc func refreshGoal() {
+        MBProgressHUD.forView(self)?.hide(animated: true)
+        
         guard let slug = self.goalDictionary["slug"] as? String else { return }
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
+        
+        guard let defaults = UserDefaults(suiteName: "group.beeminder.beeminder"),
+            let token = defaults.object(forKey: "accessToken") as? String else { return }
+
+        let hud = MBProgressHUD.showAdded(to: self, animated: true)
+        hud.mode = .customView
+        hud.customView = UIImageView(image: UIImage(named: "checkmark"))
         
         let parameters = ["access_token": token]
-        RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters, success: { (responseObject) in
-            var goalJSON = JSON(responseObject!)
-            if (!goalJSON["queued"].bool!) {
+        RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters, success: { [weak hud] responseObject in
+            let goalJSON = JSON(responseObject!)
+            if (!goalJSON["queued"].boolValue) {
                 self.pollTimer?.invalidate()
                 self.pollTimer = nil
-                let hud = MBProgressHUD.allHUDs(for: self).first as? MBProgressHUD
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
+                hud?.hide(animated: true, afterDelay: 2)
                 self.valueStepper.value = 0
                 self.valueLabel.text = "0"
                 self.addDataButton.isUserInteractionEnabled = true
                 self.limitLabel.text = "\(slug): \(goalJSON["limsum"])"
-                let urlString = "\(goalJSON["thumb_url"])"
+                let urlString = goalJSON["thumb_url"].stringValue
                 self.setGraphImage(urlStr: urlString)
             }
-        }) { (responseError) in
-            //
+        }) { [weak hud] responseError in
+            hud?.hide(animated: true, afterDelay: 2)
         }
     }
     
