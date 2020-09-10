@@ -17,7 +17,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     var goal : JSONGoal!
     
     fileprivate var cellIdentifier = "datapointCell"
-    fileprivate var goalImageView = UIImageView()
+    var goalImageView = UIImageView()
     fileprivate var dateTextField = UITextField()
     fileprivate var valueTextField = UITextField()
     fileprivate var commentTextField = UITextField()
@@ -34,6 +34,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     fileprivate let headerWidth = Double(1.0/3.0)
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
         if #available(iOS 13.0, *) {
             self.view.backgroundColor = UIColor.systemBackground
         } else {
@@ -116,8 +118,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.left.equalTo(self.goalImageScrollView)
             make.right.equalTo(self.goalImageScrollView)
         }
-        self.goalImageView.image = UIImage(named: "GraphPlaceholder")
-
         
         self.scrollView.addSubview(self.deltasLabel)
         self.deltasLabel.snp.makeConstraints { (make) in
@@ -390,7 +390,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if (!CurrentUserManager.sharedManager.signedIn()) { return }
+        if (!CurrentUserManager.sharedManager.isSignedIn) { return }
         if keyPath == "graph_url" {
             self.setGraphImage()
         } else if keyPath == "delta_text" || keyPath == "safebump" || keyPath == "safesum" {
@@ -456,11 +456,16 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setGraphImage() {
-        if CurrentUserManager.sharedManager.isDeadbeat() {
+        guard !CurrentUserManager.sharedManager.isDeadbeat() else {
             self.goalImageView.image = UIImage(named: "GraphPlaceholder")
-        } else {
-            self.goalImageView.af_setImage(withURL: URL(string: self.goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
+            return
         }
+        
+        // galleryVC set this image (either right away from the cache or downloading it then adding it to the cache)
+        // if the goal is refreshed on this goalVC - and the urls have changed (cache busting urls), then as is
+        // this new version is not in the cache gallery knows of ... (but will be upon returning to the gallery - because gallery fetches everything again)
+        guard self.goalImageView.image == UIImage(named: "GraphPlaceholder") else { return }
+        self.goalImageView.af_setImage(withURL: URL(string: self.goal.cacheBustingGraphUrl)!, placeholderImage: self.goalImageView.image, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
     }
     
     @objc func goalImageTapped() {
@@ -557,7 +562,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }) { (error) in
             self.submitButton.isUserInteractionEnabled = true
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
+            self.present(self.failedToAddDatapointAlert, animated: true, completion: nil)
         }
     }
     
@@ -570,14 +575,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshGoal() {
-        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
-            self.goal = JSONGoal(json: JSON(responseObject!))
+        CurrentUserManager.sharedManager.fetchGoal(self.goal.slug, success: { jsonGoal in
+            self.goal = jsonGoal
             self.datapointsTableView.reloadData()
             self.refreshCountdown()
             self.setValueTextField()
             self.valueTextFieldValueChanged()
             self.deltasLabel.attributedText = self.goal!.attributedDeltaText
-            if (!self.goal.queued!) {
+            if (!(jsonGoal.queued ?? false)) {
                 self.setGraphImage()
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 self.pollTimer?.invalidate()
@@ -644,5 +649,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
+    }
+}
+
+
+extension GoalViewController {
+    var failedToAddDatapointAlert: UIAlertController {
+        let alert = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        return alert
     }
 }

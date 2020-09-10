@@ -12,6 +12,8 @@ import MBProgressHUD
 import SwiftyJSON
 import HealthKit
 import SafariServices
+import Alamofire
+import AlamofireImage
 
 
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {    
@@ -31,9 +33,17 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     var goals : Array<JSONGoal> = []
     var filteredGoals : Array<JSONGoal> = []
-    
+       
+    let imageCache = AutoPurgingImageCache(memoryCapacity: 128_000_000, preferredMemoryUsageAfterPurge: 90_000_000)
+    var imageDownloader: ImageDownloader!
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.imageDownloader = ImageDownloader(configuration: ImageDownloader.defaultURLSessionConfiguration(),
+                                               downloadPrioritization: .fifo,
+                                               maximumActiveDownloads: 4,
+                                               imageCache: self.imageCache)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
@@ -148,7 +158,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.collectionView?.refreshControl = {
             let refreshControl = UIRefreshControl()
-            refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
+            refreshControl.addTarget(self, action: #selector(self.userRequestedTableRefresh), for: UIControlEvents.valueChanged)
             return refreshControl
         }()
         
@@ -205,7 +215,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         
-        if CurrentUserManager.sharedManager.signedIn() {
+        if CurrentUserManager.sharedManager.isSignedIn {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
                 if success {
@@ -215,10 +225,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 }
             }
         }
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !CurrentUserManager.sharedManager.signedIn() {
+        if !CurrentUserManager.sharedManager.isSignedIn {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
@@ -373,6 +384,21 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func didFetchGoals() {
+        let thumbs = self.goals.map{ $0.cacheBustingThumbUrl }
+        let graphs = self.goals.map{ $0.cacheBustingGraphUrl }
+        let imageUrlStrings = thumbs + graphs
+        let imageUrls = imageUrlStrings.compactMap { URL(string: $0) }
+            
+        imageUrls.forEach { url in
+            guard self.imageCache.image(withIdentifier: url.absoluteString) == nil else { return }
+            Alamofire.request(url).responseImage { response in
+                guard let data = response.data, let image = UIImage(data: data, scale: 1.0) else { return }
+                
+                self.imageCache.add(image, withIdentifier: url.absoluteString)
+            }
+        }
+        
+        
         self.sortGoals()
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
@@ -405,7 +431,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         })
     }
     
-    @objc func fetchGoals() {
+    @objc func userRequestedTableRefresh() {
+        self.fetchGoals(userInitiated: true)
+    }
+    
+    func fetchGoals(userInitiated: Bool = false) {
         if self.goals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
@@ -413,7 +443,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.goals = goals
             self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
-        }) { (error) in
+        }, error: { (error) in
             if UIApplication.shared.applicationState == .active {
                 if let errorString = error?.localizedDescription {
                     let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
@@ -424,7 +454,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.collectionView?.refreshControl?.endRefreshing()
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             self.collectionView!.reloadData()
-        }
+        }, userInvoked: userInitiated)
     }
     
     func sortGoals() {
@@ -447,7 +477,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        self.imageCache.removeAllImages()
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -469,9 +499,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let goal:JSONGoal = self.filteredGoals[(indexPath as NSIndexPath).row]
-        
+        let goal = self.filteredGoals[(indexPath as NSIndexPath).row]
         cell.goal = goal
+        if let thumb = self.imageCache.image(withIdentifier: goal.cacheBustingThumbUrl) {
+            cell.thumbnailImageView.image = thumb
+        } else {
+            cell.thumbnailImageView.af_setImage(withURL: URL(string: goal.cacheBustingThumbUrl)!, placeholderImage: nil,progressQueue: DispatchQueue.global(qos: .background), imageTransition: .noTransition, runImageTransitionIfCached: false) { response  in
+                guard let data = response.data, let image = UIImage(data: data, scale: 1.0) else { return }
+                self.imageCache.add(image, withIdentifier: goal.cacheBustingThumbUrl)
+            }
+        }
         
         return cell
     }
@@ -486,19 +523,33 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func openGoalFromNotification(_ notification: Notification) {
-        let slug = (notification as NSNotification).userInfo!["slug"] as! String
-        let matchingGoal = self.goals.filter({ (goal) -> Bool in
-            return goal.slug == slug
-        }).last
-        if matchingGoal != nil {
-            self.navigationController?.popToRootViewController(animated: false)
-            self.openGoal(matchingGoal!)
+        self.navigationController?.popToRootViewController(animated: false)
+
+        guard let slug = notification.userInfo?["slug"] as? String,
+            let matchingGoal = self.goals.last(where: { $0.slug == slug }) else {
+                
+                let alert = UIAlertController(title: "Goal not found", message: "no goal matching notification's goal was found", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            return
         }
+
+        self.openGoal(matchingGoal)
     }
     
     func openGoal(_ goal: JSONGoal) {
         let goalViewController = GoalViewController()
         goalViewController.goal = goal
+        
+        if let graph = self.imageCache.image(withIdentifier: goal.cacheBustingGraphUrl) {
+            goalViewController.goalImageView.image = graph
+        } else {
+            goalViewController.goalImageView.af_setImage(withURL: URL(string: goal.cacheBustingGraphUrl)!, placeholderImage: nil,progressQueue: DispatchQueue.global(qos: .background), imageTransition: .noTransition, runImageTransitionIfCached: false) { response  in
+                guard let data = response.data, let image = UIImage(data: data, scale: 1.0) else { return }
+                self.imageCache.add(image, withIdentifier: goal.cacheBustingGraphUrl)
+            }
+        }
+        
         self.navigationController?.pushViewController(goalViewController, animated: true)
     }
     
