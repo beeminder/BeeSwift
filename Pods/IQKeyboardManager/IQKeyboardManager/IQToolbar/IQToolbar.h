@@ -1,5 +1,5 @@
 //
-//  IQToolbar.h
+// IQToolbar.h
 // https://github.com/hackiftekhar/IQKeyboardManager
 // Copyright (c) 2013-16 Iftekhar Qurashi.
 //
@@ -21,7 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#import "IQTitleBarButtonItem.h"
+
 #import <UIKit/UIToolbar.h>
+#import <UIKit/UIDevice.h>
 
 /**
  IQToolbar for IQKeyboardManager.
@@ -29,14 +32,29 @@
 @interface IQToolbar : UIToolbar <UIInputViewAudioFeedback>
 
 /**
- Title font for toolbar.
+ Previous bar button of toolbar.
  */
-@property(nullable, nonatomic, strong) UIFont *titleFont;
+@property(nonnull, nonatomic, strong) IQBarButtonItem *previousBarButton;
 
 /**
- Toolbar title
+ Next bar button of toolbar.
  */
-@property(nullable, nonatomic, strong) NSString *title;
+@property(nonnull, nonatomic, strong) IQBarButtonItem *nextBarButton;
+
+/**
+ Title bar button of toolbar.
+ */
+@property(nonnull, nonatomic, strong, readonly) IQTitleBarButtonItem *titleBarButton;
+
+/**
+ Done bar button of toolbar.
+ */
+@property(nonnull, nonatomic, strong) IQBarButtonItem *doneBarButton;
+
+/**
+ Fixed space bar button of toolbar.
+ */
+@property(nonnull, nonatomic, strong) IQBarButtonItem *fixedSpaceBarButton;
 
 @end
 
