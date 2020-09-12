@@ -51,7 +51,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         
         self.collectionView?.alwaysBounceVertical = true
-        self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: "footer")
+        self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
         if #available(iOS 13.0, *) {
             self.view.backgroundColor = .systemBackground
         } else {
@@ -59,7 +59,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         self.title = "Goals"
         
-        let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.settingsButtonPressed))
+        let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
         self.navigationItem.rightBarButtonItem = item
         
         self.view.addSubview(self.lastUpdatedView)
@@ -148,7 +148,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.collectionView?.refreshControl = {
             let refreshControl = UIRefreshControl()
-            refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
+            refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControl.Event.valueChanged)
             return refreshControl
         }()
         
@@ -368,7 +368,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             lastTextString = "Last updated: a long time ago..."
         }
         let lastText: NSMutableAttributedString = NSMutableAttributedString(string: lastTextString)
-        lastText.addAttribute(NSAttributedStringKey.foregroundColor, value: color, range: NSRange(location: 0, length: lastText.string.count))
+        lastText.addAttribute(NSAttributedString.Key.foregroundColor, value: color, range: NSRange(location: 0, length: lastText.string.count))
         self.lastUpdatedLabel.attributedText = lastText
     }
     

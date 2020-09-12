@@ -183,7 +183,7 @@ class TimerViewController: UIViewController {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             })
-            if let goalVC = self.presentingViewController?.childViewControllers.last as? GoalViewController {
+            if let goalVC = self.presentingViewController?.children.last as? GoalViewController {
                 goalVC.refreshGoal()
                 goalVC.pollUntilGraphUpdates()
             }
