@@ -30,13 +30,13 @@ class RemoveHKMetricViewController: UIViewController {
             let attrString = NSMutableAttributedString()
             
             attrString.append(NSMutableAttributedString(string: "Configuring goal ",
-                                                        attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFont]))
+                                                        attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]))
             
             attrString.append(NSMutableAttributedString(string: "\(self.goal.slug)\n",
-                attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultBoldFont]))
+                attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultBoldFont]))
             
             attrString.append(NSMutableAttributedString(string: "This goal obtains its data from Apple Health (\(self.goal.humanizedAutodata!)). You can disconnect the goal with the button below.",
-                attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
+                attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
             return attrString
         }()
         
