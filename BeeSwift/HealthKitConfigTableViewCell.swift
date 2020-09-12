@@ -33,7 +33,7 @@ class HealthKitConfigTableViewCell: UITableViewCell {
     fileprivate var autodataNameLabel = BSLabel()
     fileprivate var addMetricLabel = BSLabel()
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.configure()
     }
