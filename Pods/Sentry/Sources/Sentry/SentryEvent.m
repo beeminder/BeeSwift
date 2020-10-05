@@ -3,8 +3,11 @@
 #import "NSDictionary+SentrySanitize.h"
 #import "SentryBreadcrumb.h"
 #import "SentryClient.h"
+#import "SentryCurrentDate.h"
 #import "SentryDebugMeta.h"
 #import "SentryException.h"
+#import "SentryId.h"
+#import "SentryMessage.h"
 #import "SentryMeta.h"
 #import "SentryStacktrace.h"
 #import "SentryThread.h"
@@ -23,9 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self = [super init];
     if (self) {
-        self.eventId =
-            [[[NSUUID UUID].UUIDString stringByReplacingOccurrencesOfString:@"-"
-                                                                 withString:@""] lowercaseString];
+        self.eventId = [[SentryId alloc] init];
         self.level = level;
         self.platform = @"cocoa";
     }
@@ -44,11 +45,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDictionary<NSString *, id> *)serialize
 {
     if (nil == self.timestamp) {
-        self.timestamp = [NSDate date];
+        self.timestamp = [SentryCurrentDate date];
     }
 
     NSMutableDictionary *serializedData = @{
-        @"event_id" : self.eventId,
+        @"event_id" : self.eventId.sentryIdString,
         @"timestamp" : [self.timestamp sentry_toIso8601String],
         @"platform" : @"cocoa",
     }
@@ -133,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [serializedData setValue:self.context forKey:@"contexts"];
 
-    [serializedData setValue:self.message forKey:@"message"];
+    [serializedData setValue:[self.message serialize] forKey:@"message"];
     [serializedData setValue:self.logger forKey:@"logger"];
     [serializedData setValue:self.serverName forKey:@"server_name"];
     [serializedData setValue:self.type forKey:@"type"];
