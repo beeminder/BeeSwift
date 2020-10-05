@@ -1,10 +1,7 @@
-#import "SentryBreadcrumb.h"
 #import "SentryDefines.h"
-#import "SentryOptions.h"
 #import "SentrySerializable.h"
-#import "SentrySession.h"
 
-@class SentryUser;
+@class SentryUser, SentrySession, SentryOptions, SentryBreadcrumb;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,7 +42,8 @@ NS_SWIFT_NAME(Scope)
 /**
  * Set global extra -> these will be sent with every event
  */
-- (void)setExtraValue:(id)value forKey:(NSString *)key NS_SWIFT_NAME(setExtra(value:key:));
+- (void)setExtraValue:(id _Nullable)value
+               forKey:(NSString *)key NS_SWIFT_NAME(setExtra(value:key:));
 
 /**
  * Remove the extra for the specified key.
@@ -111,6 +109,12 @@ NS_SWIFT_NAME(Scope)
  * Clears the current Scope
  */
 - (void)clear;
+
+- (BOOL)isEqual:(id _Nullable)other;
+
+- (BOOL)isEqualToScope:(SentryScope *)scope;
+
+- (NSUInteger)hash;
 
 @end
 
