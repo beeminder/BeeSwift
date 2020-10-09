@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        resetStateIfUITesting()
 
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.font :
             UIFont.beeminder.defaultFontPlain.withSize(20)]
@@ -146,6 +147,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             completionHandler([])
         default:
             completionHandler([.alert, .sound, .badge])
+        }
+    }
+    
+    private func resetStateIfUITesting() {
+        if ProcessInfo.processInfo.arguments.contains("UI-Testing") {
+            UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
         }
     }
 }
