@@ -139,7 +139,7 @@ class CurrentUserManager : NSObject {
     }
     
     func handleFailedSignup(_ responseError: Error, errorMessage : String?) {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: self, userInfo: ["error" : responseError])
+        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: self, userInfo: ["error" : errorMessage])
         self.signOut()
     }
     
