@@ -86,7 +86,7 @@ class RemoveHKMetricViewController: UIViewController {
                 hud?.hide(true, afterDelay: 2)
                 self.navigationController?.popViewController(animated: true)
             })
-        }) { (error) -> Void in
+        }) { (error, errorMessage) -> Void in
             // bar
         }
     }

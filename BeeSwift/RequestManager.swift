@@ -8,11 +8,12 @@
 
 import Foundation
 import Alamofire
+import SwiftyJSON
 
 class RequestManager {
     static let baseURLString = Config.baseURLString
     
-    class func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
         Alamofire.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: SessionManager.defaultHTTPHeaders).validate().responseJSON { response in
             switch response.result {
             case .success:
@@ -45,30 +46,30 @@ class RequestManager {
                     case .responseSerializationFailed(let reason): break
                         //
                     }
-                    errorHandler?(response.error)
+                    errorHandler?(response.error, JSON(data: response.data!)["error_message"].string)
                     print(error)
                     return
                 }
-                errorHandler?(response.error)
+                errorHandler?(response.error, JSON(data: response.data!)["error_message"].string)
                 print(e)
             }
         }
     }
     
-    class func get(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func get(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
         RequestManager.rawRequest(url: url, method: .get, parameters: RequestManager.authedParams(parameters), success: success, errorHandler: errorHandler)
     }
     
     
-    class func put(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func put(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
         RequestManager.rawRequest(url: url, method: .patch, parameters: RequestManager.authedParams(parameters), success: success, errorHandler: errorHandler)
     }
     
-    class func post(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func post(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
         RequestManager.rawRequest(url: url, method: .post, parameters: RequestManager.authedParams(parameters), success: success, errorHandler: errorHandler)
     }
     
-    class func delete(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func delete(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
         RequestManager.rawRequest(url: url, method: .delete, parameters: RequestManager.authedParams(parameters), success: success, errorHandler: errorHandler)
     }
     

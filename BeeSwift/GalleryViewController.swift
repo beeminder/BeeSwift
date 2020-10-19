@@ -413,7 +413,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.goals = goals
             self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
-        }) { (error) in
+        }) { (error, errorMessage) in
             if UIApplication.shared.applicationState == .active {
                 if let errorString = error?.localizedDescription {
                     let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)

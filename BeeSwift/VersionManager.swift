@@ -34,7 +34,7 @@ class VersionManager : NSObject {
                 VersionManager.sharedManager.minRequiredVersion = "\(minVersion)"
                 completion(currentVersion.compare("\(minVersion)", options: .numeric) == .orderedAscending, nil)
             }
-        }) { (responseError) in
+        }) { (responseError, responseMessage) in
             completion(false, responseError)
         }
     }

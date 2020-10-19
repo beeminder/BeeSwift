@@ -156,7 +156,7 @@ class TodayTableViewCell: UITableViewCell {
         
         RequestManager.post(url: "api/v1/users/me/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
             self.pollUntilGraphUpdates()
-        }) { (responseError) in
+        }) { (responseError, errorMessage) in
             self.addDataButton.setTitle("oops!", for: .normal)
         }
     }
@@ -188,7 +188,7 @@ class TodayTableViewCell: UITableViewCell {
                 let urlString = "\(goalJSON["thumb_url"])"
                 self.setGraphImage(urlStr: urlString)
             }
-        }) { (responseError) in
+        }) { (responseError, errorMessage) in
             //
         }
     }

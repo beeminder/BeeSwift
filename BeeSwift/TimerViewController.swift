@@ -188,7 +188,7 @@ class TimerViewController: UIViewController {
                 goalVC.pollUntilGraphUpdates()
             }
             self.resetButtonPressed()
-        }) { (error) in
+        }) { (error, errorMessage) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
         }

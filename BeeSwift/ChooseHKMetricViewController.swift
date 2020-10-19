@@ -111,7 +111,7 @@ class ChooseHKMetricViewController: UIViewController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.navigationController?.popViewController(animated: true)
                 }
-        }) { (responseError) -> Void in
+        }) { (responseError, errorMessage) -> Void in
             self.tableView.reloadData()
             if let errorString = responseError?.localizedDescription {
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)

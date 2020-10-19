@@ -439,7 +439,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
             self.pollUntilGraphUpdates()
-        }) { (error) in
+        }) { (error, errorMessage) in
             let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
@@ -554,7 +554,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.pollUntilGraphUpdates()
             self.submitButton.isUserInteractionEnabled = true
             CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
-        }) { (error) in
+        }) { (error, errorMessage) in
             self.submitButton.isUserInteractionEnabled = true
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
@@ -583,7 +583,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.pollTimer?.invalidate()
                 self.pollTimer = nil
             }
-        }) { (error) in
+        }) { (error, errorMessage) in
             // foo
         }
     }

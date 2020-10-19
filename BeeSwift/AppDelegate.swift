@@ -50,7 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             //
-        }) { (error) in
+        }) { (error, errorMessage) in
             //
         }
     }
@@ -85,7 +85,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             completionHandler(.newData)
-        }) { (error) in
+        }) { (error, errorMessage) in
             completionHandler(.failed)
         }
     }
@@ -121,7 +121,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         SignedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: ["device_token" : token], success: { (responseObject) -> Void in
             //foo
-        }) { (error) -> Void in
+        }) { (error, errorMessage) -> Void in
             //bar
         }
     }

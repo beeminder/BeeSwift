@@ -310,7 +310,9 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     }
     
     @objc func handleFailedSignUp(_ notification : Notification) {
-        let failureAC = UIAlertController(title: "Could not sign up", message: "Username or email is already taken", preferredStyle: .alert)
+        print(notification.userInfo?["error"])
+        let message = notification.userInfo?["error"] as? String ?? "Username or email is already taken"
+        let failureAC = UIAlertController(title: "Could not sign up", message: message, preferredStyle: .alert)
         failureAC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         self.present(failureAC, animated: true, completion: nil)
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)

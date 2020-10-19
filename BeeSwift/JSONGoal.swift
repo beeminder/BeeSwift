@@ -636,7 +636,7 @@ class JSONGoal {
                 let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
                 self.postDatapoint(params: params, success: { (responseObject) in
                     success?()
-                }, failure: { (error) in
+                }, failure: { (error, errorMessage) in
                     print(error)
                     errorCompletion?()
                 })
@@ -658,7 +658,7 @@ class JSONGoal {
                             let datapointID = d["id"].string
                             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
                                 success?()
-                            }, errorHandler: { (error) in
+                            }, errorHandler: { (error, errorMessage) in
                                 errorCompletion?()
                             })
                         }
@@ -666,14 +666,14 @@ class JSONGoal {
                         let datapointID = d["id"].string
                         RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
                             //
-                        }) { (error) in
+                        }) { (error, errorMessage) in
                             //
                         }
                     }
                     first = false
                 })
             }
-        }) { (error) in
+        }) { (error, errorMessage) in
             //
         }
         
@@ -813,7 +813,7 @@ class JSONGoal {
         })
     }
     
-    func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?) -> Void)?) {
+    func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
         RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
     }
 }
