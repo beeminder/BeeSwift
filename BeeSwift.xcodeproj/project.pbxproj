@@ -13,7 +13,6 @@
 		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
 		A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */; };
 		A11488BE1EE9B0CE003316E1 /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11488BD1EE9B0CE003316E1 /* UIDevice.swift */; };
-		A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */; };
 		A11BA9A41FCE54E3004BB425 /* HealthStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */; };
 		A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */; };
 		A12BA94C1AFF201B00AFEF32 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A12BA94B1AFF201B00AFEF32 /* AddressBook.framework */; };
@@ -136,7 +135,6 @@
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
 		A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveHKMetricViewController.swift; sourceTree = "<group>"; };
 		A11488BD1EE9B0CE003316E1 /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
-		A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseGoalSortViewController.swift; sourceTree = "<group>"; };
 		A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoreManager.swift; sourceTree = "<group>"; };
 		A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewController.swift; sourceTree = "<group>"; };
 		A12BA94B1AFF201B00AFEF32 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
@@ -363,7 +361,6 @@
 				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
 				A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */,
 				A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */,
-				A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */,
 				A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */,
 				A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */,
 				A196CB201AE4142F00B90A3E /* Main.storyboard */,
@@ -820,7 +817,6 @@
 				A149B3721AEF54D100F19A09 /* BSButton.swift in Sources */,
 				A1C170E01BEEB3110018D32B /* UIFontExtension.swift in Sources */,
 				A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */,
-				A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */,
 				A142492D1FD079B4007736B3 /* SignedRequestManager.swift in Sources */,
 				A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */,
 				A1BCE9851AFFFB3A007322CC /* RequestManager.swift in Sources */,
