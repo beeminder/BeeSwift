@@ -6,20 +6,20 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SentryThread, SentryException, SentryStacktrace, SentryUser, SentryDebugMeta, SentryContext,
-    SentryBreadcrumb;
+    SentryBreadcrumb, SentryId, SentryMessage;
 
 NS_SWIFT_NAME(Event)
 @interface SentryEvent : NSObject <SentrySerializable>
 
 /**
- * This will be set by the initializer. Should be an UUID with the "-".
+ * This will be set by the initializer.
  */
-@property (nonatomic, copy) NSString *eventId;
+@property (nonatomic, strong) SentryId *eventId;
 
 /**
  * Message of the event
  */
-@property (nonatomic, copy) NSString *message;
+@property (nonatomic, strong) SentryMessage *message;
 
 /**
  * NSDate of when the event occured
@@ -93,8 +93,8 @@ NS_SWIFT_NAME(Event)
  * you Don't touch it if you not know what you are doing.
  *
  * {
- *  version: "3.3.3",
- *  name: "sentry-cocoa",
+ *  version: "6.0.1",
+ *  name: "sentry.cocoa",
  *  integrations: [
  *      "react-native"
  *  ]
@@ -152,11 +152,6 @@ NS_SWIFT_NAME(Event)
 @property (nonatomic, strong) NSArray<SentryBreadcrumb *> *_Nullable breadcrumbs;
 
 /**
- * JSON baggage, that will only be filled if initWithJSON is called.
- */
-@property (nonatomic, strong) NSData *json;
-
-/**
  * Init an SentryEvent will set all needed fields by default
  * @return SentryEvent
  */
@@ -168,16 +163,6 @@ NS_SWIFT_NAME(Event)
  * @return SentryEvent
  */
 - (instancetype)initWithLevel:(enum SentryLevel)level NS_DESIGNATED_INITIALIZER;
-
-/**
- * Init an SentryEvent with a JSON blob that completly bypasses all other
- * attributes in the event. Instead only the JSON will be sent, this is used in
- * react-native for example where we consider the event from JS as the source of
- * truth.
- * @param json NSData
- * @return SentryEvent
- */
-- (instancetype)initWithJSON:(NSData *)json;
 
 @end
 
