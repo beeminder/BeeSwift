@@ -243,7 +243,7 @@ class JSONGoal {
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
-                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeminder.green, range: NSRange(location: 0, length: attString.string.count))
+                attString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.beeminder.green, range: NSRange(location: 0, length: attString.string.count))
                 return attString
             }
             return NSMutableAttributedString(string: "")
@@ -268,7 +268,7 @@ class JSONGoal {
             if i < self.deltaColors.count {
                 color = self.deltaColors[i]
             }
-            attString.addAttribute(NSAttributedStringKey.foregroundColor, value: color as Any, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
+            attString.addAttribute(NSAttributedString.Key.foregroundColor, value: color as Any, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
         }
         
         attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.count))

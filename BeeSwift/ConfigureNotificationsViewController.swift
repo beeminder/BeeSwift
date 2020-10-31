@@ -56,7 +56,7 @@ class ConfigureNotificationsViewController: UIViewController {
         self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
         self.fetchGoals()
         self.updateHiddenElements()
-        NotificationCenter.default.addObserver(self, selector: #selector(self.foregroundEntered), name: .UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.foregroundEntered), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -64,7 +64,7 @@ class ConfigureNotificationsViewController: UIViewController {
     }
     
     @objc func settingsButtonTapped() {
-        UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!)
+        UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
     }
     
     func sortGoals() {
@@ -121,7 +121,7 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! SettingsTableViewCell!
+        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! SettingsTableViewCell?
         if (indexPath as NSIndexPath).section == 0 {
             cell?.title = "Default notification settings"
             return cell!
