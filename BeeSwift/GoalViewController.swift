@@ -425,8 +425,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @objc func actionButtonPressed() {
         guard let username = CurrentUserManager.sharedManager.username,
-            let accessToken = CurrentUserManager.sharedManager.accessToken,
-            let viewGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(RequestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
+            let apiToken = CurrentUserManager.sharedManager.apiToken,
+            let viewGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?\(apiToken.type.rawValue)=\(apiToken.value)&redirect_to_url=\(RequestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
         
         let safariVC = SFSafariViewController(url: viewGoalUrl)
         safariVC.delegate = self
@@ -570,7 +570,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshGoal() {
-        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
+        guard let apiToken = CurrentUserManager.sharedManager.apiToken else { return }
+        
+        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?\(apiToken.type.rawValue)=\(apiToken.value)&datapoints_count=5", parameters: nil, success: { (responseObject) in
             self.goal = JSONGoal(json: JSON(responseObject!))
             self.datapointsTableView.reloadData()
             self.refreshCountdown()

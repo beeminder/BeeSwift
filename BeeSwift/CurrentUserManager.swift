@@ -22,6 +22,14 @@ class CurrentUserManager : NSObject {
     static let goalsFetchedNotificationName = "com.beeminder.goalsFetchedNotification"
     static let healthKitMetricRemovedNotificationName = "com.beeminder.healthKitMetricRemovedNotification"
     
+    fileprivate struct UserDefaultsKeys {
+        static let apiTokenType = "api-token-type"
+        static let apiTokenValue = "api-token-value"
+        
+        static let accessToken = "access_token"
+    }
+    
+    fileprivate let apiTokenKey = "api_token_key"
     fileprivate let accessTokenKey = "access_token"
     fileprivate let usernameKey = "username"
     fileprivate let deadbeatKey = "deadbeat"
@@ -34,8 +42,12 @@ class CurrentUserManager : NSObject {
     var goals : [JSONGoal] = []
     var goalsFetchedAt : Date = Date()
     
-    var accessToken :String? {
-        return UserDefaults.standard.object(forKey: accessTokenKey) as! String?
+    var apiToken: ApiToken? {
+        guard let typeStr = UserDefaults.standard.string(forKey: UserDefaultsKeys.apiTokenType),
+            let type = ApiTokenType(typeStr),
+            let value = UserDefaults.standard.string(forKey: UserDefaultsKeys.apiTokenValue) else { return nil }
+        
+        return ApiToken(type: type, token: value)
     }
     
     var username :String? {
@@ -72,7 +84,7 @@ class CurrentUserManager : NSObject {
     }
     
     func signedIn() -> Bool {
-        return self.accessToken != nil && self.username != nil
+        return self.apiToken != nil && self.username != nil
     }
     
     func isDeadbeat() -> Bool {
@@ -92,8 +104,9 @@ class CurrentUserManager : NSObject {
         UserDefaults.standard.synchronize()
     }
     
-    func setAccessToken(_ accessToken: String) {
-        UserDefaults.standard.set(accessToken, forKey: accessTokenKey)
+    func setApiToken(_ apiToken: ApiToken) {
+        UserDefaults.standard.set(apiToken.type.rawValue, forKey: UserDefaultsKeys.apiTokenType)
+        UserDefaults.standard.set(apiToken.value, forKey: UserDefaultsKeys.apiTokenValue)
         UserDefaults.standard.synchronize()
     }
     
@@ -105,11 +118,25 @@ class CurrentUserManager : NSObject {
         }
     }
     
+    func handleSuccessfulSignup(_ responseJSON: JSON) {
+        guard let authToken = responseJSON["authentication_token"].string, let username = responseJSON["username"].string else {
+            return
+        }
+        
+        CurrentUserManager.sharedManager.setApiToken(ApiToken(type: .AuthenticationToken, token: authToken))
+
+        UserDefaults.standard.set(username, forKey: usernameKey)
+        UserDefaults.standard.synchronize()
+        
+        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
+    }
+    
     func handleSuccessfulSignin(_ responseJSON: JSON) {
         if responseJSON["deadbeat"].boolValue {
             self.setDeadbeat(true)
         }
-        UserDefaults.standard.set(responseJSON[accessTokenKey].string!, forKey: accessTokenKey)
+
+        CurrentUserManager.sharedManager.setApiToken(ApiToken(type: .AccessToken, token:responseJSON[accessTokenKey].string!))
         UserDefaults.standard.set(responseJSON[usernameKey].string!, forKey: usernameKey)
         UserDefaults.standard.set(responseJSON[defaultAlertstartKey].number!, forKey: defaultAlertstartKey)
         UserDefaults.standard.set(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
@@ -147,10 +174,12 @@ class CurrentUserManager : NSObject {
         self.goals = []
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
-        UserDefaults.standard.removeObject(forKey: accessTokenKey)
-        UserDefaults.standard.removeObject(forKey: deadbeatKey)
-        UserDefaults.standard.removeObject(forKey: usernameKey)
-        UserDefaults.standard.synchronize()
+
+        if let bundleID = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            UserDefaults.standard.synchronize()
+        }
+
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
     }
     
@@ -177,9 +206,12 @@ class CurrentUserManager : NSObject {
     }
 
     func updateTodayWidget() {
-        if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder") {
+        if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder"), let apiToken =
+            CurrentUserManager.sharedManager.apiToken {
             sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
-            sharedDefaults.set(CurrentUserManager.sharedManager.accessToken, forKey: "accessToken")
+            sharedDefaults.set(apiToken.type.rawValue, forKey: UserDefaultsKeys.apiTokenType)
+            sharedDefaults.set(apiToken.value, forKey: UserDefaultsKeys.apiTokenValue)
+            
             sharedDefaults.synchronize()
         }
     }
@@ -191,5 +223,14 @@ class CurrentUserManager : NSObject {
             return ["deadline" : goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
         }
         return Array(todayGoals.prefix(3)) as Array<Any>
+    }
+    
+    func migrateToApiToken() {
+        guard let previousAccessToken = UserDefaults.standard.string(forKey: UserDefaultsKeys.accessToken) else {
+            // migration apparently not needed
+            return
+        }
+        
+        CurrentUserManager.sharedManager.setApiToken(ApiToken(type: .AccessToken, token: previousAccessToken))
     }
 }
