@@ -1098,7 +1098,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
-				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Debug;
 		};
@@ -1134,7 +1133,6 @@
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "BeeSwift/BeeSwift-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
-				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Release;
 		};
