@@ -16,13 +16,13 @@ import AlamofireNetworkActivityIndicator
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var window: UIWindow?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         resetStateIfUITesting()
         removeAllLocalNotifications()
 
-        UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.font :
+        UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.font :
             UIFont.beeminder.defaultFontPlain.withSize(20)]
-        UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedStringKey.font : UIFont.beeminder.defaultFontPlain.withSize(18)], for: UIControlState())
+        UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedString.Key.font : UIFont.beeminder.defaultFontPlain.withSize(18)], for: UIControl.State())
         IQKeyboardManager.shared().isEnableAutoToolbar = false
 
         if HKHealthStore.isHealthDataAvailable() {
@@ -65,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-        NotificationCenter.default.post(name: Notification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.post(name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -90,10 +90,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     
 
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
         if url.scheme == "beeminder" {
             if let query = url.query {
-                let slugKeyIndex = query.components(separatedBy: "=").index(of: "slug")
+                let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
                 let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
@@ -105,7 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         if url.scheme == "beeminder" {
             if let query = url.query {
-                let slugKeyIndex = query.components(separatedBy: "=").index(of: "slug")
+                let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
                 let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
@@ -137,8 +137,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - UNUserNotificationCenterDelegate
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert, .sound, .badge])
-    }
+            completionHandler([.alert, .sound, .badge])
+        }
     
     private func resetStateIfUITesting() {
         if ProcessInfo.processInfo.arguments.contains("UI-Testing") {
