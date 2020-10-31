@@ -39,6 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             UserDefaults.standard.set(true, forKey: Constants.healthSyncRemindersPreferenceKey)
         }
         
+        UNUserNotificationCenter.current().delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
 
@@ -46,15 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         return true
     }
-
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
-            //
-        }) { (error, errorMessage) in
-            //
-        }
-    }
-
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
@@ -93,26 +86,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
-        if url.scheme == "beeminder" {
-            if let query = url.query {
-                let slugKeyIndex = query.components(separatedBy: "=").index(of: "slug")
-                let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
-
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
-            }
-        }
+        guard url.scheme == "beeminder", let slug = url.getSlug() else { return false }
+        
+        self.fetchGoalsIfNeededThenViewMatchingGoalWith(slug: slug)
         return true
     }
 
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-        if url.scheme == "beeminder" {
-            if let query = url.query {
-                let slugKeyIndex = query.components(separatedBy: "=").index(of: "slug")
-                let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
-
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
-            }
-        }
+        guard url.scheme == "beeminder", let slug = url.getSlug() else { return false }
+        
+        self.fetchGoalsIfNeededThenViewMatchingGoalWith(slug: slug)
         return true
     }
     
@@ -147,5 +130,146 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         default:
             completionHandler([.alert, .sound, .badge])
         }
+    }
+    
+    // processing user's response to a notification
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        guard response.actionIdentifier == UNNotificationDefaultActionIdentifier else {
+            completionHandler()
+            return
+        }
+        
+        guard let slug = response.notification.request.getSlug() else {
+            completionHandler()
+            return
+        }
+        
+        print("found slug: \(slug)")
+        
+        self.fetchGoalsIfNeededThenViewMatchingGoalWith(slug: slug)
+        
+        completionHandler()
+    }
+    
+    // MARK: opening goals
+    
+    private func fetchGoalsIfNeededThenViewMatchingGoalWith(slug: String) {
+        if CurrentUserManager.sharedManager.goals.isEmpty || CurrentUserManager.sharedManager.goalsFetchedAt.timeIntervalSinceNow < -3600 {
+            // apparently no data or stale data
+            
+            CurrentUserManager.sharedManager.fetchGoals(success: { goals in
+                CurrentUserManager.sharedManager.goals = goals
+                self.openGoalWith(slug)
+            }, error: nil)
+            
+        } else {
+            self.openGoalWith(slug)
+        }
+    }
+    
+    /// given a goal we shall navigate to it
+    private func openGoal(goal: JSONGoal) {
+        guard let navigationController = window?.rootViewController as? UINavigationController else { return }
+        
+        let alreadyShowingGoal = { () -> Bool in
+            guard let topVC = navigationController.topViewController as? GoalViewController else { return false }
+            return topVC.goal.slug == goal.slug
+        }()
+        
+        if !alreadyShowingGoal {
+            let goalVC: GoalViewController = {
+                let goalVC = GoalViewController()
+                goalVC.goal = goal
+                return goalVC
+            }()
+            navigationController.popToRootViewController(animated: true)
+            navigationController.pushViewController(goalVC, animated: true)
+        }
+    }
+    
+    /// for viewing, open goal with slug
+    /// - Parameter slug: slug of the goal to open
+    private func openGoalWith(_ slug: String) {
+        guard let goal = CurrentUserManager.sharedManager.goals.last(where: { $0.slug == slug }) else {
+            print("no goal matching slug: \(slug)")
+            
+            guard let navigationController = window?.rootViewController as? UINavigationController else { return }
+            navigationController.popToRootViewController(animated: true)
+            
+            return
+        }
+        self.openGoal(goal: goal)
+    }
+
+}
+
+// MARK: - private extensions for extracting slugs
+
+private extension UNNotificationRequest {
+    func getSlug() -> String? {
+        return self.content.body.getSlug()
+    }
+}
+
+private extension Dictionary where Key == AnyHashable, Value == Any {
+    func getSlug() -> String? {
+        guard let alert = self.getNotificiationAlert() else { return nil }
+        
+        return alert.getSlug()
+    }
+    
+    func getNotificiationAlert() -> String? {
+        guard let aps = self["aps"] as? [String:Any] else { return nil }
+        
+        return aps["alert"] as? String
+    }
+}
+
+private extension String {
+    
+    static let beemergencyEepPrefix = "Eep! "
+    static let beemergencyTodayPrefix = "Beemergency today for "
+    
+    /// returns the slug found in notifications
+    ///
+    /// - note:
+    /// following format expected/supported:
+    /// - "Beemergency today for _slug-of-goal_"
+    /// - "Eep! _slug-of-goal_ needs _quantity_ _unit_ by _deadline_"
+    /// - "_slug-of-goal_ needs _quantity_ _unit_ by _deadline_"
+    func getSlug() -> String? {
+        let slugStart: String.Index = {
+            if self.starts(with: String.beemergencyTodayPrefix) {
+                return String.beemergencyTodayPrefix.endIndex
+            } else if self.starts(with: String.beemergencyEepPrefix) {
+                return String.beemergencyEepPrefix.endIndex
+            } else {
+                return self.startIndex
+            }
+        }()
+        
+        return self
+            .suffix(from: slugStart)
+            .split(separator: " ")
+            .first?
+            .trimmingCharacters(in: .whitespaces)
+    }
+}
+
+private extension URL {
+    /// obtains the slug, if found, from an URL
+    ///
+    /// - Note: currently supports URL "_beeminder://?slug=myslughere_"
+    func getSlug() -> String? {
+        guard
+            self.scheme == "beeminder",
+            let elements = self.query?.components(separatedBy: "="),
+            let slugKeyIndex = elements.index(of: "slug")
+            else { return nil }
+        
+        let slug = elements[(slugKeyIndex.advanced(by: 1))]
+        
+        return slug
     }
 }
