@@ -1,5 +1,60 @@
 # Changelog
 
+Changes to be released in next version
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ *
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ *
+
+🧱 Build
+ * 
+
+Others
+ * 
+
+## 5.8. (2020-10-20)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * Clarify instructions for Apple Health goals [#170](https://github.com/beeminder/BeeSwift/issues/170)
+ * Add pull to refresh on the goal screen [#84](https://github.com/beeminder/BeeSwift/issues/84)
+ * Add a link for resetting a forgotten password [#173](https://github.com/beeminder/BeeSwift/issues/173)
+ * Show divider on sign in / sign up
+ * Update the datapoint comment for Apple Health goals to match other autodata goals [#195](https://github.com/beeminder/BeeSwift/issues/195)
+ * improve handling of 'no more free accounts currently available' when signing up
+
+🐛 Bugfix
+ * Fix the bug of missing icons on older versions of iOS [#158](https://github.com/beeminder/BeeSwift/issues/158)
+ * Fix a bug where a duplicate datapoint would be displayed on the goal screen [#166](https://github.com/beeminder/BeeSwift/issues/166) 
+ * Fix a crasher when updating Apple Health goals in the background [#179](https://github.com/beeminder/BeeSwift/issues/179)
+ * Fix the app badge not being updated after the user signs out [#40](https://github.com/beeminder/BeeSwift/issues/40)
+ * Remove the tiny black border around the icon that appeared in version 5.7 [#178](https://github.com/beeminder/BeeSwift/issues/178)
+
+⚠️ API Changes
+ *
+
+🧱 Build
+ * Update Semaphore configuration with new sentry slug
+ * bump AlamofireImage from 3.5.2 to 3.6.0
+ * bump Alamofire from 4.8.2 to 4.9.1
+ * Bump Sentry from 4.5.0 to 5.2.0
+
+Others
+ * Update license to reflect MIT for code and something else for Beeminder branding
+
+
 ## 5.7. (Aug 20, 2020)
 
  * Added some padding around the bee in the app icon [#25](https://github.com/beeminder/BeeSwift/issues/25) [#139](https://github.com/beeminder/BeeSwift/pull/139)
