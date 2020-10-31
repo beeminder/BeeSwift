@@ -19,7 +19,7 @@ class DatapointTableViewCell : UITableViewCell {
         }
     }
     
-    override required init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override required init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.setup()
     }
