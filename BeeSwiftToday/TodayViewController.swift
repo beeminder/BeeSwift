@@ -20,7 +20,6 @@ class TodayViewController: UIViewController {
     var tableView = UITableView()
     
     fileprivate let rowHeight = Constants.thumbnailHeight + 40
-    fileprivate let cellReuseIdentifier = "todayTableViewCell"
     
     override func viewDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateDataSource), name: UserDefaults.didChangeNotification, object: nil)
@@ -40,7 +39,8 @@ class TodayViewController: UIViewController {
             make.top.equalTo(0)
             make.bottom.equalTo(0)
         }
-        self.tableView.register(TodayTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
+        self.tableView.register(TodayTableViewCell.self, forCellReuseIdentifier: TodayTableViewCell.ReuseIdentifierAutogoal)
+        self.tableView.register(TodayTableViewCell.self, forCellReuseIdentifier: TodayTableViewCell.ReuseIdentifierManualgoal)
     }
     
     @objc func updateDataSource() {
@@ -81,7 +81,10 @@ extension TodayViewController : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier, for: indexPath) as! TodayTableViewCell
+        let goalDictionary = self.goalDictionaries[indexPath.row]
+        
+        let reuseId = goalDictionary["hideDataEntry"] as! Bool ? TodayTableViewCell.ReuseIdentifierAutogoal : TodayTableViewCell.ReuseIdentifierManualgoal
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: reuseId, for: indexPath) as! TodayTableViewCell
         
         cell.goalDictionary = self.goalDictionaries[indexPath.row]
         
