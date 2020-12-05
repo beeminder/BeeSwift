@@ -1,8 +1,10 @@
 #import "SentryScope.h"
+#import "SentryBreadcrumb.h"
 #import "SentryEvent.h"
 #import "SentryGlobalEventProcessor.h"
 #import "SentryLog.h"
 #import "SentryScope+Private.h"
+#import "SentrySession.h"
 #import "SentryUser.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -84,17 +86,8 @@ SentryScope ()
     if (self = [self init]) {
         self.extraDictionary = scope.extraDictionary.mutableCopy;
         self.tagDictionary = scope.tagDictionary.mutableCopy;
-        SentryUser *scopeUser = scope.userObject;
-        SentryUser *user = nil;
-        if (nil != scopeUser) {
-            user = [[SentryUser alloc] init];
-            user.userId = scopeUser.userId;
-            user.data = scopeUser.data.mutableCopy;
-            user.username = scopeUser.username;
-            user.email = scopeUser.email;
-        }
         self.maxBreadcrumbs = scope.maxBreadcrumbs;
-        self.userObject = user;
+        self.userObject = scope.userObject.copy;
         self.contextDictionary = scope.contextDictionary.mutableCopy;
         self.breadcrumbArray = scope.breadcrumbArray.mutableCopy;
         self.distString = scope.distString;
@@ -160,7 +153,7 @@ SentryScope ()
     [self notifyListeners];
 }
 
-- (void)setExtraValue:(id)value forKey:(NSString *)key
+- (void)setExtraValue:(id _Nullable)value forKey:(NSString *)key
 {
     @synchronized(self) {
         [self.extraDictionary setValue:value forKey:key];
@@ -251,7 +244,29 @@ SentryScope ()
     [self notifyListeners];
 }
 
-- (NSDictionary<NSString *, id> *)serializeBreadcrumbs
+- (NSDictionary<NSString *, id> *)serialize
+{
+    @synchronized(self) {
+        NSMutableDictionary *serializedData = [NSMutableDictionary new];
+        [serializedData setValue:[self.tagDictionary copy] forKey:@"tags"];
+        [serializedData setValue:[self.extraDictionary copy] forKey:@"extra"];
+        [serializedData setValue:[self.contextDictionary copy] forKey:@"context"];
+        [serializedData setValue:[self.userObject serialize] forKey:@"user"];
+        [serializedData setValue:self.distString forKey:@"dist"];
+        [serializedData setValue:self.environmentString forKey:@"environment"];
+        [serializedData setValue:[self.fingerprintArray copy] forKey:@"fingerprint"];
+        if (self.levelEnum != kSentryLevelNone) {
+            [serializedData setValue:SentryLevelNames[self.levelEnum] forKey:@"level"];
+        }
+        NSArray *crumbs = [self serializeBreadcrumbs];
+        if (crumbs.count > 0) {
+            [serializedData setValue:crumbs forKey:@"breadcrumbs"];
+        }
+        return serializedData;
+    }
+}
+
+- (NSArray *)serializeBreadcrumbs
 {
     NSMutableArray *crumbs = [NSMutableArray new];
 
@@ -259,30 +274,7 @@ SentryScope ()
         [crumbs addObject:[crumb serialize]];
     }
 
-    NSMutableDictionary *serializedData = [NSMutableDictionary new];
-    if (crumbs.count > 0) {
-        [serializedData setValue:crumbs forKey:@"breadcrumbs"];
-    }
-
-    return serializedData;
-}
-
-- (NSDictionary<NSString *, id> *)serialize
-{
-    @synchronized(self) {
-        NSMutableDictionary *serializedData = [[self serializeBreadcrumbs] mutableCopy];
-        [serializedData setValue:self.tagDictionary forKey:@"tags"];
-        [serializedData setValue:self.extraDictionary forKey:@"extra"];
-        [serializedData setValue:self.contextDictionary forKey:@"context"];
-        [serializedData setValue:[self.userObject serialize] forKey:@"user"];
-        [serializedData setValue:self.distString forKey:@"dist"];
-        [serializedData setValue:self.environmentString forKey:@"environment"];
-        [serializedData setValue:self.fingerprintArray forKey:@"fingerprint"];
-        if (self.levelEnum != kSentryLevelNone) {
-            [serializedData setValue:SentryLevelNames[self.levelEnum] forKey:@"level"];
-        }
-        return serializedData;
-    }
+    return crumbs;
 }
 
 - (void)applyToSession:(SentrySession *)session
@@ -376,6 +368,66 @@ SentryScope ()
 
         return event;
     }
+}
+
+- (BOOL)isEqual:(id _Nullable)other
+{
+    if (other == self)
+        return YES;
+    if (!other || ![[other class] isEqual:[self class]])
+        return NO;
+
+    return [self isEqualToScope:other];
+}
+
+- (BOOL)isEqualToScope:(SentryScope *)scope
+{
+    if (self == scope)
+        return YES;
+    if (scope == nil)
+        return NO;
+    if (self.userObject != scope.userObject && ![self.userObject isEqualToUser:scope.userObject])
+        return NO;
+    if (self.tagDictionary != scope.tagDictionary
+        && ![self.tagDictionary isEqualToDictionary:scope.tagDictionary])
+        return NO;
+    if (self.extraDictionary != scope.extraDictionary
+        && ![self.extraDictionary isEqualToDictionary:scope.extraDictionary])
+        return NO;
+    if (self.contextDictionary != scope.contextDictionary
+        && ![self.contextDictionary isEqualToDictionary:scope.contextDictionary])
+        return NO;
+    if (self.breadcrumbArray != scope.breadcrumbArray
+        && ![self.breadcrumbArray isEqualToArray:scope.breadcrumbArray])
+        return NO;
+    if (self.distString != scope.distString && ![self.distString isEqualToString:scope.distString])
+        return NO;
+    if (self.environmentString != scope.environmentString
+        && ![self.environmentString isEqualToString:scope.environmentString])
+        return NO;
+    if (self.fingerprintArray != scope.fingerprintArray
+        && ![self.fingerprintArray isEqualToArray:scope.fingerprintArray])
+        return NO;
+    if (self.levelEnum != scope.levelEnum)
+        return NO;
+    if (self.maxBreadcrumbs != scope.maxBreadcrumbs)
+        return NO;
+    return YES;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger hash = [self.userObject hash];
+    hash = hash * 23 + [self.tagDictionary hash];
+    hash = hash * 23 + [self.extraDictionary hash];
+    hash = hash * 23 + [self.contextDictionary hash];
+    hash = hash * 23 + [self.breadcrumbArray hash];
+    hash = hash * 23 + [self.distString hash];
+    hash = hash * 23 + [self.environmentString hash];
+    hash = hash * 23 + [self.fingerprintArray hash];
+    hash = hash * 23 + (NSUInteger)self.levelEnum;
+    hash = hash * 23 + self.maxBreadcrumbs;
+    return hash;
 }
 
 @end

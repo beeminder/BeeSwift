@@ -1,9 +1,8 @@
 #import "SentryDefines.h"
-#import "SentryTransport.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SentryDsn;
+@class SentryDsn, SentrySdkInfo;
 
 NS_SWIFT_NAME(Options)
 @interface SentryOptions : NSObject
@@ -28,14 +27,14 @@ NS_SWIFT_NAME(Options)
 @property (nonatomic, strong) SentryDsn *_Nullable parsedDsn;
 
 /**
- * debug [mode] sets a more verbose log level. Default is @NO. If set to @YES
+ * debug [mode] sets a more verbose log level. Default is NO. If set to YES
  * sentry prints more log messages to the console.
  */
-@property (nonatomic, copy) NSNumber *debug;
+@property (nonatomic, assign) BOOL debug;
 
 /**
- DEPRECATED: use debug bool instead (debug = @YES maps to logLevel
- kSentryLogLevelError, debug = @NO maps to loglevel kSentryLogLevelError). thus
+ DEPRECATED: use debug bool instead (debug = YES maps to logLevel
+ kSentryLogLevelError, debug = NO maps to loglevel kSentryLogLevelError). thus
  kSentryLogLevelNone and kSentryLogLevelDebug will be dropped entirely. defines
  the log level of sentry log (console output).
  */
@@ -57,10 +56,10 @@ NS_SWIFT_NAME(Options)
 @property (nonatomic, copy) NSString *_Nullable environment;
 
 /**
- * Is the client enabled?. Default is @YES, if set @NO sending of events will be
- * prevented.
+ * Specifies wether this SDK should send events to Sentry. If set to NO events will be
+ * dropped in the client and not sent to Sentry. Default is YES.
  */
-@property (nonatomic, copy) NSNumber *enabled;
+@property (nonatomic, assign) BOOL enabled;
 
 /**
  * How many breadcrumbs do you want to keep in memory?
@@ -81,6 +80,17 @@ NS_SWIFT_NAME(Options)
 @property (nonatomic, copy) SentryBeforeBreadcrumbCallback _Nullable beforeBreadcrumb;
 
 /**
+ * This gets called shortly after the initialization of the SDK when the last program execution
+ * terminated with a crash. It is not guaranteed that this is called on the main thread.
+ *
+ * @discussion This callback is only executed once during the entire run of the program to avoid
+ * multiple callbacks if there are multiple crash events to send. This can happen when the program
+ * terminates with a crash before the SDK can send the crash event. You can look into beforeSend if
+ * you prefer a callback for every event.
+ */
+@property (nonatomic, copy) SentryOnCrashedLastRunCallback _Nullable onCrashedLastRun;
+
+/**
  * Array of integrations to install.
  */
 @property (nonatomic, copy) NSArray<NSString *> *_Nullable integrations;
@@ -97,9 +107,9 @@ NS_SWIFT_NAME(Options)
 @property (nonatomic, copy) NSNumber *_Nullable sampleRate;
 
 /**
- * Whether to enable automatic session tracking.
+ * Whether to enable automatic session tracking or not. Default is YES.
  */
-@property (nonatomic, copy) NSNumber *enableAutoSessionTracking;
+@property (nonatomic, assign) BOOL enableAutoSessionTracking;
 
 /**
  * The interval to end a session if the App goes to the background.
@@ -113,7 +123,12 @@ NS_SWIFT_NAME(Options)
  *
  * This feature is disabled by default.
  */
-@property (nonatomic, copy) NSNumber *attachStacktrace;
+@property (nonatomic, assign) BOOL attachStacktrace;
+
+/**
+ * Describes the Sentry SDK and its configuration used to capture and transmit an event.
+ */
+@property (nonatomic, readonly, strong) SentrySdkInfo *sdkInfo;
 
 @end
 
