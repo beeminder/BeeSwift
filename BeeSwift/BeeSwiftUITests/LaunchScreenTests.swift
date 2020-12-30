@@ -10,10 +10,18 @@ import XCTest
 class LaunchScreenTests: XCTestCase {
     
     static var app: XCUIApplication?
+    var userDefaults: UserDefaults?
+    let userDefaultsSuiteName = "TestDefaults"
 
     override func setUp() {
         super.setUp()
+        UserDefaults().removePersistentDomain(forName: userDefaultsSuiteName)
+        userDefaults = UserDefaults(suiteName: userDefaultsSuiteName)
+        if let appDomain = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: appDomain)
+        }
         let app = XCUIApplication()
+        app.launchArguments += ["UI-Testing"]
         app.launch()
     }
     
@@ -30,12 +38,4 @@ class LaunchScreenTests: XCTestCase {
         XCTAssertTrue(app.buttons["Sign In"].exists)
         XCTAssertTrue(app.textFields["Email or username"].exists)
     }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-//        self.measure() {
-//            // Put the code you want to measure the time of here.
-//        }
-    }
-    
 }

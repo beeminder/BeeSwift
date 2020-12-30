@@ -156,6 +156,7 @@ class CurrentUserManager : NSObject {
     
     func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, error: ((_ error : Error?, _ errorMessage : String?) -> ())?) {
         guard let username = self.username else {
+            CurrentUserManager.sharedManager.signOut()
             success?([])
             return
         }
