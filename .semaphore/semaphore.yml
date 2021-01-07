@@ -22,7 +22,8 @@ blocks:
         commands:
           - checkout
           - cache restore
-          - bundle install --path vendor/bundle
+          - bundle config set path 'vendor/bundle'
+          - bundle install
           - cache store
           - cp /Users/semaphore/BeeSwift/BeeSwift/Config.swift.sample /Users/semaphore/BeeSwift/BeeSwift/Config.swift
       jobs:
