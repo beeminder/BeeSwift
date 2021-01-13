@@ -176,6 +176,39 @@ class CurrentUserManager : NSObject {
             error?(responseError, errorMessage)
         }
     }
+    
+    
+    /// fetches a goal
+    /// - Parameters:
+    ///   - slug: slug corresponding to goal to be fetched
+    ///   - success: callback containing the fetched goal
+    ///   - error: callback containing the error
+    func fetchGoal(_ slug: String, success: ((_ goal : JSONGoal) -> ())? = nil, error: ((_ error : Error?, _ errorMessage: String?) -> ())? = nil) {
+        guard let username = self.username else { return }
+    
+        RequestManager.get(url: "/api/v1/users/\(username)/goals/\(slug)?datapoints_count=5", parameters: nil, success: { (responseObject) in
+            
+            guard let responseObject = responseObject else { return }
+            let json = JSON(responseObject)
+            let jsonGoal = JSONGoal(json: json)
+            
+            let index = self.goals.firstIndex { jGoal -> Bool in
+                jGoal.slug == jsonGoal.slug && jGoal.id == jsonGoal.id
+            }
+            
+            if let index = index  {
+                self.goals[index] = jsonGoal
+                self.goals.remove(at: index)
+                self.goals.append(jsonGoal)
+            }
+            
+            self.updateTodayWidget()
+            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
+            success?(jsonGoal)
+        }) { (responseError, errorMessage) in
+            error?(responseError, errorMessage)
+        }
+    }
 
     func updateTodayWidget() {
         if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder") {
