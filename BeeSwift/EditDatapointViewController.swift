@@ -188,7 +188,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         let params = [
-            "access_token": CurrentUserManager.sharedManager.accessToken!,
+            CurrentUserManager.sharedManager.apiToken!.type.rawValue: CurrentUserManager.sharedManager.apiToken!.value,
             "urtext": self.urtext()
         ]
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
@@ -204,7 +204,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     
     func deleteDatapoint() {
         let params = [
-            "access_token": CurrentUserManager.sharedManager.accessToken!
+            CurrentUserManager.sharedManager.apiToken!.type.rawValue: CurrentUserManager.sharedManager.apiToken!.value,
         ]
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate

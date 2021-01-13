@@ -58,7 +58,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignUp(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignedIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
+       
         if #available(iOS 13.0, *) {
             self.view.backgroundColor = UIColor.systemBackground
         } else {
@@ -182,6 +182,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         scrollView.addSubview(self.newEmailTextField)
         self.newEmailTextField.isHidden = true
         self.newEmailTextField.autocapitalizationType = .none
+        self.newEmailTextField.keyboardType = .emailAddress
         self.newEmailTextField.snp.makeConstraints { (make) in
             make.top.equalTo(self.newUsernameTextField.snp.bottom).offset(15)
             make.centerX.equalTo(scrollView)

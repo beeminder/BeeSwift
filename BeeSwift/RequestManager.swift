@@ -75,13 +75,12 @@ class RequestManager {
     
     
     class func authedParams(_ params: [String: Any]?) -> Parameters? {
-        if params == nil { return ["access_token" : CurrentUserManager.sharedManager.accessToken ?? ""] }
-        if CurrentUserManager.sharedManager.accessToken != nil {
-            var localParams = params!
-            localParams["access_token"] = CurrentUserManager.sharedManager.accessToken!
-            return localParams
-        }
-        return params
+        guard let token = CurrentUserManager.sharedManager.apiToken else { return params }
+        
+        var paramsWithToken = params ?? [:]
+        paramsWithToken["\(token.type.rawValue)"] = token.value
+        
+        return paramsWithToken
     }
 
 }
