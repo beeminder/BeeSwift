@@ -94,7 +94,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         return 20
     }
     func numberOfSections(in tableView: UITableView) -> Int {
-        return HKHealthStore.isHealthDataAvailable() ? 5 : 4
+        return HKHealthStore.isHealthDataAvailable() ? 4 : 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -115,21 +115,17 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         
         switch section {
         case 0:
-            let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String
-            cell.title = "Sort goals by: \(selectedGoalSort ?? "")"
-            cell.imageName = "Sort"
-        case 1:
             UNUserNotificationCenter.current().getNotificationSettings { (settings) in
                 DispatchQueue.main.async {
                     cell.title = "Emergency notifications: \(settings.authorizationStatus == .authorized ? "on" : "off")"
                 }
             }
             cell.imageName = "Notifications"
-        case 2:
+        case 1:
             cell.title = "Time zone: \(CurrentUserManager.sharedManager.timezone())"
             cell.imageName = "Clock"
             cell.accessoryType = .none
-        case 3:
+        case 2:
             cell.title = "Sign out"
             cell.imageName = "SignOut"
             cell.accessoryType = .none
@@ -151,12 +147,10 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         
         switch section {
         case 0:
-            self.navigationController?.pushViewController(ChooseGoalSortViewController(), animated: true)
-        case 1:
             self.navigationController?.pushViewController(ConfigureNotificationsViewController(), animated: true)
-        case 2:
+        case 1:
             print("nothing")
-        case 3:
+        case 2:
             self.signOutButtonPressed()
         default:
             break
