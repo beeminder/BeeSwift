@@ -510,14 +510,14 @@ class JSONGoal {
                 // Perform proper error handling here
                 return
             }
-            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + .seconds(5), execute: {
-                self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
-                self.setUnlockNotification()
+            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + .seconds(5), execute: { [weak self] in
+                self?.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
+                self?.setUnlockNotification()
             })
         }
         
         query.statisticsUpdateHandler = {
-            query, statistics, collection, error in
+            [weak self] query, statistics, collection, error in
             
             if HKHealthStore.isHealthDataAvailable() {
                 guard let statsCollection = collection else {
@@ -525,8 +525,8 @@ class JSONGoal {
                     return
                 }
                 
-                self.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
-                self.setUnlockNotification()
+                self?.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
+                self?.setUnlockNotification()
             }
         }
         healthStore.execute(query)
@@ -575,28 +575,30 @@ class JSONGoal {
             return
         }
         
-        collection.enumerateStatistics(from: startDate, to: endDate) { [unowned self] statistics, stop in
-            healthStore.preferredUnits(for: [statistics.quantityType], completion: { (units, error) in
+        collection.enumerateStatistics(from: startDate, to: endDate) { [weak self] statistics, stop in
+            guard let self = self else { return }
+            
+            healthStore.preferredUnits(for: [statistics.quantityType], completion: { [weak self] (units, error) in
+                guard let self = self else { return }
                 guard let unit = units.first?.value else { return }
-                var datapointValue : Double?
+                guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
                 
-                guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
-                    return
-                }
                 guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
                     fatalError("*** Unable to create a quantity type ***")
                 }
+
+                let value: Double? = {
+                    switch quantityType.aggregationStyle {
+                    case .cumulative:
+                        return statistics.sumQuantity()?.doubleValue(for: unit)
+                    case .discrete:
+                        return statistics.minimumQuantity()?.doubleValue(for: unit)
+                    default:
+                        return nil
+                    }
+                }()
                 
-                
-                if quantityType.aggregationStyle == .cumulative {
-                    let quantity = statistics.sumQuantity()
-                    datapointValue = quantity?.doubleValue(for: unit)
-                } else if quantityType.aggregationStyle == .discrete {
-                    let quantity = statistics.minimumQuantity()
-                    datapointValue = quantity?.doubleValue(for: unit)
-                }
-                
-                guard datapointValue != nil else { return }
+                guard let datapointValue = value else { return }
                 
                 let startDate = statistics.startDate
                 let endDate = statistics.endDate
@@ -606,7 +608,7 @@ class JSONGoal {
                 let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
                 let daystamp = formatter.string(from: datapointDate)
                 
-                self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
+                self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
             })
         }
     }
@@ -631,10 +633,10 @@ class JSONGoal {
             
             if datapoints.count == 0 {
                 let requestId = "\(daystamp)-\(self.minuteStamp())"
-                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Automatically entered via iOS Health app\"", "requestid": requestId]
+                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
                 self.postDatapoint(params: params, success: { (responseObject) in
                     success?()
-                }, failure: { (error) in
+                }, failure: { (error, errorMessage) in
                     print(error)
                     errorCompletion?()
                 })
@@ -647,7 +649,7 @@ class JSONGoal {
                         let params = [
                             "access_token": CurrentUserManager.sharedManager.accessToken!,
                             "value": "\(datapointValue)",
-                            "comment": "Automatically updated via iOS Health app",
+                            "comment": "Auto-updated via Apple Health",
                             "requestid": requestId
                         ]
                         let val = d["value"].double as? Double
@@ -656,7 +658,7 @@ class JSONGoal {
                             let datapointID = d["id"].string
                             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
                                 success?()
-                            }, errorHandler: { (error) in
+                            }, errorHandler: { (error, errorMessage) in
                                 errorCompletion?()
                             })
                         }
@@ -664,14 +666,14 @@ class JSONGoal {
                         let datapointID = d["id"].string
                         RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
                             //
-                        }) { (error) in
+                        }) { (error, errorMessage) in
                             //
                         }
                     }
                     first = false
                 })
             }
-        }) { (error) in
+        }) { (error, errorMessage) in
             //
         }
         
@@ -811,7 +813,7 @@ class JSONGoal {
         })
     }
     
-    func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?) -> Void)?) {
+    func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
         RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
     }
 }

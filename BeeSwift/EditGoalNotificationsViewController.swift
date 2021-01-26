@@ -65,7 +65,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 self.goal!.leadtime = leadtime!
                 self.goal!.use_defaults = NSNumber(value: false as Bool)
                 self.useDefaultsSwitch.isOn = false
-            }) { (error) -> Void in
+            }) { (error, errorMessage) -> Void in
                 // show alert
         }
     }
@@ -79,7 +79,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     self.goal!.alertstart = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
                     self.useDefaultsSwitch.isOn = false
-                }) { (error) -> Void in
+                }) { (error, errorMessage) -> Void in
                     //foo
             }
         }
@@ -91,7 +91,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     self.goal?.deadline = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
                     self.useDefaultsSwitch.isOn = false
-                }) { (responseError) -> Void in
+                }) { (responseError, errorMessage) -> Void in
                     if let errorString = responseError?.localizedDescription {
                         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                         let alert = UIAlertController(title: "Error saving to Beeminder", message: errorString, preferredStyle: .alert)
@@ -122,7 +122,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                             }, failure: { () -> Void in
                                 // foo
                         })
-                    }) { (error) -> Void in
+                    }) { (error, errorMessage) -> Void in
                         //foo
                 }
             }))
@@ -136,7 +136,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
                 success: { (responseObject) -> Void in
                     self.goal?.use_defaults = NSNumber(value: false as Bool)
-                }) { (error) -> Void in
+                }) { (error, errorMessage) -> Void in
                     //foo
             }
         }

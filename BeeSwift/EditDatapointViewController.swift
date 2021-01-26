@@ -196,7 +196,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
             hud?.hide(true, afterDelay: 2)
-        }) { (error) in
+        }) { (error, errorMessage) in
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             // alert
         }
@@ -216,7 +216,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 self.navigationController?.popViewController(animated: true)
             }
-        }) { (error) in
+        }) { (error, errorMessage) in
             //
         }
     }

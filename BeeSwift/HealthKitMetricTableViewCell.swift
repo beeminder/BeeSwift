@@ -16,7 +16,7 @@ class HealthKitMetricTableViewCell: UITableViewCell {
         }
     }
     
-    fileprivate var metricLabel = BSLabel()
+    fileprivate let metricLabel = BSLabel()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -26,6 +26,12 @@ class HealthKitMetricTableViewCell: UITableViewCell {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.configure()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.metricLabel.text = nil
+        self.metric = nil
     }
     
     func configure() {

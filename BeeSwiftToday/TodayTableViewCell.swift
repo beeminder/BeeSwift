@@ -23,7 +23,7 @@ class TodayTableViewCell: UITableViewCell {
     let valueLabel = BSLabel()
     let valueStepper = UIStepper()
     let limitLabel = BSLabel()
-    var addDataButton = BSButton()
+    let addDataButton = BSButton()
     var pollTimer : Timer?
     let graphImageView = UIImageView()
     
@@ -31,9 +31,16 @@ class TodayTableViewCell: UITableViewCell {
         UIImage(named: "ThumbnailPlaceholder")
     }
     
-    fileprivate
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        self.valueLabel.text = nil
+        self.limitLabel.text = nil
+        self.addDataButton.titleLabel?.text = nil
+        self.graphImageView.image = self.thumbnailPlaceholder
+    }
     
-    func configureCell() {
+    fileprivate func configureCell() {
         self.selectionStyle = .none
         
         self.addSubview(self.graphImageView)
@@ -149,7 +156,7 @@ class TodayTableViewCell: UITableViewCell {
         
         RequestManager.post(url: "api/v1/users/me/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
             self.pollUntilGraphUpdates()
-        }) { (responseError) in
+        }) { (responseError, errorMessage) in
             self.addDataButton.setTitle("oops!", for: .normal)
         }
     }
@@ -181,7 +188,7 @@ class TodayTableViewCell: UITableViewCell {
                 let urlString = "\(goalJSON["thumb_url"])"
                 self.setGraphImage(urlStr: urlString)
             }
-        }) { (responseError) in
+        }) { (responseError, errorMessage) in
             //
         }
     }

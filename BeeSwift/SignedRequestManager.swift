@@ -11,11 +11,11 @@ import Alamofire
 
 class SignedRequestManager: RequestManager {
     
-    class func signedGET(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func signedGET(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
         RequestManager.rawRequest(url: url, method: .get, parameters: SignedRequestManager.signedParameters(RequestManager.authedParams(parameters)), success: success, errorHandler: errorHandler)
     }
     
-    class func signedPOST(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?) -> Void)?) {
+    class func signedPOST(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
         let params = SignedRequestManager.signedParameters(RequestManager.authedParams(parameters))
         RequestManager.rawRequest(url: url, method: .post, parameters: params, success: success, errorHandler: errorHandler)
     }

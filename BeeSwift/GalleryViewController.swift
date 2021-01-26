@@ -21,7 +21,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let lastUpdatedLabel = BSLabel()
     let cellReuseIdentifier = "Cell"
     let newGoalCellReuseIdentifier = "NewGoalCell"
-    var refreshControl = UIRefreshControl()
     var deadbeatView = UIView()
     var outofdateView = UIView()
     let noGoalsLabel = BSLabel()
@@ -73,7 +72,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.lastUpdatedView.addSubview(self.lastUpdatedLabel)
         self.lastUpdatedLabel.text = "Last updated:"
-        self.lastUpdatedLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
+        self.lastUpdatedLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         self.lastUpdatedLabel.textAlignment = NSTextAlignment.center
         self.lastUpdatedLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(3)
@@ -147,8 +146,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView!.register(NewGoalCollectionViewCell.self, forCellWithReuseIdentifier: self.newGoalCellReuseIdentifier)
         self.view.addSubview(self.collectionView!)
         
-        self.refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
-        self.collectionView!.addSubview(self.refreshControl)
+        self.collectionView?.refreshControl = {
+            let refreshControl = UIRefreshControl()
+            refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControlEvents.valueChanged)
+            return refreshControl
+        }()
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.searchBar.snp.bottom)
@@ -373,7 +375,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func didFetchGoals() {
         self.sortGoals()
         self.setupHealthKit()
-        self.refreshControl.endRefreshing()
+        self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
         self.collectionView!.reloadData()
         self.updateDeadbeatHeight()
@@ -411,7 +413,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.goals = goals
             self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
-        }) { (error) in
+        }) { (error, errorMessage) in
             if UIApplication.shared.applicationState == .active {
                 if let errorString = error?.localizedDescription {
                     let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
@@ -419,7 +421,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     self.present(alert, animated: true, completion: nil)
                 }
             }
-            self.refreshControl.endRefreshing()
+            self.collectionView?.refreshControl?.endRefreshing()
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             self.collectionView!.reloadData()
         }

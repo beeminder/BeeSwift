@@ -48,21 +48,26 @@ class SettingsViewController: UIViewController {
             self.view.backgroundColor = .white
         }
         self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-        
-        let versionLabel = BSLabel()
-        versionLabel.text = "Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String)"
-        self.view.addSubview(versionLabel)
-        versionLabel.snp.makeConstraints { (make) in
-            if #available(iOS 11.0, *) {
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-10)
-            } else {
-                make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-10)
+
+        if let info = Bundle.main.infoDictionary {
+            let appVersion = info["CFBundleShortVersionString"] as? String ?? "Unknown"
+            let appBuild = info[kCFBundleVersionKey as String] as? String ?? "Unknown"
+
+            let versionLabel = BSLabel()
+            versionLabel.text = "Version: \(appVersion) (\(appBuild))"
+            self.view.addSubview(versionLabel)
+            versionLabel.snp.makeConstraints { (make) in
+                if #available(iOS 11.0, *) {
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-10)
+                } else {
+                    make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-10)
+                }
+                make.width.equalTo(self.view)
             }
-            make.width.equalTo(self.view)
+            versionLabel.textAlignment = .center
         }
-        versionLabel.textAlignment = .center
     }
-    
+
     @objc func userDefaultsDidChange() {
         DispatchQueue.main.async {
             self.tableView.reloadData()

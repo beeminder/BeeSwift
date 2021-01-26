@@ -28,7 +28,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
             success: { (responseObject) -> Void in
                 CurrentUserManager.sharedManager.setDefaultLeadTime(leadtime)
-            }) { (error) -> Void in
+            }) { (error, errorMessage) -> Void in
                 // show alert
         }
     }
@@ -45,7 +45,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
                 success: { (responseObject) -> Void in
                     CurrentUserManager.sharedManager.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
-                }) { (error) -> Void in
+                }) { (error, errorMessage) -> Void in
                     //foo
             }
         }
@@ -55,7 +55,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
                 success: { (responseObject) -> Void in
                     CurrentUserManager.sharedManager.setDefaultDeadline(self.midnightOffsetFromTimePickerView())
-                }) { (error) -> Void in
+                }) { (error, errorMessage) -> Void in
                     //foo
             }
         }

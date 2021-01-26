@@ -100,8 +100,8 @@ class CurrentUserManager : NSObject {
     func signInWithEmail(_ email: String, password: String) {
         RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, success: { (responseObject) in
                 self.handleSuccessfulSignin(JSON(responseObject))
-            }) { (responseError) in
-                if responseError != nil { self.handleFailedSignin(responseError!) }
+            }) { (responseError, errorMessage) in
+                if responseError != nil { self.handleFailedSignin(responseError!, errorMessage: errorMessage) }
         }
     }
     
@@ -128,18 +128,18 @@ class CurrentUserManager : NSObject {
                 UserDefaults.standard.set(responseJSON["default_leadtime"].number!, forKey: "default_leadtime")
                 UserDefaults.standard.synchronize()
                 if (success != nil) { success!() }
-        }, errorHandler: { (error) -> Void in
+        }, errorHandler: { (error, errorMessage) -> Void in
                 if (failure != nil) { failure!() }
         })
     }
     
-    func handleFailedSignin(_ responseError: Error) {
+    func handleFailedSignin(_ responseError: Error, errorMessage : String?) {
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: self, userInfo: ["error" : responseError])
         self.signOut()
     }
     
-    func handleFailedSignup(_ responseError: Error) {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: self, userInfo: ["error" : responseError])
+    func handleFailedSignup(_ responseError: Error, errorMessage : String?) {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: self, userInfo: ["error" : errorMessage])
         self.signOut()
     }
     
@@ -154,8 +154,9 @@ class CurrentUserManager : NSObject {
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
     }
     
-    func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, error: ((_ error : Error?) -> ())?) {
+    func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, error: ((_ error : Error?, _ errorMessage : String?) -> ())?) {
         guard let username = self.username else {
+            CurrentUserManager.sharedManager.signOut()
             success?([])
             return
         }
@@ -171,8 +172,8 @@ class CurrentUserManager : NSObject {
             self.goalsFetchedAt = Date()
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
             success?(jGoals)
-        }) { (responseError) in
-            error?(responseError)
+        }) { (responseError, errorMessage) in
+            error?(responseError, errorMessage)
         }
     }
 

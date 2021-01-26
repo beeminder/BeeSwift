@@ -10,7 +10,7 @@ import Foundation
 
 class DatapointTableViewCell : UITableViewCell {
     
-    var datapointLabel = BSLabel()
+    let datapointLabel = BSLabel()
     
     var datapointText : String?
     {
@@ -29,8 +29,14 @@ class DatapointTableViewCell : UITableViewCell {
         self.setup()        
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.datapointLabel.text = nil
+        self.datapointText = nil
+    }
+    
     func setup() {
-        self.datapointLabel.font = UIFont(name: "Avenir", size: Constants.defaultFontSize)
+        self.datapointLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         self.datapointLabel.lineBreakMode = .byTruncatingTail
         self.contentView.addSubview(self.datapointLabel)
         self.selectionStyle = .none

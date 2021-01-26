@@ -8,8 +8,9 @@
 
 import Foundation
 import MBProgressHUD
+import SafariServices
 
-class SignInViewController : UIViewController, UITextFieldDelegate {
+class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariViewControllerDelegate {
     
     var headerLabel = BSLabel()
     var emailTextField = BSTextField()
@@ -25,8 +26,30 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
     var backToSignUpButton = BSButton()
     var signInButton = BSButton()
     var divider = UIView()
+    let resetPasswordButton: BSButton = {
+        let button = BSButton()
+        button.setTitle("Forgot password?", for: .normal)
+        button.titleLabel?.font = UIFont.beeminder.defaultFontHeavy
+        if #available(iOS 13.0, *) {
+            button.setTitleColor(UIColor.label, for: .normal)
+        } else {
+            button.setTitleColor(UIColor.beeminder.gray, for: .normal)
+        }
+        
+        if #available(iOS 13.0, *) {
+            button.backgroundColor = UIColor.systemBackground
+        } else {
+            button.backgroundColor = UIColor.white
+        }
+        
+        button.addTarget(self, action: #selector(SignInViewController.resetPasswordTapped), for: .touchUpInside)
+
+        return button
+    }()
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+
         let scrollView = UIScrollView()
         self.view.addSubview(scrollView)
         scrollView.snp.makeConstraints { (make) -> Void in
@@ -105,18 +128,27 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
             make.width.equalTo(self.emailTextField)
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }
+
+        scrollView.addSubview(self.resetPasswordButton)
+        self.resetPasswordButton.isHidden = true
+        self.resetPasswordButton.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.passwordTextField)
+            make.right.equalTo(self.passwordTextField)
+            make.top.equalTo(self.passwordTextField.snp.bottom).offset(15)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
+        }
         
         scrollView.addSubview(self.signInButton)
         self.signInButton.isHidden = true
         self.signInButton.setTitle("Sign In", for: UIControlState())
         self.signInButton.backgroundColor = UIColor.beeminder.gray
-        self.signInButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
+        self.signInButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
         self.signInButton.titleLabel?.textColor = UIColor.white
         self.signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControlEvents.touchUpInside)
         self.signInButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.passwordTextField)
             make.right.equalTo(self.passwordTextField)
-            make.top.equalTo(self.passwordTextField.snp.bottom).offset(15)
+            make.top.equalTo(self.resetPasswordButton.snp.bottom).offset(15)
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         
@@ -128,7 +160,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         self.backToSignUpButton.isHidden = true
         self.backToSignUpButton.setTitle("Back to Sign Up", for: .normal)
         self.backToSignUpButton.snp.makeConstraints { (make) in
-            make.top.equalTo(self.signInButton.snp.bottom).offset(15)
+            make.top.equalTo(divider.snp.bottom).offset(15)
             make.centerX.equalTo(scrollView)
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.width.equalTo(self.view).multipliedBy(0.75)
@@ -174,7 +206,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         scrollView.addSubview(self.signUpButton)
         self.signUpButton.isHidden = true
         self.signUpButton.setTitle("Sign Up", for: .normal)
-        self.signUpButton.titleLabel?.font = UIFont(name: "Avenir", size: 20)
+        self.signUpButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
         self.signUpButton.addTarget(self, action: #selector(SignInViewController.signUpButtonPressed), for: .touchUpInside)
         self.signUpButton.snp.makeConstraints { (make) in
             make.top.equalTo(self.newPasswordTextField.snp.bottom).offset(15)
@@ -221,6 +253,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         self.headerLabel.isHidden = false
         self.signInButton.isHidden = false
         self.signUpButton.isHidden = true
+        self.resetPasswordButton.isHidden = false
         self.divider.snp.remakeConstraints { (make) -> Void in
             make.left.equalTo(self.signInButton)
             make.right.equalTo(self.signInButton)
@@ -246,6 +279,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         self.headerLabel.isHidden = false
         self.signInButton.isHidden = true
         self.signUpButton.isHidden = false
+        self.resetPasswordButton.isHidden = true
         self.divider.snp.remakeConstraints { (make) -> Void in
             make.left.equalTo(self.signUpButton)
             make.right.equalTo(self.signUpButton)
@@ -276,7 +310,9 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
     }
     
     @objc func handleFailedSignUp(_ notification : Notification) {
-        let failureAC = UIAlertController(title: "Could not sign up", message: "Username or email is already taken", preferredStyle: .alert)
+        print(notification.userInfo?["error"])
+        let message = notification.userInfo?["error"] as? String ?? "Username or email is already taken"
+        let failureAC = UIAlertController(title: "Could not sign up", message: message, preferredStyle: .alert)
         failureAC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         self.present(failureAC, animated: true, completion: nil)
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
@@ -306,4 +342,19 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         return true
     }
     
+    @objc func resetPasswordTapped() {
+        let safariVC = SFSafariViewController(url: self.passwordResetUrl, entersReaderIfAvailable: true)
+        self.present(safariVC, animated: true, completion: nil)
+    }
+    
+    
+    var passwordResetUrl: URL {
+        return URL(string: "https://www.beeminder.com/users/password/new")!
+    }
+    
+    // MARK: - SFSafariViewControllerDelegate
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true, completion: nil)
+    }
 }

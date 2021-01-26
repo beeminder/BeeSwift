@@ -1,5 +1,11 @@
 MIT License
 
+The assets like the Beeminder logo and our webcopy are not open source. 
+If  you're running your own version of Beeminder using our code, you can't call 
+it "Beeminder", etc. We're modeling this on CodeCombat's license.
+
+The following applies to the actual Swift source code in this repository.
+
 Copyright (c) 2011-Present Beeminder
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
