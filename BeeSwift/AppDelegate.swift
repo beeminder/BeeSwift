@@ -18,6 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         resetStateIfUITesting()
+        removeAllLocalNotifications()
 
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.font :
             UIFont.beeminder.defaultFontPlain.withSize(20)]
@@ -35,10 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
-        
-        if UserDefaults.standard.object(forKey: Constants.healthSyncRemindersPreferenceKey) == nil {
-            UserDefaults.standard.set(true, forKey: Constants.healthSyncRemindersPreferenceKey)
-        }
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
@@ -140,19 +137,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - UNUserNotificationCenterDelegate
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        switch notification.request.identifier {
-        case JSONGoal.unlockNotificationIdentifier:
-            // about to present a notification, a reminder to unlock the device
-            // yet the app is active, thus we can abandon the notification
-            completionHandler([])
-        default:
-            completionHandler([.alert, .sound, .badge])
-        }
+        completionHandler([.alert, .sound, .badge])
     }
     
     private func resetStateIfUITesting() {
         if ProcessInfo.processInfo.arguments.contains("UI-Testing") {
             UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
         }
+    }
+    
+    private func removeAllLocalNotifications() {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 }

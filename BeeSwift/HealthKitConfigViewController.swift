@@ -16,7 +16,6 @@ class HealthKitConfigViewController: UIViewController {
     var tableView = UITableView()
     var goals : [JSONGoal] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
-    var syncRemindersSwitch = UISwitch()
     let margin = 12
     
     override func viewDidLoad() {
@@ -30,52 +29,11 @@ class HealthKitConfigViewController: UIViewController {
         let backItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         self.navigationItem.backBarButtonItem = backItem
         
-        let syncRemindersContainer = UIView()
-        self.view.addSubview(syncRemindersContainer)
-        syncRemindersContainer.backgroundColor = {
-            if #available(iOS 13.0, *) {
-                return .secondarySystemBackground
-            } else {
-                return .clear
-            }
-        }()
-        syncRemindersContainer.snp.makeConstraints { make in
-            make.left.equalTo(self.margin)
-            make.right.equalTo(-self.margin)
-            
-            make.top.equalTo(self.topLayoutGuide.snp.bottom)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-        }
-        
-        let syncRemindersLabel = BSLabel()
-        syncRemindersContainer.addSubview(syncRemindersLabel)
-        syncRemindersLabel.text = "Sync Health data reminders"
-        if #available(iOS 13.0, *) {
-            syncRemindersLabel.backgroundColor = .secondarySystemBackground
-        } else {
-            syncRemindersLabel.backgroundColor = .clear
-        }
-        syncRemindersLabel.snp.makeConstraints { make in
-            make.left.equalTo(self.margin)
-            make.right.equalTo(-self.margin)
-            
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-        }
-        
-        syncRemindersContainer.addSubview(self.syncRemindersSwitch)
-        self.syncRemindersSwitch.isOn = UserDefaults.standard.bool(forKey: Constants.healthSyncRemindersPreferenceKey)
-        self.syncRemindersSwitch.addTarget(self, action: #selector(self.syncRemindersSwitchValueChanged), for: .valueChanged)
-        self.syncRemindersSwitch.snp.makeConstraints { (make) in
-            make.centerY.equalTo(syncRemindersLabel)
-            make.right.equalTo(-self.margin)
-        }
-        
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.margin)
             make.right.equalTo(-self.margin)
-            
-            make.top.equalTo(syncRemindersContainer.snp.bottom).offset(self.margin)
+            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(self.margin)
             make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
         }
         
@@ -106,13 +64,6 @@ class HealthKitConfigViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    @objc func syncRemindersSwitchValueChanged() {
-        UserDefaults.standard.set(self.syncRemindersSwitch.isOn, forKey: Constants.healthSyncRemindersPreferenceKey)
-        if self.syncRemindersSwitch.isOn == false {
-            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        }
     }
     
     @objc func fetchGoals() {
