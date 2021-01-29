@@ -21,6 +21,28 @@ Changes to be released in next version
 Others
  * 
 
+## 5.9. (2021-01-28)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * Removed the "Unlock your phone to sync your Health data with Beeminder" notifications, which were often delivered nonsensically. [#44](https://github.com/beeminder/BeeSwift/issues/44)
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ *
+
+🧱 Build
+ * 
+
+Others
+ * 
+
+
 ## 5.8. (2020-10-20)
 =================================================
 
