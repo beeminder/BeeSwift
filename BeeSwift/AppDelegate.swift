@@ -37,6 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
         
+        self.migrateToApiToken()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
 
@@ -137,9 +139,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - UNUserNotificationCenterDelegate
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert, .sound, .badge])
-    }
-    
+            completionHandler([.alert, .sound, .badge])
+        }
+
+    // MARK: - helper
+
     private func resetStateIfUITesting() {
         if ProcessInfo.processInfo.arguments.contains("UI-Testing") {
             UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
@@ -148,5 +152,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     private func removeAllLocalNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    }
+
+    func migrateToApiToken() {
+        CurrentUserManager.sharedManager.migrateToApiToken()
     }
 }
