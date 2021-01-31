@@ -234,11 +234,11 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         }
 
         MBProgressHUD.showAdded(to: self.view, animated: true)
-        OAuthSignInManager.sharedManager.signUpWith(email: newEmail, password: newPassword, username: newUsername)
+        OAuthSignInManager.shared.signUpWith(email: newEmail, password: newPassword, username: newUsername)
     }
     
     @objc func chooseSignInButtonPressed() {
-        CurrentUserManager.sharedManager.signingUp = false
+        CurrentUserManager.shared.signingUp = false
         self.divider.isHidden = false
         self.backToSignUpButton.isHidden = false
         self.emailTextField.isHidden = false
@@ -264,7 +264,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     }
     
     @objc func chooseSignUpButtonPressed() {
-        CurrentUserManager.sharedManager.signingUp = true
+        CurrentUserManager.shared.signingUp = true
         self.divider.isHidden = false
         self.backToSignUpButton.isHidden = true
         self.emailTextField.isHidden = true
@@ -329,7 +329,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         }
         
         MBProgressHUD.showAdded(to: self.view, animated: true)
-        CurrentUserManager.sharedManager.signInWithEmail(email, password: password)
+        CurrentUserManager.shared.signInWithEmail(email, password: password)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

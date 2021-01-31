@@ -168,7 +168,7 @@ class JSONGoal {
     }
     
     var countdownColor :UIColor {
-        guard let buf = self.safebuf?.intValue else { return UIColor.beeminder.gray }
+        guard let buf = self.safebuf?.intValue else { return UIColor.Beeminder.gray }
         if buf < 1 {
             return UIColor.red
         }
@@ -178,7 +178,7 @@ class JSONGoal {
         else if buf < 3 {
             return UIColor.blue
         }
-        return UIColor.beeminder.green
+        return UIColor.Beeminder.green
     }
     
     var relativeLane : NSNumber {
@@ -243,7 +243,7 @@ class JSONGoal {
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
-                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.beeminder.green, range: NSRange(location: 0, length: attString.string.count))
+                attString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.Beeminder.green, range: NSRange(location: 0, length: attString.string.count))
                 return attString
             }
             return NSMutableAttributedString(string: "")
@@ -283,7 +283,7 @@ class JSONGoal {
     }
     
     var deltaColorsWhenBelowIsGoodSide: [UIColor] {
-        return [UIColor.beeminder.green, UIColor.blue, UIColor.orange]
+        return [UIColor.Beeminder.green, UIColor.blue, UIColor.orange]
     }
     
     var deltaColorsWhenAboveIsGoodSide: [UIColor] {
@@ -401,7 +401,7 @@ class JSONGoal {
     }
     
     func setupActivitySummaryQuery() {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         guard let categoryType = self.hkCategoryTypeIdentifier() else { return }
         if categoryType != .appleStandHour { return }
         
@@ -472,7 +472,7 @@ class JSONGoal {
     }
     
     func setupHKStatisticsCollectionQuery() {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
         
@@ -530,7 +530,7 @@ class JSONGoal {
     }
     
     func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         
         let endDate = Date()
         let calendar = Calendar.current
@@ -583,7 +583,7 @@ class JSONGoal {
         
         let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
         
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (response) in
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (response) in
             let responseJSON = JSON(response)
             var datapoints = responseJSON.array!
             datapoints = datapoints.filter { (datapoint) -> Bool in
@@ -596,7 +596,7 @@ class JSONGoal {
             
             if datapoints.count == 0 {
                 let requestId = "\(daystamp)-\(self.minuteStamp())"
-                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
+                let params = ["access_token": CurrentUserManager.shared.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
                 self.postDatapoint(params: params, success: { (responseObject) in
                     success?()
                 }, failure: { (error, errorMessage) in
@@ -610,7 +610,7 @@ class JSONGoal {
                     if first {
                         let requestId = "\(daystamp)-\(self.minuteStamp())"
                         let params = [
-                            "access_token": CurrentUserManager.sharedManager.accessToken!,
+                            "access_token": CurrentUserManager.shared.accessToken!,
                             "value": "\(datapointValue)",
                             "comment": "Auto-updated via Apple Health",
                             "requestid": requestId
@@ -619,7 +619,7 @@ class JSONGoal {
                         if datapointValue == val { success?() }
                         else {
                             let datapointID = d["id"].string
-                            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
+                            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
                                 success?()
                             }, errorHandler: { (error, errorMessage) in
                                 errorCompletion?()
@@ -627,7 +627,7 @@ class JSONGoal {
                         }
                     } else {
                         let datapointID = d["id"].string
-                        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
+                        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
                             //
                         }) { (error, errorMessage) in
                             //
@@ -664,7 +664,7 @@ class JSONGoal {
     }
     
     func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
         if self.hasRecentlyUpdatedHealthData() {
             success?()
@@ -750,7 +750,7 @@ class JSONGoal {
     }
     
     func setupHealthKit() {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
         
         healthStore.requestAuthorization(toShare: nil, read: [sampleType], completion: { (success, error) in
@@ -777,7 +777,7 @@ class JSONGoal {
     }
     
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
+        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
     }
 }
 

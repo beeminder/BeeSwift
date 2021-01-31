@@ -11,7 +11,7 @@ import SwiftyJSON
 
 class CurrentUserManager : NSObject {
     
-    static let sharedManager = CurrentUserManager()
+    static let shared = CurrentUserManager()
     static let signedInNotificationName     = "com.beeminder.signedInNotification"
     static let willSignOutNotificationName  = "com.beeminder.willSignOutNotification"
     static let failedSignInNotificationName = "com.beeminder.failedSignInNotification"
@@ -120,7 +120,7 @@ class CurrentUserManager : NSObject {
     }
     
     func syncNotificationDefaults(_ success: (() -> Void)?, failure: (() -> Void)?) {
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: [:],
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.shared.username!).json", parameters: [:],
             success: { (responseObject) -> Void in
                 let responseJSON = JSON(responseObject!)
                 UserDefaults.standard.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
@@ -180,7 +180,7 @@ class CurrentUserManager : NSObject {
     func updateTodayWidget() {
         if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder") {
             sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
-            sharedDefaults.set(CurrentUserManager.sharedManager.accessToken, forKey: "accessToken")
+            sharedDefaults.set(CurrentUserManager.shared.accessToken, forKey: "accessToken")
             sharedDefaults.synchronize()
         }
     }

@@ -14,7 +14,7 @@ enum VersionError: Error {
 }
 
 class VersionManager : NSObject {
-    static let sharedManager = VersionManager()
+    static let shared = VersionManager()
     var minRequiredVersion : String = "1.0"
     
     func currentVersion() -> String? {
@@ -22,16 +22,16 @@ class VersionManager : NSObject {
     }
     
     func updateRequired() -> Bool {
-        guard let version = VersionManager.sharedManager.currentVersion() else { return false }
-        return version.compare(VersionManager.sharedManager.minRequiredVersion, options: .numeric) == .orderedAscending
+        guard let version = VersionManager.shared.currentVersion() else { return false }
+        return version.compare(VersionManager.shared.minRequiredVersion, options: .numeric) == .orderedAscending
     }
     
     func checkIfUpdateRequired(completion: @escaping (Bool, Error?) -> Void) {        
         RequestManager.get(url: "api/private/app_versions.json", parameters: nil, success: { (responseJSON) in
             guard let response = JSON(responseJSON!).dictionary else { return }
             if let minVersion = response["min_ios"]?.number?.decimalValue,
-                let currentVersion = VersionManager.sharedManager.currentVersion() {
-                VersionManager.sharedManager.minRequiredVersion = "\(minVersion)"
+                let currentVersion = VersionManager.shared.currentVersion() {
+                VersionManager.shared.minRequiredVersion = "\(minVersion)"
                 completion(currentVersion.compare("\(minVersion)", options: .numeric) == .orderedAscending, nil)
             }
         }) { (responseError, responseMessage) in

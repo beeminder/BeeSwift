@@ -1,0 +1,52 @@
+
+included:	 # paths to include during linting. `--path` is ignored if present.
+  - BeeSwift
+  - BeeSwiftToday
+
+excluded:	 # paths to ignore during linting. Takes precedence over `included`.
+  - Carthage
+  - Pods
+
+reporter: "xcode"
+
+opt_in_rules: # some rules are only opt-in
+  - control_statement
+  - trailing_newline
+  - colon
+  - comma
+  - toggle_bool
+
+
+disabled_rules:
+- identifier_name
+- shorthand_operator
+- force_cast # Remove from disabled_rules if Constants.swift popoverViewControllerConstants is linted correctly
+- force_try
+- function_body_length # should be removed from disabled_rules - but currently blocks build
+- type_body_length # should be removed from disabled_rules - but currently blocks build
+- file_length # should be removed from disabled_rules - but currently blocks build
+- line_length # should be removed from disabled_rules - but currently blocks build
+- function_parameter_count # should be enabled with about 6 parameters
+- cyclomatic_complexity #
+
+custom_rules:
+  toggle_bool:
+    included: ".*.swift"
+    regex: '(?<=\n)[ \t]*(?<VAR>\w+) *= *!\k<VAR>(?=\s)'
+    name: "Toggle Bool"
+    message: "Prefer `toggle()` over manual boolean toggling."
+    severity: warning
+
+  use_beeminder_colors:
+    included: ".*\\.swift"
+    name: "Beeminder colors"
+    regex: '(UIColor\()|(UIColor\.(?:(?!(clear|beeminder))))'
+    message: "Use colors in `UIColor.beeminder.`"
+    severity: error
+
+  use_beeminder_fonts:
+    included: ".*\\.swift"
+    name: "Beeminder fonts"
+    regex: "(UIFont\\()|(UIFont\\.(?:(?!systemFont|beeminder)))"
+    message: "Use fonts in `UIFont.beeminder.`"
+    severity: error
