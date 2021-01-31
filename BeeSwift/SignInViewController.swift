@@ -29,7 +29,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     let resetPasswordButton: BSButton = {
         let button = BSButton()
         button.setTitle("Forgot password?", for: .normal)
-        button.titleLabel?.font = UIFont.beeminder.defaultFontHeavy
+        button.titleLabel?.font = UIFont.Beeminder.defaultFontHeavy
         if #available(iOS 13.0, *) {
             button.setTitleColor(UIColor.label, for: .normal)
         } else {
@@ -142,7 +142,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         self.signInButton.isHidden = true
         self.signInButton.setTitle("Sign In", for: UIControlState())
         self.signInButton.backgroundColor = UIColor.beeminder.gray
-        self.signInButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
+        self.signInButton.titleLabel?.font = UIFont.Beeminder.defaultFontPlain.withSize(20)
         self.signInButton.titleLabel?.textColor = UIColor.white
         self.signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControlEvents.touchUpInside)
         self.signInButton.snp.makeConstraints { (make) -> Void in
@@ -206,7 +206,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         scrollView.addSubview(self.signUpButton)
         self.signUpButton.isHidden = true
         self.signUpButton.setTitle("Sign Up", for: .normal)
-        self.signUpButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
+        self.signUpButton.titleLabel?.font = UIFont.Beeminder.defaultFontPlain.withSize(20)
         self.signUpButton.addTarget(self, action: #selector(SignInViewController.signUpButtonPressed), for: .touchUpInside)
         self.signUpButton.snp.makeConstraints { (make) in
             make.top.equalTo(self.newPasswordTextField.snp.bottom).offset(15)
@@ -234,11 +234,11 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         }
 
         MBProgressHUD.showAdded(to: self.view, animated: true)
-        OAuthSignInManager.sharedManager.signUpWith(email: newEmail, password: newPassword, username: newUsername)
+        OAuthSignInManager.shared.signUpWith(email: newEmail, password: newPassword, username: newUsername)
     }
     
     @objc func chooseSignInButtonPressed() {
-        CurrentUserManager.sharedManager.signingUp = false
+        CurrentUserManager.shared.signingUp = false
         self.divider.isHidden = false
         self.backToSignUpButton.isHidden = false
         self.emailTextField.isHidden = false
@@ -264,7 +264,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     }
     
     @objc func chooseSignUpButtonPressed() {
-        CurrentUserManager.sharedManager.signingUp = true
+        CurrentUserManager.shared.signingUp = true
         self.divider.isHidden = false
         self.backToSignUpButton.isHidden = true
         self.emailTextField.isHidden = true
@@ -329,7 +329,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         }
         
         MBProgressHUD.showAdded(to: self.view, animated: true)
-        CurrentUserManager.sharedManager.signInWithEmail(email, password: password)
+        CurrentUserManager.shared.signInWithEmail(email, password: password)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

@@ -75,7 +75,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         countdownView.addSubview(self.countdownLabel)
 
-        self.countdownLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(Constants.defaultFontSize)
+        self.countdownLabel.font = UIFont.Beeminder.defaultFontHeavy.withSize(Constants.defaultFontSize)
         self.countdownLabel.textAlignment = .center
         self.countdownLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.centerX.equalTo(countdownView)
@@ -125,7 +125,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.left.right.equalTo(0)
         }
         self.deltasLabel.attributedText = self.goal!.attributedDeltaText
-        self.deltasLabel.font = UIFont.beeminder.defaultBoldFont.withSize(Constants.defaultFontSize)
+        self.deltasLabel.font = UIFont.Beeminder.defaultBoldFont.withSize(Constants.defaultFontSize)
         self.deltasLabel.textAlignment = .center
         
         
@@ -158,7 +158,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         dataEntryView.addSubview(self.dateTextField)
-        self.dateTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
+        self.dateTextField.font = UIFont.Beeminder.defaultFontPlain.withSize(16)
         self.dateTextField.tintColor = UIColor.beeminder.gray
         self.dateTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.dateTextField.layer.borderWidth = 1
@@ -173,7 +173,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         dataEntryView.addSubview(self.valueTextField)
-        self.valueTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
+        self.valueTextField.font = UIFont.Beeminder.defaultFontPlain.withSize(16)
         self.valueTextField.tintColor = UIColor.beeminder.gray
         self.valueTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
         self.valueTextField.layer.borderWidth = 1
@@ -212,7 +212,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let commentLeftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 1))
         
         dataEntryView.addSubview(self.commentTextField)
-        self.commentTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
+        self.commentTextField.font = UIFont.Beeminder.defaultFontPlain.withSize(16)
         self.commentTextField.leftView = commentLeftPaddingView
         self.commentTextField.leftViewMode = .always
         self.commentTextField.tintColor = UIColor.beeminder.gray
@@ -281,7 +281,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let dateLabel = BSLabel()
         dataEntryView.addSubview(dateLabel)
         dateLabel.text = "Date"
-        dateLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
+        dateLabel.font = UIFont.Beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         dateLabel.textAlignment = .center
         dateLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.dateStepper)
@@ -303,7 +303,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let valueLabel = BSLabel()
         dataEntryView.addSubview(valueLabel)
         valueLabel.text = "Value"
-        valueLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
+        valueLabel.font = UIFont.Beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         valueLabel.textAlignment = .center
         valueLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.valueStepper)
@@ -390,7 +390,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if (!CurrentUserManager.sharedManager.signedIn()) { return }
+        if (!CurrentUserManager.shared.signedIn()) { return }
         if keyPath == "graph_url" {
             self.setGraphImage()
         } else if keyPath == "delta_text" || keyPath == "safebump" || keyPath == "safesum" {
@@ -424,8 +424,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func actionButtonPressed() {
-        guard let username = CurrentUserManager.sharedManager.username,
-            let accessToken = CurrentUserManager.sharedManager.accessToken,
+        guard let username = CurrentUserManager.shared.username,
+            let accessToken = CurrentUserManager.shared.accessToken,
             let viewGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(RequestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
         
         let safariVC = SFSafariViewController(url: viewGoalUrl)
@@ -437,7 +437,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.scrollView.refreshControl?.endRefreshing()
         MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
         
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
+        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
             self.pollUntilGraphUpdates()
         }) { (error, errorMessage) in
             let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
@@ -456,7 +456,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setGraphImage() {
-        if CurrentUserManager.sharedManager.isDeadbeat() {
+        if CurrentUserManager.shared.isDeadbeat() {
             self.goalImageView.image = UIImage(named: "GraphPlaceholder")
         } else {
             self.goalImageView.af_setImage(withURL: URL(string: self.goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
@@ -548,12 +548,12 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
         let params = ["urtext": self.urtextFromTextFields(), "requestid": UUID().uuidString]
         
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (responseObject) in
+        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (responseObject) in
             self.commentTextField.text = ""
             self.refreshGoal()
             self.pollUntilGraphUpdates()
             self.submitButton.isUserInteractionEnabled = true
-            CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
+            CurrentUserManager.shared.fetchGoals(success: nil, error: nil)
         }) { (error, errorMessage) in
             self.submitButton.isUserInteractionEnabled = true
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
@@ -570,7 +570,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshGoal() {
-        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
+        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.shared.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
             self.goal = JSONGoal(json: JSON(responseObject!))
             self.datapointsTableView.reloadData()
             self.refreshCountdown()
@@ -634,8 +634,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             return cell
         }
         
-        let text = datapoint["canonical"].string
-        cell.datapointText = text
+            let text = datapoint["canonical"].string
+            cell.datapointText = text
         
         return cell
     }

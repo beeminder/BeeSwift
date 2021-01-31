@@ -31,13 +31,13 @@ class ChooseHKMetricViewController: UIViewController {
             let attrString = NSMutableAttributedString()
             
             attrString.append(NSMutableAttributedString(string: "Configuring goal ",
-                                                        attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFont]))
+                                                        attributes: [NSAttributedStringKey.font: UIFont.Beeminder.defaultFont]))
             
             attrString.append(NSMutableAttributedString(string: "\(self.goal.slug)\n",
-                attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultBoldFont]))
+                attributes: [NSAttributedStringKey.font: UIFont.Beeminder.defaultBoldFont]))
             
             attrString.append(NSMutableAttributedString(string: "Apple Health metric as autodata!\nWith this metric as the autodata source for your goal, Apple Health will keep Beeminder up to date with your latest data automatically.\n(Technically it updates the Beeminder iOS app which updates Beeminder so you'll have to open the app occasionally.)\nPick a metric from the list below, then hit save to update your goal.",
-                                                        attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
+                                                        attributes: [NSAttributedStringKey.font: UIFont.Beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
             return attrString
         }()
         
@@ -77,7 +77,7 @@ class ChooseHKMetricViewController: UIViewController {
     
     @objc func saveButtonPressed() {
         guard let selectedRow = self.tableView.indexPathForSelectedRow?.row else { return }
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         let metric = self.sortedHKMetrics[selectedRow]
@@ -103,7 +103,7 @@ class ChooseHKMetricViewController: UIViewController {
         var params : [String : [String : String]] = [:]
         params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
         
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
                 let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))

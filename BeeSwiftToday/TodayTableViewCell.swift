@@ -197,7 +197,7 @@ class TodayTableViewCell: UITableViewCell {
     /// and replacing it with the downloaded, updated image
     /// provided via the urlStr
     func setGraphImage(urlStr: String?) {
-        guard !CurrentUserManager.sharedManager.isDeadbeat(),
+        guard !CurrentUserManager.shared.isDeadbeat(),
         let thumbUrlStr = urlStr, let thumbUrl = URL(string: thumbUrlStr) else {
             self.graphImageView.image = self.thumbnailPlaceholder
             return

@@ -30,13 +30,13 @@ class RemoveHKMetricViewController: UIViewController {
             let attrString = NSMutableAttributedString()
             
             attrString.append(NSMutableAttributedString(string: "Configuring goal ",
-                                                        attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFont]))
+                                                        attributes: [NSAttributedStringKey.font: UIFont.Beeminder.defaultFont]))
             
             attrString.append(NSMutableAttributedString(string: "\(self.goal.slug)\n",
-                attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultBoldFont]))
+                attributes: [NSAttributedStringKey.font: UIFont.Beeminder.defaultBoldFont]))
             
             attrString.append(NSMutableAttributedString(string: "This goal obtains its data from Apple Health (\(self.goal.humanizedAutodata!)). You can disconnect the goal with the button below.",
-                attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
+                attributes: [NSAttributedStringKey.font: UIFont.Beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
             return attrString
         }()
         
@@ -73,7 +73,7 @@ class RemoveHKMetricViewController: UIViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
             
             self.goal = JSONGoal(json: JSON(responseObject!))
 

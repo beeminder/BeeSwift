@@ -10,13 +10,13 @@ import Foundation
 import SwiftyJSON
 
 class OAuthSignInManager: NSObject {
-    static let sharedManager = OAuthSignInManager()
+    static let shared = OAuthSignInManager()
     
     func signUpWith(email: String, password: String, username: String) {
         SignedRequestManager.signedPOST(url: "/api/v1/users", parameters: ["email": email, "password": password, "username": username], success: { (responseObject) -> Void in
-            CurrentUserManager.sharedManager.handleSuccessfulSignin(JSON(responseObject!))
+            CurrentUserManager.shared.handleSuccessfulSignin(JSON(responseObject!))
         }) { (responseError, errorMessage) -> Void in
-            if responseError != nil  { CurrentUserManager.sharedManager.handleFailedSignup(responseError!, errorMessage: errorMessage) }
+            if responseError != nil  { CurrentUserManager.shared.handleFailedSignup(responseError!, errorMessage: errorMessage) }
         }
     }
 }

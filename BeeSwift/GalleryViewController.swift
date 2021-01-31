@@ -72,7 +72,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.lastUpdatedView.addSubview(self.lastUpdatedLabel)
         self.lastUpdatedLabel.text = "Last updated:"
-        self.lastUpdatedLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
+        self.lastUpdatedLabel.font = UIFont.Beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         self.lastUpdatedLabel.textAlignment = NSTextAlignment.center
         self.lastUpdatedLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(3)
@@ -90,7 +90,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !CurrentUserManager.sharedManager.isDeadbeat() {
+            if !CurrentUserManager.shared.isDeadbeat() {
                 make.height.equalTo(0)
             }
         }
@@ -99,7 +99,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.deadbeatView.addSubview(deadbeatLabel)
         deadbeatLabel.textColor = UIColor.red
         deadbeatLabel.numberOfLines = 0
-        deadbeatLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(13)
+        deadbeatLabel.font = UIFont.Beeminder.defaultFontHeavy.withSize(13)
         deadbeatLabel.text = "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
         deadbeatLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(3)
@@ -119,7 +119,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.outofdateView.addSubview(self.outofdateLabel)
         self.outofdateLabel.textColor = .red
         self.outofdateLabel.numberOfLines = 0
-        self.outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
+        self.outofdateLabel.font = UIFont.Beeminder.defaultFontHeavy.withSize(12)
         self.outofdateLabel.textAlignment = .center
         self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
         self.outofdateLabel.snp.makeConstraints { (make) in
@@ -175,10 +175,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.fetchGoals()
         
-        _ = try? VersionManager.sharedManager.appStoreVersion { (version, error) in
+        _ = try? VersionManager.shared.appStoreVersion { (version, error) in
             if let error = error {
                 print(error)
-            } else if let appStoreVersion = version, let currentVersion = VersionManager.sharedManager.currentVersion() {
+            } else if let appStoreVersion = version, let currentVersion = VersionManager.shared.currentVersion() {
                 if currentVersion < appStoreVersion {
                     DispatchQueue.main.sync {
                         self.outofdateView.snp.remakeConstraints { (make) -> Void in
@@ -192,7 +192,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         
-        VersionManager.sharedManager.checkIfUpdateRequired { (required, error) in
+        VersionManager.shared.checkIfUpdateRequired { (required, error) in
             if required && error == nil {
                 self.outofdateView.snp.remakeConstraints { (make) -> Void in
                     make.left.equalTo(0)
@@ -205,7 +205,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         
-        if CurrentUserManager.sharedManager.signedIn() {
+        if CurrentUserManager.shared.signedIn() {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
                 if success {
@@ -218,7 +218,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !CurrentUserManager.sharedManager.signedIn() {
+        if !CurrentUserManager.shared.signedIn() {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
@@ -227,8 +227,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleGoalsFetchedNotification() {
-        self.goals = CurrentUserManager.sharedManager.goals
-        self.lastUpdated = CurrentUserManager.sharedManager.goalsFetchedAt
+        self.goals = CurrentUserManager.shared.goals
+        self.lastUpdated = CurrentUserManager.shared.goalsFetchedAt
         self.didFetchGoals()
     }
     
@@ -326,15 +326,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !CurrentUserManager.sharedManager.isDeadbeat() {
+            if !CurrentUserManager.shared.isDeadbeat() {
                 make.height.equalTo(0)
             }
         }
     }
     
     @objc func handleCreateGoalButtonPressed() {
-        guard let username = CurrentUserManager.sharedManager.username,
-            let access_token = CurrentUserManager.sharedManager.accessToken,
+        guard let username = CurrentUserManager.shared.username,
+            let access_token = CurrentUserManager.shared.accessToken,
             let createGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(access_token)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true") else { return }
         
         let safariVC = SFSafariViewController(url: createGoalUrl)
@@ -398,7 +398,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             if goal.hkPermissionType() != nil { permissions.insert(goal.hkPermissionType()!) }
         }
         guard permissions.count > 0 else { return }
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let healthStore = HealthStoreManager.shared.healthStore else { return }
         
         healthStore.requestAuthorization(toShare: nil, read: permissions, completion: { (success, error) in
             self.goals.forEach { (goal) in goal.setupHealthKit() }
@@ -409,7 +409,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if self.goals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
+        CurrentUserManager.shared.fetchGoals(success: { (goals) in
             self.goals = goals
             self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
             self.didFetchGoals()
@@ -451,7 +451,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return VersionManager.sharedManager.updateRequired() ? 0 : self.filteredGoals.count + 1
+        return VersionManager.shared.updateRequired() ? 0 : self.filteredGoals.count + 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {

@@ -32,7 +32,7 @@ class TimerViewController: UIViewController {
         }
         self.timerLabel.text = "00:00:00"
         self.timerLabel.textColor = .white
-        self.timerLabel.font = UIFont.beeminder.defaultBoldFont.withSize(48)
+        self.timerLabel.font = UIFont.Beeminder.defaultBoldFont.withSize(48)
         
         let exitButton = BSButton()
         self.view.addSubview(exitButton)
@@ -177,7 +177,7 @@ class TimerViewController: UIViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug!)/datapoints.json", parameters: params, success: { (responseObject) in
+        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.shared.username!)/goals/\(self.slug!)/datapoints.json", parameters: params, success: { (responseObject) in
             hud?.mode = .text
             hud?.labelText = "Added!"
             DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {

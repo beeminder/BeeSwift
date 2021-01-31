@@ -37,7 +37,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         if #available(iOS 13.0, *) {
             self.contentView.backgroundColor = .systemBackground
         }
-        self.slugLabel.font = UIFont.beeminder.defaultFontHeavy
+        self.slugLabel.font = UIFont.Beeminder.defaultFontHeavy
         self.slugLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.margin)
             make.top.equalTo(10)
@@ -47,7 +47,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.slugLabel.textColor = .label
         }
         
-        self.titleLabel.font = UIFont.beeminder.defaultFont
+        self.titleLabel.font = UIFont.Beeminder.defaultFont
         if #available(iOS 13.0, *) {
             self.titleLabel.textColor = .label
         }
@@ -66,7 +66,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         }
 
         self.safesumLabel.textAlignment = NSTextAlignment.center
-        self.safesumLabel.font = UIFont.beeminder.defaultBoldFont.withSize(13)
+        self.safesumLabel.font = UIFont.Beeminder.defaultBoldFont.withSize(13)
         self.safesumLabel.numberOfLines = 0
         self.safesumLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
@@ -95,7 +95,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     
     func setThumbnailImage() {
         guard let _ = self.goal else { return }
-        if CurrentUserManager.sharedManager.isDeadbeat() {
+        if CurrentUserManager.shared.isDeadbeat() {
             self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
         } else {
             self.thumbnailImageView.af_setImage(withURL: URL(string: self.goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)

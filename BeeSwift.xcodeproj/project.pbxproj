@@ -461,6 +461,7 @@
 				A12E69491BD3EF0200AB94C2 /* Sources */,
 				A12E694A1BD3EF0200AB94C2 /* Frameworks */,
 				A12E694B1BD3EF0200AB94C2 /* Resources */,
+				9BB5FAB424F13A4500C82166 /* Lint Sources */,
 			);
 			buildRules = (
 			);
@@ -481,6 +482,7 @@
 				A196CB121AE4142E00B90A3E /* Resources */,
 				A1B53C401B2D04EB00AF266F /* Embed App Extensions */,
 				65ECC2B46631C152D41E5ED7 /* [CP] Embed Pods Frameworks */,
+				9BB5FAB324F139E500C82166 /* Lint Sources */,
 			);
 			buildRules = (
 			);
@@ -730,6 +732,46 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BeeSwift/Pods-BeeSwift-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		9BB5FAB324F139E500C82166 /* Lint Sources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/*",
+				"$(SRCROOT)/.swiftlint.yml",
+			);
+			name = "Lint Sources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\" lint\n";
+		};
+		9BB5FAB424F13A4500C82166 /* Lint Sources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/*",
+				"$(SRCROOT)/.swiftlint.yml",
+			);
+			name = "Lint Sources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\" lint\n";
 		};
 		E2D92A94933DBD2D5D5F3943 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
