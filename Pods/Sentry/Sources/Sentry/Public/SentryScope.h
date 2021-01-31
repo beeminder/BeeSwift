@@ -1,10 +1,7 @@
-#import "SentryBreadcrumb.h"
 #import "SentryDefines.h"
-#import "SentryOptions.h"
 #import "SentrySerializable.h"
-#import "SentrySession.h"
 
-@class SentryUser;
+@class SentryUser, SentrySession, SentryOptions, SentryBreadcrumb, SentryAttachment;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,7 +42,8 @@ NS_SWIFT_NAME(Scope)
 /**
  * Set global extra -> these will be sent with every event
  */
-- (void)setExtraValue:(id)value forKey:(NSString *)key NS_SWIFT_NAME(setExtra(value:key:));
+- (void)setExtraValue:(id _Nullable)value
+               forKey:(NSString *)key NS_SWIFT_NAME(setExtra(value:key:));
 
 /**
  * Remove the extra for the specified key.
@@ -106,6 +104,14 @@ NS_SWIFT_NAME(Scope)
  * Remove the context for the specified key.
  */
 - (void)removeContextForKey:(NSString *)key NS_SWIFT_NAME(removeContext(key:));
+
+/**
+ * Adds an attachment to the Scope's list of attachments. The SDK adds the attachment to every event
+ * sent to Sentry.
+ *
+ * @param attachment The attachment to add to the Scope's list of attachments.
+ */
+- (void)addAttachment:(SentryAttachment *)attachment;
 
 /**
  * Clears the current Scope

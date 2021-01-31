@@ -1,16 +1,31 @@
 #import "SentryClient.h"
+#import "NSDictionary+SentrySanitize.h"
 #import "SentryCrashDefaultBinaryImageProvider.h"
 #import "SentryCrashDefaultMachineContextWrapper.h"
 #import "SentryDebugMetaBuilder.h"
 #import "SentryDefaultCurrentDateProvider.h"
 #import "SentryDsn.h"
+#import "SentryEnvelope.h"
+#import "SentryEvent.h"
+#import "SentryException.h"
+#import "SentryFileManager.h"
+#import "SentryFrameRemover.h"
 #import "SentryGlobalEventProcessor.h"
+#import "SentryId.h"
+#import "SentryInstallation.h"
 #import "SentryLog.h"
+#import "SentryMessage.h"
 #import "SentryMeta.h"
+#import "SentryOptions.h"
+#import "SentrySDK+Private.h"
+#import "SentryScope+Private.h"
 #import "SentryScope.h"
 #import "SentryStacktraceBuilder.h"
 #import "SentryThreadInspector.h"
+#import "SentryTransport.h"
 #import "SentryTransportFactory.h"
+#import "SentryUser.h"
+#import "SentryUserFeedback.h"
 
 #if SENTRY_HAS_UIKIT
 #    import <UIKit/UIKit.h>
@@ -28,6 +43,8 @@ SentryClient ()
 
 @end
 
+NSString *const DropSessionLogMessage = @"Session has no release name. Won't send it.";
+
 @implementation SentryClient
 
 - (_Nullable instancetype)initWithOptions:(SentryOptions *)options
@@ -41,7 +58,9 @@ SentryClient ()
         self.debugMetaBuilder =
             [[SentryDebugMetaBuilder alloc] initWithBinaryImageProvider:provider];
 
-        SentryStacktraceBuilder *stacktraceBuilder = [[SentryStacktraceBuilder alloc] init];
+        SentryFrameRemover *frameRemover = [[SentryFrameRemover alloc] init];
+        SentryStacktraceBuilder *stacktraceBuilder =
+            [[SentryStacktraceBuilder alloc] initWithSentryFrameRemover:frameRemover];
         id<SentryCrashMachineContextWrapper> machineContextWrapper =
             [[SentryCrashDefaultMachineContextWrapper alloc] init];
 
@@ -84,70 +103,195 @@ SentryClient ()
     return _fileManager;
 }
 
-- (NSString *_Nullable)captureMessage:(NSString *)message withScope:(SentryScope *_Nullable)scope
+- (SentryId *)captureMessage:(NSString *)message
+{
+    return [self captureMessage:message withScope:[[SentryScope alloc] init]];
+}
+
+- (SentryId *)captureMessage:(NSString *)message withScope:(SentryScope *)scope
 {
     SentryEvent *event = [[SentryEvent alloc] initWithLevel:kSentryLevelInfo];
+    event.message = [[SentryMessage alloc] initWithFormatted:message];
+    return [self sendEvent:event withScope:scope alwaysAttachStacktrace:NO];
+}
+
+- (SentryId *)captureException:(NSException *)exception
+{
+    return [self captureException:exception withScope:[[SentryScope alloc] init]];
+}
+
+- (SentryId *)captureException:(NSException *)exception withScope:(SentryScope *)scope
+{
+    SentryEvent *event = [self buildExceptionEvent:exception];
+    return [self sendEvent:event withScope:scope alwaysAttachStacktrace:YES];
+}
+
+- (SentryId *)captureException:(NSException *)exception
+                   withSession:(SentrySession *)session
+                     withScope:(SentryScope *)scope
+{
+    SentryEvent *event = [self buildExceptionEvent:exception];
+    event = [self prepareEvent:event withScope:scope alwaysAttachStacktrace:YES];
+    return [self sendEvent:event withSession:session withScope:scope];
+}
+
+- (SentryEvent *)buildExceptionEvent:(NSException *)exception
+{
+    SentryEvent *event = [[SentryEvent alloc] initWithLevel:kSentryLevelError];
+    SentryException *sentryException = [[SentryException alloc] initWithValue:exception.reason
+                                                                         type:exception.name];
+    event.exceptions = @[ sentryException ];
+    [self setUserInfo:exception.userInfo withEvent:event];
+    return event;
+}
+
+- (SentryId *)captureError:(NSError *)error
+{
+    return [self captureError:error withScope:[[SentryScope alloc] init]];
+}
+
+- (SentryId *)captureError:(NSError *)error withScope:(SentryScope *)scope
+{
+    SentryEvent *event = [self buildErrorEvent:error];
+    return [self sendEvent:event withScope:scope alwaysAttachStacktrace:YES];
+}
+
+- (SentryId *)captureError:(NSError *)error
+               withSession:(SentrySession *)session
+                 withScope:(SentryScope *)scope
+{
+    SentryEvent *event = [self buildErrorEvent:error];
+    event = [self prepareEvent:event withScope:scope alwaysAttachStacktrace:YES];
+    return [self sendEvent:event withSession:session withScope:scope];
+}
+
+- (SentryEvent *)buildErrorEvent:(NSError *)error
+{
+    SentryEvent *event = [[SentryEvent alloc] initWithLevel:kSentryLevelError];
+    NSString *formatted = [NSString stringWithFormat:@"%@ %ld", error.domain, (long)error.code];
+    SentryMessage *message = [[SentryMessage alloc] initWithFormatted:formatted];
+    message.message = [error.domain stringByAppendingString:@" %s"];
+    message.params = @[ [NSString stringWithFormat:@"%ld", (long)error.code] ];
     event.message = message;
-    return [self sendEvent:event withScope:scope alwaysAttachStacktrace:NO];
+    [self setUserInfo:error.userInfo withEvent:event];
+    return event;
 }
 
-- (NSString *_Nullable)captureException:(NSException *)exception
-                              withScope:(SentryScope *_Nullable)scope
+- (SentryId *)captureCrashEvent:(SentryEvent *)event withScope:(SentryScope *)scope
 {
-    SentryEvent *event = [[SentryEvent alloc] initWithLevel:kSentryLevelError];
-    event.message = exception.reason;
-    return [self sendEvent:event withScope:scope alwaysAttachStacktrace:YES];
+    return [self sendEvent:event withScope:scope alwaysAttachStacktrace:NO isCrashEvent:YES];
 }
 
-- (NSString *_Nullable)captureError:(NSError *)error withScope:(SentryScope *_Nullable)scope
-{
-    SentryEvent *event = [[SentryEvent alloc] initWithLevel:kSentryLevelError];
-    event.message = error.localizedDescription;
-    return [self sendEvent:event withScope:scope alwaysAttachStacktrace:YES];
-}
-
-- (NSString *_Nullable)captureEvent:(SentryEvent *)event withScope:(SentryScope *_Nullable)scope
-{
-    return [self sendEvent:event withScope:scope alwaysAttachStacktrace:NO];
-}
-
-- (NSString *_Nullable)sendEvent:(SentryEvent *)event
-                       withScope:(SentryScope *_Nullable)scope
-          alwaysAttachStacktrace:(BOOL)alwaysAttachStacktrace
+- (SentryId *)captureCrashEvent:(SentryEvent *)event
+                    withSession:(SentrySession *)session
+                      withScope:(SentryScope *)scope
 {
     SentryEvent *preparedEvent = [self prepareEvent:event
                                           withScope:scope
-                             alwaysAttachStacktrace:alwaysAttachStacktrace];
+                             alwaysAttachStacktrace:NO
+                                       isCrashEvent:YES];
+    return [self sendEvent:preparedEvent withSession:session withScope:scope];
+}
+
+- (SentryId *)captureEvent:(SentryEvent *)event
+{
+    return [self captureEvent:event withScope:[[SentryScope alloc] init]];
+}
+
+- (SentryId *)captureEvent:(SentryEvent *)event withScope:(SentryScope *)scope
+{
+    return [self sendEvent:event withScope:scope alwaysAttachStacktrace:NO];
+}
+
+- (SentryId *)sendEvent:(SentryEvent *)event
+                 withScope:(SentryScope *)scope
+    alwaysAttachStacktrace:(BOOL)alwaysAttachStacktrace
+{
+    return [self sendEvent:event
+                     withScope:scope
+        alwaysAttachStacktrace:alwaysAttachStacktrace
+                  isCrashEvent:NO];
+}
+
+- (SentryId *)sendEvent:(SentryEvent *)event
+                 withScope:(SentryScope *)scope
+    alwaysAttachStacktrace:(BOOL)alwaysAttachStacktrace
+              isCrashEvent:(BOOL)isCrashEvent
+{
+    SentryEvent *preparedEvent = [self prepareEvent:event
+                                          withScope:scope
+                             alwaysAttachStacktrace:alwaysAttachStacktrace
+                                       isCrashEvent:isCrashEvent];
+
     if (nil != preparedEvent) {
-        if (nil != self.options.beforeSend) {
-            preparedEvent = self.options.beforeSend(preparedEvent);
-        }
-        if (nil != preparedEvent) {
-            [self.transport sendEvent:preparedEvent withCompletionHandler:nil];
-            return preparedEvent.eventId;
-        }
+        [self.transport sendEvent:preparedEvent attachments:scope.attachments];
+        return preparedEvent.eventId;
     }
-    return nil;
+
+    return SentryId.empty;
+}
+
+- (SentryId *)sendEvent:(SentryEvent *)event
+            withSession:(SentrySession *)session
+              withScope:(SentryScope *)scope
+{
+    if (nil != event) {
+        if (nil == session.releaseName || [session.releaseName length] == 0) {
+            [SentryLog logWithMessage:DropSessionLogMessage andLevel:kSentryLogLevelDebug];
+            [self.transport sendEvent:event attachments:scope.attachments];
+            return event.eventId;
+        }
+
+        [self.transport sendEvent:event withSession:session attachments:scope.attachments];
+        return event.eventId;
+    } else {
+        [self captureSession:session];
+        return SentryId.empty;
+    }
 }
 
 - (void)captureSession:(SentrySession *)session
 {
+    if (nil == session.releaseName || [session.releaseName length] == 0) {
+        [SentryLog logWithMessage:DropSessionLogMessage andLevel:kSentryLogLevelDebug];
+        return;
+    }
+
     SentryEnvelope *envelope = [[SentryEnvelope alloc] initWithSession:session];
     [self captureEnvelope:envelope];
 }
 
-// TODO: We remove this function It is not in the header and nobody uses it
-- (void)captureSessions:(NSArray<SentrySession *> *)sessions
-{
-    SentryEnvelope *envelope = [[SentryEnvelope alloc] initWithSessions:sessions];
-    [self captureEnvelope:envelope];
-}
-
-- (NSString *_Nullable)captureEnvelope:(SentryEnvelope *)envelope
+- (void)captureEnvelope:(SentryEnvelope *)envelope
 {
     // TODO: What is about beforeSend
-    [self.transport sendEnvelope:envelope withCompletionHandler:nil];
-    return envelope.header.eventId;
+
+    if ([self isDisabled]) {
+        [self logDisabledMessage];
+        return;
+    }
+
+    [self.transport sendEnvelope:envelope];
+}
+
+- (void)captureUserFeedback:(SentryUserFeedback *)userFeedback
+{
+    if ([self isDisabled]) {
+        [self logDisabledMessage];
+        return;
+    }
+
+    if ([SentryId.empty isEqual:userFeedback.eventId]) {
+        [SentryLog logWithMessage:@"Capturing UserFeedback with an empty event id. Won't send it."
+                         andLevel:kSentryLogLevelDebug];
+        return;
+    }
+
+    [self.transport sendUserFeedback:userFeedback];
+}
+
+- (void)storeEnvelope:(SentryEnvelope *)envelope
+{
+    [self.fileManager storeEnvelope:envelope];
 }
 
 /**
@@ -164,14 +308,23 @@ SentryClient ()
 }
 
 - (SentryEvent *_Nullable)prepareEvent:(SentryEvent *)event
-                             withScope:(SentryScope *_Nullable)scope
+                             withScope:(SentryScope *)scope
                 alwaysAttachStacktrace:(BOOL)alwaysAttachStacktrace
 {
-    NSParameterAssert(event);
+    return [self prepareEvent:event
+                     withScope:scope
+        alwaysAttachStacktrace:alwaysAttachStacktrace
+                  isCrashEvent:NO];
+}
 
-    if (NO == [self.options.enabled boolValue]) {
-        [SentryLog logWithMessage:@"SDK is disabled, will not do anything"
-                         andLevel:kSentryLogLevelDebug];
+- (SentryEvent *_Nullable)prepareEvent:(SentryEvent *)event
+                             withScope:(SentryScope *)scope
+                alwaysAttachStacktrace:(BOOL)alwaysAttachStacktrace
+                          isCrashEvent:(BOOL)isCrashEvent
+{
+    NSParameterAssert(event);
+    if ([self isDisabled]) {
+        [self logDisabledMessage];
         return nil;
     }
 
@@ -202,6 +355,7 @@ SentryClient ()
 
     NSString *environment = self.options.environment;
     if (nil != environment && nil == event.environment) {
+        // Set the environment from option to the event before Scope is applied
         event.environment = environment;
     }
 
@@ -214,27 +368,55 @@ SentryClient ()
         event.sdk = sdk;
     }
 
-    BOOL shouldAttachStacktrace = alwaysAttachStacktrace ||
-        [self.options.attachStacktrace boolValue]
+    BOOL shouldAttachStacktrace = alwaysAttachStacktrace || self.options.attachStacktrace
         || (nil != event.exceptions && [event.exceptions count] > 0);
 
     BOOL debugMetaNotAttached = !(nil != event.debugMeta && event.debugMeta.count > 0);
-    if (shouldAttachStacktrace && debugMetaNotAttached) {
+    if (!isCrashEvent && shouldAttachStacktrace && debugMetaNotAttached) {
         event.debugMeta = [self.debugMetaBuilder buildDebugMeta];
     }
 
     BOOL threadsNotAttached = !(nil != event.threads && event.threads.count > 0);
-    if (shouldAttachStacktrace && threadsNotAttached) {
-        // We don't want to add the stacktrace of attaching the stacktrace.
-        // Therefore we skip three frames.
-        event.threads = [self.threadInspector getCurrentThreadsSkippingFrames:3];
+    if (!isCrashEvent && shouldAttachStacktrace && threadsNotAttached) {
+        event.threads = [self.threadInspector getCurrentThreads];
     }
 
-    if (nil != scope) {
-        event = [scope applyToEvent:event maxBreadcrumb:self.options.maxBreadcrumbs];
+    event = [scope applyToEvent:event maxBreadcrumb:self.options.maxBreadcrumbs];
+
+    // With scope applied, before running callbacks run:
+    if (nil == event.environment) {
+        // We default to environment 'production' if nothing was set
+        event.environment = @"production";
     }
 
-    return [self callEventProcessors:event];
+    // Need to do this after the scope is applied cause this sets the user if there is any
+    [self setUserIdIfNoUserSet:event];
+
+    event = [self callEventProcessors:event];
+
+    if (nil != self.options.beforeSend) {
+        event = self.options.beforeSend(event);
+    }
+
+    if (isCrashEvent && nil != self.options.onCrashedLastRun && !SentrySDK.crashedLastRunCalled) {
+        // We only want to call the callback once. It can occur that multiple crash events are
+        // about to be sent.
+        self.options.onCrashedLastRun(event);
+        SentrySDK.crashedLastRunCalled = YES;
+    }
+
+    return event;
+}
+
+- (BOOL)isDisabled
+{
+    return !self.options.enabled || nil == self.options.parsedDsn;
+}
+
+- (void)logDisabledMessage
+{
+    [SentryLog logWithMessage:@"SDK disabled or no DSN set. Won't do anyting."
+                     andLevel:kSentryLogLevelDebug];
 }
 
 - (SentryEvent *_Nullable)callEventProcessors:(SentryEvent *)event
@@ -251,6 +433,32 @@ SentryClient ()
         }
     }
     return newEvent;
+}
+
+- (void)setUserInfo:(NSDictionary *)userInfo withEvent:(SentryEvent *)event
+{
+    if (nil != event && nil != userInfo && userInfo.count > 0) {
+        NSMutableDictionary *context;
+        if (nil == event.context) {
+            context = [[NSMutableDictionary alloc] init];
+            event.context = context;
+        } else {
+            context = [event.context mutableCopy];
+        }
+
+        [context setValue:[userInfo sentry_sanitize] forKey:@"user info"];
+    }
+}
+
+- (void)setUserIdIfNoUserSet:(SentryEvent *)event
+{
+    // We only want to set the id if the customer didn't set a user so we at least set something to
+    // identify the user.
+    if (nil == event.user) {
+        SentryUser *user = [[SentryUser alloc] init];
+        user.userId = [SentryInstallation id];
+        event.user = user;
+    }
 }
 
 @end
