@@ -32,7 +32,7 @@ class TimerViewController: UIViewController {
         }
         self.timerLabel.text = "00:00:00"
         self.timerLabel.textColor = .white
-        self.timerLabel.font = UIFont.beeminder.defaultBoldFont.withSize(48)
+        self.timerLabel.font = UIFont.Beeminder.defaultBoldFont.withSize(48)
         
         let exitButton = BSButton()
         self.view.addSubview(exitButton)

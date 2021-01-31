@@ -31,13 +31,13 @@ class ChooseHKMetricViewController: UIViewController {
             let attrString = NSMutableAttributedString()
             
             attrString.append(NSMutableAttributedString(string: "Configuring goal ",
-                                                        attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFont]))
+                                                        attributes: [NSAttributedStringKey.font: UIFont.Beeminder.defaultFont]))
             
             attrString.append(NSMutableAttributedString(string: "\(self.goal.slug)\n",
-                attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultBoldFont]))
+                attributes: [NSAttributedStringKey.font: UIFont.Beeminder.defaultBoldFont]))
             
             attrString.append(NSMutableAttributedString(string: "Apple Health metric as autodata!\nWith this metric as the autodata source for your goal, Apple Health will keep Beeminder up to date with your latest data automatically.\n(Technically it updates the Beeminder iOS app which updates Beeminder so you'll have to open the app occasionally.)\nPick a metric from the list below, then hit save to update your goal.",
-                                                        attributes: [NSAttributedStringKey.font: UIFont.beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
+                                                        attributes: [NSAttributedStringKey.font: UIFont.Beeminder.defaultFontLight.withSize(Constants.defaultFontSize)]))
             return attrString
         }()
         

@@ -21,8 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         removeAllLocalNotifications()
 
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.font :
-            UIFont.beeminder.defaultFontPlain.withSize(20)]
-        UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedStringKey.font : UIFont.beeminder.defaultFontPlain.withSize(18)], for: UIControlState())
+            UIFont.Beeminder.defaultFontPlain.withSize(20)]
+        UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedStringKey.font : UIFont.Beeminder.defaultFontPlain.withSize(18)], for: UIControlState())
         IQKeyboardManager.shared().isEnableAutoToolbar = false
 
         if HKHealthStore.isHealthDataAvailable() {

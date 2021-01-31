@@ -19,14 +19,14 @@ class EditNotificationsViewController: UIViewController {
             } else if self.timePickerEditingMode == .alertstart {
                 self.timePickerView.isHidden = false
                 self.setTimePickerComponents(self.alertstart.intValue)
-                self.alertStartLabel.font = UIFont.beeminder.defaultBoldFont
-                self.deadlineLabel.font = UIFont.beeminder.defaultFont
+                self.alertStartLabel.font = UIFont.Beeminder.defaultBoldFont
+                self.deadlineLabel.font = UIFont.Beeminder.defaultFont
             }
             else if self.timePickerEditingMode == .deadline {
                 self.timePickerView.isHidden = false
                 self.setTimePickerComponents(self.deadline.intValue)
-                self.alertStartLabel.font = UIFont.beeminder.defaultFont
-                self.deadlineLabel.font = UIFont.beeminder.defaultBoldFont
+                self.alertStartLabel.font = UIFont.Beeminder.defaultFont
+                self.deadlineLabel.font = UIFont.Beeminder.defaultBoldFont
             }
         }
     }
@@ -222,7 +222,7 @@ extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerView
             make.left.equalTo(10)
             make.right.equalTo(-20)
         }
-        label.font = UIFont.beeminder.defaultFontPlain.withSize(17)
+        label.font = UIFont.Beeminder.defaultFontPlain.withSize(17)
         
         var text = ""
         var alignment = NSTextAlignment.center

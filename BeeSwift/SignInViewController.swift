@@ -29,7 +29,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     let resetPasswordButton: BSButton = {
         let button = BSButton()
         button.setTitle("Forgot password?", for: .normal)
-        button.titleLabel?.font = UIFont.beeminder.defaultFontHeavy
+        button.titleLabel?.font = UIFont.Beeminder.defaultFontHeavy
         if #available(iOS 13.0, *) {
             button.setTitleColor(UIColor.label, for: .normal)
         } else {
@@ -142,7 +142,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         self.signInButton.isHidden = true
         self.signInButton.setTitle("Sign In", for: UIControlState())
         self.signInButton.backgroundColor = UIColor.beeminder.gray
-        self.signInButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
+        self.signInButton.titleLabel?.font = UIFont.Beeminder.defaultFontPlain.withSize(20)
         self.signInButton.titleLabel?.textColor = UIColor.white
         self.signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControlEvents.touchUpInside)
         self.signInButton.snp.makeConstraints { (make) -> Void in
@@ -206,7 +206,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         scrollView.addSubview(self.signUpButton)
         self.signUpButton.isHidden = true
         self.signUpButton.setTitle("Sign Up", for: .normal)
-        self.signUpButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
+        self.signUpButton.titleLabel?.font = UIFont.Beeminder.defaultFontPlain.withSize(20)
         self.signUpButton.addTarget(self, action: #selector(SignInViewController.signUpButtonPressed), for: .touchUpInside)
         self.signUpButton.snp.makeConstraints { (make) in
             make.top.equalTo(self.newPasswordTextField.snp.bottom).offset(15)

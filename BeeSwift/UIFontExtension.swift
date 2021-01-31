@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 extension UIFont {
-    struct beeminder {
+    struct Beeminder {
         static var defaultFont: UIFont {
             return defaultFontLight
         }
