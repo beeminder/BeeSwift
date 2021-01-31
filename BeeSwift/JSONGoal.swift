@@ -77,15 +77,27 @@ class JSONGoal {
         self.runits = json["runits"].string!
         self.yaxis = json["yaxis"].string!
         self.baremin = json["baremin"].string!
-        if json["rate"].number != nil { self.rate = json["rate"].number! }
-        if json["delta_text"].string != nil { self.delta_text = json["delta_text"].string! }
+        if let rate = json["rate"].number {
+            self.rate = rate
+        }
+        if let deltaText = json["delta_text"].string {
+            self.delta_text = deltaText
+        }
         self.won = json["won"].number!
-        if json["lane"].number != nil { self.lane = json["lane"].number! }
+        if let lane = json["lane"].number {
+            self.lane = lane
+        }
         self.yaw = json["yaw"].number!
         self.dir = json["dir"].number!
-        if json["limsum"].string != nil { self.limsum = json["limsum"].string! }
-        if json["safesum"].string != nil { self.safesum = json["safesum"].string! }
-        if json["safebuf"].number != nil { self.safebuf = json["safebuf"].number! }
+        if let limsum = json["limsum"].string {
+            self.limsum = limsum
+        }
+        if let safesum = json["safesum"].string {
+            self.safesum = safesum
+        }
+        if let safebuf = json["safebuf"].number {
+            self.safebuf = safebuf
+        }
         self.use_defaults = json["use_defaults"].bool! as NSNumber
         if let safebump = json["safebump"].number {
             self.safebump = safebump
@@ -94,11 +106,14 @@ class JSONGoal {
             self.curval = curval
         }
         self.pledge = json["pledge"].number!
-        let ad : String? = json["autodata"].string
-        if ad != nil { self.autodata = ad! } else { self.autodata = "" }
+        self.autodata = json["autodata"].stringValue
         
-        if json["graph_url"].string != nil { self.graph_url = json["graph_url"].string! }
-        if json["thumb_url"].string != nil { self.thumb_url = json["thumb_url"].string! }
+        if let graphUrl = json["graph_url"].string {
+            self.graph_url = graphUrl
+        }
+        if let thumbUrl = json["thumb_url"].string {
+            self.thumb_url = thumbUrl
+        }
         
         self.healthKitMetric = json["healthkitmetric"].string
         
@@ -182,15 +197,15 @@ class JSONGoal {
     }
     
     var relativeLane : NSNumber {
-        return self.lane != nil ? NSNumber(value: self.lane!.int32Value * self.yaw.int32Value as Int32) : 0
+        guard let lane = self.lane else { return 0 }
+        
+        return NSNumber(value: lane.int32Value * self.yaw.int32Value as Int32)
     }
     
     var countdownHelperText :String {
         if self.delta_text.components(separatedBy: "✔").count == 4 {
-            if self.safebump != nil && self.curval != nil {
-                if (self.safebump!.doubleValue - self.curval!.doubleValue <= 0) {
+            if let safeBump = self.safebump, let curVal = self.curval, safeBump.doubleValue - curVal.doubleValue <= 0 {
                     return "Ending in"
-                }
             }
         }
         if self.yaw.intValue < 0 && self.dir.intValue > 0 {
@@ -200,20 +215,18 @@ class JSONGoal {
     }
     
     var humanizedRunits :String {
-        if self.runits == "d" {
+        switch self.runits {
+        case "d":
             return "day"
-        }
-        if self.runits == "m" {
+        case "m":
             return "month"
-        }
-        if self.runits == "h" {
+        case "h":
             return "hour"
-        }
-        if self.runits == "y" {
+        case "y":
             return "year"
+        default:
+            return "week"
         }
-        
-        return "week"
     }
     
     func capitalSafesum() -> String {
@@ -303,11 +316,11 @@ class JSONGoal {
     }
     
     func hkSampleType() -> HKSampleType? {
-        if self.hkQuantityTypeIdentifier() != nil {
-            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
+        if let quantityId = self.hkQuantityTypeIdentifier() {
+            return HKObjectType.quantityType(forIdentifier: quantityId)
         }
-        if self.hkCategoryTypeIdentifier() != nil {
-            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        if let categoryId = self.hkCategoryTypeIdentifier() {
+            return HKObjectType.categoryType(forIdentifier: categoryId)
         }
         return nil
     }
@@ -323,10 +336,10 @@ class JSONGoal {
     }
     
     func hkPermissionType() -> HKObjectType? {
-        if self.hkQuantityTypeIdentifier() != nil {
-            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
-        } else if self.hkCategoryTypeIdentifier() != nil {
-            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        if let quantityId = self.hkQuantityTypeIdentifier() {
+            return HKObjectType.quantityType(forIdentifier: quantityId)
+        } else if let categoryId = self.hkCategoryTypeIdentifier() {
+            return HKObjectType.categoryType(forIdentifier: categoryId)
         }
         return nil
     }
@@ -474,7 +487,7 @@ class JSONGoal {
     func setupHKStatisticsCollectionQuery() {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else { return }
         
         let calendar = Calendar.current
         var interval = DateComponents()
@@ -605,8 +618,7 @@ class JSONGoal {
                 })
             } else if datapoints.count >= 1 {
                 var first = true
-                datapoints.forEach({ (datapoint) in
-                    guard let d = datapoint as? JSON else { return }
+                datapoints.forEach({ datapoint in
                     if first {
                         let requestId = "\(daystamp)-\(self.minuteStamp())"
                         let params = [
@@ -615,10 +627,10 @@ class JSONGoal {
                             "comment": "Auto-updated via Apple Health",
                             "requestid": requestId
                         ]
-                        let val = d["value"].double as? Double
+                        let val = datapoint["value"].double
                         if datapointValue == val { success?() }
                         else {
-                            let datapointID = d["id"].string
+                            let datapointID = datapoint["id"].string
                             RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
                                 success?()
                             }, errorHandler: { (error, errorMessage) in
@@ -626,7 +638,7 @@ class JSONGoal {
                             })
                         }
                     } else {
-                        let datapointID = d["id"].string
+                        let datapointID = datapoint["id"].string
                         RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
                             //
                         }) { (error, errorMessage) in
@@ -644,18 +656,13 @@ class JSONGoal {
     }
     
     func hasRecentlyUpdatedHealthData() -> Bool {
-        var updateDictionary = UserDefaults.standard.dictionary(forKey: Constants.healthKitUpdateDictionaryKey)
-        if updateDictionary == nil {
-            updateDictionary = [:]
+        var updateDictionary = UserDefaults.standard.dictionary(forKey: Constants.healthKitUpdateDictionaryKey) ?? [:]
+        
+        if let lastUpdate = updateDictionary[self.slug] as? Date, lastUpdate.timeIntervalSinceNow > -60.0 {
+            return true
         }
         
-        if updateDictionary![self.slug] != nil {
-            let lastUpdate = updateDictionary![self.slug] as! Date
-            if lastUpdate.timeIntervalSinceNow > -60.0 {
-                return true
-            }
-        }
-        updateDictionary![self.slug] = Date()
+        updateDictionary[self.slug] = Date()
         
         UserDefaults.standard.set(updateDictionary, forKey: Constants.healthKitUpdateDictionaryKey)
         UserDefaults.standard.synchronize()

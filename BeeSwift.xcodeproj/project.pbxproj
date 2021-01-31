@@ -320,7 +320,6 @@
 			children = (
 				A196CB161AE4142E00B90A3E /* BeeSwift */,
 				A196CB2F1AE4142F00B90A3E /* BeeSwiftTests */,
-				E5FEFB3F24E6FAD900A076BB /* BeeSwiftUITests */,
 				A12E694F1BD3EF0200AB94C2 /* BeeSwiftToday */,
 				E5FEFB3624E6FAC800A076BB /* BeeSwiftUITests */,
 				A196CB151AE4142E00B90A3E /* Products */,
@@ -436,18 +435,10 @@
 			isa = PBXGroup;
 			children = (
 				E5FEFB3724E6FAC800A076BB /* BeeSwiftUITests.swift */,
+				E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */,
 				E5FEFB3924E6FAC800A076BB /* Info.plist */,
 			);
 			path = BeeSwiftUITests;
-			sourceTree = "<group>";
-		};
-		E5FEFB3F24E6FAD900A076BB /* BeeSwiftUITests */ = {
-			isa = PBXGroup;
-			children = (
-				E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */,
-			);
-			name = BeeSwiftUITests;
-			path = BeeSwift/BeeSwiftUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -608,8 +599,8 @@
 			projectRoot = "";
 			targets = (
 				A196CB131AE4142E00B90A3E /* BeeSwift */,
-				A196CB2B1AE4142F00B90A3E /* BeeSwiftTests */,
 				A12E694C1BD3EF0200AB94C2 /* BeeSwiftToday */,
+				A196CB2B1AE4142F00B90A3E /* BeeSwiftTests */,
 				E5FEFB3424E6FAC800A076BB /* BeeSwiftUITests */,
 			);
 		};
@@ -922,7 +913,6 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
@@ -951,7 +941,6 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
@@ -1096,9 +1085,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "BeeSwift/BeeSwift-Bridging-Header.h";
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "BeeSwift/BeeSwift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
-				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Debug;
 		};
@@ -1132,9 +1119,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "BeeSwift/BeeSwift-Bridging-Header.h";
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "BeeSwift/BeeSwift-Bridging-Header.h";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
-				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Release;
 		};

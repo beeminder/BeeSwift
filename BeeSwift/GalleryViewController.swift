@@ -287,9 +287,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.goals = []
         self.filteredGoals = []
         self.collectionView?.reloadData()
-        if self.presentedViewController != nil {
-            if type(of: self.presentedViewController!) == SignInViewController.self { return }
-        }
+
+        guard self.presentedViewController as? SignInViewController == nil else { return }
+    
         let signInVC = SignInViewController()
         signInVC.modalPresentationStyle = .fullScreen
         self.present(signInVC, animated: true, completion: nil)
@@ -395,7 +395,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func setupHealthKit() {
         var permissions = Set<HKObjectType>.init()
         self.goals.forEach { (goal) in
-            if goal.hkPermissionType() != nil { permissions.insert(goal.hkPermissionType()!) }
+            if let permissiontype = goal.hkPermissionType() {
+                permissions.insert(permissiontype)
+            }
         }
         guard permissions.count > 0 else { return }
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
@@ -486,14 +488,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func openGoalFromNotification(_ notification: Notification) {
-        let slug = (notification as NSNotification).userInfo!["slug"] as! String
-        let matchingGoal = self.goals.filter({ (goal) -> Bool in
-            return goal.slug == slug
-        }).last
-        if matchingGoal != nil {
-            self.navigationController?.popToRootViewController(animated: false)
-            self.openGoal(matchingGoal!)
-        }
+        guard
+            let userInfo = notification.userInfo,
+            let slug = userInfo["slug"] as? String,
+            let matchingGoal = self.goals.last(where: { $0.slug == slug } )
+            else { return }
+
+        self.navigationController?.popToRootViewController(animated: true)
+        self.openGoal(matchingGoal)
     }
     
     func openGoal(_ goal: JSONGoal) {
