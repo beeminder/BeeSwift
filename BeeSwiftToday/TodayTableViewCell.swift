@@ -65,7 +65,7 @@ class TodayTableViewCell: UITableViewCell {
             make.right.equalTo(-10)
         })
         
-        if self.goalDictionary["hideDataEntry"] as! Bool {
+        if let hide = self.goalDictionary["hideDataEntry"] as? Bool, hide {
             self.limitLabel.snp.remakeConstraints({ (make) in
                 make.left.equalTo(self.graphImageView.snp.right).offset(10)
                 make.centerY.equalTo(self.graphImageView)
@@ -80,12 +80,16 @@ class TodayTableViewCell: UITableViewCell {
             make.right.equalTo(-10)
         }
         
-        var addTitle = "Add"
-        // small screen hack
-        if (UIDevice.current.orientation == .landscapeRight || UIDevice.current.orientation == .landscapeLeft && UIScreen.main.bounds.height >= 375) ||
-           (UIScreen.main.bounds.width >= 375) {
-            addTitle = "Add data"
-        }
+        let addTitle: String = {
+            // small screen hack
+            if (UIDevice.current.orientation == .landscapeRight || UIDevice.current.orientation == .landscapeLeft && UIScreen.main.bounds.height >= 375) ||
+                (UIScreen.main.bounds.width >= 375) {
+                return "Add data"
+            } else {
+                return "Add"
+            }
+        }()
+        
         self.addDataButton.setTitle(addTitle, for: .normal)
         self.addDataButton.setTitleColor(UIColor.black, for: .normal)
         self.addDataButton.addTarget(self, action: #selector(self.addDataButtonPressed), for: .touchUpInside)
@@ -115,12 +119,13 @@ class TodayTableViewCell: UITableViewCell {
     }
     
     @objc func addDataButtonPressed() {
+        guard let slug = self.goalDictionary["slug"] as? String else { return }
+        guard let token = self.defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let username = self.defaults?.object(forKey: "username") as? String else { return }
+        
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
         hud?.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
-
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
         
         // if the goal's deadline is after midnight, and it's after midnight,
         // but before the deadline,
@@ -152,9 +157,8 @@ class TodayTableViewCell: UITableViewCell {
         formatter.dateFormat = "d"
         
         let params = ["access_token": token, "urtext": "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
-        guard let slug = self.goalDictionary["slug"] as? String else { return }
         
-        RequestManager.post(url: "api/v1/users/me/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
+        RequestManager.post(url: "api/v1/users/\(username)/goals/\(slug)/datapoints.json", parameters: params, success: { (responseJSON) in
             self.pollUntilGraphUpdates()
         }) { (responseError, errorMessage) in
             self.addDataButton.setTitle("oops!", for: .normal)
@@ -162,17 +166,17 @@ class TodayTableViewCell: UITableViewCell {
     }
     
     func pollUntilGraphUpdates() {
-        if self.pollTimer != nil { return }
+        guard self.pollTimer == nil else { return }
         self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.refreshGoal), userInfo: nil, repeats: true)
     }
     
     @objc func refreshGoal() {
         guard let slug = self.goalDictionary["slug"] as? String else { return }
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let token = self.defaults?.object(forKey: "accessToken") as? String else { return }
+        guard let username = self.defaults?.object(forKey: "username") as? String else { return }
         
         let parameters = ["access_token": token]
-        RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters, success: { (responseObject) in
+        RequestManager.get(url: "api/v1/users/\(username)/goals/\(slug)", parameters: parameters, success: { (responseObject) in
             var goalJSON = JSON(responseObject!)
             if (!goalJSON["queued"].bool!) {
                 self.pollTimer?.invalidate()
@@ -204,5 +208,10 @@ class TodayTableViewCell: UITableViewCell {
         }
         
         self.graphImageView.af_setImage(withURL: thumbUrl, placeholderImage: thumbnailPlaceholder, progressQueue: DispatchQueue.global(qos: .background), imageTransition: .crossDissolve(0.4), runImageTransitionIfCached: false)
+    }
+    
+    /// UserDefaults shared between app and extension
+    var defaults: UserDefaults? {
+        return UserDefaults(suiteName: "group.beeminder.beeminder")
     }
 }
