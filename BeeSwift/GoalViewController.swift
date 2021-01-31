@@ -17,7 +17,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     var goal : JSONGoal!
     
     fileprivate var cellIdentifier = "datapointCell"
-    fileprivate var goalImageView = UIImageView()
+    var goalImageView = UIImageView()
     fileprivate var dateTextField = UITextField()
     fileprivate var valueTextField = UITextField()
     fileprivate var commentTextField = UITextField()
@@ -34,6 +34,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     fileprivate let headerWidth = Double(1.0/3.0)
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
         if #available(iOS 13.0, *) {
             self.view.backgroundColor = UIColor.systemBackground
         } else {
@@ -116,8 +118,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.left.equalTo(self.goalImageScrollView)
             make.right.equalTo(self.goalImageScrollView)
         }
-        self.goalImageView.image = UIImage(named: "GraphPlaceholder")
-
         
         self.scrollView.addSubview(self.deltasLabel)
         self.deltasLabel.snp.makeConstraints { (make) in
@@ -456,11 +456,16 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setGraphImage() {
-        if CurrentUserManager.sharedManager.isDeadbeat() {
+        guard !CurrentUserManager.sharedManager.isDeadbeat() else {
             self.goalImageView.image = UIImage(named: "GraphPlaceholder")
-        } else {
-            self.goalImageView.af_setImage(withURL: URL(string: self.goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
+            return
         }
+        
+        // galleryVC set this image (either right away from the cache or downloading it then adding it to the cache)
+        // if the goal is refreshed on this goalVC - and the urls have changed (cache busting urls), then as is
+        // this new version is not in the cache gallery knows of ... (but will be upon returning to the gallery - because gallery fetches everything again)
+        guard self.goalImageView.image == UIImage(named: "GraphPlaceholder") else { return }
+        self.goalImageView.af_setImage(withURL: URL(string: self.goal.cacheBustingGraphUrl)!, placeholderImage: self.goalImageView.image, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
     }
     
     @objc func goalImageTapped() {
