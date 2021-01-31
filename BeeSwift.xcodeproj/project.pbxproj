@@ -544,7 +544,7 @@
 					A12E694C1BD3EF0200AB94C2 = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = 8TW9V9HVES;
-						LastSwiftMigration = 0910;
+						LastSwiftMigration = 1210;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -558,7 +558,7 @@
 					A196CB131AE4142E00B90A3E = {
 						CreatedOnToolsVersion = 6.3;
 						DevelopmentTeam = 8TW9V9HVES;
-						LastSwiftMigration = 0910;
+						LastSwiftMigration = 1210;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -583,6 +583,7 @@
 					};
 					A196CB2B1AE4142F00B90A3E = {
 						CreatedOnToolsVersion = 6.3;
+						LastSwiftMigration = 1210;
 						TestTargetID = A196CB131AE4142E00B90A3E;
 					};
 					E5FEFB3424E6FAC800A076BB = {
@@ -923,7 +924,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -952,7 +953,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1097,8 +1098,7 @@
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "BeeSwift/BeeSwift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
-				VALID_ARCHS = "armv7 armv7s arm64";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1133,8 +1133,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "BeeSwift/BeeSwift-Bridging-Header.h";
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "BeeSwift/BeeSwift-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
-				VALID_ARCHS = "armv7 armv7s arm64";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1156,7 +1155,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.andrewpbrett.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = BeeSwiftTests;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BeeSwift.app/BeeSwift";
 				TEST_TARGET_NAME = BeeSwiftTests;
 			};
@@ -1176,7 +1175,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.andrewpbrett.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = BeeSwiftTests;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BeeSwift.app/BeeSwift";
 				TEST_TARGET_NAME = BeeSwiftTests;
 			};
