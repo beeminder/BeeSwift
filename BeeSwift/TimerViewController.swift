@@ -14,10 +14,17 @@ class TimerViewController: UIViewController {
     
     let timerLabel = BSLabel()
     let startStopButton = BSButton()
-    var goal : JSONGoal?
-    var timingSince: Date?
+    var goal : JSONGoal!
+    var timingSince: Date? {
+        didSet {
+            guard let goal = self.goal else { return }
+            CurrentUserManager.sharedManager.set(timerSince: timingSince, for: goal)
+        }
+    }
     var timer: Timer?
-    var slug: String?
+    var slug: String {
+        goal.slug
+    }
     var units: String?
     var accumulatedSeconds = 0
 
@@ -82,11 +89,15 @@ class TimerViewController: UIViewController {
         resetButton.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
         resetButton.setTitle("Reset", for: .normal)
         resetButton.backgroundColor = .clear
+
+        if let goal = self.goal {
+            self.timingSince = CurrentUserManager.sharedManager.timingSince(for: goal)
+        }
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.updateTimerLabel()
     }
     
     @objc func exitButtonPressed() {
@@ -113,16 +124,23 @@ class TimerViewController: UIViewController {
     }
     
     @objc func startStopButtonPressed() {
-        if self.timingSince == nil {
-            self.timingSince = Date()
-            self.startStopButton.setTitle("Stop", for: .normal)
-            self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateTimerLabel), userInfo: nil, repeats: true)
-        } else {
-            self.accumulatedSeconds += Int(Date().timeIntervalSince(self.timingSince!))
-            self.startStopButton.setTitle("Start", for: .normal)
-            self.timer?.invalidate()
-            self.timer = nil
-            self.timingSince = nil
+        switch (self.timingSince, self.timer) {
+
+            case (nil, nil):
+                self.timingSince = Date()
+                self.startStopButton.setTitle("Stop", for: .normal)
+                self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateTimerLabel), userInfo: nil, repeats: true)
+
+            case (_, nil):
+                self.startStopButton.setTitle("Stop", for: .normal)
+                self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateTimerLabel), userInfo: nil, repeats: true)
+
+            default:
+                self.accumulatedSeconds += Int(Date().timeIntervalSince(self.timingSince!))
+                self.startStopButton.setTitle("Start", for: .normal)
+                self.timer?.invalidate()
+                self.timer = nil
+                self.timingSince = nil
         }
     }
     
@@ -177,21 +195,28 @@ class TimerViewController: UIViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug!)/datapoints.json", parameters: params, success: { (responseObject) in
-            hud?.mode = .text
-            hud?.labelText = "Added!"
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            })
-            if let goalVC = self.presentingViewController?.childViewControllers.last as? GoalViewController {
-                goalVC.refreshGoal()
-                goalVC.pollUntilGraphUpdates()
-            }
-            self.resetButtonPressed()
+        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (responseObject) in
+                                            hud?.mode = .text
+                                            hud?.labelText = "Added!"
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+                                                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                                            })
+                                            if let goalVC = self.presentingViewController?.childViewControllers.last as? GoalViewController {
+                                                goalVC.refreshGoal()
+                                                goalVC.pollUntilGraphUpdates()
+                                            }
+                                            self.resetButtonPressed()
         }) { (error, errorMessage) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
+                                            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                                            UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
         }
         
+    }
+}
+
+extension TimerViewController {
+    convenience init(for goal: JSONGoal) {
+        self.init()
+        self.goal = goal
     }
 }

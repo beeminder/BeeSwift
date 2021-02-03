@@ -404,9 +404,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func timerButtonPressed() {
-        let controller = TimerViewController()
-        controller.slug = self.goal.slug
-        controller.goal = self.goal
+        let controller = TimerViewController(for: self.goal)
         controller.modalPresentationStyle = .fullScreen
         do {
             let hoursRegex = try NSRegularExpression(pattern: "(hr|hour)s?")
