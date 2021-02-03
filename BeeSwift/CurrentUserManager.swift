@@ -33,6 +33,21 @@ class CurrentUserManager : NSObject {
     
     var goals : [JSONGoal] = []
     var goalsFetchedAt : Date = Date()
+
+    func timingSince(for goal: JSONGoal) -> Date? {
+        return UserDefaults.standard.object(forKey: keyTimer(for: goal)) as? Date
+    }
+    func set(timerSince: Date?, for goal: JSONGoal) {
+        let key = keyTimer(for: goal)
+        guard let timingSince = timerSince else {
+            UserDefaults.standard.removeObject(forKey: key)
+            return
+        }
+        UserDefaults.standard.set(timingSince, forKey: key)
+    }
+    private func keyTimer(for goal: JSONGoal) -> String {
+        return "key-timer-\(goal.id)"
+    }
     
     var accessToken :String? {
         return UserDefaults.standard.object(forKey: accessTokenKey) as! String?
