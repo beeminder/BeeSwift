@@ -168,7 +168,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.noGoalsLabel.snp.makeConstraints { (make) in
             make.top.left.right.equalTo(self.collectionView!)
         }
-        self.noGoalsLabel.text = "No goals yet!\n\nIn-app goal creation is coming soon, but for now, head to beeminder.com to create a goal."
+        self.noGoalsLabel.text = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
         self.noGoalsLabel.textAlignment = .center
         self.noGoalsLabel.numberOfLines = 0
         self.noGoalsLabel.isHidden = true
