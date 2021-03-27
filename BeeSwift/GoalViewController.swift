@@ -193,11 +193,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.left.equalTo(-1)
             make.top.equalTo(0)
         }
-        colonButton.setTitle(":", for: UIControlState())
+        colonButton.setTitle(":", for: UIControl.State())
         colonButton.layer.borderWidth = 1
         colonButton.layer.borderColor = UIColor.beeminder.gray.cgColor
         colonButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 26)
-        colonButton.setTitleColor(UIColor.black, for: UIControlState())
+        colonButton.setTitleColor(UIColor.black, for: UIControl.State())
         colonButton.addTarget(self, action: #selector(self.colonButtonPressed), for: .touchUpInside)
         self.valueTextField.addTarget(self, action: #selector(GoalViewController.valueTextFieldValueChanged), for: .editingChanged)
         self.valueTextField.snp.makeConstraints { (make) -> Void in
@@ -233,7 +233,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         dataEntryView.addSubview(self.submitButton)
-        self.submitButton.setTitle("Submit", for: UIControlState())
+        self.submitButton.setTitle("Submit", for: UIControl.State())
         self.submitButton.addTarget(self, action: #selector(GoalViewController.submitDatapoint), for: .touchUpInside)
         self.submitButton.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.commentTextField.snp.bottom).offset(10)
