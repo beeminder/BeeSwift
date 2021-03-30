@@ -90,3 +90,10 @@ class RequestManager {
         RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(slug)/datapoints.json", parameters: params, success: success, errorHandler: errorHandler)
     }
 }
+
+// MARK: - Error types when interacting with the API
+
+/// Error types describing errors when interacting with the API
+public enum ApiError: Error {
+    case jsonDeserializationError
+}
