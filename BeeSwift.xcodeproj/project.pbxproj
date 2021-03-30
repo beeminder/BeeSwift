@@ -77,13 +77,34 @@
 		A1F8F07B232C05410060B83E /* JSONGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* JSONGoal.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
 		A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */; };
+		D25716F2B8CCFE41DCD5CD5C /* Pods_BeeSwiftIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45017ADDD1E7A7E50917F8D4 /* Pods_BeeSwiftIntents.framework */; };
 		D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */; };
+		E55FAB19261240F800A0CF88 /* CurrentUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */; };
+		E55FAB1F2612410000A0CF88 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
 		E55FEE6B23FF7552007C20B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
 		E55FEE6C23FF7552007C20B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
 		E5C161942423CEA00045C90D /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C161932423CE9F0045C90D /* VersionManager.swift */; };
+		E5C9EFE62612E02700DBBEAE /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
+		E5CF516A2612431600546184 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
+		E5CF51702612432400546184 /* RequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BCE9841AFFFB3A007322CC /* RequestManager.swift */; };
+		E5CF51762612432E00546184 /* HealthStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */; };
+		E5CF517C2612434300546184 /* BSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B3711AEF54D100F19A09 /* BSButton.swift */; };
+		E5CF51822612434700546184 /* BSLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B381AEDA71D006F48DA /* BSLabel.swift */; };
+		E5CF51832612434A00546184 /* BSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1781AB21DE50F59000B96C5 /* BSTextField.swift */; };
+		E5CF51892612434E00546184 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B341AED9184006F48DA /* UIColorExtension.swift */; };
+		E5CF518F2612435000546184 /* UIFontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */; };
+		E5CF51952612435800546184 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
+		E5CF519B2612435B00546184 /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11488BD1EE9B0CE003316E1 /* UIDevice.swift */; };
+		E5CF51A12612436200546184 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
+		E5CF51A72612436200546184 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
+		E5CF51AD2612437400546184 /* JSONGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* JSONGoal.swift */; };
 		E5DF493724DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
 		E5DF493824DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
 		E5DF493924DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
+		E5F7C492260FC5300095684F /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5F7C491260FC5300095684F /* Intents.framework */; };
+		E5F7C4AA260FC5300095684F /* BeeSwiftIntents.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = E5F7C490260FC5300095684F /* BeeSwiftIntents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E5F7C55026113C330095684F /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
+		E5F7C55E2611791F0095684F /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F7C55C2611791E0095684F /* AddDataIntentHandler.swift */; };
 		E5FEFB3824E6FAC800A076BB /* BeeSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FEFB3724E6FAC800A076BB /* BeeSwiftUITests.swift */; };
 		E5FEFB4124E6FAFC00A076BB /* LaunchScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */; };
 /* End PBXBuildFile section */
@@ -103,6 +124,13 @@
 			remoteGlobalIDString = A196CB131AE4142E00B90A3E;
 			remoteInfo = BeeSwift;
 		};
+		E5F7C4A8260FC5300095684F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E5F7C48F260FC5300095684F;
+			remoteInfo = BeeSwiftIntents;
+		};
 		E5FEFB3A24E6FAC800A076BB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
@@ -115,19 +143,22 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		A1B53C401B2D04EB00AF266F /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
 				A12E69581BD3EF0200AB94C2 /* BeeSwiftToday.appex in Embed App Extensions */,
+				E5F7C4AA260FC5300095684F /* BeeSwiftIntents.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		02D934CC6CDDCD50DB360CF0 /* Pods-BeeSwiftIntents.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftIntents.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftIntents/Pods-BeeSwiftIntents.release.xcconfig"; sourceTree = "<group>"; };
 		20121F7A17F740656ADD55D0 /* Pods_BeeSwiftTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeeSwiftTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		45017ADDD1E7A7E50917F8D4 /* Pods_BeeSwiftIntents.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeeSwiftIntents.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		48624C6AA40C5EB0AF7F67ED /* Pods-BeeSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwift/Pods-BeeSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		60463FA350C4B88CD9AB0AA4 /* Pods-BeeSwiftToday.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftToday.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftToday/Pods-BeeSwiftToday.release.xcconfig"; sourceTree = "<group>"; };
 		689E3517CFFCDE8407A728A7 /* Pods-BeeSwiftTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftTests/Pods-BeeSwiftTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -195,13 +226,21 @@
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
 		A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGoalCollectionViewCell.swift; sourceTree = "<group>"; };
 		AF1B05535FB9C64FEC41EBE9 /* Pods-BeeSwiftTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftTests/Pods-BeeSwiftTests.release.xcconfig"; sourceTree = "<group>"; };
+		C38D69D9E768288A9437110C /* Pods-BeeSwiftIntents.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftIntents.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftIntents/Pods-BeeSwiftIntents.debug.xcconfig"; sourceTree = "<group>"; };
 		C622986C48BC5CA5BBB7E3C7 /* Pods-BeeSwiftToday.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftToday.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftToday/Pods-BeeSwiftToday.debug.xcconfig"; sourceTree = "<group>"; };
 		DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeeSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E029CC25A4BEE8E42BD37670 /* Pods-BeeSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwift/Pods-BeeSwift.release.xcconfig"; sourceTree = "<group>"; };
+		E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AddDataIntents.intentdefinition; sourceTree = "<group>"; };
 		E55FEE6A23FF7552007C20B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		E55FEE6D23FF78E8007C20B2 /* Sentry.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Sentry.sh; sourceTree = "<group>"; };
 		E5C161932423CE9F0045C90D /* VersionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionManager.swift; sourceTree = "<group>"; };
 		E5DF493624DC69A200260560 /* Config.swift.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = Config.swift.sample; sourceTree = "<group>"; };
+		E5F7C490260FC5300095684F /* BeeSwiftIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BeeSwiftIntents.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		E5F7C491260FC5300095684F /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		E5F7C496260FC5300095684F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E5F7C49C260FC5300095684F /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
+		E5F7C55626113C840095684F /* BeeSwiftIntents.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BeeSwiftIntents.entitlements; sourceTree = "<group>"; };
+		E5F7C55C2611791E0095684F /* AddDataIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataIntentHandler.swift; sourceTree = "<group>"; };
 		E5FEFB3524E6FAC800A076BB /* BeeSwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeeSwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5FEFB3724E6FAC800A076BB /* BeeSwiftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeSwiftUITests.swift; sourceTree = "<group>"; };
 		E5FEFB3924E6FAC800A076BB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -242,6 +281,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E5F7C48D260FC5300095684F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5F7C492260FC5300095684F /* Intents.framework in Frameworks */,
+				D25716F2B8CCFE41DCD5CD5C /* Pods_BeeSwiftIntents.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E5FEFB3224E6FAC800A076BB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -261,6 +309,8 @@
 				AF1B05535FB9C64FEC41EBE9 /* Pods-BeeSwiftTests.release.xcconfig */,
 				C622986C48BC5CA5BBB7E3C7 /* Pods-BeeSwiftToday.debug.xcconfig */,
 				60463FA350C4B88CD9AB0AA4 /* Pods-BeeSwiftToday.release.xcconfig */,
+				C38D69D9E768288A9437110C /* Pods-BeeSwiftIntents.debug.xcconfig */,
+				02D934CC6CDDCD50DB360CF0 /* Pods-BeeSwiftIntents.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -323,6 +373,7 @@
 				E5FEFB3F24E6FAD900A076BB /* BeeSwiftUITests */,
 				A12E694F1BD3EF0200AB94C2 /* BeeSwiftToday */,
 				E5FEFB3624E6FAC800A076BB /* BeeSwiftUITests */,
+				E5F7C493260FC5300095684F /* BeeSwiftIntents */,
 				A196CB151AE4142E00B90A3E /* Products */,
 				C039E8389CFF5C0D8CF85D8D /* Frameworks */,
 				3A029811DF302A79CBF63611 /* Pods */,
@@ -336,6 +387,7 @@
 				A196CB2C1AE4142F00B90A3E /* BeeSwiftTests.xctest */,
 				A12E694D1BD3EF0200AB94C2 /* BeeSwiftToday.appex */,
 				E5FEFB3524E6FAC800A076BB /* BeeSwiftUITests.xctest */,
+				E5F7C490260FC5300095684F /* BeeSwiftIntents.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -348,6 +400,7 @@
 				A106AD8B1AF1F62800C434E8 /* Managers */,
 				A149147C1BE7A4FC0060600A /* UI */,
 				A149147D1BE7A5140060600A /* Util */,
+				E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */,
 				A196CB191AE4142E00B90A3E /* AppDelegate.swift */,
 				A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */,
 				A10D4E921B07948500A72D29 /* DatapointsTableView.swift */,
@@ -428,8 +481,21 @@
 				DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */,
 				20121F7A17F740656ADD55D0 /* Pods_BeeSwiftTests.framework */,
 				8A2D58FC1D496CC59C60A22C /* Pods_BeeSwiftToday.framework */,
+				E5F7C491260FC5300095684F /* Intents.framework */,
+				E5F7C49C260FC5300095684F /* IntentsUI.framework */,
+				45017ADDD1E7A7E50917F8D4 /* Pods_BeeSwiftIntents.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E5F7C493260FC5300095684F /* BeeSwiftIntents */ = {
+			isa = PBXGroup;
+			children = (
+				E5F7C55626113C840095684F /* BeeSwiftIntents.entitlements */,
+				E5F7C496260FC5300095684F /* Info.plist */,
+				E5F7C55C2611791E0095684F /* AddDataIntentHandler.swift */,
+			);
+			path = BeeSwiftIntents;
 			sourceTree = "<group>";
 		};
 		E5FEFB3624E6FAC800A076BB /* BeeSwiftUITests */ = {
@@ -486,6 +552,7 @@
 			);
 			dependencies = (
 				A12E69571BD3EF0200AB94C2 /* PBXTargetDependency */,
+				E5F7C4A9260FC5300095684F /* PBXTargetDependency */,
 			);
 			name = BeeSwift;
 			productName = BeeSwift;
@@ -512,6 +579,24 @@
 			productReference = A196CB2C1AE4142F00B90A3E /* BeeSwiftTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		E5F7C48F260FC5300095684F /* BeeSwiftIntents */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E5F7C4AE260FC5300095684F /* Build configuration list for PBXNativeTarget "BeeSwiftIntents" */;
+			buildPhases = (
+				3E5E5C67641B909F104C58A3 /* [CP] Check Pods Manifest.lock */,
+				E5F7C48C260FC5300095684F /* Sources */,
+				E5F7C48D260FC5300095684F /* Frameworks */,
+				E5F7C48E260FC5300095684F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BeeSwiftIntents;
+			productName = BeeSwiftIntents;
+			productReference = E5F7C490260FC5300095684F /* BeeSwiftIntents.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		E5FEFB3424E6FAC800A076BB /* BeeSwiftUITests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E5FEFB3C24E6FAC800A076BB /* Build configuration list for PBXNativeTarget "BeeSwiftUITests" */;
@@ -537,7 +622,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftMigration = 0710;
-				LastSwiftUpdateCheck = 1130;
+				LastSwiftUpdateCheck = 1240;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = APB;
 				TargetAttributes = {
@@ -586,6 +671,11 @@
 						LastSwiftMigration = 1240;
 						TestTargetID = A196CB131AE4142E00B90A3E;
 					};
+					E5F7C48F260FC5300095684F = {
+						CreatedOnToolsVersion = 12.4;
+						DevelopmentTeam = 8TW9V9HVES;
+						ProvisioningStyle = Automatic;
+					};
 					E5FEFB3424E6FAC800A076BB = {
 						CreatedOnToolsVersion = 11.3.1;
 						DevelopmentTeam = 8TW9V9HVES;
@@ -612,6 +702,7 @@
 				A196CB2B1AE4142F00B90A3E /* BeeSwiftTests */,
 				A12E694C1BD3EF0200AB94C2 /* BeeSwiftToday */,
 				E5FEFB3424E6FAC800A076BB /* BeeSwiftUITests */,
+				E5F7C48F260FC5300095684F /* BeeSwiftIntents */,
 			);
 		};
 /* End PBXProject section */
@@ -646,10 +737,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E5F7C48E260FC5300095684F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5CF51A12612436200546184 /* Config.swift.sample in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E5FEFB3324E6FAC800A076BB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5CF51A72612436200546184 /* Config.swift.sample in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -698,6 +798,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BeeSwiftTests/Pods-BeeSwiftTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3E5E5C67641B909F104C58A3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BeeSwiftIntents-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		65ECC2B46631C152D41E5ED7 /* [CP] Embed Pods Frameworks */ = {
@@ -809,6 +931,7 @@
 				A1BE73AC1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift in Sources */,
 				A1C11B481B06F5D100D22871 /* Constants.swift in Sources */,
 				A11488BE1EE9B0CE003316E1 /* UIDevice.swift in Sources */,
+				E5C9EFE62612E02700DBBEAE /* AddDataIntents.intentdefinition in Sources */,
 				A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */,
 				A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */,
 				A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */,
@@ -848,6 +971,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E5F7C48C260FC5300095684F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5F7C55E2611791F0095684F /* AddDataIntentHandler.swift in Sources */,
+				E5CF51762612432E00546184 /* HealthStoreManager.swift in Sources */,
+				E5CF51832612434A00546184 /* BSTextField.swift in Sources */,
+				E55FAB19261240F800A0CF88 /* CurrentUserManager.swift in Sources */,
+				E5CF51952612435800546184 /* HealthKitConfig.swift in Sources */,
+				E5F7C55026113C330095684F /* AddDataIntents.intentdefinition in Sources */,
+				E5CF51AD2612437400546184 /* JSONGoal.swift in Sources */,
+				E5CF51822612434700546184 /* BSLabel.swift in Sources */,
+				E5CF51702612432400546184 /* RequestManager.swift in Sources */,
+				E55FAB1F2612410000A0CF88 /* Config.swift in Sources */,
+				E5CF519B2612435B00546184 /* UIDevice.swift in Sources */,
+				E5CF516A2612431600546184 /* Constants.swift in Sources */,
+				E5CF517C2612434300546184 /* BSButton.swift in Sources */,
+				E5CF51892612434E00546184 /* UIColorExtension.swift in Sources */,
+				E5CF518F2612435000546184 /* UIFontExtension.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E5FEFB3124E6FAC800A076BB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -869,6 +1014,11 @@
 			isa = PBXTargetDependency;
 			target = A196CB131AE4142E00B90A3E /* BeeSwift */;
 			targetProxy = A196CB2D1AE4142F00B90A3E /* PBXContainerItemProxy */;
+		};
+		E5F7C4A9260FC5300095684F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E5F7C48F260FC5300095684F /* BeeSwiftIntents */;
+			targetProxy = E5F7C4A8260FC5300095684F /* PBXContainerItemProxy */;
 		};
 		E5FEFB3B24E6FAC800A076BB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -923,7 +1073,7 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -952,7 +1102,7 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -1075,6 +1225,7 @@
 			baseConfigurationReference = 48624C6AA40C5EB0AF7F67ED /* Pods-BeeSwift.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BeeSwift/BeeSwift.entitlements;
@@ -1084,6 +1235,7 @@
 				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1099,7 +1251,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "BeeSwift/BeeSwift-Bridging-Header.h";
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "BeeSwift/BeeSwift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -1109,6 +1261,7 @@
 			baseConfigurationReference = E029CC25A4BEE8E42BD37670 /* Pods-BeeSwift.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BeeSwift/BeeSwift.entitlements;
@@ -1118,6 +1271,7 @@
 				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1134,7 +1288,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "BeeSwift/BeeSwift-Bridging-Header.h";
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "BeeSwift/BeeSwift-Bridging-Header.h";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -1180,6 +1334,71 @@
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BeeSwift.app/BeeSwift";
 				TEST_TARGET_NAME = BeeSwiftTests;
+			};
+			name = Release;
+		};
+		E5F7C4AF260FC5300095684F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C38D69D9E768288A9437110C /* Pods-BeeSwiftIntents.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BeeSwiftIntents/BeeSwiftIntents.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 8TW9V9HVES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BeeSwiftIntents/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MARKETING_VERSION = 6.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeSwiftIntents;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E5F7C4B0260FC5300095684F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 02D934CC6CDDCD50DB360CF0 /* Pods-BeeSwiftIntents.release.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BeeSwiftIntents/BeeSwiftIntents.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = 8TW9V9HVES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BeeSwiftIntents/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MARKETING_VERSION = 6.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeSwiftIntents;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1269,6 +1488,15 @@
 			buildConfigurations = (
 				A196CB3A1AE4142F00B90A3E /* Debug */,
 				A196CB3B1AE4142F00B90A3E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E5F7C4AE260FC5300095684F /* Build configuration list for PBXNativeTarget "BeeSwiftIntents" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E5F7C4AF260FC5300095684F /* Debug */,
+				E5F7C4B0260FC5300095684F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

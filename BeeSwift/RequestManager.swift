@@ -84,4 +84,9 @@ class RequestManager {
         return params
     }
 
+    class func addDatapoint(urtext: String, slug: String, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
+        let params = ["urtext": urtext, "requestid": UUID().uuidString]
+        
+        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(slug)/datapoints.json", parameters: params, success: success, errorHandler: errorHandler)
+    }
 }

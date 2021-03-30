@@ -11,6 +11,7 @@ import SwiftyJSON
 import MBProgressHUD
 import AlamofireImage
 import SafariServices
+import Intents
 
 class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     
@@ -32,6 +33,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
+    fileprivate let viewGoalActivityType = "com.beeminder.viewGoal"
 
     override func viewDidLoad() {
         if #available(iOS 13.0, *) {
@@ -40,6 +42,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.view.backgroundColor = UIColor.white
         }
         self.title = self.goal.slug
+        
+        if #available(iOS 12.0, *) {
+            let viewGoalActivity = self.viewGoalShortcut()
+            self.userActivity = viewGoalActivity
+            viewGoalActivity.becomeCurrent()
+        } else {
+            // do nothing
+        }
         
         // have to set these before the datapoints since setting the most recent datapoint updates the text field,
         // which in turn updates the stepper
@@ -546,15 +556,18 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         hud?.mode = .indeterminate
         self.submitButton.isUserInteractionEnabled = false
         self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
-        let params = ["urtext": self.urtextFromTextFields(), "requestid": UUID().uuidString]
-        
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/datapoints.json", parameters: params, success: { (responseObject) in
+        if #available(iOS 12.0, *) {
+            self.donateAddDataIntent(value: self.valueTextField.text!)
+        } else {
+            // do nothing
+        }
+        RequestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug) { (responseObject) in
             self.commentTextField.text = ""
             self.refreshGoal()
             self.pollUntilGraphUpdates()
             self.submitButton.isUserInteractionEnabled = true
             CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
-        }) { (error, errorMessage) in
+        } errorHandler: { (error, errorMessage) in
             self.submitButton.isUserInteractionEnabled = true
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
@@ -644,5 +657,29 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
+    }
+    
+    @available(iOS 12.0, *)
+    func viewGoalShortcut() -> NSUserActivity {
+        let activity = NSUserActivity(activityType: viewGoalActivityType)
+        activity.isEligibleForSearch = true
+        activity.isEligibleForPrediction = true
+        activity.persistentIdentifier = NSUserActivityPersistentIdentifier(viewGoalActivityType)
+        activity.suggestedInvocationPhrase = "View Beeminder goal: \(self.goal.slug)"
+        activity.title = "View Beeminder goal: \(self.goal.slug)"
+        activity.userInfo = ["slug": self.goal.slug]
+        activity.requiredUserInfoKeys = ["slug"]
+        return activity
+    }
+    
+    @available(iOS 12.0, *)
+    func donateAddDataIntent(value: String) {
+        let intent = AddDataIntent()
+        intent.goal = self.goal.slug
+        intent.suggestedInvocationPhrase = "Add Beeminder data to \(self.goal.slug)"
+        let formatter = NumberFormatter()
+        intent.value = formatter.number(from: value)
+        let interaction = INInteraction(intent: intent, response: nil)
+        interaction.donate(completion: nil)
     }
 }
