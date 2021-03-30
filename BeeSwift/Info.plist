@@ -112,6 +112,12 @@
 	<string>Beeminder will only read the data you specify to update your goal</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Beeminder does not share or use your location</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Requests to add data can be made through Siri</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>AddDataIntent</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

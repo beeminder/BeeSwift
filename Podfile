@@ -20,6 +20,10 @@ target 'BeeSwiftToday' do
 	pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '5.2.0'
 	pod "MBProgressHUD"	
 end
+target 'BeeSwiftIntents' do
+	pod 'Alamofire', '~> 4.9'
+	pod 'SwiftyJSON'
+end
 target 'BeeSwiftTests' do
 	pod "Alamofire", '~> 4.9'
 	pod "AlamofireImage", '~> 3.6'
@@ -31,6 +35,8 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['SWIFT_VERSION'] = '4.0'
+      config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
+      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
     end
   end
 end
