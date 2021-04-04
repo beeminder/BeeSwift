@@ -43,6 +43,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardFrameWillChange), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
@@ -229,6 +231,31 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.navigationController?.pushViewController(SettingsViewController(), animated: true)
     }
     
+    @objc func keyboardWillHide(notification: Notification) {
+        guard let collectionView = self.collectionView else { return }
+        guard notification.name == UIResponder.keyboardWillHideNotification else { return }
+
+        collectionView.contentInset = .zero
+        collectionView.scrollIndicatorInsets = .zero
+    }
+
+    @objc func keyboardFrameWillChange(notification: Notification) {
+        guard let collectionView = self.collectionView else { return }
+        guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        guard notification.name != UIResponder.keyboardWillHideNotification else { return }
+
+        collectionView.contentInset = {
+            let bottom: CGFloat = {
+                let keyboardScreenEndFrame = keyboardValue.cgRectValue
+                let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
+                return keyboardViewEndFrame.height - view.safeAreaInsets.bottom
+            }()
+            return UIEdgeInsets(top: 0, left: 0, bottom: bottom, right: 0)
+        }()
+
+        collectionView.scrollIndicatorInsets = collectionView.contentInset
+    }
+
     @objc func searchButtonPressed() {
         self.toggleSearchBar()
     }
