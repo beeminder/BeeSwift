@@ -250,7 +250,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     @objc func keyboardFrameWillChange(notification: Notification) {
         guard let collectionView = self.collectionView else { return }
-        guard notification.name != UIResponder.keyboardWillHideNotification else { return }
+        guard notification.name == UIResponder.keyboardWillChangeFrameNotification else { return }
         guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
 
         collectionView.contentInset = {
