@@ -9,7 +9,13 @@
 import Foundation
 import Intents
 
-class AddDataIntentHandler: INExtension, AddDataIntentHandling {
+@available(iOS 14.0, *)
+class IntentHandler: INExtension, AddDataIntentHandling {
+    func provideGoalOptionsCollection(for intent: AddDataIntent, with completion: @escaping (INObjectCollection<NSString>?, Error?) -> Void) {
+        let slugs : [NSString] = ["btime"]
+        completion(INObjectCollection(items: slugs), nil)
+    }
+    
     func resolveValue(for intent: AddDataIntent, with completion: @escaping (AddDataValueResolutionResult) -> Void) {
         print("foo")
     }
@@ -19,6 +25,10 @@ class AddDataIntentHandler: INExtension, AddDataIntentHandling {
     }
     
     override func handler(for intent: INIntent) -> Any? {
+        return AddDataIntentHandler()
+        guard intent is AddDataIntent else {
+            fatalError("Unhandled intent type: \(intent)")
+        }
         return AddDataIntentHandler()
     }
     
