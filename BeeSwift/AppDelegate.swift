@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // start crash handler
         SentrySDK.start { options in
-            options.dsn = Config.sentryClientDSN
+            options.dsn = Config.init().sentryClientDSN
             options.debug = true
         }
         

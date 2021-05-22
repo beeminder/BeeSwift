@@ -10,8 +10,14 @@ import Foundation
 
 
 import Foundation
-struct Config {
-    static let sentryClientDSN = ""
-    static let requestSigningKey = ""
-    static let baseURLString = "https://www.beeminder.com"
+public struct Config {
+    public var sentryClientDSN = ""
+    public var requestSigningKey = ""
+    public var baseURLString = "https://www.beeminder.com"
+    
+    public init() {
+        self.baseURLString = "https://www.beeminder.com"
+        self.requestSigningKey = ""
+        self.sentryClientDSN = ""
+    }
 }

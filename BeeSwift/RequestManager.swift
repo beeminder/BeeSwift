@@ -11,7 +11,7 @@ import Alamofire
 import SwiftyJSON
 
 class RequestManager {
-    static let baseURLString = Config.baseURLString
+    static let baseURLString = Config.init().baseURLString
     
     class func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
         Alamofire.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: SessionManager.defaultHTTPHeaders).validate().responseJSON { response in
