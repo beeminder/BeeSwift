@@ -225,6 +225,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
             make.width.equalTo(self.view).multipliedBy(0.75)
         }
         self.backToSignInButton.addTarget(self, action: #selector(SignInViewController.chooseSignInButtonPressed), for: .touchUpInside)
+        self.chooseSignInButtonPressed()
     }
     
     @objc func signUpButtonPressed() {
@@ -239,8 +240,8 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     
     @objc func chooseSignInButtonPressed() {
         CurrentUserManager.sharedManager.signingUp = false
-        self.divider.isHidden = false
-        self.backToSignUpButton.isHidden = false
+        //self.divider.isHidden = false
+        //self.backToSignUpButton.isHidden = false
         self.emailTextField.isHidden = false
         self.passwordTextField.isHidden = false
         self.backToSignInButton.isHidden = true
