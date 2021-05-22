@@ -150,7 +150,7 @@
 					<key>INIntentParameterConfigurable</key>
 					<true/>
 					<key>INIntentParameterDisplayName</key>
-					<string>Goal</string>
+					<string>Goal (slug)</string>
 					<key>INIntentParameterDisplayNameID</key>
 					<string>9qhRtb</string>
 					<key>INIntentParameterDisplayPriority</key>
