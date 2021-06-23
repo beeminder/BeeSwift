@@ -324,7 +324,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     }
     
     @objc func signInButtonPressed() {
-        guard let email = self.emailTextField.text, let password = self.passwordTextField.text, !email.isEmpty, !password.isEmpty else {
+        guard let email = self.emailTextField.text?.trimmingCharacters(in: .whitespaces), let password = self.passwordTextField.text, !email.isEmpty, !password.isEmpty else {
             self.present(self.missingDataOnSignIn, animated: true, completion: nil)
             return
         }
