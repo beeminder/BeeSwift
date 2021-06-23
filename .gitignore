@@ -18,6 +18,7 @@ xcuserdata/
 *.xcscmblueprint
 *.xcbkptlist
 /build
+BeeKit/Config.swift
 BeeSwift/Config.swift
 BeeSwift/GoogleService-Info.plist
 BeeSwift/Sentry.sh

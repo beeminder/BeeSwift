@@ -11,6 +11,7 @@ import IQKeyboardManager
 import HealthKit
 import Sentry
 import AlamofireNetworkActivityIndicator
+import BeeKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {

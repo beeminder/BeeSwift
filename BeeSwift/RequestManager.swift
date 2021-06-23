@@ -9,6 +9,7 @@
 import Foundation
 import Alamofire
 import SwiftyJSON
+import BeeKit
 
 class RequestManager {
     static let baseURLString = Config.init().baseURLString

@@ -48,6 +48,16 @@
                ReferencedContainer = "container:BeeSwift.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E57BE6E72655EBDF00BA540B"
+               BuildableName = "BeeKitTests.xctest"
+               BlueprintName = "BeeKitTests"
+               ReferencedContainer = "container:BeeSwift.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
