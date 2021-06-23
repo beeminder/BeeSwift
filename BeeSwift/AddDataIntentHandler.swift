@@ -12,11 +12,6 @@ import BeeKit
 
 @available(iOS 14.0, *)
 class AddDataIntentHandler: NSObject, AddDataIntentHandling {
-    func provideGoalOptionsCollection(for intent: AddDataIntent, with completion: @escaping (INObjectCollection<NSString>?, Error?) -> Void) {
-        let slugs : [NSString] = ["btime"]
-        completion(INObjectCollection(items: slugs), nil)
-    }
-    
     func resolveValue(for intent: AddDataIntent, with completion: @escaping (AddDataValueResolutionResult) -> Void) {
         print("foo")
     }
@@ -32,12 +27,13 @@ class AddDataIntentHandler: NSObject, AddDataIntentHandling {
 
     func handle(intent: AddDataIntent,
               completion: @escaping (AddDataIntentResponse) -> Void) {
-        let params = ["urtext": "^ 1", "requestid": UUID().uuidString]
+        guard let datapointValue = intent.value else { return }
         
-        RequestManager.addDatapoint(urtext: "^ 1", slug: intent.goal!) { (response) in
+        RequestManager.addDatapoint(urtext: "^ \(datapointValue)", slug: intent.goal!) { (response) in
             completion(AddDataIntentResponse.success(goal: intent.goal!))
         } errorHandler: { (error, errorMessage) in
             completion(AddDataIntentResponse.failure(goal: intent.goal!))
         }
+        completion(AddDataIntentResponse(code: .continueInApp, userActivity: nil))
     }
 }
