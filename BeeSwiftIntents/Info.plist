@@ -30,7 +30,7 @@
 			<array/>
 			<key>IntentsSupported</key>
 			<array>
-				<string>AddData</string>
+				<string>AddDataIntent</string>
 			</array>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>
