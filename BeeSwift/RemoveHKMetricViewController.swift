@@ -80,7 +80,7 @@ class RemoveHKMetricViewController: UIViewController {
             hud?.mode = .customView
             hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
             
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: self, userInfo: ["goal": self.goal])
+            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: self, userInfo: ["goal": self.goal as Any])
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 hud?.hide(true, afterDelay: 2)

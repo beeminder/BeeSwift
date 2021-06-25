@@ -57,7 +57,6 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignUp(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignedIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
         if #available(iOS 13.0, *) {
             self.view.backgroundColor = UIColor.systemBackground
@@ -89,16 +88,6 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }
         self.chooseSignInButton.addTarget(self, action: #selector(SignInViewController.chooseSignInButtonPressed), for: .touchUpInside)
-        
-        scrollView.addSubview(self.chooseSignUpButton)
-        self.chooseSignUpButton.setTitle("Create a Beeminder account", for: .normal)
-        self.chooseSignUpButton.snp.makeConstraints { (make) in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(self.chooseSignInButton.snp.bottom).offset(15)
-            make.width.equalToSuperview().multipliedBy(0.75)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-        }
-        self.chooseSignUpButton.addTarget(self, action: #selector(SignInViewController.chooseSignUpButtonPressed), for: .touchUpInside)
         
         scrollView.addSubview(self.emailTextField)
         self.emailTextField.isHidden = true
@@ -156,18 +145,6 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         self.divider.isHidden = true
         self.divider.backgroundColor = UIColor.beeminder.gray
         
-        scrollView.addSubview(self.backToSignUpButton)
-        self.backToSignUpButton.isHidden = true
-        self.backToSignUpButton.setTitle("Back to Sign Up", for: .normal)
-        self.backToSignUpButton.snp.makeConstraints { (make) in
-            make.top.equalTo(divider.snp.bottom).offset(15)
-            make.centerX.equalTo(scrollView)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-            make.width.equalTo(self.view).multipliedBy(0.75)
-            make.bottom.equalTo(-20)
-        }
-        self.backToSignUpButton.addTarget(self, action: #selector(SignInViewController.chooseSignUpButtonPressed), for: .touchUpInside)
-        
         scrollView.addSubview(self.newUsernameTextField)
         self.newUsernameTextField.isHidden = true
         self.newUsernameTextField.autocapitalizationType = .none
@@ -207,7 +184,6 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         self.signUpButton.isHidden = true
         self.signUpButton.setTitle("Sign Up", for: .normal)
         self.signUpButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
-        self.signUpButton.addTarget(self, action: #selector(SignInViewController.signUpButtonPressed), for: .touchUpInside)
         self.signUpButton.snp.makeConstraints { (make) in
             make.top.equalTo(self.newPasswordTextField.snp.bottom).offset(15)
             make.centerX.equalTo(self.view)
@@ -226,16 +202,6 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         }
         self.backToSignInButton.addTarget(self, action: #selector(SignInViewController.chooseSignInButtonPressed), for: .touchUpInside)
         self.chooseSignInButtonPressed()
-    }
-    
-    @objc func signUpButtonPressed() {
-        guard let newEmail = self.newEmailTextField.text, let newPassword = self.newPasswordTextField.text, let newUsername = self.newUsernameTextField.text, !newEmail.isEmpty, !newPassword.isEmpty, !newUsername.isEmpty else {
-            self.present(self.missingDataOnSignUp, animated: true, completion: nil)
-            return
-        }
-
-        MBProgressHUD.showAdded(to: self.view, animated: true)
-        OAuthSignInManager.sharedManager.signUpWith(email: newEmail, password: newPassword, username: newUsername)
     }
     
     @objc func chooseSignInButtonPressed() {
@@ -264,31 +230,6 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
 
     }
     
-    @objc func chooseSignUpButtonPressed() {
-        CurrentUserManager.sharedManager.signingUp = true
-        self.divider.isHidden = false
-        self.backToSignUpButton.isHidden = true
-        self.emailTextField.isHidden = true
-        self.passwordTextField.isHidden = true
-        self.backToSignInButton.isHidden = false
-        self.newUsernameTextField.isHidden = false
-        self.newPasswordTextField.isHidden = false
-        self.newEmailTextField.isHidden = false
-        self.chooseSignInButton.isHidden = true
-        self.chooseSignUpButton.isHidden = true
-        self.headerLabel.text = "Sign up for Beeminder"
-        self.headerLabel.isHidden = false
-        self.signInButton.isHidden = true
-        self.signUpButton.isHidden = false
-        self.resetPasswordButton.isHidden = true
-        self.divider.snp.remakeConstraints { (make) -> Void in
-            make.left.equalTo(self.signUpButton)
-            make.right.equalTo(self.signUpButton)
-            make.height.equalTo(1)
-            make.top.equalTo(self.signUpButton.snp.bottom).offset(15)
-        }
-    }
-    
     var missingDataOnSignIn: UIAlertController {
         let lackOfCredentials = UIAlertController(title: "Incomplete Account Details", message: "Username and Password are required", preferredStyle: .alert)
         lackOfCredentials.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
@@ -296,24 +237,8 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         return lackOfCredentials
     }
     
-    var missingDataOnSignUp: UIAlertController {
-        let lackOfCredentials = UIAlertController(title: "Incomplete Account Details", message: "Email address, desired Username, and Password are required", preferredStyle: .alert)
-        lackOfCredentials.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-        
-        return lackOfCredentials
-    }
-    
     @objc func handleFailedSignIn(_ notification : Notification) {
         let failureAC = UIAlertController(title: "Could not sign in", message: "Invalid credentials", preferredStyle: .alert)
-        failureAC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-        self.present(failureAC, animated: true, completion: nil)
-        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-    }
-    
-    @objc func handleFailedSignUp(_ notification : Notification) {
-        print(notification.userInfo?["error"])
-        let message = notification.userInfo?["error"] as? String ?? "Username or email is already taken"
-        let failureAC = UIAlertController(title: "Could not sign up", message: message, preferredStyle: .alert)
         failureAC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         self.present(failureAC, animated: true, completion: nil)
         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)

@@ -373,7 +373,7 @@ class JSONGoal {
             return w2! > w1!
         }
         if weight != nil {
-            datapointValue = weight as! Double
+            datapointValue = weight!!
         }
         return datapointValue
     }
@@ -408,23 +408,23 @@ class JSONGoal {
         guard let categoryType = self.hkCategoryTypeIdentifier() else { return }
         if categoryType != .appleStandHour { return }
         
-        let calendar = Calendar.current
+        //let calendar = Calendar.current
         
-        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
-        let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
-        let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
+        //let components = calendar.dateComponents(in: TimeZone.current, from: Date())
+        //let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
+        //let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
         
-        guard let startDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!) else { return }
-        guard let endDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!) else { return }
+        //guard let startDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!) else { return }
+        //guard let endDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!) else { return }
         
-        let startDateComponents = calendar.dateComponents([.day,.month,.year], from: startDate)
-        let endDateComponents = calendar.dateComponents([.day,.month,.year], from: endDate)
+        //let startDateComponents = calendar.dateComponents([.day,.month,.year], from: startDate)
+        //let endDateComponents = calendar.dateComponents([.day,.month,.year], from: endDate)
         
-        let startDC = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: startDateComponents.year, month: startDateComponents.month, day: startDateComponents.day, hour: nil, minute: nil, second: nil, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
+        //let startDC = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: startDateComponents.year, month: startDateComponents.month, day: startDateComponents.day, hour: nil, minute: nil, second: nil, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
         
-        let endDC = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: endDateComponents.year, month: endDateComponents.month, day: endDateComponents.day, hour: nil, minute: nil, second: nil, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
+        //let endDC = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: endDateComponents.year, month: endDateComponents.month, day: endDateComponents.day, hour: nil, minute: nil, second: nil, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
         
-        let summariesWithinRange = HKQuery.predicate(forActivitySummariesBetweenStart: startDC, end: endDC)
+        //let summariesWithinRange = HKQuery.predicate(forActivitySummariesBetweenStart: startDC, end: endDC)
         
         let query = HKActivitySummaryQuery(predicate: nil) { (query, summaries, error) -> Void in
             guard let activitySummaries = summaries else {
@@ -476,7 +476,7 @@ class JSONGoal {
     
     func setupHKStatisticsCollectionQuery() {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
-        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
+        if ((self.hkQuantityTypeIdentifier() == nil)) { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
         
         let calendar = Calendar.current
@@ -587,7 +587,7 @@ class JSONGoal {
         let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
         
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (response) in
-            let responseJSON = JSON(response)
+            let responseJSON = JSON(response!)
             var datapoints = responseJSON.array!
             datapoints = datapoints.filter { (datapoint) -> Bool in
                 if let datapointStamp = datapoint["daystamp"].string {
@@ -603,7 +603,6 @@ class JSONGoal {
                 self.postDatapoint(params: params, success: { (responseObject) in
                     success?()
                 }, failure: { (error, errorMessage) in
-                    print(error)
                     errorCompletion?()
                 })
             } else if datapoints.count >= 1 {
@@ -618,7 +617,7 @@ class JSONGoal {
                             "comment": "Auto-updated via Apple Health",
                             "requestid": requestId
                         ]
-                        let val = d["value"].double as? Double
+                        let val = d["value"].double
                         if datapointValue == val { success?() }
                         else {
                             let datapointID = d["id"].string

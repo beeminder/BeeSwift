@@ -22,8 +22,8 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     }
     
     override func sendLeadTimeToServer(_ timer : Timer) {
-        var userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
-        guard let leadtime = userInfo["leadtime"] as? NSNumber else { return }
+        let userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
+        guard let leadtime = userInfo["leadtime"] else { return }
         let params = [ "default_leadtime" : leadtime ]
         RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
             success: { (responseObject) -> Void in

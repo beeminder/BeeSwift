@@ -15,7 +15,6 @@ class CurrentUserManager : NSObject {
     static let signedInNotificationName     = "com.beeminder.signedInNotification"
     static let willSignOutNotificationName  = "com.beeminder.willSignOutNotification"
     static let failedSignInNotificationName = "com.beeminder.failedSignInNotification"
-    static let failedSignUpNotificationName = "com.beeminder.failedSignUpNotification"
     static let signedOutNotificationName    = "com.beeminder.signedOutNotification"
     static let resetNotificationName        = "com.beeminder.resetNotification"
     static let willResetNotificationName    = "com.beeminder.willResetNotification"
@@ -99,7 +98,7 @@ class CurrentUserManager : NSObject {
     
     func signInWithEmail(_ email: String, password: String) {
         RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, success: { (responseObject) in
-                self.handleSuccessfulSignin(JSON(responseObject))
+            self.handleSuccessfulSignin(JSON(responseObject!))
             }) { (responseError, errorMessage) in
                 if responseError != nil { self.handleFailedSignin(responseError!, errorMessage: errorMessage) }
         }
@@ -135,11 +134,6 @@ class CurrentUserManager : NSObject {
     
     func handleFailedSignin(_ responseError: Error, errorMessage : String?) {
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: self, userInfo: ["error" : responseError])
-        self.signOut()
-    }
-    
-    func handleFailedSignup(_ responseError: Error, errorMessage : String?) {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignUpNotificationName), object: self, userInfo: ["error" : errorMessage])
         self.signOut()
     }
     

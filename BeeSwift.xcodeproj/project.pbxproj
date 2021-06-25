@@ -16,7 +16,6 @@
 		A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */; };
 		A11BA9A41FCE54E3004BB425 /* HealthStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */; };
 		A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */; };
-		A12BA94C1AFF201B00AFEF32 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A12BA94B1AFF201B00AFEF32 /* AddressBook.framework */; };
 		A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */; };
 		A12BA9541AFFF21800AFEF32 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12BA9531AFFF21800AFEF32 /* Crypto.swift */; };
 		A12E694E1BD3EF0200AB94C2 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B53C301B2D04EA00AF266F /* NotificationCenter.framework */; };
@@ -26,7 +25,6 @@
 		A13C9CFB2345C18D002912C4 /* JSONGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* JSONGoal.swift */; };
 		A142491F1FD073EC007736B3 /* RequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BCE9841AFFFB3A007322CC /* RequestManager.swift */; };
 		A14249211FD07514007736B3 /* CurrentUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */; };
-		A14249231FD07631007736B3 /* OAuthSignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14249221FD07631007736B3 /* OAuthSignInManager.swift */; };
 		A142492A1FD0788F007736B3 /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11488BD1EE9B0CE003316E1 /* UIDevice.swift */; };
 		A142492D1FD079B4007736B3 /* SignedRequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A142492C1FD079B4007736B3 /* SignedRequestManager.swift */; };
 		A142492E1FD0A56A007736B3 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A158DDB51E46EEA10031BD4F /* HealthKit.framework */; };
@@ -79,7 +77,6 @@
 		A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */; };
 		D25716F2B8CCFE41DCD5CD5C /* Pods_BeeSwiftIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45017ADDD1E7A7E50917F8D4 /* Pods_BeeSwiftIntents.framework */; };
 		D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */; };
-		E532041E2684138900C5D822 /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
 		E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E557610026549DD10076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E55FAB19261240F800A0CF88 /* CurrentUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */; };
@@ -134,13 +131,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = A196CB131AE4142E00B90A3E;
 			remoteInfo = BeeSwift;
-		};
-		E53204202684138900C5D822 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E57BE6DF2655EBD900BA540B;
-			remoteInfo = BeeKit;
 		};
 		E57BE6EA2655EBE000BA540B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -236,7 +226,6 @@
 		A12E69551BD3EF0200AB94C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A12E695C1BD3EF3600AB94C2 /* BeeSwiftToday.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BeeSwiftToday.entitlements; sourceTree = "<group>"; };
 		A1308D451DE24D76006D0626 /* BeeSwift.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BeeSwift.entitlements; sourceTree = "<group>"; };
-		A14249221FD07631007736B3 /* OAuthSignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthSignInManager.swift; sourceTree = "<group>"; };
 		A142492C1FD079B4007736B3 /* SignedRequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedRequestManager.swift; sourceTree = "<group>"; };
 		A1453B341AED9184006F48DA /* UIColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		A1453B381AEDA71D006F48DA /* BSLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSLabel.swift; sourceTree = "<group>"; };
@@ -331,7 +320,6 @@
 				A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */,
 				A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */,
 				A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */,
-				A12BA94C1AFF201B00AFEF32 /* AddressBook.framework in Frameworks */,
 				A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */,
 				D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */,
 			);
@@ -365,7 +353,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E5F7C492260FC5300095684F /* Intents.framework in Frameworks */,
-				E532041E2684138900C5D822 /* BeeKit.framework in Frameworks */,
 				D25716F2B8CCFE41DCD5CD5C /* Pods_BeeSwiftIntents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -401,7 +388,6 @@
 				A1BCE9841AFFFB3A007322CC /* RequestManager.swift */,
 				A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */,
 				A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */,
-				A14249221FD07631007736B3 /* OAuthSignInManager.swift */,
 				A142492C1FD079B4007736B3 /* SignedRequestManager.swift */,
 				E5C161932423CE9F0045C90D /* VersionManager.swift */,
 			);
@@ -744,7 +730,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				E53204212684138900C5D822 /* PBXTargetDependency */,
 			);
 			name = BeeSwiftIntents;
 			productName = BeeSwiftIntents;
@@ -851,10 +836,9 @@
 			};
 			buildConfigurationList = A196CB0F1AE4142E00B90A3E /* Build configuration list for PBXProject "BeeSwift" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -1138,7 +1122,6 @@
 				A1619EA61BEECC6700E14B3A /* EditGoalNotificationsViewController.swift in Sources */,
 				A12BA9541AFFF21800AFEF32 /* Crypto.swift in Sources */,
 				A1A8BDE61FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift in Sources */,
-				A14249231FD07631007736B3 /* OAuthSignInManager.swift in Sources */,
 				E5C161942423CEA00045C90D /* VersionManager.swift in Sources */,
 				A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */,
 			);
@@ -1216,11 +1199,6 @@
 			target = A196CB131AE4142E00B90A3E /* BeeSwift */;
 			targetProxy = A196CB2D1AE4142F00B90A3E /* PBXContainerItemProxy */;
 		};
-		E53204212684138900C5D822 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E57BE6DF2655EBD900BA540B /* BeeKit */;
-			targetProxy = E53204202684138900C5D822 /* PBXContainerItemProxy */;
-		};
 		E57BE6EB2655EBE000BA540B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E57BE6DF2655EBD900BA540B /* BeeKit */;
@@ -1282,7 +1260,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_TESTABILITY = YES;
@@ -1314,7 +1292,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1460,7 +1438,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
@@ -1497,7 +1475,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
@@ -1580,7 +1558,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
@@ -1621,7 +1599,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1716,7 +1694,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				EXCLUDED_ARCHS = "";
@@ -1752,7 +1730,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				EXCLUDED_ARCHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;

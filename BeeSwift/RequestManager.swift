@@ -20,7 +20,6 @@ class RequestManager {
             case .success:
                 success?(response.result.value)
             case .failure(let e):
-                print(response.error)
                 if let error = e as? AFError {
                     switch error {
                     case .responseValidationFailed(let reason):
@@ -37,15 +36,24 @@ class RequestManager {
                                 CurrentUserManager.sharedManager.signOut()
                             }
                             print("Response status code was unacceptable: \(code)")
+                        @unknown default:
+                            print(reason)
+                            break
                         }
-                    case .invalidURL(let url): break
-                        //
-                    case .parameterEncodingFailed(let reason): break
-                        //
-                    case .multipartEncodingFailed(let reason): break
-                        //
-                    case .responseSerializationFailed(let reason): break
-                        //
+                    case .invalidURL(let url):
+                        print(url)
+                        break
+                    case .parameterEncodingFailed(let reason):
+                        print(reason)
+                        break
+                    case .multipartEncodingFailed(let reason):
+                        print(reason)
+                        break
+                    case .responseSerializationFailed(let reason):
+                        print(reason)
+                        break
+                    @unknown default:
+                        print(error)
                     }
                     errorHandler?(response.error, JSON(data: response.data!)["error_message"].string)
                     print(error)
@@ -53,6 +61,8 @@ class RequestManager {
                 }
                 errorHandler?(response.error, JSON(data: response.data!)["error_message"].string)
                 print(e)
+            @unknown default:
+                errorHandler?(response.error, JSON(data: response.data!)["error_message"].string)
             }
         }
     }
