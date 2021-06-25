@@ -579,25 +579,55 @@ class JSONGoal {
         }
     }
     
-    func updateBeeminderWithValue(datapointValue : Double, daystamp : String, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        
-        if datapointValue == 0  { return }
-        
-        
+    private func fetchRecentDatapoints(success: @escaping ((_ datapoints : [JSON]) -> ()), errorCompletion: (() -> ())?) {
         let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
-        
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (response) in
             let responseJSON = JSON(response!)
-            var datapoints = responseJSON.array!
-            datapoints = datapoints.filter { (datapoint) -> Bool in
-                if let datapointStamp = datapoint["daystamp"].string {
-                    return datapointStamp == daystamp
-                } else {
-                    return false
-                }
+            success(responseJSON.array!)
+        }) { (error, errorMessage) in
+            errorCompletion?()
+        }
+    }
+    
+    private func datapointsMatchingDaystamp(datapoints : [JSON], daystamp : String) -> [JSON] {
+        datapoints.filter { (datapoint) -> Bool in
+            if let datapointStamp = datapoint["daystamp"].string {
+                return datapointStamp == daystamp
+            } else {
+                return false
             }
-            
-            if datapoints.count == 0 {
+        }
+    }
+    
+    private func updateDatapoint(datapoint : JSON, daystamp : String, datapointValue : Double, success: (() -> ())?, errorCompletion: (() -> ())?) {
+        let val = datapoint["value"].double
+        if datapointValue == val {
+            success?()
+            return
+        }
+        let requestId = "\(daystamp)-\(self.minuteStamp())"
+        let params = [
+            "access_token": CurrentUserManager.sharedManager.accessToken!,
+            "value": "\(datapointValue)",
+            "comment": "Auto-updated via Apple Health",
+            "requestid": requestId
+        ]
+        let datapointID = datapoint["id"].string
+        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
+            success?()
+        }, errorHandler: { (error, errorMessage) in
+            errorCompletion?()
+        })
+    }
+    
+    private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, success: (() -> ())?, errorCompletion: (() -> ())?) {
+        if datapointValue == 0  {
+            success?()
+            return
+        }
+        fetchRecentDatapoints { datapoints in
+            var matchingDatapoints = self.datapointsMatchingDaystamp(datapoints: datapoints, daystamp: daystamp)
+            if matchingDatapoints.count == 0 {
                 let requestId = "\(daystamp)-\(self.minuteStamp())"
                 let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
                 self.postDatapoint(params: params, success: { (responseObject) in
@@ -605,41 +635,24 @@ class JSONGoal {
                 }, failure: { (error, errorMessage) in
                     errorCompletion?()
                 })
-            } else if datapoints.count >= 1 {
-                var first = true
-                datapoints.forEach({ (datapoint) in
-                    guard let d = datapoint as? JSON else { return }
-                    if first {
-                        let requestId = "\(daystamp)-\(self.minuteStamp())"
-                        let params = [
-                            "access_token": CurrentUserManager.sharedManager.accessToken!,
-                            "value": "\(datapointValue)",
-                            "comment": "Auto-updated via Apple Health",
-                            "requestid": requestId
-                        ]
-                        let val = d["value"].double
-                        if datapointValue == val { success?() }
-                        else {
-                            let datapointID = d["id"].string
-                            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
-                                success?()
-                            }, errorHandler: { (error, errorMessage) in
-                                errorCompletion?()
-                            })
-                        }
-                    } else {
-                        let datapointID = d["id"].string
-                        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
-                            //
-                        }) { (error, errorMessage) in
-                            //
-                        }
+            } else if matchingDatapoints.count >= 1 {
+                let firstDatapoint = matchingDatapoints.remove(at: 0)
+                matchingDatapoints.forEach { datapoint in
+                    let datapointID = datapoint["id"].string
+                    RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
+                        //
+                    }) { (error, errorMessage) in
+                        //
                     }
-                    first = false
-                })
+                }
+                self.updateDatapoint(datapoint: firstDatapoint, daystamp: daystamp, datapointValue: datapointValue) {
+                    success?()
+                } errorCompletion: {
+                    errorCompletion?()
+                }
             }
-        }) { (error, errorMessage) in
-            //
+        } errorCompletion: {
+            errorCompletion?()
         }
     }
     
