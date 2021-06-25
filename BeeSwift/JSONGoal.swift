@@ -315,8 +315,11 @@ class JSONGoal {
     func hkObserverQuery() -> HKObserverQuery? {
         guard let sampleType = self.hkSampleType() else { return nil }
         return HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
-            self.hkQueryForLast(days: 1, success: nil, errorCompletion: nil)
-            completionHandler()
+            self.hkQueryForLast(days: 1) {
+                completionHandler()
+            } errorCompletion: {
+                //
+            }
         })
     }
     
