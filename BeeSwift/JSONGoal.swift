@@ -663,6 +663,27 @@ class JSONGoal {
         return false
     }
     
+    private func predicateForDayOffset(offset : Int) -> NSPredicate? {
+        let bounds = dateBoundsForDayOffset(offset: offset)
+        return HKQuery.predicateForSamples(withStart: bounds[0], end: bounds[1], options: .strictEndDate)
+    }
+    
+    private func dateBoundsForDayOffset(offset : Int) -> [Date] {
+        let calendar = Calendar.current
+        
+        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
+        let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
+        let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
+        
+        let endOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!)
+        let startOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!)
+        
+        guard let startDate = calendar.date(byAdding: .day, value: offset, to: startOfToday!) else { return [] }
+        guard let endDate = calendar.date(byAdding: .day, value: offset, to: endOfToday!) else { return [] }
+        
+        return [startDate, endDate]
+    }
+    
     func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
@@ -672,24 +693,12 @@ class JSONGoal {
         }
         
         ((-1*days + 1)...0).forEach({ (offset) in
-            let calendar = Calendar.current
-            
-            let components = calendar.dateComponents(in: TimeZone.current, from: Date())
-            let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
-            let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
-            
-            let endOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!)
-            let startOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!)
-            
-            guard let startDate = calendar.date(byAdding: .day, value: offset, to: startOfToday!) else { return }
-            guard let endDate = calendar.date(byAdding: .day, value: offset, to: endOfToday!) else { return }
-            
+            let predicate = predicateForDayOffset(offset: offset)
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyyMMdd"
-            let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
+            let bounds = dateBoundsForDayOffset(offset: offset)
+            let datapointDate = self.deadline.intValue >= 0 ? bounds[0] : bounds[1]
             let daystamp = formatter.string(from: datapointDate)
-            
-            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
             
             if self.hkQuantityTypeIdentifier() != nil {
                 var options : HKStatisticsOptions
