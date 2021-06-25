@@ -406,45 +406,6 @@ class JSONGoal {
         return datapointValue
     }
     
-    func setupActivitySummaryQuery() {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
-        guard let categoryType = self.hkCategoryTypeIdentifier() else { return }
-        if categoryType != .appleStandHour { return }
-        
-        //let calendar = Calendar.current
-        
-        //let components = calendar.dateComponents(in: TimeZone.current, from: Date())
-        //let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
-        //let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
-        
-        //guard let startDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!) else { return }
-        //guard let endDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!) else { return }
-        
-        //let startDateComponents = calendar.dateComponents([.day,.month,.year], from: startDate)
-        //let endDateComponents = calendar.dateComponents([.day,.month,.year], from: endDate)
-        
-        //let startDC = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: startDateComponents.year, month: startDateComponents.month, day: startDateComponents.day, hour: nil, minute: nil, second: nil, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
-        
-        //let endDC = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: endDateComponents.year, month: endDateComponents.month, day: endDateComponents.day, hour: nil, minute: nil, second: nil, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
-        
-        //let summariesWithinRange = HKQuery.predicate(forActivitySummariesBetweenStart: startDC, end: endDC)
-        
-        let query = HKActivitySummaryQuery(predicate: nil) { (query, summaries, error) -> Void in
-            guard let activitySummaries = summaries else {
-                guard let queryError = error else {
-                    fatalError("*** Did not return a valid error object. ***")
-                }
-                print(queryError)
-                return
-            }
-            if self.hasRecentlyUpdatedHealthData() { return }
-            self.updateBeeminderWithActivitySummaries(summaries: activitySummaries, success: nil, errorCompletion: nil)
-            
-        }
-        query.updateHandler = self.activitySummaryUpdateHandler
-        healthStore.execute(query)
-    }
-    
     func activitySummaryUpdateHandler(query: HKActivitySummaryQuery, summaries: [HKActivitySummary]?, error: Error?) {
         guard let activitySummaries = summaries else {
             guard let queryError = error else {
