@@ -766,9 +766,6 @@ class JSONGoal {
         
         ((-1*days + 1)...0).forEach({ (dayOffset) in
             queryWithOffsetResult[dayOffset] = .incomplete
-        })
-        
-        ((-1*days + 1)...0).forEach({ (dayOffset) in
             if self.hkQuantityTypeIdentifier() != nil {
                 self.runStatsQuery(dayOffset: dayOffset) {
                     queryWithOffsetResult[dayOffset] = .success
@@ -787,7 +784,6 @@ class JSONGoal {
                 }
             }
         })
-        success?()
     }
     
     func setupHealthKit() {
@@ -800,7 +796,6 @@ class JSONGoal {
                 return
             }
             healthStore.enableBackgroundDelivery(for: sampleType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
-                
                 if error != nil {
                     //handle error
                     return
