@@ -583,6 +583,14 @@ class JSONGoal {
             errorCompletion?()
         })
     }
+    private func deleteDatapoint(datapoint : JSON) {
+        let datapointID = datapoint["id"].string
+        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
+            //
+        }) { (error, errorMessage) in
+            //
+        }
+    }
     
     private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, success: (() -> ())?, errorCompletion: (() -> ())?) {
         if datapointValue == 0  {
@@ -602,12 +610,7 @@ class JSONGoal {
             } else if matchingDatapoints.count >= 1 {
                 let firstDatapoint = matchingDatapoints.remove(at: 0)
                 matchingDatapoints.forEach { datapoint in
-                    let datapointID = datapoint["id"].string
-                    RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
-                        //
-                    }) { (error, errorMessage) in
-                        //
-                    }
+                    self.deleteDatapoint(datapoint: datapoint)
                 }
                 self.updateDatapoint(datapoint: firstDatapoint, daystamp: daystamp, datapointValue: datapointValue) {
                     success?()
@@ -640,12 +643,12 @@ class JSONGoal {
         return false
     }
     
-    private func predicateForDayOffset(offset : Int) -> NSPredicate? {
-        let bounds = dateBoundsForDayOffset(offset: offset)
+    private func predicateForDayOffset(dayOffset : Int) -> NSPredicate? {
+        let bounds = dateBoundsForDayOffset(dayOffset: dayOffset)
         return HKQuery.predicateForSamples(withStart: bounds[0], end: bounds[1], options: .strictEndDate)
     }
     
-    private func dateBoundsForDayOffset(offset : Int) -> [Date] {
+    private func dateBoundsForDayOffset(dayOffset : Int) -> [Date] {
         let calendar = Calendar.current
         
         let components = calendar.dateComponents(in: TimeZone.current, from: Date())
@@ -655,84 +658,133 @@ class JSONGoal {
         let endOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!)
         let startOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!)
         
-        guard let startDate = calendar.date(byAdding: .day, value: offset, to: startOfToday!) else { return [] }
-        guard let endDate = calendar.date(byAdding: .day, value: offset, to: endOfToday!) else { return [] }
+        guard let startDate = calendar.date(byAdding: .day, value: dayOffset, to: startOfToday!) else { return [] }
+        guard let endDate = calendar.date(byAdding: .day, value: dayOffset, to: endOfToday!) else { return [] }
         
         return [startDate, endDate]
     }
     
-    func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
+    private func runStatsQuery(dayOffset : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
+        let predicate = predicateForDayOffset(dayOffset: dayOffset)
+        let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
+        
+        var options : HKStatisticsOptions
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
+        if quantityType.aggregationStyle == .cumulative {
+            options = .cumulativeSum
+        } else {
+            options = .discreteMin
+        }
+        let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: options, completionHandler: { (query, statistics, error) in
+            if error != nil || statistics == nil { return }
+            
+            guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
+                return
+            }
+            guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+                fatalError("*** Unable to create a quantity type ***")
+            }
+            
+            healthStore.preferredUnits(for: [quantityType], completion: { (units, error) in
+                var datapointValue : Double?
+                guard let unit = units.first?.value else { return }
+                
+                let aggStyle : HKQuantityAggregationStyle
+                if #available(iOS 13.0, *) { aggStyle = .discreteArithmetic } else { aggStyle = .discrete }
+                
+                if quantityType.aggregationStyle == .cumulative {
+                    let quantity = statistics!.sumQuantity()
+                    datapointValue = quantity?.doubleValue(for: unit)
+                } else if quantityType.aggregationStyle == aggStyle {
+                    let quantity = statistics!.minimumQuantity()
+                    datapointValue = quantity?.doubleValue(for: unit)
+                }
+                
+                if datapointValue == nil || datapointValue == 0  { return }
+                
+                self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp, success: {
+                    success?()
+                }, errorCompletion: {
+                    errorCompletion?()
+                })
+            })
+        })
+        
+        healthStore.execute(statsQuery)
+    }
+    
+    private func runCategoryTypeQuery(dayOffset : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
+        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+        guard let sampleType = self.hkSampleType() else { return }
+        let predicate = predicateForDayOffset(dayOffset: dayOffset)
+        let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
+        
+        let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
+            if error != nil || samples == nil { return }
+            
+            let datapointValue = self.hkDatapointValueForSamples(samples: samples!, units: nil)
+            
+            if datapointValue == 0 { return }
+            
+            self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
+        })
+        healthStore.execute(query)
+    }
+    
+    private func dayStampFromDayOffset(dayOffset : Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+        let bounds = dateBoundsForDayOffset(dayOffset: dayOffset)
+        let datapointDate = self.deadline.intValue >= 0 ? bounds[0] : bounds[1]
+        return formatter.string(from: datapointDate)
+    }
+    
+    private func runCallbacksIfQueriesAreComplete(queryResults : [Int : HKQueryResult], success: (() -> ())?, errorCompletion: (() -> ())?) {
+        if Set(queryResults.values).contains(.incomplete) { return }
+        if Set(queryResults.values).contains(.failure) {
+            errorCompletion?()
+            return
+        }
+        success?()
+    }
+    
+    private enum HKQueryResult {
+        case incomplete
+        case success
+        case failure
+    }
+    
+    func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
         if self.hasRecentlyUpdatedHealthData() {
             success?()
             return
         }
         
-        ((-1*days + 1)...0).forEach({ (offset) in
-            let predicate = predicateForDayOffset(offset: offset)
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyyMMdd"
-            let bounds = dateBoundsForDayOffset(offset: offset)
-            let datapointDate = self.deadline.intValue >= 0 ? bounds[0] : bounds[1]
-            let daystamp = formatter.string(from: datapointDate)
-            
+        var queryWithOffsetResult : [Int : HKQueryResult] = [:]
+        
+        ((-1*days + 1)...0).forEach({ (dayOffset) in
+            queryWithOffsetResult[dayOffset] = .incomplete
+        })
+        
+        ((-1*days + 1)...0).forEach({ (dayOffset) in
             if self.hkQuantityTypeIdentifier() != nil {
-                var options : HKStatisticsOptions
-                guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
-                if quantityType.aggregationStyle == .cumulative {
-                    options = .cumulativeSum
-                } else {
-                    options = .discreteMin
+                self.runStatsQuery(dayOffset: dayOffset) {
+                    queryWithOffsetResult[dayOffset] = .success
+                    self.runCallbacksIfQueriesAreComplete(queryResults: queryWithOffsetResult, success: success, errorCompletion: errorCompletion)
+                } errorCompletion: {
+                    queryWithOffsetResult[dayOffset] = .failure
+                    self.runCallbacksIfQueriesAreComplete(queryResults: queryWithOffsetResult, success: success, errorCompletion: errorCompletion)
                 }
-                let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: options, completionHandler: { (query, statistics, error) in
-                    if error != nil || statistics == nil { return }
-                    
-                    guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
-                        return
-                    }
-                    guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-                        fatalError("*** Unable to create a quantity type ***")
-                    }
-                    
-                    healthStore.preferredUnits(for: [quantityType], completion: { (units, error) in
-                        var datapointValue : Double?
-                        guard let unit = units.first?.value else { return }
-                        
-                        let aggStyle : HKQuantityAggregationStyle
-                        if #available(iOS 13.0, *) { aggStyle = .discreteArithmetic } else { aggStyle = .discrete }
-                        
-                        if quantityType.aggregationStyle == .cumulative {
-                            let quantity = statistics!.sumQuantity()
-                            datapointValue = quantity?.doubleValue(for: unit)
-                        } else if quantityType.aggregationStyle == aggStyle {
-                            let quantity = statistics!.minimumQuantity()
-                            datapointValue = quantity?.doubleValue(for: unit)
-                        }
-                        
-                        if datapointValue == nil || datapointValue == 0  { return }
-                        
-                        self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp, success: {
-                            success?()
-                        }, errorCompletion: {
-                            errorCompletion?()
-                        })
-                    })
-                })
-                
-                healthStore.execute(statsQuery)
-                return
             } else {
-                let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
-                    if error != nil || samples == nil { return }
-                    
-                    let datapointValue = self.hkDatapointValueForSamples(samples: samples!, units: nil)
-                    
-                    if datapointValue == 0 { return }
-                    
-                    self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
-                })
-                healthStore.execute(query)
+                self.runCategoryTypeQuery(dayOffset: dayOffset) {
+                    queryWithOffsetResult[dayOffset] = .success
+                    self.runCallbacksIfQueriesAreComplete(queryResults: queryWithOffsetResult, success: success, errorCompletion: errorCompletion)
+                } errorCompletion: {
+                    queryWithOffsetResult[dayOffset] = .failure
+                    self.runCallbacksIfQueriesAreComplete(queryResults: queryWithOffsetResult, success: success, errorCompletion: errorCompletion)
+                }
             }
         })
         success?()

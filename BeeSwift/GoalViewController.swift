@@ -365,21 +365,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     @objc func syncWeekButtonPressed() {
         self.syncHealthDataButtonPressed(numDays: 7)
     }
-    
-    private var previouslySeenSyncDayAmount: [Int] {
-        [
-            1, /*a day; today*/
-            7 /*a week; the past seven days*/
-        ]
-    }
-    /// expecting 1 for today button and 7 for week button
-    private func syncHealthDataButtonPressed(numDays: Int = 1) {
-        assert(previouslySeenSyncDayAmount.contains(numDays), "previously only handled values \(previouslySeenSyncDayAmount); hic sunt dracones!")
-        let daysBackToSync = previouslySeenSyncDayAmount.contains(numDays) ? numDays : 1
-        
+
+    private func syncHealthDataButtonPressed(numDays: Int) {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        self.goal.hkQueryForLast(days: daysBackToSync, success: {
+        self.goal.hkQueryForLast(days: numDays, success: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
