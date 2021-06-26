@@ -563,12 +563,13 @@ class JSONGoal {
         }
     }
     
-    private func updateDatapoint(datapoint : JSON, daystamp : String, datapointValue : Double, success: (() -> ())?, errorCompletion: (() -> ())?) {
+    private func updateDatapoint(datapoint : JSON, datapointValue : Double, success: (() -> ())?, errorCompletion: (() -> ())?) {
         let val = datapoint["value"].double
         if datapointValue == val {
             success?()
             return
         }
+        let daystamp = datapoint["daystamp"].string!
         let requestId = "\(daystamp)-\(self.minuteStamp())"
         let params = [
             "access_token": CurrentUserManager.sharedManager.accessToken!,
@@ -583,6 +584,7 @@ class JSONGoal {
             errorCompletion?()
         })
     }
+    
     private func deleteDatapoint(datapoint : JSON) {
         let datapointID = datapoint["id"].string
         RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
@@ -612,7 +614,7 @@ class JSONGoal {
                 matchingDatapoints.forEach { datapoint in
                     self.deleteDatapoint(datapoint: datapoint)
                 }
-                self.updateDatapoint(datapoint: firstDatapoint, daystamp: daystamp, datapointValue: datapointValue) {
+                self.updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue) {
                     success?()
                 } errorCompletion: {
                     errorCompletion?()
@@ -667,7 +669,7 @@ class JSONGoal {
     private func runStatsQuery(dayOffset : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
-        let predicate = predicateForDayOffset(dayOffset: dayOffset)
+        let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
         
         var options : HKStatisticsOptions
