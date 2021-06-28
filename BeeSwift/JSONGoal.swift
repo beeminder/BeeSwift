@@ -619,7 +619,7 @@ class JSONGoal {
         }
         
         if updateDictionary![self.slug] != nil {
-            let lastUpdate = updateDictionary![self.slug] as! Date
+            guard let lastUpdate = updateDictionary![self.slug] as? Date else { return false }
             if lastUpdate.timeIntervalSinceNow > -60.0 {
                 return true
             }
