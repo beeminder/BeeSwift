@@ -145,6 +145,10 @@ class CurrentUserManager : NSObject {
         UserDefaults.standard.removeObject(forKey: deadbeatKey)
         UserDefaults.standard.removeObject(forKey: usernameKey)
         UserDefaults.standard.synchronize()
+
+        UserDefaults.standard.removeSuite(named: "group.beeminder.beeminder")
+        CurrentUserManager.sharedManager.updateTodayWidget()
+
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
     }
     
