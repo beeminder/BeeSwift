@@ -1,5 +1,5 @@
 //
-//  JSONself.swift
+//  JSONgoal.swift
 //  BeeSwift
 //
 //  Created by Andy Brett on 9/13/19.
@@ -612,26 +612,6 @@ class JSONGoal {
         }
     }
     
-    func hasRecentlyUpdatedHealthData() -> Bool {
-        var updateDictionary = UserDefaults.standard.dictionary(forKey: Constants.healthKitUpdateDictionaryKey)
-        if updateDictionary == nil {
-            updateDictionary = [:]
-        }
-        
-        if updateDictionary![self.slug] != nil {
-            guard let lastUpdate = updateDictionary![self.slug] as? Date else { return false }
-            if lastUpdate.timeIntervalSinceNow > -60.0 {
-                return true
-            }
-        }
-        updateDictionary![self.slug] = Date()
-        
-        UserDefaults.standard.set(updateDictionary, forKey: Constants.healthKitUpdateDictionaryKey)
-        UserDefaults.standard.synchronize()
-        
-        return false
-    }
-    
     private func predicateForDayOffset(dayOffset : Int) -> NSPredicate? {
         let bounds = dateBoundsForDayOffset(dayOffset: dayOffset)
         return HKQuery.predicateForSamples(withStart: bounds[0], end: bounds[1], options: .strictEndDate)
@@ -745,12 +725,7 @@ class JSONGoal {
         case failure
     }
     
-    func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        if self.hasRecentlyUpdatedHealthData() {
-            success?()
-            return
-        }
-        
+    func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {        
         var queryWithOffsetResult : [Int : HKQueryResult] = [:]
         
         ((-1*days + 1)...0).forEach({ (dayOffset) in
