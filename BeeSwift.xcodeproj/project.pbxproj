@@ -77,6 +77,9 @@
 		A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */; };
 		D25716F2B8CCFE41DCD5CD5C /* Pods_BeeSwiftIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45017ADDD1E7A7E50917F8D4 /* Pods_BeeSwiftIntents.framework */; };
 		D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */; };
+		E52094FE2741D72300CB766F /* JSONGoal+Healthkit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* JSONGoal+Healthkit.swift */; };
+		E52094FF2741D73800CB766F /* JSONGoal+Healthkit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* JSONGoal+Healthkit.swift */; };
+		E52095002741D73900CB766F /* JSONGoal+Healthkit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* JSONGoal+Healthkit.swift */; };
 		E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E557610026549DD10076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E55FAB19261240F800A0CF88 /* CurrentUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */; };
@@ -276,6 +279,7 @@
 		C622986C48BC5CA5BBB7E3C7 /* Pods-BeeSwiftToday.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftToday.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftToday/Pods-BeeSwiftToday.debug.xcconfig"; sourceTree = "<group>"; };
 		DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeeSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E029CC25A4BEE8E42BD37670 /* Pods-BeeSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwift/Pods-BeeSwift.release.xcconfig"; sourceTree = "<group>"; };
+		E52094FD2741D72300CB766F /* JSONGoal+Healthkit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONGoal+Healthkit.swift"; sourceTree = "<group>"; };
 		E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AddDataIntents.intentdefinition; sourceTree = "<group>"; };
 		E55760F426549D310076B95A /* AddDataIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataIntentHandler.swift; sourceTree = "<group>"; };
 		E55FEE6A23FF7552007C20B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -482,6 +486,7 @@
 				A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */,
 				A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */,
 				A1F8F07A232C05410060B83E /* JSONGoal.swift */,
+				E52094FD2741D72300CB766F /* JSONGoal+Healthkit.swift */,
 				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
 				A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */,
 				A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */,
@@ -1071,6 +1076,7 @@
 				A142492F1FD0A590007736B3 /* HealthStoreManager.swift in Sources */,
 				A142492A1FD0788F007736B3 /* UIDevice.swift in Sources */,
 				A1D8532C1EB0EA5700FC75DE /* UIFontExtension.swift in Sources */,
+				E52094FF2741D73800CB766F /* JSONGoal+Healthkit.swift in Sources */,
 				A1D853261EB0332D00FC75DE /* Constants.swift in Sources */,
 				A14249211FD07514007736B3 /* CurrentUserManager.swift in Sources */,
 				A13C9CFB2345C18D002912C4 /* JSONGoal.swift in Sources */,
@@ -1102,6 +1108,7 @@
 				A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */,
 				A1E619001E86980900D8ED93 /* HealthKitConfig.swift in Sources */,
 				A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */,
+				E52094FE2741D72300CB766F /* JSONGoal+Healthkit.swift in Sources */,
 				A1453B391AEDA71D006F48DA /* BSLabel.swift in Sources */,
 				A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */,
 				A1F8F07B232C05410060B83E /* JSONGoal.swift in Sources */,
@@ -1163,6 +1170,7 @@
 				E5CF51832612434A00546184 /* BSTextField.swift in Sources */,
 				E55FAB19261240F800A0CF88 /* CurrentUserManager.swift in Sources */,
 				E5CF51952612435800546184 /* HealthKitConfig.swift in Sources */,
+				E52095002741D73900CB766F /* JSONGoal+Healthkit.swift in Sources */,
 				E5F7C55026113C330095684F /* AddDataIntents.intentdefinition in Sources */,
 				E5CF51AD2612437400546184 /* JSONGoal.swift in Sources */,
 				E5CF51822612434700546184 /* BSLabel.swift in Sources */,
