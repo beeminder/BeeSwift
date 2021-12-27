@@ -44,6 +44,36 @@ extension JSONGoal {
         })
     }
     
+    func hkSampleType() -> HKSampleType? {
+        if self.hkQuantityTypeIdentifier() != nil {
+            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
+        }
+        if self.hkCategoryTypeIdentifier() != nil {
+            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        }
+        return nil
+    }
+    
+    func hkObserverQuery() -> HKObserverQuery? {
+        guard let sampleType = self.hkSampleType() else { return nil }
+        return HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
+            self.hkQueryForLast(days: 1) {
+                completionHandler()
+            } errorCompletion: {
+                //
+            }
+        })
+    }
+    
+    func hkPermissionType() -> HKObjectType? {
+        if self.hkQuantityTypeIdentifier() != nil {
+            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
+        } else if self.hkCategoryTypeIdentifier() != nil {
+            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        }
+        return nil
+    }
+    
     func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
         var queryWithOffsetResult : [Int : HKQueryResult] = [:]
         
