@@ -75,43 +75,27 @@ extension JSONGoal {
     }
     
     func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        var queryWithOffsetResult : [Int : HKQueryResult] = [:]
-        
         ((-1*days + 1)...0).forEach({ (dayOffset) in
-            queryWithOffsetResult[dayOffset] = .incomplete
             if self.hkQuantityTypeIdentifier() != nil {
                 self.runStatsQuery(dayOffset: dayOffset) {
-                    queryWithOffsetResult[dayOffset] = .success
-                    self.runCallbacksIfQueriesAreComplete(queryResults: queryWithOffsetResult, success: success, errorCompletion: errorCompletion)
+                    success?()
                 } errorCompletion: {
-                    queryWithOffsetResult[dayOffset] = .failure
-                    self.runCallbacksIfQueriesAreComplete(queryResults: queryWithOffsetResult, success: success, errorCompletion: errorCompletion)
+                    errorCompletion?()
                 }
             } else {
                 self.runCategoryTypeQuery(dayOffset: dayOffset) {
-                    queryWithOffsetResult[dayOffset] = .success
-                    self.runCallbacksIfQueriesAreComplete(queryResults: queryWithOffsetResult, success: success, errorCompletion: errorCompletion)
+                    success?()
                 } errorCompletion: {
-                    queryWithOffsetResult[dayOffset] = .failure
-                    self.runCallbacksIfQueriesAreComplete(queryResults: queryWithOffsetResult, success: success, errorCompletion: errorCompletion)
+                    errorCompletion?()
                 }
             }
         })
     }
     
-    private func runCallbacksIfQueriesAreComplete(queryResults : [Int : HKQueryResult], success: (() -> ())?, errorCompletion: (() -> ())?) {
-        if Set(queryResults.values).contains(.incomplete) { return }
-        if Set(queryResults.values).contains(.failure) {
-            errorCompletion?()
-            return
-        }
-        success?()
-    }
-    
     private func runCategoryTypeQuery(dayOffset : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
         guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         guard let sampleType = self.hkSampleType() else { return }
-        let predicate = predicateForDayOffset(dayOffset: dayOffset)
+        let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
         
         let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
@@ -371,6 +355,9 @@ extension JSONGoal {
     }
     
     private func dateBoundsForDayOffset(dayOffset : Int) -> [Date] {
+        if self.healthKitMetric == "timeAsleep" || self.healthKitMetric == "timeInBed" {
+            return self.sleepDateBoundsForDayOffset(dayOffset: dayOffset)
+        }
         let calendar = Calendar.current
         
         let components = calendar.dateComponents(in: TimeZone.current, from: Date())
@@ -386,11 +373,25 @@ extension JSONGoal {
         return [startDate, endDate]
     }
     
+    private func sleepDateBoundsForDayOffset(dayOffset : Int) -> [Date] {
+        let calendar = Calendar.current
+        
+        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
+        
+        let sixPmToday = calendar.date(bySettingHour: 18, minute: 0, second: 0, of: calendar.date(from: components)!)
+        let sixPmTomorrow = calendar.date(byAdding: .day, value: 1, to: sixPmToday!)
+        
+        guard let startDate = calendar.date(byAdding: .day, value: dayOffset, to: sixPmToday!) else { return [] }
+        guard let endDate = calendar.date(byAdding: .day, value: dayOffset, to: sixPmTomorrow!) else { return [] }
+        
+        return [startDate, endDate]
+    }
+    
     private func dayStampFromDayOffset(dayOffset : Int) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd"
-        let bounds = dateBoundsForDayOffset(dayOffset: dayOffset)
-        let datapointDate = self.deadline.intValue >= 0 ? bounds[0] : bounds[1]
+        let bounds = self.dateBoundsForDayOffset(dayOffset: dayOffset)
+        let datapointDate = (self.deadline.intValue >= 0 && self.healthKitMetric != "timeAsleep" && self.healthKitMetric != "timeInBed") ? bounds[0] : bounds[1]
         return formatter.string(from: datapointDate)
     }
     
@@ -399,7 +400,7 @@ extension JSONGoal {
             success?()
             return
         }
-        fetchRecentDatapoints { datapoints in
+        self.fetchRecentDatapoints { datapoints in
             var matchingDatapoints = self.datapointsMatchingDaystamp(datapoints: datapoints, daystamp: daystamp)
             if matchingDatapoints.count == 0 {
                 let requestId = "\(daystamp)-\(self.minuteStamp())"
