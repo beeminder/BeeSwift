@@ -54,7 +54,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.titleLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.slugLabel)
             make.left.equalTo(self.slugLabel.snp.right).offset(10)
-            make.width.lessThanOrEqualTo(self.contentView).multipliedBy(0.6)
+            make.right.lessThanOrEqualTo(-self.margin)
         }
         self.titleLabel.textAlignment = .right
 
