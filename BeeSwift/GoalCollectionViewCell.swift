@@ -11,6 +11,7 @@ import Foundation
 class GoalCollectionViewCell: UICollectionViewCell {
     let slugLabel :BSLabel = BSLabel()
     let titleLabel :BSLabel = BSLabel()
+    let todaytaLabel :BSLabel = BSLabel()
     let thumbnailImageView :UIImageView = UIImageView()
     let safesumLabel :BSLabel = BSLabel()
     let margin = 8
@@ -22,6 +23,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.titleLabel.text = goal?.title
             self.slugLabel.text = goal?.slug
             self.titleLabel.isHidden = goal?.title == goal?.slug
+            self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
             self.safesumLabel.text = goal?.capitalSafesum()
             self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.beeminder.gray
         }
@@ -32,6 +34,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         
         self.contentView.addSubview(self.slugLabel)
         self.contentView.addSubview(self.titleLabel)
+        self.contentView.addSubview(self.todaytaLabel)
         self.contentView.addSubview(self.thumbnailImageView)
         self.contentView.addSubview(self.safesumLabel)
         if #available(iOS 13.0, *) {
@@ -54,9 +57,19 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.titleLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.slugLabel)
             make.left.equalTo(self.slugLabel.snp.right).offset(10)
-            make.right.lessThanOrEqualTo(-self.margin)
+            make.right.lessThanOrEqualTo(self.todaytaLabel.snp.left).offset(-10)
         }
-        self.titleLabel.textAlignment = .right
+        self.titleLabel.textAlignment = .left
+        
+        self.todaytaLabel.font = UIFont.beeminder.defaultFont
+        if #available(iOS 13.0, *) {
+            self.todaytaLabel.textColor = .label
+        }
+        self.todaytaLabel.snp.makeConstraints { (make) -> Void in
+            make.centerY.equalTo(self.slugLabel)
+            make.right.equalTo(-self.margin)
+        }
+        self.todaytaLabel.textAlignment = .right
 
         self.thumbnailImageView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0).offset(self.margin)
