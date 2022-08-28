@@ -182,7 +182,7 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		A1B53C401B2D04EB00AF266F /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
@@ -190,7 +190,7 @@
 				E5F7C4AA260FC5300095684F /* BeeSwiftIntents.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E57BE71C2655F03200BA540B /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
