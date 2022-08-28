@@ -13,14 +13,12 @@ import UserNotifications
 
 class JSONGoal {
     var autodata: String = ""
-    var burner: String = ""
     var delta_text: String = ""
     var graph_url: String?
     var healthKitMetric: String?
     var id: String = ""
     var lane: NSNumber?
     var losedate: NSNumber = 0
-    var panic: NSNumber = 0
     var pledge: NSNumber = 0
     var rate: NSNumber?
     var runits: String = ""
@@ -34,7 +32,6 @@ class JSONGoal {
     var safebump: NSNumber?
     var safebuf: NSNumber?
     var curval: NSNumber?
-    var baremin: String?
     var limsum: String?
     var safesum: String?
     var deadline: NSNumber = 0
@@ -48,9 +45,7 @@ class JSONGoal {
     init(json: JSON) {
         self.id = json["id"].string!
         self.title = json["title"].string!
-        self.burner = json["burner"].string!
         self.slug = json["slug"].string!
-        self.panic = json["panic"].number!
         self.deadline = json["deadline"].number!
         self.leadtime = json["leadtime"].number!
         self.alertstart = json["alertstart"].number!
@@ -76,7 +71,6 @@ class JSONGoal {
         self.losedate = json["losedate"].number!
         self.runits = json["runits"].string!
         self.yaxis = json["yaxis"].string!
-        self.baremin = json["baremin"].string!
         if json["rate"].number != nil { self.rate = json["rate"].number! }
         if json["delta_text"].string != nil { self.delta_text = json["delta_text"].string! }
         self.won = json["won"].number!
