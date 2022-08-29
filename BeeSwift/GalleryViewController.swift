@@ -16,7 +16,7 @@ import SafariServices
 
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {    
     var collectionView :UICollectionView?
-    var collectionViewLayout :UICollectionViewLayout?
+    var collectionViewLayout :UICollectionViewFlowLayout?
     let lastUpdatedView = UIView()
     let lastUpdatedLabel = BSLabel()
     let cellReuseIdentifier = "Cell"
@@ -459,7 +459,27 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 320, height: 120)
+        let minimumWidth: CGFloat = 320
+
+        let availableWidth = self.collectionView!.frame.width - self.collectionView!.contentInset.left - self.collectionView!.contentInset.right
+        let itemSpacing = self.collectionViewLayout!.minimumInteritemSpacing
+
+        // Calculate how many cells could fit at the minimum width, rounding down (as we can't show a fractional cell)
+        // We need to account for there being margin between cells, so there is 1 fewer margin than cell. We do this by
+        // imagining there is some non-showed spacing after the final cell. For example with wo cells:
+        // | available width in parent | spacing |
+        // |  cell  | spacing |  cell  | spacing |
+        let cellsWhileMaintainingMinimumWidth = Int(
+            (availableWidth + itemSpacing) /
+            (minimumWidth + itemSpacing)
+        )
+
+        // Calculate how wide a cell can be. This can be larger than our minimum width because we
+        // may have rounded down the number of cells. E.g. if we could have fit 1.5 minimum width
+        // cells we will only show 1, but can make it 50% wider than minimum
+        let targetWidth = (availableWidth + itemSpacing) / CGFloat(cellsWhileMaintainingMinimumWidth) -  self.collectionViewLayout!.minimumInteritemSpacing
+
+        return CGSize(width: targetWidth, height: 120)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -485,6 +505,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if row < self.filteredGoals.count { self.openGoal(self.filteredGoals[row]) }
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        // After a rotation or other size change the optimal width for our cells may have changed.
+        // We instruct the collectionView to reload so widths are recalculated.
+        coordinator.animate { _ in } completion: { _ in
+            self.collectionView?.reloadData()
+        }
+    }
+
     @objc func openGoalFromNotification(_ notification: Notification) {
         let slug = (notification as NSNotification).userInfo!["slug"] as! String
         let matchingGoal = self.goals.filter({ (goal) -> Bool in
