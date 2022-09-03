@@ -3,7 +3,7 @@ name: Semaphore iOS Swift example with Fastlane
 agent:
   machine:
     type: a1-standard-4
-    os_image: macos-xcode11
+    os_image: macos-xcode13
 blocks:
   - name: Fastlane Test
     task:
@@ -25,9 +25,10 @@ blocks:
           - bundle install --path vendor/bundle
           - cache store
           - cp /Users/semaphore/BeeSwift/BeeSwift/Config.swift.sample /Users/semaphore/BeeSwift/BeeSwift/Config.swift
+          - cp /Users/semaphore/BeeSwift/BeeSwift/Config.swift.sample /Users/semaphore/BeeSwift/BeeKit/Config.swift
       jobs:
         - name: Test
           commands:
             - bundle exec pod install
-            - bundle exec xcversion select 11.3.1
+            - bundle exec xcversion select 13.3
             - bundle exec fastlane test
