@@ -42,7 +42,7 @@ class ChooseHKMetricViewController: UIViewController {
         }()
         
         instructionsLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(20)
             make.centerX.equalTo(self.view)
             make.width.equalTo(self.view).multipliedBy(0.85)
         }
@@ -53,7 +53,7 @@ class ChooseHKMetricViewController: UIViewController {
         let saveButton = BSButton()
         self.view.addSubview(saveButton)
         saveButton.snp.makeConstraints { (make) in
-            make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-20)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-20)
             make.centerX.equalTo(self.view)
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.height.equalTo(Constants.defaultTextFieldHeight)
