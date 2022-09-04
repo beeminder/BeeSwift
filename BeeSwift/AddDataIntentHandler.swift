@@ -30,17 +30,28 @@ class AddDataIntentHandler: NSObject, AddDataIntentHandling {
     }
     
     func confirm(intent: AddDataIntent) async -> AddDataIntentResponse {
-        AddDataIntentResponse(code: .ready, userActivity: nil)
+        if intent.goal != nil && intent.value != nil {
+            return AddDataIntentResponse(code: .ready, userActivity: nil)
+        } else {
+            return AddDataIntentResponse(code: .failure, userActivity: nil)
+        }
     }
 
     func handle(intent: AddDataIntent,
               completion: @escaping (AddDataIntentResponse) -> Void) {
-        guard let datapointValue = intent.value else { return }
-        
-        RequestManager.addDatapoint(urtext: "^ \(datapointValue)", slug: intent.goal!) { (response) in
-            completion(AddDataIntentResponse.success(goal: intent.goal!))
+        guard let goal = intent.goal else {
+            completion(AddDataIntentResponse.failure(goal: ""))
+            return
+        }
+        guard let value = intent.value else {
+            completion(AddDataIntentResponse.failure(goal: goal))
+            return
+        }
+                
+        RequestManager.addDatapoint(urtext: "^ \(value)", slug: goal) { (response) in
+            completion(AddDataIntentResponse.success(goal: goal))
         } errorHandler: { (error, errorMessage) in
-            completion(AddDataIntentResponse.failure(goal: intent.goal!))
+            completion(AddDataIntentResponse.failure(goal: goal))
         }
     }
 }
