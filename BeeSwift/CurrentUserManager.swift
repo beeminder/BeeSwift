@@ -32,7 +32,7 @@ class CurrentUserManager : NSObject {
     fileprivate let beemTZKey = "timezone"
     
     var allKeys: [String] {
-        return [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
+        [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
     }
     
     let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
