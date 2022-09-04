@@ -549,7 +549,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         } errorHandler: { (error, errorMessage) in
             self.submitButton.isUserInteractionEnabled = true
             MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
+            let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
+            self.present(alertController, animated: true)
         }
     }
     
