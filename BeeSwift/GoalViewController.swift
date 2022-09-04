@@ -552,7 +552,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
             self.present(alertController, animated: true)
-            //UIAlertView(title: "Error", message: "Failed to add datapoint", delegate: nil, cancelButtonTitle: "OK").show()
         }
     }
     
