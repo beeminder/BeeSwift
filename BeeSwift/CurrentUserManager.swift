@@ -35,9 +35,7 @@ class CurrentUserManager : NSObject {
         return [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
     }
     
-
-    // TODO: suiteName needs to be a constant somewhere!
-    let userDefaults = UserDefaults(suiteName: "group.beeminder.beeminder")!
+    let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
     
     override init() {
         super.init()
@@ -51,18 +49,31 @@ class CurrentUserManager : NSObject {
     /// group-scoped settings object. Values written by old versions of the app may be in the previous store
     /// so we migrate any such values on initialization.
     private func migrateValues() {
-        
-        
         for key in allKeys {
             let standardValue = UserDefaults.standard.object(forKey: key)
             let groupValue = userDefaults.object(forKey: key)
             
             if groupValue == nil && standardValue != nil {
                 userDefaults.set(standardValue, forKey: key)
-                // It would be neater to clean up, but for now it breaks branch switching
+                // It would be neater to clean up, but for now we want to support
+                // downgrading to prior versions, so leave old keys in place.
                 // userDefaults.removeObject(forKey: key)
             }
         }
+    }
+    
+    /// Write a value to the UserDefaults store
+    ///
+    /// During migration to the appGroup shared store we still want to support users downgrading
+    /// to prior versions, and thus write all values to both stores.
+    private func set(_ value: Any, forKey key: String) {
+        userDefaults.set(value, forKey: key)
+        UserDefaults.standard.set(value, forKey: key)
+    }
+    
+    private func removeObject(forKey key: String) {
+        userDefaults.removeObject(forKey: key)
+        UserDefaults.standard.removeObject(forKey: key)
     }
     
     var goals : [JSONGoal] = []
@@ -83,17 +94,14 @@ class CurrentUserManager : NSObject {
     }
     
     func setDefaultLeadTime(_ leadtime : NSNumber) {
-        userDefaults.set(leadtime, forKey: self.defaultLeadtimeKey)
-        userDefaults.synchronize()
-    }
+        self.set(leadtime, forKey: self.defaultLeadtimeKey)    }
     
     func defaultAlertstart() -> NSNumber {
         return (userDefaults.object(forKey: self.defaultAlertstartKey) ?? 0) as! NSNumber
     }
     
     func setDefaultAlertstart(_ alertstart : NSNumber) {
-        userDefaults.set(alertstart, forKey: self.defaultAlertstartKey)
-        userDefaults.synchronize()
+        self.set(alertstart, forKey: self.defaultAlertstartKey)
     }
     
     func defaultDeadline() -> NSNumber {
@@ -101,8 +109,7 @@ class CurrentUserManager : NSObject {
     }
     
     func setDefaultDeadline(_ deadline : NSNumber) {
-        userDefaults.set(deadline, forKey: self.defaultDeadlineKey)
-        userDefaults.synchronize()
+        self.set(deadline, forKey: self.defaultDeadlineKey)
     }
     
     func signedIn() -> Bool {
@@ -119,16 +126,14 @@ class CurrentUserManager : NSObject {
     
     func setDeadbeat(_ deadbeat: Bool) {
         if deadbeat {
-            userDefaults.set(true, forKey: deadbeatKey)
+            self.set(true, forKey: deadbeatKey)
         } else {
-            userDefaults.removeObject(forKey: deadbeatKey)
+            self.removeObject(forKey: deadbeatKey)
         }
-        userDefaults.synchronize()
     }
     
     func setAccessToken(_ accessToken: String) {
-        userDefaults.set(accessToken, forKey: accessTokenKey)
-        userDefaults.synchronize()
+        self.set(accessToken, forKey: accessTokenKey)
     }
     
     func signInWithEmail(_ email: String, password: String) {
@@ -143,13 +148,12 @@ class CurrentUserManager : NSObject {
         if responseJSON["deadbeat"].boolValue {
             self.setDeadbeat(true)
         }
-        userDefaults.set(responseJSON[accessTokenKey].string!, forKey: accessTokenKey)
-        userDefaults.set(responseJSON[usernameKey].string!, forKey: usernameKey)
-        userDefaults.set(responseJSON[defaultAlertstartKey].number!, forKey: defaultAlertstartKey)
-        userDefaults.set(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
-        userDefaults.set(responseJSON[defaultLeadtimeKey].number!, forKey: defaultLeadtimeKey)
-        userDefaults.set(responseJSON[beemTZKey].string!, forKey: beemTZKey)
-        userDefaults.synchronize()
+        self.set(responseJSON[accessTokenKey].string!, forKey: accessTokenKey)
+        self.set(responseJSON[usernameKey].string!, forKey: usernameKey)
+        self.set(responseJSON[defaultAlertstartKey].number!, forKey: defaultAlertstartKey)
+        self.set(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
+        self.set(responseJSON[defaultLeadtimeKey].number!, forKey: defaultLeadtimeKey)
+        self.set(responseJSON[beemTZKey].string!, forKey: beemTZKey)
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
     }
     
@@ -157,10 +161,9 @@ class CurrentUserManager : NSObject {
         RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: [:],
             success: { (responseObject) -> Void in
                 let responseJSON = JSON(responseObject!)
-                self.userDefaults.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
-                self.userDefaults.set(responseJSON["default_deadline"].number!, forKey: "default_deadline")
-                self.userDefaults.set(responseJSON["default_leadtime"].number!, forKey: "default_leadtime")
-                self.userDefaults.synchronize()
+                self.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
+                self.set(responseJSON["default_deadline"].number!, forKey: "default_deadline")
+                self.set(responseJSON["default_leadtime"].number!, forKey: "default_leadtime")
                 if (success != nil) { success!() }
         }, errorHandler: { (error, errorMessage) -> Void in
                 if (failure != nil) { failure!() }
@@ -176,10 +179,9 @@ class CurrentUserManager : NSObject {
         self.goals = []
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
-        userDefaults.removeObject(forKey: accessTokenKey)
-        userDefaults.removeObject(forKey: deadbeatKey)
-        userDefaults.removeObject(forKey: usernameKey)
-        userDefaults.synchronize()
+        self.removeObject(forKey: accessTokenKey)
+        self.removeObject(forKey: deadbeatKey)
+        self.removeObject(forKey: usernameKey)
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
     }
     
@@ -209,8 +211,8 @@ class CurrentUserManager : NSObject {
     func updateTodayWidget() {
         if let sharedDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier) {
             sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
+            // Note this key is different to accessTokenKey
             sharedDefaults.set(CurrentUserManager.sharedManager.accessToken, forKey: "accessToken")
-            sharedDefaults.synchronize()
         }
     }
     
