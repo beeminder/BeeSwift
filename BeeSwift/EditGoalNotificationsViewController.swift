@@ -38,7 +38,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         useDefaultsLabel.text = "Use defaults"
         self.view.addSubview(useDefaultsLabel)
         useDefaultsLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(20)
             make.left.equalTo(self.leadTimeLabel)
         }
         

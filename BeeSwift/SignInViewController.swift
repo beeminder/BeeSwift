@@ -42,7 +42,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
             button.backgroundColor = UIColor.white
         }
         
-        button.addTarget(self, action: #selector(SignInViewController.resetPasswordTapped), for: .touchUpInside)
+        button.addTarget(SignInViewController.self, action: #selector(SignInViewController.resetPasswordTapped), for: .touchUpInside)
 
         return button
     }()
@@ -269,7 +269,9 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     }
     
     @objc func resetPasswordTapped() {
-        let safariVC = SFSafariViewController(url: self.passwordResetUrl, entersReaderIfAvailable: true)
+        let config = SFSafariViewController.Configuration()
+        config.entersReaderIfAvailable = true;
+        let safariVC = SFSafariViewController(url: self.passwordResetUrl, configuration: config);
         self.present(safariVC, animated: true, completion: nil)
     }
     

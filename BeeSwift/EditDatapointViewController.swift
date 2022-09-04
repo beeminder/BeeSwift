@@ -33,7 +33,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.bottom.equalTo(0)
