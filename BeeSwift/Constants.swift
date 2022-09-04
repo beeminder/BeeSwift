@@ -25,5 +25,6 @@ struct Constants {
     static let deadlineGoalSortString = "Deadline"
     static let healthKitUpdateDictionaryKey = "healthKitUpdateDictionary"
     static let goalSortOptions = [Constants.nameGoalSortString, Constants.deadlineGoalSortString, Constants.pledgeGoalSortString, Constants.recentDataGoalSortString]
+    static let appGroupIdentifier = "group.beeminder.beeminder"
 }
 

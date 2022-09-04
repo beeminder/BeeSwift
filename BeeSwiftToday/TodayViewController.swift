@@ -44,7 +44,7 @@ class TodayViewController: UIViewController {
     }
     
     @objc func updateDataSource() {
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
+        let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
         self.goalDictionaries = defaults?.object(forKey: "todayGoalDictionaries") as! Array<NSDictionary>
     }
 }

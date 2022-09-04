@@ -172,7 +172,7 @@ class CurrentUserManager : NSObject {
     }
 
     func updateTodayWidget() {
-        if let sharedDefaults = UserDefaults(suiteName: "group.beeminder.beeminder") {
+        if let sharedDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier) {
             sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
             sharedDefaults.set(CurrentUserManager.sharedManager.accessToken, forKey: "accessToken")
             sharedDefaults.synchronize()

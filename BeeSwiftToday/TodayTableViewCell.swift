@@ -119,7 +119,7 @@ class TodayTableViewCell: UITableViewCell {
         hud?.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
 
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
+        let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
         guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
         
         // if the goal's deadline is after midnight, and it's after midnight,
@@ -168,7 +168,7 @@ class TodayTableViewCell: UITableViewCell {
     
     @objc func refreshGoal() {
         guard let slug = self.goalDictionary["slug"] as? String else { return }
-        let defaults = UserDefaults(suiteName: "group.beeminder.beeminder")
+        let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
         guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
         
         let parameters = ["access_token": token]
