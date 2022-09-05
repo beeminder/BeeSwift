@@ -65,7 +65,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.view.addSubview(self.lastUpdatedView)
         self.lastUpdatedView.backgroundColor = UIColor.beeminder.gray
         self.lastUpdatedView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.topLayoutGuide.snp.bottom)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
             make.left.equalTo(0)
             make.right.equalTo(0)
         }

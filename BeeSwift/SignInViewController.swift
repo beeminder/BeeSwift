@@ -26,7 +26,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     var backToSignUpButton = BSButton()
     var signInButton = BSButton()
     var divider = UIView()
-    let resetPasswordButton: BSButton = {
+    lazy var resetPasswordButton: BSButton = {
         let button = BSButton()
         button.setTitle("Forgot password?", for: .normal)
         button.titleLabel?.font = UIFont.beeminder.defaultFontHeavy
@@ -269,7 +269,9 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     }
     
     @objc func resetPasswordTapped() {
-        let safariVC = SFSafariViewController(url: self.passwordResetUrl, entersReaderIfAvailable: true)
+        let config = SFSafariViewController.Configuration()
+        config.entersReaderIfAvailable = true;
+        let safariVC = SFSafariViewController(url: self.passwordResetUrl, configuration: config);
         self.present(safariVC, animated: true, completion: nil)
     }
     
