@@ -26,7 +26,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     var backToSignUpButton = BSButton()
     var signInButton = BSButton()
     var divider = UIView()
-    let resetPasswordButton: BSButton = {
+    lazy var resetPasswordButton: BSButton = {
         let button = BSButton()
         button.setTitle("Forgot password?", for: .normal)
         button.titleLabel?.font = UIFont.beeminder.defaultFontHeavy
@@ -42,7 +42,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
             button.backgroundColor = UIColor.white
         }
         
-        button.addTarget(SignInViewController.self, action: #selector(SignInViewController.resetPasswordTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(SignInViewController.resetPasswordTapped), for: .touchUpInside)
 
         return button
     }()
