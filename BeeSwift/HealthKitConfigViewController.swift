@@ -33,8 +33,8 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.margin)
             make.right.equalTo(-self.margin)
-            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(self.margin)
-            make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(self.margin)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
         }
         
         self.tableView.delegate = self

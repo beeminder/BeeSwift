@@ -65,7 +65,7 @@ class EditNotificationsViewController: UIViewController {
         self.view.addSubview(self.leadTimeLabel)
         self.leadTimeLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(10)
-            make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(20)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(20)
         }
         
         self.leadTimeStepper.minimumValue = 0
