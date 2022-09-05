@@ -153,21 +153,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         if #available(iOS 12.0, *) {
             if let intent = userActivity.interaction?.intent as? AddDataIntent {
-                guard let value = intent.value, let slug = intent.goal else { return false }
-                RequestManager.addDatapoint(urtext: "^ \(value)", slug: slug) { (response) in
-                    CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
-                } errorHandler: { (error, errorMessage) in
-                    //
-                }
-
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
-            } else if let slug = userActivity.userInfo?["slug"] {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
+                guard let goal = intent.goal else { return false }
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": goal])
+                
+                // Early return to avoid also checking userInfo
+                return true
             }
-        } else {
-            if let slug = userActivity.userInfo?["slug"] {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
-            }
+        }
+        if let slug = userActivity.userInfo?["slug"] {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
         }
         return true
     }

@@ -12,28 +12,46 @@ import BeeKit
 
 @available(iOS 14.0, *)
 class AddDataIntentHandler: NSObject, AddDataIntentHandling {
-    func resolveValue(for intent: AddDataIntent, with completion: @escaping (AddDataValueResolutionResult) -> Void) {
-        print("foo")
+    func resolveValue(for intent: AddDataIntent) async -> AddDataValueResolutionResult {
+        if let value = intent.value {
+            return AddDataValueResolutionResult.success(with: value.doubleValue)
+        } else {
+            return AddDataValueResolutionResult.needsValue()
+        }
     }
     
-    func resolveGoal(for intent: AddDataIntent, with completion: @escaping (INStringResolutionResult) -> Void) {
-        print("foo")
+    func resolveGoal(for intent: AddDataIntent) async -> INStringResolutionResult {
+        if let goal = intent.goal {
+            // TODO: We should validate this is a valid slug
+            return INStringResolutionResult.success(with: goal)
+        } else {
+            return INStringResolutionResult.needsValue()
+        }
     }
     
-    func confirm(intent: AddDataIntent,
-               completion: @escaping (AddDataIntentResponse) -> Void) {
-        completion(AddDataIntentResponse(code: .ready, userActivity: nil))
+    func confirm(intent: AddDataIntent) async -> AddDataIntentResponse {
+        if intent.goal != nil && intent.value != nil {
+            return AddDataIntentResponse(code: .ready, userActivity: nil)
+        } else {
+            return AddDataIntentResponse(code: .failure, userActivity: nil)
+        }
     }
 
     func handle(intent: AddDataIntent,
               completion: @escaping (AddDataIntentResponse) -> Void) {
-        guard let datapointValue = intent.value else { return }
-        
-        RequestManager.addDatapoint(urtext: "^ \(datapointValue)", slug: intent.goal!) { (response) in
-            completion(AddDataIntentResponse.success(goal: intent.goal!))
-        } errorHandler: { (error, errorMessage) in
-            completion(AddDataIntentResponse.failure(goal: intent.goal!))
+        guard let goal = intent.goal else {
+            completion(AddDataIntentResponse.failure(goal: ""))
+            return
         }
-        completion(AddDataIntentResponse(code: .continueInApp, userActivity: nil))
+        guard let value = intent.value else {
+            completion(AddDataIntentResponse.failure(goal: goal))
+            return
+        }
+                
+        RequestManager.addDatapoint(urtext: "^ \(value)", slug: goal) { (response) in
+            completion(AddDataIntentResponse.success(goal: goal))
+        } errorHandler: { (error, errorMessage) in
+            completion(AddDataIntentResponse.failure(goal: goal))
+        }
     }
 }
