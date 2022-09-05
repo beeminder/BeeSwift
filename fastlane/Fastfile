@@ -30,7 +30,10 @@ platform :ios do
 
     # Increment the build number (not the version number)
     # Providing the xcodeproj is optional
-    increment_build_number(xcodeproj: "BeeSwift.xcodeproj")
+    increment_build_number(
+      build_number: latest_testflight_build_number + 1,
+      xcodeproj: "BeeSwift.xcodeproj"
+    )
     
     build_app(scheme: "BeeSwift")
 
@@ -44,6 +47,18 @@ platform :ios do
     # Push the new commit and tag back to your git remote
     push_to_git_remote
     
-    upload_to_testflight(username: "andy@andybrett.com")
+    upload_to_testflight
+  end
+  lane :increment_major_version do
+    increment_version_number(
+      bump_type: "major",
+      xcodeproj: "BeeSwift.xcodeproj"
+    )
+  end
+  lane :increment_minor_version do
+    increment_version_number(
+      bump_type: "minor",
+      xcodeproj: "BeeSwift.xcodeproj"
+    )
   end
 end

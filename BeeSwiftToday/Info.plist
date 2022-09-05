@@ -17,11 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
+	<string>6.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>16</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
