@@ -36,7 +36,7 @@
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.intents-service</string>
 		<key>NSExtensionPrincipalClass</key>
-		<string>$(PRODUCT_MODULE_NAME).AddDataIntentHandler</string>
+		<string>$(PRODUCT_MODULE_NAME).IntentHandler</string>
 	</dict>
 </dict>
 </plist>
