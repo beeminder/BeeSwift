@@ -153,15 +153,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         if #available(iOS 12.0, *) {
             if let intent = userActivity.interaction?.intent as? AddDataIntent {
-                guard let goal = intent.goal else { return false }
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": goal])
+                guard let goalSlug = intent.goal else { return false }
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": goalSlug])
                 
                 // Early return to avoid also checking userInfo
                 return true
             }
         }
-        if let slug = userActivity.userInfo?["slug"] {
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
+        if let goalSlug = userActivity.userInfo?["slug"] {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": goalSlug])
         }
         return true
     }

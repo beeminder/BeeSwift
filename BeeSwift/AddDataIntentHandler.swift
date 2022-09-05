@@ -21,9 +21,9 @@ class AddDataIntentHandler: NSObject, AddDataIntentHandling {
     }
     
     func resolveGoal(for intent: AddDataIntent) async -> INStringResolutionResult {
-        if let goal = intent.goal {
+        if let goalSlug = intent.goal {
             // TODO: We should validate this is a valid slug
-            return INStringResolutionResult.success(with: goal)
+            return INStringResolutionResult.success(with: goalSlug)
         } else {
             return INStringResolutionResult.needsValue()
         }
@@ -39,19 +39,19 @@ class AddDataIntentHandler: NSObject, AddDataIntentHandling {
 
     func handle(intent: AddDataIntent,
               completion: @escaping (AddDataIntentResponse) -> Void) {
-        guard let goal = intent.goal else {
+        guard let goalSlug = intent.goal else {
             completion(AddDataIntentResponse.failure(goal: ""))
             return
         }
         guard let value = intent.value else {
-            completion(AddDataIntentResponse.failure(goal: goal))
+            completion(AddDataIntentResponse.failure(goal: goalSlug))
             return
         }
                 
-        RequestManager.addDatapoint(urtext: "^ \(value)", slug: goal) { (response) in
-            completion(AddDataIntentResponse.success(goal: goal))
+        RequestManager.addDatapoint(urtext: "^ \(value)", slug: goalSlug) { (response) in
+            completion(AddDataIntentResponse.success(goal: goalSlug))
         } errorHandler: { (error, errorMessage) in
-            completion(AddDataIntentResponse.failure(goal: goal))
+            completion(AddDataIntentResponse.failure(goal: goalSlug))
         }
     }
 }
