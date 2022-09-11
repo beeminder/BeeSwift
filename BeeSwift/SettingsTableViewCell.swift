@@ -16,10 +16,12 @@ class SettingsTableViewCell: UITableViewCell {
     }
     var imageName : String? {
         didSet {
-            self.configure()
+            self.settingsImage.image = UIImage(named: self.imageName!)
         }
     }
+    
     let titleLabel = BSLabel()
+    let settingsImage = UIImageView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -33,22 +35,18 @@ class SettingsTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.titleLabel.text = nil
-        self.title = nil
-        self.imageName = nil
     }
     
     func configure() {
+        self.contentView.addSubview(self.titleLabel)
+        self.contentView.addSubview(self.settingsImage)
+        
         self.selectionStyle = .none
         if #available(iOS 13.0, *) {
             self.backgroundColor = .secondarySystemBackground
         } else {
             self.backgroundColor = .white
         }
-        self.accessoryType = .disclosureIndicator
-        
-        self.contentView.addSubview(self.titleLabel)
-        
         
         if #available(iOS 13.0, *) {
             self.titleLabel.textColor = .label
@@ -56,26 +54,15 @@ class SettingsTableViewCell: UITableViewCell {
             self.titleLabel.textColor = UIColor.beeminder.gray
         }
         
-        if self.imageName != nil {
-            let image = UIImage(named: self.imageName!)
-            let imageView = UIImageView(image: image)
-            
-            
-            self.contentView.addSubview(imageView)
-            imageView.snp.remakeConstraints({ (make) in
-                make.centerY.equalTo(self.contentView)
-                make.left.equalTo(10)
-                make.height.width.equalTo(26)
-            })
-            self.titleLabel.snp.remakeConstraints { (make) -> Void in
-                make.centerY.equalTo(self.contentView)
-                make.left.equalTo(imageView.snp.right).offset(10)
-            }
-        } else {
-            self.titleLabel.snp.remakeConstraints { (make) -> Void in
-                make.centerY.equalTo(self.contentView)
-                make.left.equalTo(10)
-            }
+        self.titleLabel.snp.remakeConstraints { (make) -> Void in
+            make.centerY.equalTo(self.contentView)
+            make.left.equalTo(self.settingsImage.snp.right).offset(10)
         }
+        self.settingsImage.snp.remakeConstraints({ (make) in
+            make.centerY.equalTo(self.contentView)
+            make.left.equalTo(10)
+            make.height.width.equalTo(26)
+        })
+
     }
 }

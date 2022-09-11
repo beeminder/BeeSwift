@@ -108,6 +108,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             if section == 0 {
                 cell.title = "Health app integration"
                 cell.imageName = "Health"
+                cell.accessoryType = .disclosureIndicator
                 return cell
             }
             section = section - 1
@@ -118,6 +119,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String
             cell.title = "Sort goals by: \(selectedGoalSort ?? "")"
             cell.imageName = "Sort"
+            cell.accessoryType = .disclosureIndicator
         case 1:
             UNUserNotificationCenter.current().getNotificationSettings { (settings) in
                 DispatchQueue.main.async {
@@ -125,6 +127,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
                 }
             }
             cell.imageName = "Notifications"
+            cell.accessoryType = .disclosureIndicator
         case 2:
             cell.title = "Time zone: \(CurrentUserManager.sharedManager.timezone())"
             cell.imageName = "Clock"
