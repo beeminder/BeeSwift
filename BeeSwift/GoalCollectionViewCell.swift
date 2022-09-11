@@ -69,6 +69,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             make.centerY.equalTo(self.slugLabel)
             make.right.equalTo(-self.margin)
         }
+        self.todaytaLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         self.todaytaLabel.textAlignment = .right
 
         self.thumbnailImageView.snp.makeConstraints { (make) -> Void in
