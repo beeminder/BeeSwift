@@ -9,11 +9,11 @@
 	<key>INIntentDefinitionNamespace</key>
 	<string>4ivVzY</string>
 	<key>INIntentDefinitionSystemVersion</key>
-	<string>20F71</string>
+	<string>21G83</string>
 	<key>INIntentDefinitionToolsBuildVersion</key>
-	<string>12E262</string>
+	<string>14A309</string>
 	<key>INIntentDefinitionToolsVersion</key>
-	<string>12.5</string>
+	<string>14.0</string>
 	<key>INIntents</key>
 	<array>
 		<dict>
@@ -32,15 +32,15 @@
 			<key>INIntentKeyParameter</key>
 			<string>goal</string>
 			<key>INIntentLastParameterTag</key>
-			<integer>9</integer>
+			<integer>10</integer>
 			<key>INIntentManagedParameterCombinations</key>
 			<dict>
-				<key>value,goal</key>
+				<key>value,goal,comment</key>
 				<dict>
 					<key>INIntentParameterCombinationSupportsBackgroundExecution</key>
 					<true/>
 					<key>INIntentParameterCombinationTitle</key>
-					<string>Add datapoint ${value} to ${goal}</string>
+					<string>Add datapoint ${value} to ${goal} with comment ${comment}</string>
 					<key>INIntentParameterCombinationTitleID</key>
 					<string>yG7YME</string>
 					<key>INIntentParameterCombinationUpdatesLinked</key>
@@ -51,18 +51,16 @@
 			<string>AddData</string>
 			<key>INIntentParameterCombinations</key>
 			<dict>
-				<key>value,goal</key>
+				<key>value,goal,comment</key>
 				<dict>
 					<key>INIntentParameterCombinationIsLinked</key>
-					<true/>
-					<key>INIntentParameterCombinationIsPrimary</key>
 					<true/>
 					<key>INIntentParameterCombinationSupportsBackgroundExecution</key>
 					<true/>
 					<key>INIntentParameterCombinationTitle</key>
-					<string>Add datapoint ${value} to ${goal}</string>
+					<string>Add datapoint ${value} to ${goal} with comment ${comment}</string>
 					<key>INIntentParameterCombinationTitleID</key>
-					<string>x34ZRl</string>
+					<string>LgOApG</string>
 				</dict>
 			</dict>
 			<key>INIntentParameters</key>
@@ -167,6 +165,10 @@
 						<string>6Uom7P</string>
 						<key>INIntentParameterMetadataDisableAutocorrect</key>
 						<true/>
+						<key>INIntentParameterMetadataDisableSmartDashes</key>
+						<true/>
+						<key>INIntentParameterMetadataDisableSmartQuotes</key>
+						<true/>
 					</dict>
 					<key>INIntentParameterName</key>
 					<string>goal</string>
@@ -197,6 +199,46 @@
 					<true/>
 					<key>INIntentParameterTag</key>
 					<integer>9</integer>
+					<key>INIntentParameterType</key>
+					<string>String</string>
+				</dict>
+				<dict>
+					<key>INIntentParameterConfigurable</key>
+					<true/>
+					<key>INIntentParameterDisplayName</key>
+					<string>Comment</string>
+					<key>INIntentParameterDisplayNameID</key>
+					<string>EcVZcx</string>
+					<key>INIntentParameterDisplayPriority</key>
+					<integer>3</integer>
+					<key>INIntentParameterMetadata</key>
+					<dict>
+						<key>INIntentParameterMetadataCapitalization</key>
+						<string>Sentences</string>
+						<key>INIntentParameterMetadataDefaultValue</key>
+						<string>Added via iOS Shortcut</string>
+						<key>INIntentParameterMetadataDefaultValueID</key>
+						<string>RtXI17</string>
+					</dict>
+					<key>INIntentParameterName</key>
+					<string>comment</string>
+					<key>INIntentParameterPromptDialogs</key>
+					<array>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Configuration</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Primary</string>
+						</dict>
+					</array>
+					<key>INIntentParameterTag</key>
+					<integer>10</integer>
 					<key>INIntentParameterType</key>
 					<string>String</string>
 				</dict>
