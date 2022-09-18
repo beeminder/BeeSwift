@@ -9,7 +9,6 @@
 import UIKit
 import IQKeyboardManager
 import HealthKit
-import Sentry
 import AlamofireNetworkActivityIndicator
 import BeeKit
 
@@ -28,12 +27,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if HKHealthStore.isHealthDataAvailable() {
             HealthStoreManager.sharedManager.setupHealthkit()
-        }
-
-        // start crash handler
-        SentrySDK.start { options in
-            options.dsn = Config.init().sentryClientDSN
-            options.debug = true
         }
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
