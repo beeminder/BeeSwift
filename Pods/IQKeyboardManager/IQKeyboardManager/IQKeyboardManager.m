@@ -24,64 +24,80 @@
 #import "IQKeyboardManager.h"
 #import "IQUIView+Hierarchy.h"
 #import "IQUIView+IQKeyboardToolbar.h"
-#import "IQUIWindow+Hierarchy.h"
 #import "IQNSArray+Sort.h"
-#import "IQToolbar.h"
-#import "IQBarButtonItem.h"
 #import "IQKeyboardManagerConstantsInternal.h"
 #import "IQUIScrollView+Additions.h"
 #import "IQUITextFieldView+Additions.h"
 #import "IQUIViewController+Additions.h"
 #import "IQPreviousNextView.h"
 
+#import <QuartzCore/CABase.h>
+
+#import <objc/runtime.h>
+
+#import <UIKit/UIAlertController.h>
+#import <UIKit/UISearchBar.h>
+#import <UIKit/UIScreen.h>
 #import <UIKit/UINavigationBar.h>
 #import <UIKit/UITapGestureRecognizer.h>
 #import <UIKit/UITextField.h>
 #import <UIKit/UITextView.h>
 #import <UIKit/UITableViewController.h>
+#import <UIKit/UICollectionViewController.h>
+#import <UIKit/UICollectionViewCell.h>
+#import <UIKit/UICollectionViewLayout.h>
 #import <UIKit/UINavigationController.h>
-#import <UIKit/UITableView.h>
 #import <UIKit/UITouch.h>
-
-#import <UIKit/UICollectionView.h>
+#import <UIKit/UIWindow.h>
+#import <UIKit/UIStackView.h>
 #import <UIKit/NSLayoutConstraint.h>
+#import <UIKit/UIStackView.h>
+#import <UIKit/UIAccessibility.h>
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+#import <UIKit/UIWindowScene.h>
+#import <UIKit/UIStatusBarManager.h>
+#endif
 
 NSInteger const kIQDoneButtonToolbarTag             =   -1002;
 NSInteger const kIQPreviousNextButtonToolbarTag     =   -1005;
 
-void _IQShowLog(NSString *logString);
+#define kIQCGPointInvalid CGPointMake(CGFLOAT_MAX, CGFLOAT_MAX)
 
 @interface IQKeyboardManager()<UIGestureRecognizerDelegate>
 
 /*******************************************/
 
-/** To save UITextField/UITextView object voa textField/textView notifications. */
-@property(nonatomic, weak) UIView       *textFieldView;
+/** used to adjust contentInset of UITextView. */
+@property(nonatomic, assign) UIEdgeInsets     startingTextViewContentInsets;
 
-/** used with canAdjustTextView boolean. */
-@property(nonatomic, assign) CGRect     textFieldViewIntialFrame;
+/** used to adjust scrollIndicatorInsets of UITextView. */
+@property(nonatomic, assign) UIEdgeInsets   startingTextViewScrollIndicatorInsets;
 
-/** To save rootViewController.view.frame. */
-@property(nonatomic, assign) CGRect     topViewBeginRect;
-
-/** To save rootViewController */
-@property(nonatomic, weak) UIViewController *rootViewController;
-
-/** To save topBottomLayoutConstraint original constant */
-@property(nonatomic, assign) CGFloat    layoutGuideConstraintInitialConstant;
-
-/** used with canAdjustTextView to detect a textFieldView frame is changes or not. (Bug ID: #92)*/
-@property(nonatomic, assign) BOOL    isTextFieldViewFrameChanged;
+/** used with textView to detect a textFieldView contentInset is changed or not. (Bug ID: #92)*/
+@property(nonatomic, assign) BOOL    isTextViewContentInsetChanged;
 
 /*******************************************/
 
-/** TapGesture to resign keyboard on view's touch. */
-@property(nonatomic, strong) UITapGestureRecognizer  *tapGesture;
+/** To save UITextField/UITextView object voa textField/textView notifications. */
+@property(nullable, nonatomic, weak) UIView       *textFieldView;
+
+/** To save rootViewController.view.frame.origin. */
+@property(nonatomic, assign) CGPoint    topViewBeginOrigin;
+
+/** To save rootViewController */
+@property(nullable, nonatomic, weak) UIViewController *rootViewController;
+
+/** To overcome with popGestureRecognizer issue Bug ID: #1361 */
+@property(nullable, nonatomic, weak) UIViewController *rootViewControllerWhilePopGestureRecognizerActive;
+@property(nonatomic, assign) CGPoint    topViewBeginOriginWhilePopGestureRecognizerActive;
+
+/** To know if we have any pending request to adjust view position. */
+@property(nonatomic, assign) BOOL   hasPendingAdjustRequest;
 
 /*******************************************/
 
 /** Variable to save lastScrollView that was scrolled. */
-@property(nonatomic, weak) UIScrollView     *lastScrollView;
+@property(nullable, nonatomic, weak) UIScrollView     *lastScrollView;
 
 /** LastScrollView's initial contentInsets. */
 @property(nonatomic, assign) UIEdgeInsets   startingContentInsets;
@@ -100,8 +116,15 @@ void _IQShowLog(NSString *logString);
 /** To mimic the keyboard animation */
 @property(nonatomic, assign) NSInteger  animationCurve;
 
-/** Boolean to maintain keyboard is showing or it is hide. To solve rootViewController.view.frame calculations. */
-@property(nonatomic, assign) BOOL  isKeyboardShowing;
+/*******************************************/
+
+/** TapGesture to resign keyboard on view's touch. It's a readonly property and exposed only for adding/removing dependencies if your added gesture does have collision with this one */
+@property(nonnull, nonatomic, strong, readwrite) UITapGestureRecognizer  *resignFirstResponderGesture;
+
+/**
+ moved distance to the top used to maintain distance between keyboard and textField. Most of the time this will be a positive value.
+ */
+@property(nonatomic, assign, readwrite) CGFloat movedDistance;
 
 /*******************************************/
 
@@ -115,6 +138,7 @@ void _IQShowLog(NSString *logString);
 
 @property(nonatomic, strong, nonnull, readwrite) NSMutableSet<Class> *disabledTouchResignedClasses;
 @property(nonatomic, strong, nonnull, readwrite) NSMutableSet<Class> *enabledTouchResignedClasses;
+@property(nonatomic, strong, nonnull, readwrite) NSMutableSet<Class> *touchResignedGestureIgnoreClasses;
 
 /*******************************************/
 
@@ -130,7 +154,7 @@ void _IQShowLog(NSString *logString);
     NSNotification          *_kbShowNotification;
     
     /** To save keyboard size. */
-    CGSize                   _kbSize;
+    CGRect                   _kbFrame;
     
     /*******************************************/
 }
@@ -138,7 +162,6 @@ void _IQShowLog(NSString *logString);
 //UIKeyboard handling
 @synthesize enable                              =   _enable;
 @synthesize keyboardDistanceFromTextField       =   _keyboardDistanceFromTextField;
-@synthesize preventShowingBottomBlankSpace      =   _preventShowingBottomBlankSpace;
 
 //Keyboard Appearance handling
 @synthesize overrideKeyboardAppearance          =   _overrideKeyboardAppearance;
@@ -150,95 +173,95 @@ void _IQShowLog(NSString *logString);
 
 @synthesize shouldToolbarUsesTextFieldTintColor =   _shouldToolbarUsesTextFieldTintColor;
 @synthesize toolbarTintColor                    =   _toolbarTintColor;
-
-@synthesize shouldShowTextFieldPlaceholder      =   _shouldShowTextFieldPlaceholder;
+@synthesize toolbarBarTintColor                 =   _toolbarBarTintColor;
+@synthesize shouldShowToolbarPlaceholder        =   _shouldShowToolbarPlaceholder;
 @synthesize placeholderFont                     =   _placeholderFont;
-
-//TextView handling
-@synthesize canAdjustTextView                   =   _canAdjustTextView;
+@synthesize placeholderColor                    =   _placeholderColor;
+@synthesize placeholderButtonColor              =   _placeholderButtonColor;
 
 //Resign handling
 @synthesize shouldResignOnTouchOutside          =   _shouldResignOnTouchOutside;
+@synthesize resignFirstResponderGesture         =   _resignFirstResponderGesture;
 
 //Sound handling
 @synthesize shouldPlayInputClicks               =   _shouldPlayInputClicks;
 
 //Animation handling
-@synthesize shouldAdoptDefaultKeyboardAnimation =   _shouldAdoptDefaultKeyboardAnimation;
 @synthesize layoutIfNeededOnUpdate              =   _layoutIfNeededOnUpdate;
 
 #pragma mark - Initializing functions
 
-/** Override +load method to enable KeyboardManager when class loader load IQKeyboardManager. Enabling when app starts (No need to write any code) */
+/**
+ Override +load method to enable KeyboardManager when class loader load IQKeyboardManager. Enabling when app starts (No need to write any code)
+ 
+ @Note: If you want to disable `+ (void)load` method, you can add build setting in configurations. Like that:
+       `{ 'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) IQ_KEYBOARD_MANAGER_LOAD_METHOD_DISABLE=1' }`
+ */
+#if !IQ_KEYBOARD_MANAGER_LOAD_METHOD_DISABLE
 +(void)load
 {
-    //Enabling IQKeyboardManager.
-    [[IQKeyboardManager sharedManager] setEnable:YES];
+    //Enabling IQKeyboardManager. Loading asynchronous on main thread
+    [self performSelectorOnMainThread:@selector(sharedManager) withObject:nil waitUntilDone:NO];
 }
+#endif
 
 /*  Singleton Object Initialization. */
 -(instancetype)init
 {
 	if (self = [super init])
     {
-        __weak typeof(self) weakSelf = self;
+        __weak __typeof__(self) weakSelf = self;
         
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             
-            __strong typeof(self) strongSelf = weakSelf;
-
-            //  Registering for keyboard notification.
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
-
-			//  Registering for UITextField notification.
-            [self addTextFieldViewDidBeginEditingNotificationName:UITextFieldTextDidBeginEditingNotification
-                                    didEndEditingNotificationName:UITextFieldTextDidEndEditingNotification];
-
-            //  Registering for UITextView notification.
-            [self addTextFieldViewDidBeginEditingNotificationName:UITextViewTextDidBeginEditingNotification
-                                    didEndEditingNotificationName:UITextViewTextDidEndEditingNotification];
-
-            //  Registering for orientation changes notification
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willChangeStatusBarOrientation:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
+            __strong __typeof__(self) strongSelf = weakSelf;
             
-            //Creating gesture for @shouldResignOnTouchOutside. (Enhancement ID: #14)
-            strongSelf.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapRecognized:)];
-            strongSelf.tapGesture.cancelsTouchesInView = NO;
-            [strongSelf.tapGesture setDelegate:self];
-            strongSelf.tapGesture.enabled = strongSelf.shouldResignOnTouchOutside;
+            [strongSelf registerAllNotifications];
 
+            //Creating gesture for @shouldResignOnTouchOutside. (Enhancement ID: #14)
+            strongSelf.resignFirstResponderGesture = [[UITapGestureRecognizer alloc] initWithTarget:strongSelf action:@selector(tapRecognized:)];
+            strongSelf.resignFirstResponderGesture.cancelsTouchesInView = NO;
+            [strongSelf.resignFirstResponderGesture setDelegate:strongSelf];
+            strongSelf.resignFirstResponderGesture.enabled = strongSelf.shouldResignOnTouchOutside;
+            strongSelf.topViewBeginOrigin = kIQCGPointInvalid;
+            strongSelf.topViewBeginOriginWhilePopGestureRecognizerActive = kIQCGPointInvalid;
+            
             //Setting it's initial values
             strongSelf.animationDuration = 0.25;
             strongSelf.animationCurve = UIViewAnimationCurveEaseInOut;
-			[self setKeyboardDistanceFromTextField:10.0];
-            [self setCanAdjustTextView:NO];
-            [self setShouldPlayInputClicks:NO];
-            [self setShouldResignOnTouchOutside:NO];
-            [self setOverrideKeyboardAppearance:NO];
-            [self setKeyboardAppearance:UIKeyboardAppearanceDefault];
-            [self setEnableAutoToolbar:YES];
-            [self setPreventShowingBottomBlankSpace:YES];
-            [self setShouldShowTextFieldPlaceholder:YES];
-            [self setShouldAdoptDefaultKeyboardAnimation:YES];
-            [self setToolbarManageBehaviour:IQAutoToolbarBySubviews];
-            [self setLayoutIfNeededOnUpdate:NO];
+            [strongSelf setEnable:YES];
+			[strongSelf setKeyboardDistanceFromTextField:10.0];
+            [strongSelf setShouldPlayInputClicks:YES];
+            [strongSelf setShouldResignOnTouchOutside:NO];
+            [strongSelf setOverrideKeyboardAppearance:NO];
+            [strongSelf setKeyboardAppearance:UIKeyboardAppearanceDefault];
+            [strongSelf setEnableAutoToolbar:YES];
+            [strongSelf setShouldShowToolbarPlaceholder:YES];
+            [strongSelf setToolbarManageBehaviour:IQAutoToolbarBySubviews];
+            [strongSelf setLayoutIfNeededOnUpdate:NO];
+            [strongSelf setShouldToolbarUsesTextFieldTintColor:NO];
 
+            //Loading IQToolbar, IQTitleBarButtonItem, IQBarButtonItem to fix first time keyboard appearance delay (Bug ID: #550)
+            {
+                //If you experience exception breakpoint issue at below line then try these solutions https://stackoverflow.com/questions/27375640/all-exception-break-point-is-stopping-for-no-reason-on-simulator
+                UITextField *view = [[UITextField alloc] init];
+                [view addDoneOnKeyboardWithTarget:nil action:nil];
+                [view addPreviousNextDoneOnKeyboardWithTarget:nil previousAction:nil nextAction:nil doneAction:nil];
+            }
+            
             //Initializing disabled classes Set.
-            strongSelf.disabledDistanceHandlingClasses = [[NSMutableSet alloc] initWithObjects:[UITableViewController class], nil];
+            strongSelf.disabledDistanceHandlingClasses = [[NSMutableSet alloc] initWithObjects:[UITableViewController class],[UIAlertController class], nil];
             strongSelf.enabledDistanceHandlingClasses = [[NSMutableSet alloc] init];
             
-            strongSelf.disabledToolbarClasses = [[NSMutableSet alloc] init];
+            strongSelf.disabledToolbarClasses = [[NSMutableSet alloc] initWithObjects:[UIAlertController class], nil];
             strongSelf.enabledToolbarClasses = [[NSMutableSet alloc] init];
             
             strongSelf.toolbarPreviousNextAllowedClasses = [[NSMutableSet alloc] initWithObjects:[UITableView class],[UICollectionView class],[IQPreviousNextView class], nil];
             
-            strongSelf.disabledTouchResignedClasses = [[NSMutableSet alloc] init];
+            strongSelf.disabledTouchResignedClasses = [[NSMutableSet alloc] initWithObjects:[UIAlertController class], nil];
             strongSelf.enabledTouchResignedClasses = [[NSMutableSet alloc] init];
-
-            [self setShouldToolbarUsesTextFieldTintColor:NO];
+            strongSelf.touchResignedGestureIgnoreClasses = [[NSMutableSet alloc] initWithObjects:[UIControl class],[UINavigationBar class], nil];
         });
     }
     return self;
@@ -273,36 +296,40 @@ void _IQShowLog(NSString *logString);
 -(void)setEnable:(BOOL)enable
 {
 	// If not enabled, enable it.
-    if (enable == YES && _enable == NO)
+    if (enable == YES &&
+        _enable == NO)
     {
-		//Setting NO to _enable.
+		//Setting YES to _enable.
 		_enable = enable;
         
 		//If keyboard is currently showing. Sending a fake notification for keyboardWillShow to adjust view according to keyboard.
 		if (_kbShowNotification)	[self keyboardWillShow:_kbShowNotification];
 
-        _IQShowLog(IQLocalizedString(@"enabled", nil));
+        [self showLog:@"Enabled"];
     }
 	//If not disable, desable it.
-    else if (enable == NO && _enable == YES)
+    else if (enable == NO &&
+             _enable == YES)
     {
-		//Sending a fake notification for keyboardWillHide to retain view's original frame.
+		//Sending a fake notification for keyboardWillHide to retain view's original position.
 		[self keyboardWillHide:nil];
         
 		//Setting NO to _enable.
 		_enable = enable;
 		
-        _IQShowLog(IQLocalizedString(@"disabled", nil));
+        [self showLog:@"Disabled"];
     }
 	//If already disabled.
-	else if (enable == NO && _enable == NO)
+	else if (enable == NO &&
+             _enable == NO)
 	{
-        _IQShowLog(IQLocalizedString(@"already disabled", nil));
+        [self showLog:@"Already Disabled"];
 	}
 	//If already enabled.
-	else if (enable == YES && _enable == YES)
+	else if (enable == YES &&
+             _enable == YES)
 	{
-        _IQShowLog(IQLocalizedString(@"already enabled", nil));
+        [self showLog:@"Already Enabled"];
 	}
 }
 
@@ -310,32 +337,68 @@ void _IQShowLog(NSString *logString);
 {
     BOOL enable = _enable;
     
-    UIViewController *textFieldViewController = [_textFieldView viewController];
-    
-    if (textFieldViewController)
+    IQEnableMode enableMode = _textFieldView.enableMode;
+
+    if (enableMode == IQEnableModeEnabled)
     {
-        if (enable == NO)
+        enable = YES;
+    }
+    else if (enableMode == IQEnableModeDisabled)
+    {
+        enable = NO;
+    }
+    else
+    {
+        __strong __typeof__(UIView) *strongTextFieldView = _textFieldView;
+
+        UIViewController *textFieldViewController = [strongTextFieldView viewContainingController];
+        
+        if (textFieldViewController)
         {
-            //If viewController is kind of enable viewController class, then assuming it's enabled.
-            for (Class enabledClass in _enabledDistanceHandlingClasses)
-            {
-                if ([textFieldViewController isKindOfClass:enabledClass])
-                {
-                    enable = YES;
-                    break;
+            //If it is searchBar textField embedded in Navigation Bar
+            if ([strongTextFieldView textFieldSearchBar] != nil && [textFieldViewController isKindOfClass:[UINavigationController class]]) {
+                
+                UINavigationController *navController = (UINavigationController*)textFieldViewController;
+                if (navController.topViewController) {
+                    textFieldViewController = navController.topViewController;
                 }
             }
-        }
-        
-        if (enable)
-        {
-            //If viewController is kind of disable viewController class, then assuming it's disable.
-            for (Class disabledClass in _disabledDistanceHandlingClasses)
+
+            if (enable == NO)
             {
-                if ([textFieldViewController isKindOfClass:disabledClass])
+                //If viewController is kind of enable viewController class, then assuming it's enabled.
+                for (Class enabledClass in _enabledDistanceHandlingClasses)
                 {
-                    enable = NO;
-                    break;
+                    if ([textFieldViewController isKindOfClass:enabledClass])
+                    {
+                        enable = YES;
+                        break;
+                    }
+                }
+            }
+            
+            if (enable)
+            {
+                //If viewController is kind of disable viewController class, then assuming it's disable.
+                for (Class disabledClass in _disabledDistanceHandlingClasses)
+                {
+                    if ([textFieldViewController isKindOfClass:disabledClass])
+                    {
+                        enable = NO;
+                        break;
+                    }
+                }
+                
+                //Special Controllers
+                if (enable == YES)
+                {
+                    NSString *classNameString = NSStringFromClass([textFieldViewController class]);
+                    
+                    //_UIAlertControllerTextFieldViewController
+                    if ([classNameString containsString:@"UIAlertController"] && [classNameString hasSuffix:@"TextFieldViewController"])
+                    {
+                        enable = NO;
+                    }
                 }
             }
         }
@@ -350,50 +413,86 @@ void _IQShowLog(NSString *logString);
     //Can't be less than zero. Minimum is zero.
 	_keyboardDistanceFromTextField = MAX(keyboardDistanceFromTextField, 0);
 
-    _IQShowLog([NSString stringWithFormat:@"keyboardDistanceFromTextField: %.2f",_keyboardDistanceFromTextField]);
+    [self showLog:[NSString stringWithFormat:@"keyboardDistanceFromTextField: %.2f",_keyboardDistanceFromTextField]];
 }
 
 /** Enabling/disable gesture on touching. */
 -(void)setShouldResignOnTouchOutside:(BOOL)shouldResignOnTouchOutside
 {
-    _IQShowLog([NSString stringWithFormat:@"shouldResignOnTouchOutside: %@",shouldResignOnTouchOutside?@"Yes":@"No"]);
+    [self showLog:[NSString stringWithFormat:@"shouldResignOnTouchOutside: %@",shouldResignOnTouchOutside?@"Yes":@"No"]];
     
     _shouldResignOnTouchOutside = shouldResignOnTouchOutside;
     
     //Enable/Disable gesture recognizer   (Enhancement ID: #14)
-    [_tapGesture setEnabled:[self privateShouldResignOnTouchOutside]];
+    [_resignFirstResponderGesture setEnabled:[self privateShouldResignOnTouchOutside]];
 }
 
 -(BOOL)privateShouldResignOnTouchOutside
 {
     BOOL shouldResignOnTouchOutside = _shouldResignOnTouchOutside;
     
-    UIViewController *textFieldViewController = [_textFieldView viewController];
+    __strong __typeof__(UIView) *strongTextFieldView = _textFieldView;
+
+    IQEnableMode enableMode = strongTextFieldView.shouldResignOnTouchOutsideMode;
     
-    if (textFieldViewController)
+    if (enableMode == IQEnableModeEnabled)
     {
-        if (shouldResignOnTouchOutside == NO)
+        shouldResignOnTouchOutside = YES;
+    }
+    else if (enableMode == IQEnableModeDisabled)
+    {
+        shouldResignOnTouchOutside = NO;
+    }
+    else
+    {
+        UIViewController *textFieldViewController = [strongTextFieldView viewContainingController];
+        
+        if (textFieldViewController)
         {
-            //If viewController is kind of enable viewController class, then assuming shouldResignOnTouchOutside is enabled.
-            for (Class enabledClass in _enabledTouchResignedClasses)
-            {
-                if ([textFieldViewController isKindOfClass:enabledClass])
-                {
-                    shouldResignOnTouchOutside = YES;
-                    break;
+            //If it is searchBar textField embedded in Navigation Bar
+            if ([strongTextFieldView textFieldSearchBar] != nil && [textFieldViewController isKindOfClass:[UINavigationController class]]) {
+                
+                UINavigationController *navController = (UINavigationController*)textFieldViewController;
+                if (navController.topViewController) {
+                    textFieldViewController = navController.topViewController;
                 }
             }
-        }
-        
-        if (shouldResignOnTouchOutside)
-        {
-            //If viewController is kind of disable viewController class, then assuming shouldResignOnTouchOutside is disable.
-            for (Class disabledClass in _disabledTouchResignedClasses)
+
+            if (shouldResignOnTouchOutside == NO)
             {
-                if ([textFieldViewController isKindOfClass:disabledClass])
+                //If viewController is kind of enable viewController class, then assuming shouldResignOnTouchOutside is enabled.
+                for (Class enabledClass in _enabledTouchResignedClasses)
                 {
-                    shouldResignOnTouchOutside = NO;
-                    break;
+                    if ([textFieldViewController isKindOfClass:enabledClass])
+                    {
+                        shouldResignOnTouchOutside = YES;
+                        break;
+                    }
+                }
+            }
+            
+            if (shouldResignOnTouchOutside)
+            {
+                //If viewController is kind of disable viewController class, then assuming shouldResignOnTouchOutside is disable.
+                for (Class disabledClass in _disabledTouchResignedClasses)
+                {
+                    if ([textFieldViewController isKindOfClass:disabledClass])
+                    {
+                        shouldResignOnTouchOutside = NO;
+                        break;
+                    }
+                }
+                
+                //Special Controllers
+                if (shouldResignOnTouchOutside == YES)
+                {
+                    NSString *classNameString = NSStringFromClass([textFieldViewController class]);
+                    
+                    //_UIAlertControllerTextFieldViewController
+                    if ([classNameString containsString:@"UIAlertController"] && [classNameString hasSuffix:@"TextFieldViewController"])
+                    {
+                        shouldResignOnTouchOutside = NO;
+                    }
                 }
             }
         }
@@ -402,12 +501,21 @@ void _IQShowLog(NSString *logString);
     return shouldResignOnTouchOutside;
 }
 
+/** Setter of movedDistance property. */
+-(void)setMovedDistance:(CGFloat)movedDistance
+{
+    _movedDistance = movedDistance;
+    if (self.movedDistanceChanged != nil) {
+        self.movedDistanceChanged(movedDistance);
+    }
+}
+
 /** Enable/disable autotoolbar. Adding and removing toolbar if required. */
 -(void)setEnableAutoToolbar:(BOOL)enableAutoToolbar
 {
     _enableAutoToolbar = enableAutoToolbar;
     
-    _IQShowLog([NSString stringWithFormat:@"enableAutoToolbar: %@",enableAutoToolbar?@"Yes":@"No"]);
+    [self showLog:[NSString stringWithFormat:@"enableAutoToolbar: %@",enableAutoToolbar?@"Yes":@"No"]];
 
     //If enabled then adding toolbar.
     if ([self privateIsEnableAutoToolbar] == YES)
@@ -425,10 +533,21 @@ void _IQShowLog(NSString *logString);
 {
     BOOL enableAutoToolbar = _enableAutoToolbar;
     
-    UIViewController *textFieldViewController = [_textFieldView viewController];
+    __strong __typeof__(UIView) *strongTextFieldView = _textFieldView;
+
+    UIViewController *textFieldViewController = [strongTextFieldView viewContainingController];
     
     if (textFieldViewController)
     {
+        //If it is searchBar textField embedded in Navigation Bar
+        if ([strongTextFieldView textFieldSearchBar] != nil && [textFieldViewController isKindOfClass:[UINavigationController class]]) {
+            
+            UINavigationController *navController = (UINavigationController*)textFieldViewController;
+            if (navController.topViewController) {
+                textFieldViewController = navController.topViewController;
+            }
+        }
+
         if (enableAutoToolbar == NO)
         {
             //If found any toolbar enabled classes then return.
@@ -453,6 +572,19 @@ void _IQShowLog(NSString *logString);
                     break;
                 }
             }
+            
+            
+            //Special Controllers
+            if (enableAutoToolbar == YES)
+            {
+                NSString *classNameString = NSStringFromClass([textFieldViewController class]);
+                
+                //_UIAlertControllerTextFieldViewController
+                if ([classNameString containsString:@"UIAlertController"] && [classNameString hasSuffix:@"TextFieldViewController"])
+                {
+                    enableAutoToolbar = NO;
+                }
+            }
         }
     }
     
@@ -464,184 +596,264 @@ void _IQShowLog(NSString *logString);
 /** Getting keyWindow. */
 -(UIWindow *)keyWindow
 {
-    if (_textFieldView.window)
+    UIView *textFieldView = _textFieldView;
+
+    if (textFieldView.window)
     {
-        return _textFieldView.window;
+        return textFieldView.window;
     }
     else
     {
-        static UIWindow *_keyWindow = nil;
+        static __weak UIWindow *cachedKeyWindow = nil;
         
         /*  (Bug ID: #23, #25, #73)   */
-        UIWindow *originalKeyWindow = [[UIApplication sharedApplication] keyWindow];
-        
+        UIWindow *originalKeyWindow = nil;
+
+        #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        if (@available(iOS 13.0, *)) {
+            NSSet<UIScene *> *connectedScenes = [UIApplication sharedApplication].connectedScenes;
+            for (UIScene *scene in connectedScenes) {
+                if (scene.activationState == UISceneActivationStateForegroundActive && [scene isKindOfClass:[UIWindowScene class]]) {
+                    UIWindowScene *windowScene = (UIWindowScene *)scene;
+                    for (UIWindow *window in windowScene.windows) {
+                        if (window.isKeyWindow) {
+                            originalKeyWindow = window;
+                            break;
+                        }
+                    }
+                }
+            }
+        } else
+        #endif
+        {
+        #if __IPHONE_OS_VERSION_MIN_REQUIRED < 130000
+            originalKeyWindow = [UIApplication sharedApplication].keyWindow;
+        #endif
+        }
+
         //If original key window is not nil and the cached keywindow is also not original keywindow then changing keywindow.
-        if (originalKeyWindow != nil && _keyWindow != originalKeyWindow)  _keyWindow = originalKeyWindow;
+        if (originalKeyWindow)
+        {
+            cachedKeyWindow = originalKeyWindow;
+        }
         
-        return _keyWindow;
+        return cachedKeyWindow;
     }
 }
 
-/*  Helper function to manipulate RootViewController's frame with animation. */
--(void)setRootViewFrame:(CGRect)frame
+-(void)optimizedAdjustPosition
 {
-    //  Getting topMost ViewController.
-    UIViewController *controller = [_textFieldView topMostController];
-    if (controller == nil)  controller = [[self keyWindow] topMostController];
-    
-    //frame size needs to be adjusted on iOS8 due to orientation API changes.
-    frame.size = controller.view.frame.size;
-
-    //  If can't get rootViewController then printing warning to user.
-    if (controller == nil)
-        _IQShowLog(IQLocalizedString(@"You must set UIWindow.rootViewController in your AppDelegate to work with IQKeyboardManager", nil));
-    
-    __weak typeof(self) weakSelf = self;
-    
-    //Used UIViewAnimationOptionBeginFromCurrentState to minimize strange animations.
-    [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
-
-        __strong typeof(self) strongSelf = weakSelf;
-
-        //  Setting it's new frame
-        [controller.view setFrame:frame];
+    if (_hasPendingAdjustRequest == NO)
+    {
+        _hasPendingAdjustRequest = YES;
         
-        //Animating content if needed (Bug ID: #204)
-        if (strongSelf.layoutIfNeededOnUpdate)
-        {
-            //Animating content (Bug ID: #160)
-            [controller.view setNeedsLayout];
-            [controller.view layoutIfNeeded];
-        }
-        
-        _IQShowLog([NSString stringWithFormat:@"Set %@ frame to : %@",[controller _IQDescription],NSStringFromCGRect(frame)]);
-    } completion:NULL];
+        __weak __typeof__(self) weakSelf = self;
+
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            
+            __strong __typeof__(self) strongSelf = weakSelf;
+
+            [strongSelf adjustPosition];
+            strongSelf.hasPendingAdjustRequest = NO;
+        }];
+    }
 }
 
 /* Adjusting RootViewController's frame according to interface orientation. */
--(void)adjustFrame
+-(void)adjustPosition
 {
-    //  We are unable to get textField object while keyboard showing on UIWebView's textField.  (Bug ID: #11)
-    if (_textFieldView == nil)   return;
-    
-    _IQShowLog([NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)]);
+    UIView *textFieldView = _textFieldView;
 
-    //  Boolean to know keyboard is showing/hiding
-    _isKeyboardShowing = YES;
+    //  Getting RootViewController.  (Bug ID: #1, #4)
+    UIViewController *rootController = _rootViewController;
     
     //  Getting KeyWindow object.
     UIWindow *keyWindow = [self keyWindow];
     
-    //  Getting RootViewController.  (Bug ID: #1, #4)
-    UIViewController *rootController = [_textFieldView topMostController];
-    if (rootController == nil)  rootController = [keyWindow topMostController];
+    //  We are unable to get textField object while keyboard showing on WKWebView's textField.  (Bug ID: #11)
+    if (_hasPendingAdjustRequest == NO ||
+        textFieldView == nil ||
+        rootController == nil ||
+        keyWindow == nil)
+        return;
     
+    CFTimeInterval startTime = CACurrentMediaTime();
+    [self showLog:[NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)] indentation:1];
+
     //  Converting Rectangle according to window bounds.
-    CGRect textFieldViewRect = [[_textFieldView superview] convertRect:_textFieldView.frame toView:keyWindow];
-    //  Getting RootViewRect.
-    CGRect rootViewRect = [[rootController view] frame];
-    //Getting statusBarFrame
+    CGRect textFieldViewRectInWindow = [[textFieldView superview] convertRect:textFieldView.frame toView:keyWindow];
+    CGRect textFieldViewRectInRootSuperview = [[textFieldView superview] convertRect:textFieldView.frame toView:rootController.view.superview];
+    //  Getting RootView origin.
+    CGPoint rootViewOrigin = rootController.view.frame.origin;
 
     //Maintain keyboardDistanceFromTextField
-    CGFloat keyboardDistanceFromTextField = (_textFieldView.keyboardDistanceFromTextField == kIQUseDefaultKeyboardDistance)?_keyboardDistanceFromTextField:_textFieldView.keyboardDistanceFromTextField;
-    CGSize kbSize = _kbSize;
-    kbSize.height += keyboardDistanceFromTextField;
+    CGFloat specialKeyboardDistanceFromTextField = textFieldView.keyboardDistanceFromTextField;
 
-    CGRect statusBarFrame = [[UIApplication sharedApplication] statusBarFrame];
-    
-    //  (Bug ID: #250)
-    IQLayoutGuidePosition layoutGuidePosition = IQLayoutGuidePositionNone;
-    
-    NSLayoutConstraint *constraint = [[_textFieldView viewController] IQLayoutGuideConstraint];
-    
-    //If topLayoutGuide constraint
-    if (constraint && (constraint.firstItem == [[_textFieldView viewController] topLayoutGuide] || constraint.secondItem == [[_textFieldView viewController] topLayoutGuide]))
     {
-        layoutGuidePosition = IQLayoutGuidePositionTop;
-    }
-    //If bottomLayoutGuice constraint
-    else if (constraint && (constraint.firstItem == [[_textFieldView viewController] bottomLayoutGuide] || constraint.secondItem == [[_textFieldView viewController] bottomLayoutGuide]))
-    {
-        layoutGuidePosition = IQLayoutGuidePositionBottom;
+        UISearchBar *searchBar = textFieldView.textFieldSearchBar;
+        
+        if (searchBar)
+        {
+            specialKeyboardDistanceFromTextField = searchBar.keyboardDistanceFromTextField;
+        }
     }
     
-    CGFloat topLayoutGuide = CGRectGetHeight(statusBarFrame);
+    CGFloat keyboardDistanceFromTextField = (specialKeyboardDistanceFromTextField == kIQUseDefaultKeyboardDistance)?_keyboardDistanceFromTextField:specialKeyboardDistanceFromTextField;
 
-    CGFloat move = 0;
+    CGSize kbSize;
+    
+    {
+        CGRect kbFrame = _kbFrame;
+        
+        kbFrame.origin.y -= keyboardDistanceFromTextField;
+        kbFrame.size.height += keyboardDistanceFromTextField;
+        
+        //Calculating actual keyboard displayed size, keyboard frame may be different when hardware keyboard is attached (Bug ID: #469) (Bug ID: #381) (Bug ID: #1506)
+        CGRect intersectRect = CGRectIntersection(kbFrame, keyWindow.frame);
+        
+        if (CGRectIsNull(intersectRect))
+        {
+            kbSize = CGSizeMake(kbFrame.size.width, 0);
+        }
+        else
+        {
+            kbSize = intersectRect.size;
+        }
+    }
+
+    CGFloat statusBarHeight = 0;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+    if (@available(iOS 13.0, *)) {
+        statusBarHeight = [self keyWindow].windowScene.statusBarManager.statusBarFrame.size.height;
+
+    } else
+#endif
+    {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 130000
+        statusBarHeight = [[UIApplication sharedApplication] statusBarFrame].size.height;
+#endif
+    }
+
+    CGFloat navigationBarAreaHeight = statusBarHeight + rootController.navigationController.navigationBar.frame.size.height;
+    CGFloat layoutAreaHeight = rootController.view.layoutMargins.top;
+    
+    CGFloat topLayoutGuide = MAX(navigationBarAreaHeight, layoutAreaHeight) + 5;
+    CGFloat bottomLayoutGuide = ([textFieldView respondsToSelector:@selector(isEditable)] && [textFieldView isKindOfClass:[UIScrollView class]]) ? 0 : rootController.view.layoutMargins.bottom; //Validation of textView for case where there is a tab bar at the bottom or running on iPhone X and textView is at the bottom.
+
     //  +Move positive = textField is hidden.
     //  -Move negative = textField is showing.
-	
-    //  Checking if there is bottomLayoutGuide attached (Bug ID: #250)
-    if (layoutGuidePosition == IQLayoutGuidePositionBottom)
-    {
-        //  Calculating move position.
-        move = CGRectGetMaxY(textFieldViewRect)-(CGRectGetHeight(keyWindow.frame)-kbSize.height);
-    }
-    else
-    {
-        //  Calculating move position. Common for both normal and special cases.
-        move = MIN(CGRectGetMinY(textFieldViewRect)-(topLayoutGuide+5), CGRectGetMaxY(textFieldViewRect)-(CGRectGetHeight(keyWindow.frame)-kbSize.height));
-    }
-	
-    _IQShowLog([NSString stringWithFormat:@"Need to move: %.2f",move]);
+    //  Calculating move position. Common for both normal and special cases.
+    CGFloat move = MIN(CGRectGetMinY(textFieldViewRectInRootSuperview)-topLayoutGuide, CGRectGetMaxY(textFieldViewRectInWindow)-(CGRectGetHeight(keyWindow.frame)-kbSize.height)+bottomLayoutGuide);
 
-    //  Getting it's superScrollView.   //  (Enhancement ID: #21, #24)
-    UIScrollView *superScrollView = (UIScrollView*)[_textFieldView superviewOfClassType:[UIScrollView class]];
+    [self showLog:[NSString stringWithFormat:@"Need to move: %.2f",move]];
+
+    UIScrollView *superScrollView = nil;
+    UIScrollView *superView = (UIScrollView*)[textFieldView superviewOfClassType:[UIScrollView class]];
+
+    //Getting UIScrollView whose scrolling is enabled.    //  (Bug ID: #285)
+    while (superView)
+    {
+        if (superView.isScrollEnabled && superView.shouldIgnoreScrollingAdjustment == NO)
+        {
+            superScrollView = superView;
+            break;
+        }
+        else
+        {
+            //  Getting it's superScrollView.   //  (Enhancement ID: #21, #24)
+            superView = (UIScrollView*)[superView superviewOfClassType:[UIScrollView class]];
+        }
+    }
     
+    __strong __typeof__(UIScrollView) *strongLastScrollView = _lastScrollView;
+
     //If there was a lastScrollView.    //  (Bug ID: #34)
-    if (_lastScrollView)
+    if (strongLastScrollView)
     {
         //If we can't find current superScrollView, then setting lastScrollView to it's original form.
         if (superScrollView == nil)
         {
-            _IQShowLog([NSString stringWithFormat:@"Restoring %@ contentInset to : %@ and contentOffset to : %@",[_lastScrollView _IQDescription],NSStringFromUIEdgeInsets(_startingContentInsets),NSStringFromCGPoint(_startingContentOffset)]);
-
-            __weak typeof(self) weakSelf = self;
-
-            [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
-                
-                __strong typeof(self) strongSelf = weakSelf;
-
-                [strongSelf.lastScrollView setContentInset:strongSelf.startingContentInsets];
-                strongSelf.lastScrollView.scrollIndicatorInsets = strongSelf.startingScrollIndicatorInsets;
-            } completion:NULL];
-            
-            if (_lastScrollView.shouldRestoreScrollViewContentOffset)
+            if (UIEdgeInsetsEqualToEdgeInsets(strongLastScrollView.contentInset, _startingContentInsets) == NO)
             {
-                [_lastScrollView setContentOffset:_startingContentOffset animated:YES];
+                [self showLog:[NSString stringWithFormat:@"Restoring ScrollView contentInset to : %@",NSStringFromUIEdgeInsets(_startingContentInsets)]];
+                
+                __weak __typeof__(self) weakSelf = self;
+
+                [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                    
+                    __strong __typeof__(self) strongSelf = weakSelf;
+                    
+                    [strongLastScrollView setContentInset:strongSelf.startingContentInsets];
+                    strongLastScrollView.scrollIndicatorInsets = strongSelf.startingScrollIndicatorInsets;
+                } completion:NULL];
+            }
+            
+            if (strongLastScrollView.shouldRestoreScrollViewContentOffset && CGPointEqualToPoint(strongLastScrollView.contentOffset, _startingContentOffset) == NO)
+            {
+                [self showLog:[NSString stringWithFormat:@"Restoring ScrollView contentOffset to : %@",NSStringFromCGPoint(_startingContentOffset)]];
+                
+                BOOL animatedContentOffset = ([textFieldView superviewOfClassType:[UIStackView class] belowView:strongLastScrollView] != nil);   //  (Bug ID: #1365, #1508, #1541)
+
+                if (animatedContentOffset) {
+                    [strongLastScrollView setContentOffset:_startingContentOffset animated:UIView.areAnimationsEnabled];
+                } else {
+                    strongLastScrollView.contentOffset = _startingContentOffset;
+                }
             }
 
             _startingContentInsets = UIEdgeInsetsZero;
             _startingScrollIndicatorInsets = UIEdgeInsetsZero;
             _startingContentOffset = CGPointZero;
             _lastScrollView = nil;
+            strongLastScrollView = _lastScrollView;
         }
         //If both scrollView's are different, then reset lastScrollView to it's original frame and setting current scrollView as last scrollView.
-        else if (superScrollView != _lastScrollView)
+        else if (superScrollView != strongLastScrollView)
         {
-            _IQShowLog([NSString stringWithFormat:@"Restoring %@ contentInset to : %@ and contentOffset to : %@",[_lastScrollView _IQDescription],NSStringFromUIEdgeInsets(_startingContentInsets),NSStringFromCGPoint(_startingContentOffset)]);
-
-            __weak typeof(self) weakSelf = self;
-
-            [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
-                
-                __strong typeof(self) strongSelf = weakSelf;
-
-                [strongSelf.lastScrollView setContentInset:strongSelf.startingContentInsets];
-                strongSelf.lastScrollView.scrollIndicatorInsets = strongSelf.startingScrollIndicatorInsets;
-            } completion:NULL];
-
-            if (_lastScrollView.shouldRestoreScrollViewContentOffset)
+            if (UIEdgeInsetsEqualToEdgeInsets(strongLastScrollView.contentInset, _startingContentInsets) == NO)
             {
-                [_lastScrollView setContentOffset:_startingContentOffset animated:YES];
+                [self showLog:[NSString stringWithFormat:@"Restoring ScrollView contentInset to : %@",NSStringFromUIEdgeInsets(_startingContentInsets)]];
+
+                __weak __typeof__(self) weakSelf = self;
+                
+                [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                    
+                    __strong __typeof__(self) strongSelf = weakSelf;
+                    
+                    [strongLastScrollView setContentInset:strongSelf.startingContentInsets];
+                    strongLastScrollView.scrollIndicatorInsets = strongSelf.startingScrollIndicatorInsets;
+                } completion:NULL];
+            }
+
+            if (strongLastScrollView.shouldRestoreScrollViewContentOffset && CGPointEqualToPoint(strongLastScrollView.contentOffset, _startingContentOffset) == NO)
+            {
+                [self showLog:[NSString stringWithFormat:@"Restoring ScrollView contentOffset to : %@",NSStringFromCGPoint(_startingContentOffset)]];
+
+                BOOL animatedContentOffset = ([textFieldView superviewOfClassType:[UIStackView class] belowView:strongLastScrollView] != nil);   //  (Bug ID: #1365, #1508, #1541)
+
+                if (animatedContentOffset) {
+                    [strongLastScrollView setContentOffset:_startingContentOffset animated:UIView.areAnimationsEnabled];
+                } else {
+                    strongLastScrollView.contentOffset = _startingContentOffset;
+                }
             }
             
             _lastScrollView = superScrollView;
+            strongLastScrollView = _lastScrollView;
             _startingContentInsets = superScrollView.contentInset;
-            _startingScrollIndicatorInsets = superScrollView.scrollIndicatorInsets;
             _startingContentOffset = superScrollView.contentOffset;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+            if (@available(iOS 11.1, *)) {
+                _startingScrollIndicatorInsets = superScrollView.verticalScrollIndicatorInsets;
+            } else
+#endif
+            {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 130000
+                _startingScrollIndicatorInsets = superScrollView.scrollIndicatorInsets;
+#endif
+            }
 
-            _IQShowLog([NSString stringWithFormat:@"Saving New %@ contentInset: %@ and contentOffset : %@",[_lastScrollView _IQDescription],NSStringFromUIEdgeInsets(_startingContentInsets),NSStringFromCGPoint(_startingContentOffset)]);
+            [self showLog:[NSString stringWithFormat:@"Saving New contentInset: %@ and contentOffset : %@",NSStringFromUIEdgeInsets(_startingContentInsets),NSStringFromCGPoint(_startingContentOffset)]];
         }
         //Else the case where superScrollView == lastScrollView means we are on same scrollView after switching to different textField. So doing nothing
     }
@@ -649,25 +861,126 @@ void _IQShowLog(NSString *logString);
     else if(superScrollView)
     {
         _lastScrollView = superScrollView;
+        strongLastScrollView = _lastScrollView;
         _startingContentInsets = superScrollView.contentInset;
         _startingContentOffset = superScrollView.contentOffset;
-        _startingScrollIndicatorInsets = superScrollView.scrollIndicatorInsets;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        if (@available(iOS 11.1, *)) {
+            _startingScrollIndicatorInsets = superScrollView.verticalScrollIndicatorInsets;
+        } else
+#endif
+        {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 130000
+            _startingScrollIndicatorInsets = superScrollView.scrollIndicatorInsets;
+#endif
+        }
 
-        _IQShowLog([NSString stringWithFormat:@"Saving %@ contentInset: %@ and contentOffset : %@",[_lastScrollView _IQDescription],NSStringFromUIEdgeInsets(_startingContentInsets),NSStringFromCGPoint(_startingContentOffset)]);
+        [self showLog:[NSString stringWithFormat:@"Saving contentInset: %@ and contentOffset : %@",NSStringFromUIEdgeInsets(_startingContentInsets),NSStringFromCGPoint(_startingContentOffset)]];
     }
     
     //  Special case for ScrollView.
     {
         //  If we found lastScrollView then setting it's contentOffset to show textField.
-        if (_lastScrollView)
+        if (strongLastScrollView)
         {
             //Saving
-            UIView *lastView = _textFieldView;
-            UIScrollView *superScrollView = _lastScrollView;
+            UIView *lastView = textFieldView;
+            superScrollView = strongLastScrollView;
 
             //Looping in upper hierarchy until we don't found any scrollView in it's upper hirarchy till UIWindow object.
-            while (superScrollView && (move>0?(move > (-superScrollView.contentOffset.y-superScrollView.contentInset.top)):superScrollView.contentOffset.y>0) )
+            while (superScrollView)
             {
+                BOOL shouldContinue = NO;
+                
+                if (move > 0)
+                {
+                    shouldContinue = move > (-superScrollView.contentOffset.y-superScrollView.contentInset.top);
+                }
+                else
+                {
+                    //Special treatment for UITableView due to their cell reusing logic
+                    if ([superScrollView isKindOfClass:[UITableView class]])
+                    {
+                        shouldContinue = superScrollView.contentOffset.y>0;
+
+                        UITableView *tableView = (UITableView*)superScrollView;
+                        UITableViewCell *tableCell = nil;
+                        NSIndexPath *indexPath = nil;
+                        NSIndexPath *previousIndexPath = nil;
+
+                        if (shouldContinue &&
+                            (tableCell = (UITableViewCell*)[textFieldView superviewOfClassType:[UITableViewCell class]]) &&
+                            (indexPath = [tableView indexPathForCell:tableCell]) &&
+                            (previousIndexPath = [tableView previousIndexPathOfIndexPath:indexPath]))
+                        {
+                            CGRect previousCellRect = [tableView rectForRowAtIndexPath:previousIndexPath];
+                            if (CGRectIsEmpty(previousCellRect) == NO)
+                            {
+                                CGRect previousCellRectInRootSuperview = [tableView convertRect:previousCellRect toView:rootController.view.superview];
+                                move = MIN(0, CGRectGetMaxY(previousCellRectInRootSuperview) - topLayoutGuide);
+                            }
+                        }
+                    }
+                    //Special treatment for UICollectionView due to their cell reusing logic
+                    else if ([superScrollView isKindOfClass:[UICollectionView class]])
+                    {
+                        shouldContinue = superScrollView.contentOffset.y>0;
+                        
+                        UICollectionView *collectionView = (UICollectionView*)superScrollView;
+                        UICollectionViewCell *collectionCell = nil;
+                        NSIndexPath *indexPath = nil;
+                        NSIndexPath *previousIndexPath = nil;
+
+                        if (shouldContinue &&
+                            (collectionCell = (UICollectionViewCell*)[textFieldView superviewOfClassType:[UICollectionViewCell class]]) &&
+                            (indexPath = [collectionView indexPathForCell:collectionCell]) &&
+                            (previousIndexPath = [collectionView previousIndexPathOfIndexPath:indexPath]))
+                        {
+                            UICollectionViewLayoutAttributes *attributes = [collectionView layoutAttributesForItemAtIndexPath:previousIndexPath];
+                            
+                            CGRect previousCellRect = attributes.frame;
+                            if (CGRectIsEmpty(previousCellRect) == NO)
+                            {
+                                CGRect previousCellRectInRootSuperview = [collectionView convertRect:previousCellRect toView:rootController.view.superview];
+                                move = MIN(0, CGRectGetMaxY(previousCellRectInRootSuperview) - topLayoutGuide);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //If the textField is hidden at the top
+                        shouldContinue = textFieldViewRectInRootSuperview.origin.y < topLayoutGuide;
+                        
+                        if (shouldContinue) {
+                            move = MIN(0, textFieldViewRectInRootSuperview.origin.y - topLayoutGuide);
+                        }
+                    }
+                }
+                
+                if (shouldContinue == NO)
+                {
+                    move = 0;
+                    break;
+                }
+
+                UIScrollView *nextScrollView = nil;
+                UIScrollView *tempScrollView = (UIScrollView*)[superScrollView superviewOfClassType:[UIScrollView class]];
+                
+                //Getting UIScrollView whose scrolling is enabled.    //  (Bug ID: #285)
+                while (tempScrollView)
+                {
+                    if (tempScrollView.isScrollEnabled && tempScrollView.shouldIgnoreScrollingAdjustment == NO)
+                    {
+                        nextScrollView = tempScrollView;
+                        break;
+                    }
+                    else
+                    {
+                        //  Getting it's superScrollView.   //  (Enhancement ID: #21, #24)
+                        tempScrollView = (UIScrollView*)[tempScrollView superviewOfClassType:[UIScrollView class]];
+                    }
+                }
+
                 //Getting lastViewRect.
                 CGRect lastViewRect = [[lastView superview] convertRect:lastView.frame toView:superScrollView];
                 
@@ -675,28 +988,20 @@ void _IQShowLog(NSString *logString);
                 CGFloat shouldOffsetY = superScrollView.contentOffset.y - MIN(superScrollView.contentOffset.y,-move);
                 
                 //Rearranging the expected Y offset according to the view.
-                shouldOffsetY = MIN(shouldOffsetY, lastViewRect.origin.y/*-5*/);   //-5 is for good UI.//Commenting -5 (Bug ID: #69)
+                shouldOffsetY = MIN(shouldOffsetY, lastViewRect.origin.y);
                 
-                //[_textFieldView isKindOfClass:[UITextView class]] If is a UITextView type
-                //[superScrollView superviewOfClassType:[UIScrollView class]] == nil    If processing scrollView is last scrollView in upper hierarchy (there is no other scrollView upper hierrchy.)
+                //[textFieldView isKindOfClass:[UITextView class]] If is a UITextView type
+                //[superScrollView superviewOfClassType:[UIScrollView class]] == nil    If processing scrollView is last scrollView in upper hierarchy (there is no other scrollView upper hierarchy.)
                 //shouldOffsetY >= 0     shouldOffsetY must be greater than in order to keep distance from navigationBar (Bug ID: #92)
-                if ([_textFieldView isKindOfClass:[UITextView class]] && [superScrollView superviewOfClassType:[UIScrollView class]] == nil && (shouldOffsetY >= 0))
+                if ([textFieldView respondsToSelector:@selector(isEditable)]  && [textFieldView isKindOfClass:[UIScrollView class]] &&
+                    nextScrollView == nil &&
+                    (shouldOffsetY >= 0))
                 {
-                    CGFloat maintainTopLayout = 0;
-                    
-                    //When uncommenting this, each calculation goes to well, but don't know why scrollView doesn't adjusting it's contentOffset at bottom
-//                    if ([_textFieldView.viewController respondsToSelector:@selector(topLayoutGuide)])
-//                        maintainTopLayout = [_textFieldView.viewController.topLayoutGuide length];
-//                    else
-                        maintainTopLayout = CGRectGetMaxY(_textFieldView.viewController.navigationController.navigationBar.frame);
-
-                    maintainTopLayout+= 10; //For good UI
-                    
                     //  Converting Rectangle according to window bounds.
-                    CGRect currentTextFieldViewRect = [[_textFieldView superview] convertRect:_textFieldView.frame toView:keyWindow];
+                    CGRect currentTextFieldViewRect = [[textFieldView superview] convertRect:textFieldView.frame toView:keyWindow];
                     
                     //Calculating expected fix distance which needs to be managed from navigation bar
-                    CGFloat expectedFixDistance = CGRectGetMinY(currentTextFieldViewRect) - maintainTopLayout;
+                    CGFloat expectedFixDistance = CGRectGetMinY(currentTextFieldViewRect) - topLayoutGuide;
                     
                     //Now if expectedOffsetY (superScrollView.contentOffset.y + expectedFixDistance) is lower than current shouldOffsetY, which means we're in a position where navigationBar up and hide, then reducing shouldOffsetY with expectedOffsetY (superScrollView.contentOffset.y + expectedFixDistance)
                     shouldOffsetY = MIN(shouldOffsetY, superScrollView.contentOffset.y + expectedFixDistance);
@@ -711,204 +1016,299 @@ void _IQShowLog(NSString *logString);
                 }
 
                 
-                //Getting problem while using `setContentOffset:animated:`, So I used animation API.
-                [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
-                    
-                    _IQShowLog([NSString stringWithFormat:@"Adjusting %.2f to %@ ContentOffset",(superScrollView.contentOffset.y-shouldOffsetY),[superScrollView _IQDescription]]);
-                    _IQShowLog([NSString stringWithFormat:@"Remaining Move: %.2f",move]);
+                CGPoint newContentOffset = CGPointMake(superScrollView.contentOffset.x, shouldOffsetY);
+                
+                if (CGPointEqualToPoint(superScrollView.contentOffset, newContentOffset) == NO)
+                {
+                    __weak __typeof__(self) weakSelf = self;
 
-                    superScrollView.contentOffset = CGPointMake(superScrollView.contentOffset.x, shouldOffsetY);
+                    //Getting problem while using `setContentOffset:animated:`, So I used animation API.
+                    [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                        
+                        __strong __typeof__(self) strongSelf = weakSelf;
 
-                } completion:NULL];
+                        [strongSelf showLog:[NSString stringWithFormat:@"Adjusting %.2f to %@ ContentOffset",(superScrollView.contentOffset.y-shouldOffsetY),[superScrollView _IQDescription]]];
+                        [strongSelf showLog:[NSString stringWithFormat:@"Remaining Move: %.2f",move]];
+                        
+                        BOOL animatedContentOffset = ([textFieldView superviewOfClassType:[UIStackView class] belowView:superScrollView] != nil);   //  (Bug ID: #1365, #1508, #1541)
+
+                        if (animatedContentOffset) {
+                            [superScrollView setContentOffset:newContentOffset animated:UIView.areAnimationsEnabled];
+                        } else {
+                            superScrollView.contentOffset = newContentOffset;
+                        }
+                    } completion:^(BOOL finished){
+                        
+                        __strong __typeof__(self) strongSelf = weakSelf;
+
+                        if ([superScrollView isKindOfClass:[UITableView class]] || [superScrollView isKindOfClass:[UICollectionView class]])
+                        {
+                            //This will update the next/previous states
+                            [strongSelf addToolbarIfRequired];
+                        }
+                    }];
+                }
 
                 //  Getting next lastView & superScrollView.
                 lastView = superScrollView;
-                superScrollView = (UIScrollView*)[lastView superviewOfClassType:[UIScrollView class]];
+                superScrollView = nextScrollView;
             }
             
             //Updating contentInset
+            if (strongLastScrollView.shouldIgnoreContentInsetAdjustment == false)
             {
-                CGRect lastScrollViewRect = [[_lastScrollView superview] convertRect:_lastScrollView.frame toView:keyWindow];
+                CGRect lastScrollViewRect = [[strongLastScrollView superview] convertRect:strongLastScrollView.frame toView:keyWindow];
 
-                CGFloat bottom = kbSize.height-(CGRectGetHeight(keyWindow.frame)-CGRectGetMaxY(lastScrollViewRect));
+                CGFloat bottomInset = (kbSize.height)-(CGRectGetHeight(keyWindow.frame)-CGRectGetMaxY(lastScrollViewRect));
+                CGFloat bottomScrollIndicatorInset = bottomInset - keyboardDistanceFromTextField;
 
                 // Update the insets so that the scroll vew doesn't shift incorrectly when the offset is near the bottom of the scroll view.
-                UIEdgeInsets movedInsets = _lastScrollView.contentInset;
+                bottomInset = MAX(_startingContentInsets.bottom, bottomInset);
+                bottomScrollIndicatorInset = MAX(_startingScrollIndicatorInsets.bottom, bottomScrollIndicatorInset);
 
-                movedInsets.bottom = MAX(_startingContentInsets.bottom, bottom);
-                
-                _IQShowLog([NSString stringWithFormat:@"%@ old ContentInset : %@",[_lastScrollView _IQDescription], NSStringFromUIEdgeInsets(_lastScrollView.contentInset)]);
-                
-                __weak typeof(self) weakSelf = self;
-
-                [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
-                    
-                    __strong typeof(self) strongSelf = weakSelf;
-
-                    strongSelf.lastScrollView.contentInset = movedInsets;
-                    
-                    UIEdgeInsets newInset = strongSelf.lastScrollView.scrollIndicatorInsets;
-                    newInset.bottom = movedInsets.bottom - 10;
-                    strongSelf.lastScrollView.scrollIndicatorInsets = newInset;
-
-                } completion:NULL];
-
-                //Maintaining contentSize
-                if (_lastScrollView.contentSize.height<_lastScrollView.frame.size.height)
-                {
-                    CGSize contentSize = _lastScrollView.contentSize;
-                    contentSize.height = _lastScrollView.frame.size.height;
-                    _lastScrollView.contentSize = contentSize;
+                if (@available(iOS 11, *)) {
+                    bottomInset -= strongLastScrollView.safeAreaInsets.bottom;
+                    bottomScrollIndicatorInset -= strongLastScrollView.safeAreaInsets.bottom;
                 }
-                
-                _IQShowLog([NSString stringWithFormat:@"%@ new ContentInset : %@",[_lastScrollView _IQDescription], NSStringFromUIEdgeInsets(_lastScrollView.contentInset)]);
+
+                UIEdgeInsets movedInsets = strongLastScrollView.contentInset;
+                movedInsets.bottom = bottomInset;
+
+                if (UIEdgeInsetsEqualToEdgeInsets(strongLastScrollView.contentInset, movedInsets) == NO)
+                {
+                    [self showLog:[NSString stringWithFormat:@"old ContentInset : %@ new ContentInset : %@", NSStringFromUIEdgeInsets(strongLastScrollView.contentInset), NSStringFromUIEdgeInsets(movedInsets)]];
+                    
+                    [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                        
+                        strongLastScrollView.contentInset = movedInsets;
+                        UIEdgeInsets newScrollIndicatorInset;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+                        if (@available(iOS 11.1, *)) {
+                            newScrollIndicatorInset = strongLastScrollView.verticalScrollIndicatorInsets;
+                        } else
+#endif
+                        {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 130000
+                            newScrollIndicatorInset = strongLastScrollView.scrollIndicatorInsets;
+#endif
+                        }
+
+                        newScrollIndicatorInset.bottom = bottomScrollIndicatorInset;
+                        strongLastScrollView.scrollIndicatorInsets = newScrollIndicatorInset;
+                        
+                    } completion:NULL];
+                }
             }
         }
         //Going ahead. No else if.
     }
     
-    if (layoutGuidePosition == IQLayoutGuidePositionTop)
     {
-        CGFloat constant = MIN(_layoutGuideConstraintInitialConstant, constraint.constant-move);
-        
-        __weak typeof(self) weakSelf = self;
-
-        [UIView animateWithDuration:_animationDuration delay:0 options:(7<<16|UIViewAnimationOptionBeginFromCurrentState) animations:^{
-
-            __strong typeof(self) strongSelf = weakSelf;
-
-            constraint.constant = constant;
-            [strongSelf.rootViewController.view setNeedsLayout];
-            [strongSelf.rootViewController.view layoutIfNeeded];
-        } completion:NULL];
-    }
-    //If bottomLayoutGuice constraint
-    else if (layoutGuidePosition == IQLayoutGuidePositionBottom)
-    {
-        CGFloat constant = MAX(_layoutGuideConstraintInitialConstant, constraint.constant+move);
-        
-        __weak typeof(self) weakSelf = self;
-
-        [UIView animateWithDuration:_animationDuration delay:0 options:(7<<16|UIViewAnimationOptionBeginFromCurrentState) animations:^{
-
-            __strong typeof(self) strongSelf = weakSelf;
-
-            constraint.constant = constant;
-            [strongSelf.rootViewController.view setNeedsLayout];
-            [strongSelf.rootViewController.view layoutIfNeeded];
-        } completion:NULL];
-    }
-    //If not constraint
-    else
-    {
-        //Special case for UITextView(Readjusting the move variable when textView hight is too big to fit on screen)
-        //_canAdjustTextView    If we have permission to adjust the textView, then let's do it on behalf of user  (Enhancement ID: #15)
+        //Special case for UITextView(Readjusting textView.contentInset when textView hight is too big to fit on screen)
         //_lastScrollView       If not having inside any scrollView, (now contentInset manages the full screen textView.
-        //[_textFieldView isKindOfClass:[UITextView class]] If is a UITextView type
-        //_isTextFieldViewFrameChanged  If frame is not change by library in past  (Bug ID: #92)
-        if (_canAdjustTextView && (_lastScrollView == nil) && [_textFieldView isKindOfClass:[UITextView class]] && _isTextFieldViewFrameChanged == NO)
+        //[textFieldView isKindOfClass:[UITextView class]] If is a UITextView type
+        if ([textFieldView isKindOfClass:[UIScrollView class]] && [(UIScrollView*)textFieldView isScrollEnabled] && [textFieldView respondsToSelector:@selector(isEditable)])
         {
-            CGFloat textViewHeight = MIN(CGRectGetHeight(_textFieldView.frame), (CGRectGetHeight(keyWindow.frame)-kbSize.height-(topLayoutGuide+5)));
+            UIScrollView *textView = (UIScrollView*)textFieldView;
+
+            CGFloat keyboardYPosition = CGRectGetHeight(keyWindow.frame)-(kbSize.height-keyboardDistanceFromTextField);
+
+            CGRect rootSuperViewFrameInWindow = [rootController.view.superview convertRect:rootController.view.superview.bounds toView:keyWindow];
+
+            CGFloat keyboardOverlapping = CGRectGetMaxY(rootSuperViewFrameInWindow) - keyboardYPosition;
+
+            CGFloat textViewHeight = MIN(CGRectGetHeight(textFieldView.frame), (CGRectGetHeight(rootSuperViewFrameInWindow)-topLayoutGuide-keyboardOverlapping));
             
-            __weak typeof(self) weakSelf = self;
+            if (textFieldView.frame.size.height-textView.contentInset.bottom>textViewHeight)
+            {
+                //_isTextViewContentInsetChanged,  If frame is not change by library in past, then saving user textView properties  (Bug ID: #92)
+                if (self.isTextViewContentInsetChanged == NO)
+                {
+                    self.startingTextViewContentInsets = textView.contentInset;
+                    
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+                    if (@available(iOS 11.1, *)) {
+                        self.startingTextViewScrollIndicatorInsets = textView.verticalScrollIndicatorInsets;
+                    } else
+#endif
+                    {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 130000
+                        self.startingTextViewScrollIndicatorInsets = textView.scrollIndicatorInsets;
+#endif
+                    }
+                }
 
-            [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
-                
-                __strong typeof(self) strongSelf = weakSelf;
+                CGFloat bottomInset = textFieldView.frame.size.height-textViewHeight;
 
-                _IQShowLog([NSString stringWithFormat:@"%@ Old Frame : %@",[strongSelf.textFieldView _IQDescription], NSStringFromCGRect(strongSelf.textFieldView.frame)]);
-                
-                CGRect textFieldViewRect = strongSelf.textFieldView.frame;
-                textFieldViewRect.size.height = textViewHeight;
-                strongSelf.textFieldView.frame = textFieldViewRect;
-                strongSelf.isTextFieldViewFrameChanged = YES;
-                
-                _IQShowLog([NSString stringWithFormat:@"%@ New Frame : %@",[strongSelf.textFieldView _IQDescription], NSStringFromCGRect(strongSelf.textFieldView.frame)]);
-                
-            } completion:NULL];
+                if (@available(iOS 11, *)) {
+                    bottomInset -= textFieldView.safeAreaInsets.bottom;
+                }
+
+                UIEdgeInsets newContentInset = textView.contentInset;
+                newContentInset.bottom = bottomInset;
+
+                self.isTextViewContentInsetChanged = YES;
+
+                if (UIEdgeInsetsEqualToEdgeInsets(textView.contentInset, newContentInset) == NO)
+                {
+                    __weak __typeof__(self) weakSelf = self;
+                    
+                    [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                        
+                        __strong __typeof__(self) strongSelf = weakSelf;
+                        
+                        [strongSelf showLog:[NSString stringWithFormat:@"Old UITextView.contentInset : %@ New UITextView.contentInset : %@", NSStringFromUIEdgeInsets(textView.contentInset), NSStringFromUIEdgeInsets(textView.contentInset)]];
+                        
+                        textView.contentInset = newContentInset;
+                        textView.scrollIndicatorInsets = newContentInset;
+                    } completion:NULL];
+                }
+            }
         }
 
-        //  Special case for iPad modalPresentationStyle.
-        if ([rootController modalPresentationStyle] == UIModalPresentationFormSheet ||
-            [rootController modalPresentationStyle] == UIModalPresentationPageSheet)
         {
-            _IQShowLog([NSString stringWithFormat:@"Found Special case for Model Presentation Style: %ld",(long)(rootController.modalPresentationStyle)]);
-            
+            __weak __typeof__(self) weakSelf = self;
+
             //  +Positive or zero.
             if (move>=0)
             {
-                // We should only manipulate y.
-                rootViewRect.origin.y -= move;
+                rootViewOrigin.y -= move;
                 
                 //  From now prevent keyboard manager to slide up the rootView to more than keyboard height. (Bug ID: #93)
-                if (_preventShowingBottomBlankSpace == YES)
-                {
-                    CGFloat minimumY = (CGRectGetHeight(keyWindow.frame)-rootViewRect.size.height-topLayoutGuide)/2-(kbSize.height-keyboardDistanceFromTextField);
-                    
-                    rootViewRect.origin.y = MAX(rootViewRect.origin.y, minimumY);
-                }
+                rootViewOrigin.y = MAX(rootViewOrigin.y, MIN(0, -(kbSize.height-keyboardDistanceFromTextField)));
+
+                [self showLog:@"Moving Upward"];
+                //  Setting adjusted rootViewOrigin.ty
                 
-                _IQShowLog(@"Moving Upward");
-                //  Setting adjusted rootViewRect
-                [self setRootViewFrame:rootViewRect];
+                //Used UIViewAnimationOptionBeginFromCurrentState to minimize strange animations.
+                [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                    
+                    __strong __typeof__(self) strongSelf = weakSelf;
+                    
+                    //  Setting it's new frame
+                    CGRect rect = rootController.view.frame;
+                    rect.origin = rootViewOrigin;
+                    rootController.view.frame = rect;
+                    
+                    //Animating content if needed (Bug ID: #204)
+                    if (strongSelf.layoutIfNeededOnUpdate)
+                    {
+                        //Animating content (Bug ID: #160)
+                        [rootController.view setNeedsLayout];
+                        [rootController.view layoutIfNeeded];
+                    }
+                    
+                    [strongSelf showLog:[NSString stringWithFormat:@"Set %@ origin to : %@",rootController,NSStringFromCGPoint(rootViewOrigin)]];
+                } completion:NULL];
+
+                self.movedDistance = (_topViewBeginOrigin.y-rootViewOrigin.y);
             }
             //  -Negative
             else
             {
-                //  Calculating disturbed distance. Pull Request #3
-                CGFloat disturbDistance = CGRectGetMinY(rootViewRect)-CGRectGetMinY(_topViewBeginRect);
-                
-                //  disturbDistance Negative = frame disturbed.
-                //  disturbDistance positive = frame not disturbed.
-                if(disturbDistance<0)
-                {
-                    // We should only manipulate y.
-                    rootViewRect.origin.y -= MAX(move, disturbDistance);
-                    
-                    _IQShowLog(@"Moving Downward");
-                    //  Setting adjusted rootViewRect
-                    [self setRootViewFrame:rootViewRect];
-                }
-            }
-        }
-        //If presentation style is neither UIModalPresentationFormSheet nor UIModalPresentationPageSheet then going ahead.(General case)
-        else
-        {
-            //  +Positive or zero.
-            if (move>=0)
-            {
-                rootViewRect.origin.y -= move;
-                
-                //  From now prevent keyboard manager to slide up the rootView to more than keyboard height. (Bug ID: #93)
-                if (_preventShowingBottomBlankSpace == YES)
-                {
-                    rootViewRect.origin.y = MAX(rootViewRect.origin.y, MIN(0, -kbSize.height+keyboardDistanceFromTextField));
-                }
-                
-                _IQShowLog(@"Moving Upward");
-                //  Setting adjusted rootViewRect
-                [self setRootViewFrame:rootViewRect];
-            }
-            //  -Negative
-            else
-            {
-                CGFloat disturbDistance = CGRectGetMinY(rootViewRect)-CGRectGetMinY(_topViewBeginRect);
+                CGFloat disturbDistance = rootController.view.frame.origin.y-_topViewBeginOrigin.y;
                 
                 //  disturbDistance Negative = frame disturbed. Pull Request #3
                 //  disturbDistance positive = frame not disturbed.
-                if(disturbDistance<0)
+                if(disturbDistance<=0)
                 {
-                    rootViewRect.origin.y -= MAX(move, disturbDistance);
+                    rootViewOrigin.y -= MAX(move, disturbDistance);
                     
-                    _IQShowLog(@"Moving Downward");
+                    [self showLog:@"Moving Downward"];
                     //  Setting adjusted rootViewRect
-                    [self setRootViewFrame:rootViewRect];
+                    
+                    //Used UIViewAnimationOptionBeginFromCurrentState to minimize strange animations.
+                    [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                        
+                        __strong __typeof__(self) strongSelf = weakSelf;
+                        
+                        //  Setting it's new frame
+                        CGRect rect = rootController.view.frame;
+                        rect.origin = rootViewOrigin;
+                        rootController.view.frame = rect;
+                        
+                        //Animating content if needed (Bug ID: #204)
+                        if (strongSelf.layoutIfNeededOnUpdate)
+                        {
+                            //Animating content (Bug ID: #160)
+                            [rootController.view setNeedsLayout];
+                            [rootController.view layoutIfNeeded];
+                        }
+                        
+                        [strongSelf showLog:[NSString stringWithFormat:@"Set %@ origin to : %@",rootController,NSStringFromCGPoint(rootViewOrigin)]];
+                    } completion:NULL];
+
+                    self.movedDistance = (_topViewBeginOrigin.y-rootController.view.frame.origin.y);
                 }
             }
         }
     }
     
-    _IQShowLog([NSString stringWithFormat:@"****** %@ ended ******",NSStringFromSelector(_cmd)]);
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    [self showLog:[NSString stringWithFormat:@"****** %@ ended: %g seconds ******",NSStringFromSelector(_cmd),elapsedTime] indentation:-1];
+}
+
+-(void)restorePosition
+{
+    _hasPendingAdjustRequest = NO;
+
+    //  Setting rootViewController frame to it's original position. //  (Bug ID: #18)
+    if (_rootViewController && CGPointEqualToPoint(_topViewBeginOrigin, kIQCGPointInvalid) == false)
+    {
+        __weak __typeof__(self) weakSelf = self;
+        
+        //Used UIViewAnimationOptionBeginFromCurrentState to minimize strange animations.
+        [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+            
+            __strong __typeof__(self) strongSelf = weakSelf;
+            UIViewController *strongRootController = strongSelf.rootViewController;
+            
+            {
+                [strongSelf showLog:[NSString stringWithFormat:@"Restoring %@ origin to : %@",strongRootController,NSStringFromCGPoint(strongSelf.topViewBeginOrigin)]];
+                
+                //Restoring
+                CGRect rect = strongRootController.view.frame;
+                rect.origin = strongSelf.topViewBeginOrigin;
+                strongRootController.view.frame = rect;
+
+                strongSelf.movedDistance = 0;
+                
+                if (strongRootController.navigationController.interactivePopGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+                    strongSelf.rootViewControllerWhilePopGestureRecognizerActive = strongRootController;
+                    strongSelf.topViewBeginOriginWhilePopGestureRecognizerActive = strongSelf.topViewBeginOrigin;
+                }
+                
+                //Animating content if needed (Bug ID: #204)
+                if (strongSelf.layoutIfNeededOnUpdate)
+                {
+                    //Animating content (Bug ID: #160)
+                    [strongRootController.view setNeedsLayout];
+                    [strongRootController.view layoutIfNeeded];
+                }
+            }
+            
+        } completion:NULL];
+        _rootViewController = nil;
+    }
+}
+
+#pragma mark - Public Methods
+
+/*  Refreshes textField/textView position if any external changes is explicitly made by user.   */
+- (void)reloadLayoutIfNeeded
+{
+    if ([self privateIsEnabled] == YES)
+    {
+        UIView *textFieldView = _textFieldView;
+        
+        if (textFieldView &&
+            _keyboardShowing == YES &&
+            CGPointEqualToPoint(_topViewBeginOrigin, kIQCGPointInvalid) == false &&
+            [textFieldView isAlertViewTextField] == NO)
+        {
+            [self optimizedAdjustPosition];
+        }
+    }
 }
 
 #pragma mark - UIKeyboad Notification methods
@@ -917,38 +1317,12 @@ void _IQShowLog(NSString *logString);
 {
     _kbShowNotification = aNotification;
 	
-	if ([self privateIsEnabled] == NO)	return;
-	
-    _IQShowLog([NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)]);
-
-    //Due to orientation callback we need to resave it's original frame.    //  (Bug ID: #46)
-    //Added _isTextFieldViewFrameChanged check. Saving textFieldView current frame to use it with canAdjustTextView if textViewFrame has already not been changed. (Bug ID: #92)
-    if (_isTextFieldViewFrameChanged == NO && _textFieldView)
-    {
-        _textFieldViewIntialFrame = _textFieldView.frame;
-        _IQShowLog([NSString stringWithFormat:@"Saving %@ Initial frame :%@",[_textFieldView _IQDescription],NSStringFromCGRect(_textFieldViewIntialFrame)]);
-    }
+    //  Boolean to know keyboard is showing/hiding
+    _keyboardShowing = YES;
     
-    if (CGRectEqualToRect(_topViewBeginRect, CGRectZero))    //  (Bug ID: #5)
-    {
-        //  keyboard is not showing(At the beginning only). We should save rootViewRect.
-        _rootViewController = [_textFieldView topMostController];
-        if (_rootViewController == nil)  _rootViewController = [[self keyWindow] topMostController];
-
-        _topViewBeginRect = _rootViewController.view.frame;
-        _IQShowLog([NSString stringWithFormat:@"Saving %@ beginning Frame: %@",[_rootViewController _IQDescription] ,NSStringFromCGRect(_topViewBeginRect)]);
-    }
-
-    if (_shouldAdoptDefaultKeyboardAnimation)
-    {
-        //  Getting keyboard animation.
-        _animationCurve = [[aNotification userInfo][UIKeyboardAnimationCurveUserInfoKey] integerValue];
-        _animationCurve = _animationCurve<<16;
-    }
-    else
-    {
-        _animationCurve = UIViewAnimationOptionCurveEaseOut;
-    }
+    //  Getting keyboard animation.
+    NSInteger curve = [[aNotification userInfo][UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    _animationCurve = curve<<16;
 
     //  Getting keyboard animation duration
     CGFloat duration = [[aNotification userInfo][UIKeyboardAnimationDurationUserInfoKey] floatValue];
@@ -956,56 +1330,95 @@ void _IQShowLog(NSString *logString);
     //Saving animation duration
     if (duration != 0.0)    _animationDuration = duration;
     
-    CGSize oldKBSize = _kbSize;
+    CGRect oldKBFrame = _kbFrame;
     
     //  Getting UIKeyboardSize.
-    CGRect kbFrame = [[aNotification userInfo][UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    _kbFrame = [[aNotification userInfo][UIKeyboardFrameEndUserInfoKey] CGRectValue];
 
-    CGRect screenSize = [[UIScreen mainScreen] bounds];
-
-    //Calculating actual keyboard displayed size, keyboard frame may be different when hardware keyboard is attached (Bug ID: #469) (Bug ID: #381)
-    CGRect intersectRect = CGRectIntersection(kbFrame, screenSize);
-
-    if (CGRectIsNull(intersectRect))
+    if ([self privateIsEnabled] == NO)
     {
-        _kbSize = CGSizeMake(screenSize.size.width, 0);
+        [self restorePosition];
+        _topViewBeginOrigin = kIQCGPointInvalid;
+        return;
     }
-    else
+	
+    CFTimeInterval startTime = CACurrentMediaTime();
+    [self showLog:[NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)] indentation:1];
+
+    UIView *textFieldView = _textFieldView;
+
+    if (textFieldView && CGPointEqualToPoint(_topViewBeginOrigin, kIQCGPointInvalid))    //  (Bug ID: #5)
     {
-        _kbSize = intersectRect.size;
-    }
- 
-    //If last restored keyboard size is different(any orientation accure), then refresh. otherwise not.
-    if (!CGSizeEqualToSize(_kbSize, oldKBSize))
-    {
-        //If _textFieldView is inside UIAlertView then do nothing. (Bug ID: #37, #74, #76)
-        //See notes:- https://developer.apple.com/Library/ios/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html. If it is UIAlertView textField then do not affect anything (Bug ID: #70).
-        if (_textFieldView != nil  && [_textFieldView isAlertViewTextField] == NO)
+        //  keyboard is not showing(At the beginning only). We should save rootViewRect.
+        UIViewController *rootController = [textFieldView parentContainerViewController];
+        _rootViewController = rootController;
+        
+        if (_rootViewControllerWhilePopGestureRecognizerActive == rootController)
         {
-            [self adjustFrame];
+            _topViewBeginOrigin = _topViewBeginOriginWhilePopGestureRecognizerActive;
+        }
+        else
+        {
+            _topViewBeginOrigin = rootController.view.frame.origin;
+        }
+        
+        _rootViewControllerWhilePopGestureRecognizerActive = nil;
+        _topViewBeginOriginWhilePopGestureRecognizerActive = kIQCGPointInvalid;
+        
+        [self showLog:[NSString stringWithFormat:@"Saving %@ beginning origin: %@",rootController,NSStringFromCGPoint(_topViewBeginOrigin)]];
+    }
+
+    //If last restored keyboard size is different(any orientation accure), then refresh. otherwise not.
+    if (!CGRectEqualToRect(_kbFrame, oldKBFrame))
+    {
+        //If _textFieldView is inside AlertView then do nothing. (Bug ID: #37, #74, #76)
+        //See notes:- https://developer.apple.com/library/ios/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html If it is AlertView textField then do not affect anything (Bug ID: #70).
+        if (_keyboardShowing == YES &&
+            textFieldView &&
+            [textFieldView isAlertViewTextField] == NO)
+        {
+            [self optimizedAdjustPosition];
         }
     }
 
-    _IQShowLog([NSString stringWithFormat:@"****** %@ ended ******",NSStringFromSelector(_cmd)]);
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    [self showLog:[NSString stringWithFormat:@"****** %@ ended: %g seconds ******",NSStringFromSelector(_cmd),elapsedTime] indentation:-1];
+}
+
+/*  UIKeyboardDidShowNotification. */
+- (void)keyboardDidShow:(NSNotification*)aNotification
+{
+    if ([self privateIsEnabled] == NO)	return;
+    
+    CFTimeInterval startTime = CACurrentMediaTime();
+    [self showLog:[NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)] indentation:1];
+    
+    UIView *textFieldView = _textFieldView;
+
+    //  Getting topMost ViewController.
+    UIViewController *controller = [textFieldView topMostController];
+
+    //If _textFieldView viewController is presented as formSheet, then adjustPosition again because iOS internally update formSheet frame on keyboardShown. (Bug ID: #37, #74, #76)
+    if (_keyboardShowing == YES &&
+        textFieldView &&
+        (controller.modalPresentationStyle == UIModalPresentationFormSheet || controller.modalPresentationStyle == UIModalPresentationPageSheet) &&
+        [textFieldView isAlertViewTextField] == NO)
+    {
+        [self optimizedAdjustPosition];
+    }
+    
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    [self showLog:[NSString stringWithFormat:@"****** %@ ended: %g seconds ******",NSStringFromSelector(_cmd),elapsedTime] indentation:-1];
 }
 
 /*  UIKeyboardWillHideNotification. So setting rootViewController to it's default frame. */
 - (void)keyboardWillHide:(NSNotification*)aNotification
 {
     //If it's not a fake notification generated by [self setEnable:NO].
-    if (aNotification != nil)	_kbShowNotification = nil;
+    if (aNotification)	_kbShowNotification = nil;
     
-    //If not enabled then do nothing.
-    if ([self privateIsEnabled] == NO)	return;
-    
-    _IQShowLog([NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)]);
-
-    //Commented due to #56. Added all the conditions below to handle UIWebView's textFields.    (Bug ID: #56)
-    //  We are unable to get textField object while keyboard showing on UIWebView's textField.  (Bug ID: #11)
-//    if (_textFieldView == nil)   return;
-
     //  Boolean to know keyboard is showing/hiding
-    _isKeyboardShowing = NO;
+    _keyboardShowing = NO;
     
     //  Getting keyboard animation duration
     CGFloat aDuration = [[aNotification userInfo][UIKeyboardAnimationDurationUserInfoKey] floatValue];
@@ -1014,28 +1427,53 @@ void _IQShowLog(NSString *logString);
         _animationDuration = aDuration;
     }
     
+    //If not enabled then do nothing.
+    if ([self privateIsEnabled] == NO)	return;
+    
+    CFTimeInterval startTime = CACurrentMediaTime();
+    [self showLog:[NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)] indentation:1];
+
+    //Commented due to #56. Added all the conditions below to handle WKWebView's textFields.    (Bug ID: #56)
+    //  We are unable to get textField object while keyboard showing on WKWebView's textField.  (Bug ID: #11)
+//    if (_textFieldView == nil)   return;
+
     //Restoring the contentOffset of the lastScrollView
-    if (_lastScrollView)
+    __strong __typeof__(UIScrollView) *strongLastScrollView = _lastScrollView;
+
+    if (strongLastScrollView)
     {
-        __weak typeof(self) weakSelf = self;
+        __weak __typeof__(self) weakSelf = self;
+        __weak __typeof__(UIView) *weakTextFieldView = self.textFieldView;
 
         [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
             
-            __strong typeof(self) strongSelf = weakSelf;
+            __strong __typeof__(self) strongSelf = weakSelf;
+            __strong __typeof__(UIView) *strongTextFieldView = weakTextFieldView;
 
-            strongSelf.lastScrollView.contentInset = strongSelf.startingContentInsets;
-            strongSelf.lastScrollView.scrollIndicatorInsets = strongSelf.startingScrollIndicatorInsets;
-            
-            if (strongSelf.lastScrollView.shouldRestoreScrollViewContentOffset)
+            if (UIEdgeInsetsEqualToEdgeInsets(strongLastScrollView.contentInset, strongSelf.startingContentInsets) == NO)
             {
-                strongSelf.lastScrollView.contentOffset = strongSelf.startingContentOffset;
-            }
+                [strongSelf showLog:[NSString stringWithFormat:@"Restoring ScrollView contentInset to : %@",NSStringFromUIEdgeInsets(strongSelf.startingContentInsets)]];
 
-            _IQShowLog([NSString stringWithFormat:@"Restoring %@ contentInset to : %@ and contentOffset to : %@",[strongSelf.lastScrollView _IQDescription],NSStringFromUIEdgeInsets(strongSelf.startingContentInsets),NSStringFromCGPoint(strongSelf.startingContentOffset)]);
+                strongLastScrollView.contentInset = strongSelf.startingContentInsets;
+                strongLastScrollView.scrollIndicatorInsets = strongSelf.startingScrollIndicatorInsets;
+            }
+            
+            if (strongLastScrollView.shouldRestoreScrollViewContentOffset && CGPointEqualToPoint(strongLastScrollView.contentOffset, strongSelf.startingContentOffset) == NO)
+            {
+                [strongSelf showLog:[NSString stringWithFormat:@"Restoring ScrollView contentOffset to : %@",NSStringFromCGPoint(strongSelf.startingContentOffset)]];
+
+                BOOL animatedContentOffset = ([strongTextFieldView superviewOfClassType:[UIStackView class] belowView:strongLastScrollView] != nil);   //  (Bug ID: #1365, #1508, #1541)
+
+                if (animatedContentOffset) {
+                    [strongLastScrollView setContentOffset:strongSelf.startingContentOffset animated:UIView.areAnimationsEnabled];
+                } else {
+                    strongLastScrollView.contentOffset = strongSelf.startingContentOffset;
+                }
+            }
             
             // TODO: restore scrollView state
             // This is temporary solution. Have to implement the save and restore scrollView state
-            UIScrollView *superscrollView = strongSelf.lastScrollView;
+            UIScrollView *superscrollView = strongLastScrollView;
             do
             {
                 CGSize contentSize = CGSizeMake(MAX(superscrollView.contentSize.width, CGRectGetWidth(superscrollView.frame)), MAX(superscrollView.contentSize.height, CGRectGetHeight(superscrollView.frame)));
@@ -1044,132 +1482,98 @@ void _IQShowLog(NSString *logString);
                 
                 if (minimumY<superscrollView.contentOffset.y)
                 {
-                    superscrollView.contentOffset = CGPointMake(superscrollView.contentOffset.x, minimumY);
-                    
-                    _IQShowLog([NSString stringWithFormat:@"Restoring %@ contentOffset to : %@",[superscrollView _IQDescription],NSStringFromCGPoint(superscrollView.contentOffset)]);
+                    CGPoint newContentOffset = CGPointMake(superscrollView.contentOffset.x, minimumY);
+                    if (CGPointEqualToPoint(superscrollView.contentOffset, newContentOffset) == NO)
+                    {
+                        [self showLog:[NSString stringWithFormat:@"Restoring contentOffset to : %@",NSStringFromCGPoint(newContentOffset)]];
+
+                        BOOL animatedContentOffset = ([strongSelf.textFieldView superviewOfClassType:[UIStackView class] belowView:superscrollView] != nil);   //  (Bug ID: #1365, #1508, #1541)
+
+                        if (animatedContentOffset) {
+                            [superscrollView setContentOffset:newContentOffset animated:UIView.areAnimationsEnabled];
+                        } else {
+                            superscrollView.contentOffset = newContentOffset;
+                        }
+                    }
                 }
             } while ((superscrollView = (UIScrollView*)[superscrollView superviewOfClassType:[UIScrollView class]]));
 
         } completion:NULL];
     }
     
-    //  Setting rootViewController frame to it's original position. //  (Bug ID: #18)
-    if (!CGRectEqualToRect(_topViewBeginRect, CGRectZero) && _rootViewController)
-    {
-        //frame size needs to be adjusted on iOS8 due to orientation API changes.
-        _topViewBeginRect.size = _rootViewController.view.frame.size;
-        
-        __weak typeof(self) weakSelf = self;
-
-        //Used UIViewAnimationOptionBeginFromCurrentState to minimize strange animations.
-        [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
-
-            __strong typeof(self) strongSelf = weakSelf;
-
-            NSLayoutConstraint *constraint = [[strongSelf.textFieldView viewController] IQLayoutGuideConstraint];
-            
-            //If done LayoutGuide tweak
-            if (constraint &&
-                ((constraint.firstItem == [[strongSelf.textFieldView viewController] topLayoutGuide] || constraint.secondItem == [[strongSelf.textFieldView viewController] topLayoutGuide]) ||
-                 (constraint.firstItem == [[strongSelf.textFieldView viewController] bottomLayoutGuide] || constraint.secondItem == [[strongSelf.textFieldView viewController] bottomLayoutGuide])))
-            {
-                constraint.constant = strongSelf.layoutGuideConstraintInitialConstant;
-                [strongSelf.rootViewController.view setNeedsLayout];
-                [strongSelf.rootViewController.view layoutIfNeeded];
-            }
-            else
-            {
-                _IQShowLog([NSString stringWithFormat:@"Restoring %@ frame to : %@",[strongSelf.rootViewController _IQDescription],NSStringFromCGRect(strongSelf.topViewBeginRect)]);
-                //  Setting it's new frame
-                [strongSelf.rootViewController.view setFrame:strongSelf.topViewBeginRect];
-                
-                //Animating content if needed (Bug ID: #204)
-                if (strongSelf.layoutIfNeededOnUpdate)
-                {
-                    //Animating content (Bug ID: #160)
-                    [strongSelf.rootViewController.view setNeedsLayout];
-                    [strongSelf.rootViewController.view layoutIfNeeded];
-                }
-            }
-
-        } completion:NULL];
-        _rootViewController = nil;
-    }
+    [self restorePosition];
 
     //Reset all values
     _lastScrollView = nil;
-    _kbSize = CGSizeZero;
+    _kbFrame = CGRectZero;
     _startingContentInsets = UIEdgeInsetsZero;
     _startingScrollIndicatorInsets = UIEdgeInsetsZero;
     _startingContentOffset = CGPointZero;
-//    topViewBeginRect = CGRectZero;    //Commented due to #82
 
-    _IQShowLog([NSString stringWithFormat:@"****** %@ ended ******",NSStringFromSelector(_cmd)]);
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    [self showLog:[NSString stringWithFormat:@"****** %@ ended: %g seconds ******",NSStringFromSelector(_cmd),elapsedTime] indentation:-1];
 }
 
 /*  UIKeyboardDidHideNotification. So topViewBeginRect can be set to CGRectZero. */
 - (void)keyboardDidHide:(NSNotification*)aNotification
 {
-    _IQShowLog([NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)]);
+    CFTimeInterval startTime = CACurrentMediaTime();
+    [self showLog:[NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)] indentation:1];
 
-    _topViewBeginRect = CGRectZero;
+    _topViewBeginOrigin = kIQCGPointInvalid;
 
-    _IQShowLog([NSString stringWithFormat:@"****** %@ ended ******",NSStringFromSelector(_cmd)]);
+    _kbFrame = CGRectZero;
+
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    [self showLog:[NSString stringWithFormat:@"****** %@ ended: %g seconds ******",NSStringFromSelector(_cmd),elapsedTime] indentation:-1];
 }
 
 #pragma mark - UITextFieldView Delegate methods
 /**  UITextFieldTextDidBeginEditingNotification, UITextViewTextDidBeginEditingNotification. Fetching UITextFieldView object. */
 -(void)textFieldViewDidBeginEditing:(NSNotification*)notification
 {
-    _IQShowLog([NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)]);
+    CFTimeInterval startTime = CACurrentMediaTime();
+    [self showLog:[NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)] indentation:1];
 
     //  Getting object
     _textFieldView = notification.object;
     
+    UIView *textFieldView = _textFieldView;
+
     if (_overrideKeyboardAppearance == YES)
     {
-        UITextField *textField = (UITextField*)_textFieldView;
+        UITextField *textField = (UITextField*)textFieldView;
         
-        //If keyboard appearance is not like the provided appearance
-        if (textField.keyboardAppearance != _keyboardAppearance)
+        if ([textField respondsToSelector:@selector(keyboardAppearance)])
         {
-            //Setting textField keyboard appearance and reloading inputViews.
-            textField.keyboardAppearance = _keyboardAppearance;
-            [textField reloadInputViews];
+            //If keyboard appearance is not like the provided appearance
+            if (textField.keyboardAppearance != _keyboardAppearance)
+            {
+                //Setting textField keyboard appearance and reloading inputViews.
+                textField.keyboardAppearance = _keyboardAppearance;
+                [textField reloadInputViews];
+            }
         }
-    }
-    
-    // Saving textFieldView current frame to use it with canAdjustTextView if textViewFrame has already not been changed.
-    //Added _isTextFieldViewFrameChanged check. (Bug ID: #92)
-    if (_isTextFieldViewFrameChanged == NO && _textFieldView)
-    {
-        _textFieldViewIntialFrame = _textFieldView.frame;
-        _IQShowLog([NSString stringWithFormat:@"Saving %@ Initial frame :%@",[_textFieldView _IQDescription],NSStringFromCGRect(_textFieldViewIntialFrame)]);
     }
     
 	//If autoToolbar enable, then add toolbar on all the UITextField/UITextView's if required.
 	if ([self privateIsEnableAutoToolbar])
     {
-        _IQShowLog(@"adding UIToolbars if required");
-
         //UITextView special case. Keyboard Notification is firing before textView notification so we need to reload it's inputViews.
-        if ([_textFieldView isKindOfClass:[UITextView class]] && _textFieldView.inputAccessoryView == nil)
+        if ([textFieldView respondsToSelector:@selector(isEditable)] && [textFieldView isKindOfClass:[UIScrollView class]] &&
+            textFieldView.inputAccessoryView == nil)
         {
-            __weak typeof(self) weakSelf = self;
+            __weak __typeof__(self) weakSelf = self;
 
             [UIView animateWithDuration:0.00001 delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
-                [self addToolbarIfRequired];
+
+                __strong __typeof__(self) strongSelf = weakSelf;
+
+                [strongSelf addToolbarIfRequired];
             } completion:^(BOOL finished) {
 
-                __strong typeof(self) strongSelf = weakSelf;
+                __strong __typeof__(self) strongSelf = weakSelf;
 
-                //RestoringTextView before reloading inputViews
-                if (strongSelf.isTextFieldViewFrameChanged)
-                {
-                    strongSelf.isTextFieldViewFrameChanged = NO;
-                    strongSelf.textFieldView.frame = strongSelf.textFieldViewIntialFrame;
-                }
-                
                 //On textView toolbar didn't appear on first time, so forcing textView to reload it's inputViews.
                 [strongSelf.textFieldView reloadInputViews];
             }];
@@ -1185,117 +1589,169 @@ void _IQShowLog(NSString *logString);
         [self removeToolbarIfRequired];
     }
     
-	if ([self privateIsEnabled] == NO)
-    {
-        _IQShowLog([NSString stringWithFormat:@"****** %@ ended ******",NSStringFromSelector(_cmd)]);
-        return;
-    }
-    
     //Adding Geture recognizer to window    (Enhancement ID: #14)
-    [_textFieldView.window addGestureRecognizer:_tapGesture];
-    
-    if (_isKeyboardShowing == NO)    //  (Bug ID: #5)
-    {
-        //  keyboard is not showing(At the beginning only). We should save rootViewRect and _layoutGuideConstraintInitialConstant.
-        _layoutGuideConstraintInitialConstant = [[[_textFieldView viewController] IQLayoutGuideConstraint] constant];
-        
-        _rootViewController = [_textFieldView topMostController];
-        if (_rootViewController == nil)  _rootViewController = [[self keyWindow] topMostController];
-        
-        _topViewBeginRect = _rootViewController.view.frame;
+    [_resignFirstResponderGesture setEnabled:[self privateShouldResignOnTouchOutside]];
+    [textFieldView.window addGestureRecognizer:_resignFirstResponderGesture];
 
-        _IQShowLog([NSString stringWithFormat:@"Saving %@ beginning Frame: %@",[_rootViewController _IQDescription], NSStringFromCGRect(_topViewBeginRect)]);
-    }
-    
-    //If _textFieldView is inside UIAlertView then do nothing. (Bug ID: #37, #74, #76)
-    //See notes:- https://developer.apple.com/Library/ios/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html. If it is UIAlertView textField then do not affect anything (Bug ID: #70).
-    if (_textFieldView != nil  && [_textFieldView isAlertViewTextField] == NO)
+    if ([self privateIsEnabled] == NO)
     {
-        //Getting textField viewController
-        UIViewController *textFieldViewController = [_textFieldView viewController];
-        
-        BOOL shouldIgnore = NO;
-        
-        for (Class disabledClass in _disabledDistanceHandlingClasses)
+        [self restorePosition];
+        _topViewBeginOrigin = kIQCGPointInvalid;
+    }
+    else
+    {
+        if (CGPointEqualToPoint(_topViewBeginOrigin, kIQCGPointInvalid))    //  (Bug ID: #5)
         {
-            //If viewController is kind of disabled viewController class, then ignoring to adjust view.
-            if ([textFieldViewController isKindOfClass:disabledClass])
+            //  keyboard is not showing(At the beginning only).
+            UIViewController *rootController = [textFieldView parentContainerViewController];
+            _rootViewController = rootController;
+            
+            if (_rootViewControllerWhilePopGestureRecognizerActive == rootController)
             {
-                shouldIgnore = YES;
-                break;
+                _topViewBeginOrigin = _topViewBeginOriginWhilePopGestureRecognizerActive;
             }
+            else
+            {
+                _topViewBeginOrigin = rootController.view.frame.origin;
+            }
+            
+            _rootViewControllerWhilePopGestureRecognizerActive = nil;
+            _topViewBeginOriginWhilePopGestureRecognizerActive = kIQCGPointInvalid;
+            
+            [self showLog:[NSString stringWithFormat:@"Saving %@ beginning origin: %@",rootController, NSStringFromCGPoint(_topViewBeginOrigin)]];
         }
         
-        //If shouldn't ignore.
-        if (shouldIgnore == NO)
+        //If textFieldView is inside AlertView then do nothing. (Bug ID: #37, #74, #76)
+        //See notes:- https://developer.apple.com/library/ios/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html If it is AlertView textField then do not affect anything (Bug ID: #70).
+        if (_keyboardShowing == YES &&
+            textFieldView &&
+            [textFieldView isAlertViewTextField] == NO)
         {
             //  keyboard is already showing. adjust frame.
-            [self adjustFrame];
+            [self optimizedAdjustPosition];
         }
     }
+    
+//    if ([textFieldView isKindOfClass:[UITextField class]])
+//    {
+//        [(UITextField*)textFieldView addTarget:self action:@selector(editingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+//    }
 
-    _IQShowLog([NSString stringWithFormat:@"****** %@ ended ******",NSStringFromSelector(_cmd)]);
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    [self showLog:[NSString stringWithFormat:@"****** %@ ended: %g seconds ******",NSStringFromSelector(_cmd),elapsedTime] indentation:-1];
 }
 
 /**  UITextFieldTextDidEndEditingNotification, UITextViewTextDidEndEditingNotification. Removing fetched object. */
 -(void)textFieldViewDidEndEditing:(NSNotification*)notification
 {
-    _IQShowLog([NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)]);
+    CFTimeInterval startTime = CACurrentMediaTime();
+    [self showLog:[NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)] indentation:1];
+
+    UIView *textFieldView = _textFieldView;
 
     //Removing gesture recognizer   (Enhancement ID: #14)
-    [_textFieldView.window removeGestureRecognizer:_tapGesture];
+    [textFieldView.window removeGestureRecognizer:_resignFirstResponderGesture];
     
+//    if ([textFieldView isKindOfClass:[UITextField class]])
+//    {
+//        [(UITextField*)textFieldView removeTarget:self action:@selector(editingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+//    }
+
     // We check if there's a change in original frame or not.
-    if(_isTextFieldViewFrameChanged == YES)
+    if(_isTextViewContentInsetChanged == YES &&
+       [textFieldView respondsToSelector:@selector(isEditable)] && [textFieldView isKindOfClass:[UIScrollView class]])
     {
-        __weak typeof(self) weakSelf = self;
-
-        [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+        UIScrollView *textView = (UIScrollView*)textFieldView;
+        self.isTextViewContentInsetChanged = NO;
+        if (UIEdgeInsetsEqualToEdgeInsets(textView.contentInset, self.startingTextViewContentInsets) == NO)
+        {
+            __weak __typeof__(self) weakSelf = self;
             
-            __strong typeof(self) strongSelf = weakSelf;
-
-            strongSelf.isTextFieldViewFrameChanged = NO;
-
-            _IQShowLog([NSString stringWithFormat:@"Restoring %@ frame to : %@",[strongSelf.textFieldView _IQDescription],NSStringFromCGRect(strongSelf.textFieldViewIntialFrame)]);
-
-            //Setting textField to it's initial frame
-            strongSelf.textFieldView.frame = strongSelf.textFieldViewIntialFrame;
-
-        } completion:NULL];
+            [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                
+                __strong __typeof__(self) strongSelf = weakSelf;
+                
+                [strongSelf showLog:[NSString stringWithFormat:@"Restoring textView.contentInset to : %@",NSStringFromUIEdgeInsets(strongSelf.startingTextViewContentInsets)]];
+                
+                //Setting textField to it's initial contentInset
+                textView.contentInset = strongSelf.startingTextViewContentInsets;
+                textView.scrollIndicatorInsets = strongSelf.startingTextViewScrollIndicatorInsets;
+                
+            } completion:NULL];
+        }
     }
     
     //Setting object to nil
     _textFieldView = nil;
 
-    _IQShowLog([NSString stringWithFormat:@"****** %@ ended ******",NSStringFromSelector(_cmd)]);
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    [self showLog:[NSString stringWithFormat:@"****** %@ ended: %g seconds ******",NSStringFromSelector(_cmd),elapsedTime] indentation:-1];
 }
 
-#pragma mark - UIInterfaceOrientation Change notification methods
+//-(void)editingDidEndOnExit:(UITextField*)textField
+//{
+//    [self showLog:[NSString stringWithFormat:@"ReturnKey %@",NSStringFromSelector(_cmd)]];
+//}
+
+#pragma mark - UIStatusBar Notification methods
 /**  UIApplicationWillChangeStatusBarOrientationNotification. Need to set the textView to it's original position. If any frame changes made. (Bug ID: #92)*/
 - (void)willChangeStatusBarOrientation:(NSNotification*)aNotification
 {
-    _IQShowLog([NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)]);
+    UIInterfaceOrientation currentStatusBarOrientation = UIInterfaceOrientationUnknown;
 
-    //If textFieldViewInitialRect is saved then restore it.(UITextView case @canAdjustTextView)
-    if (_isTextFieldViewFrameChanged == YES)
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+    if (@available(iOS 13.0, *)) {
+        currentStatusBarOrientation = [self keyWindow].windowScene.interfaceOrientation;
+    } else
+#endif
     {
-        __weak typeof(self) weakSelf = self;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 130000
+        currentStatusBarOrientation = UIApplication.sharedApplication.statusBarOrientation;
+#endif
+    }
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    UIInterfaceOrientation statusBarOrientation = [aNotification.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue];
+#pragma clang diagnostic pop
+    
+    if (statusBarOrientation != currentStatusBarOrientation) {
+        return;
+    }
+    
+    CFTimeInterval startTime = CACurrentMediaTime();
+    [self showLog:[NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)] indentation:1];
 
-        //Due to orientation callback we need to set it's original position.
-        [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+    __strong __typeof__(UIView) *strongTextFieldView = _textFieldView;
+
+    //If textViewContentInsetChanged is changed then restore it.
+    if (_isTextViewContentInsetChanged == YES &&
+        [strongTextFieldView respondsToSelector:@selector(isEditable)] && [strongTextFieldView isKindOfClass:[UIScrollView class]])
+    {
+        UIScrollView *textView = (UIScrollView*)strongTextFieldView;
+        self.isTextViewContentInsetChanged = NO;
+        if (UIEdgeInsetsEqualToEdgeInsets(textView.contentInset, self.startingTextViewContentInsets) == NO)
+        {
+            __weak __typeof__(self) weakSelf = self;
             
-            __strong typeof(self) strongSelf = weakSelf;
-
-            strongSelf.isTextFieldViewFrameChanged = NO;
-
-            _IQShowLog([NSString stringWithFormat:@"Restoring %@ frame to : %@",[strongSelf.textFieldView _IQDescription],NSStringFromCGRect(strongSelf.textFieldViewIntialFrame)]);
-
-            //Setting textField to it's initial frame
-            strongSelf.textFieldView.frame = strongSelf.textFieldViewIntialFrame;
-        } completion:NULL];
+            //Due to orientation callback we need to set it's original position.
+            [UIView animateWithDuration:_animationDuration delay:0 options:(_animationCurve|UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                
+                __strong __typeof__(self) strongSelf = weakSelf;
+                
+                [strongSelf showLog:[NSString stringWithFormat:@"Restoring textView.contentInset to : %@",NSStringFromUIEdgeInsets(strongSelf.startingTextViewContentInsets)]];
+                
+                //Setting textField to it's initial contentInset
+                textView.contentInset = strongSelf.startingTextViewContentInsets;
+                textView.scrollIndicatorInsets = strongSelf.startingTextViewScrollIndicatorInsets;
+            } completion:NULL];
+        }
     }
 
-    _IQShowLog([NSString stringWithFormat:@"****** %@ ended ******",NSStringFromSelector(_cmd)]);
+    [self restorePosition];
+
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    [self showLog:[NSString stringWithFormat:@"****** %@ ended: %g seconds ******",NSStringFromSelector(_cmd),elapsedTime] indentation:-1];
 }
 
 #pragma mark AutoResign methods
@@ -1320,19 +1776,29 @@ void _IQShowLog(NSString *logString);
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
     //  Should not recognize gesture if the clicked view is either UIControl or UINavigationBar(<Back button etc...)    (Bug ID: #145)
-    return ([[touch view] isKindOfClass:[UIControl class]] || [[touch view] isKindOfClass:[UINavigationBar class]]) ? NO : YES;
+    for (Class aClass in self.touchResignedGestureIgnoreClasses)
+    {
+        if ([[touch view] isKindOfClass:aClass])
+        {
+            return NO;
+        }
+    }
+
+    return YES;
 }
 
 /** Resigning textField. */
 - (BOOL)resignFirstResponder
 {
-    if (_textFieldView)
+    UIView *textFieldView = _textFieldView;
+
+    if (textFieldView)
     {
         //  Retaining textFieldView
-        UIView *textFieldRetain = _textFieldView;
+        UIView *textFieldRetain = textFieldView;
         
         //Resigning first responder
-        BOOL isResignFirstResponder = [_textFieldView resignFirstResponder];
+        BOOL isResignFirstResponder = [textFieldView resignFirstResponder];
         
         //  If it refuses then becoming it as first responder again.    (Bug ID: #96)
         if (isResignFirstResponder == NO)
@@ -1340,7 +1806,7 @@ void _IQShowLog(NSString *logString);
             //If it refuses to resign then becoming it first responder again for getting notifications callback.
             [textFieldRetain becomeFirstResponder];
             
-            _IQShowLog([NSString stringWithFormat:@"Refuses to Resign first responder: %@",[_textFieldView _IQDescription]]);
+            [self showLog:[NSString stringWithFormat:@"Refuses to Resign first responder: %@",textFieldView]];
         }
         
         return isResignFirstResponder;
@@ -1355,13 +1821,14 @@ void _IQShowLog(NSString *logString);
 -(BOOL)canGoPrevious
 {
     //Getting all responder view's.
-    NSArray *textFields = [self responderViews];
+    NSArray<UIView*> *textFields = [self responderViews];
 
     //Getting index of current textField.
     NSUInteger index = [textFields indexOfObject:_textFieldView];
 
     //If it is not first textField. then it's previous object can becomeFirstResponder.
-    if (index != NSNotFound && index > 0)
+    if (index != NSNotFound &&
+        index > 0)
     {
         return YES;
     }
@@ -1375,13 +1842,14 @@ void _IQShowLog(NSString *logString);
 -(BOOL)canGoNext
 {
     //Getting all responder view's.
-    NSArray *textFields = [self responderViews];
+    NSArray<UIView*> *textFields = [self responderViews];
     
     //Getting index of current textField.
     NSUInteger index = [textFields indexOfObject:_textFieldView];
     
     //If it is not last textField. then it's next object becomeFirstResponder.
-    if (index != NSNotFound && index < textFields.count-1)
+    if (index != NSNotFound &&
+        index < textFields.count-1)
     {
         return YES;
     }
@@ -1395,13 +1863,14 @@ void _IQShowLog(NSString *logString);
 -(BOOL)goPrevious
 {
     //Getting all responder view's.
-    NSArray *textFields = [self responderViews];
+    NSArray<__kindof UIView*> *textFields = [self responderViews];
     
     //Getting index of current textField.
     NSUInteger index = [textFields indexOfObject:_textFieldView];
     
     //If it is not first textField. then it's previous object becomeFirstResponder.
-    if (index != NSNotFound && index > 0)
+    if (index != NSNotFound &&
+        index > 0)
     {
         UITextField *nextTextField = textFields[index-1];
         
@@ -1416,7 +1885,7 @@ void _IQShowLog(NSString *logString);
             //If next field refuses to become first responder then restoring old textField as first responder.
             [textFieldRetain becomeFirstResponder];
             
-            _IQShowLog([NSString stringWithFormat:@"Refuses to become first responder: %@",[nextTextField _IQDescription]]);
+            [self showLog:[NSString stringWithFormat:@"Refuses to become first responder: %@",nextTextField]];
         }
         
         return isAcceptAsFirstResponder;
@@ -1431,13 +1900,14 @@ void _IQShowLog(NSString *logString);
 -(BOOL)goNext
 {
     //Getting all responder view's.
-    NSArray *textFields = [self responderViews];
+    NSArray<__kindof UIView*> *textFields = [self responderViews];
     
     //Getting index of current textField.
     NSUInteger index = [textFields indexOfObject:_textFieldView];
     
     //If it is not last textField. then it's next object becomeFirstResponder.
-    if (index != NSNotFound && index < textFields.count-1)
+    if (index != NSNotFound &&
+        index < textFields.count-1)
     {
         UITextField *nextTextField = textFields[index+1];
         
@@ -1452,7 +1922,7 @@ void _IQShowLog(NSString *logString);
             //If next field refuses to become first responder then restoring old textField as first responder.
             [textFieldRetain becomeFirstResponder];
             
-            _IQShowLog([NSString stringWithFormat:@"Refuses to become first responder: %@",[nextTextField _IQDescription]]);
+            [self showLog:[NSString stringWithFormat:@"Refuses to become first responder: %@",nextTextField]];
         }
         
         return isAcceptAsFirstResponder;
@@ -1465,17 +1935,19 @@ void _IQShowLog(NSString *logString);
 
 #pragma mark AutoToolbar methods
 
-/**	Get all UITextField/UITextView siblings of textFieldView. */
--(NSArray*)responderViews
+/**    Get all UITextField/UITextView siblings of textFieldView. */
+-(NSArray<__kindof UIView*>*)responderViews
 {
     UIView *superConsideredView;
     
+    UIView *textFieldView = _textFieldView;
+
     //If find any consider responderView in it's upper hierarchy then will get deepResponderView.
     for (Class consideredClass in _toolbarPreviousNextAllowedClasses)
     {
-        superConsideredView = [_textFieldView superviewOfClassType:consideredClass];
+        superConsideredView = [textFieldView superviewOfClassType:consideredClass];
         
-        if (superConsideredView != nil)
+        if (superConsideredView)
             break;
     }
     
@@ -1487,7 +1959,7 @@ void _IQShowLog(NSString *logString);
     //Otherwise fetching all the siblings
     else
     {
-        NSArray *textFields = [_textFieldView responderSiblings];
+        NSArray<UIView*> *textFields = [textFieldView responderSiblings];
         
         //Sorting textFields according to behaviour
         switch (_toolbarManageBehaviour)
@@ -1516,263 +1988,247 @@ void _IQShowLog(NSString *logString);
 /** Add toolbar if it is required to add on textFields and it's siblings. */
 -(void)addToolbarIfRequired
 {
-    //	Getting all the sibling textFields.
-    NSArray *siblings = [self responderViews];
+    CFTimeInterval startTime = CACurrentMediaTime();
+    [self showLog:[NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)] indentation:1];
     
-    //	If only one object is found, then adding only Done button.
-    if (siblings.count==1)
+    //    Getting all the sibling textFields.
+    NSArray<UIView*> *siblings = [self responderViews];
+    
+    [self showLog:[NSString stringWithFormat:@"Found %lu responder sibling(s)",(unsigned long)siblings.count]];
+
+    UIView *textFieldView = _textFieldView;
+
+    //Either there is no inputAccessoryView or if accessoryView is not appropriate for current situation(There is Previous/Next/Done toolbar).
+    //setInputAccessoryView: check   (Bug ID: #307)
+    if ([textFieldView respondsToSelector:@selector(setInputAccessoryView:)])
     {
-        UITextField *textField = nil;
-        
-        if ([siblings count])
-            textField = siblings[0];
-        
-        //Either there is no inputAccessoryView or if accessoryView is not appropriate for current situation(There is Previous/Next/Done toolbar).
-        //setInputAccessoryView: check   (Bug ID: #307)
-        if ([textField respondsToSelector:@selector(setInputAccessoryView:)] && (![textField inputAccessoryView] || ([[textField inputAccessoryView] tag] == kIQPreviousNextButtonToolbarTag)))
+        if ([textFieldView inputAccessoryView] == nil ||
+            [[textFieldView inputAccessoryView] tag] == kIQPreviousNextButtonToolbarTag ||
+            [[textFieldView inputAccessoryView] tag] == kIQDoneButtonToolbarTag)
         {
+            UITextField *textField = (UITextField*)textFieldView;
+
+            IQBarButtonItemConfiguration *rightConfiguration = nil;
+            
             //Supporting Custom Done button image (Enhancement ID: #366)
             if (_toolbarDoneBarButtonItemImage)
             {
-                [textField addRightButtonOnKeyboardWithImage:_toolbarDoneBarButtonItemImage target:self action:@selector(doneAction:) shouldShowPlaceholder:_shouldShowTextFieldPlaceholder];
+                rightConfiguration = [[IQBarButtonItemConfiguration alloc] initWithImage:_toolbarDoneBarButtonItemImage action:@selector(doneAction:)];
             }
             //Supporting Custom Done button text (Enhancement ID: #209, #411, Bug ID: #376)
             else if (_toolbarDoneBarButtonItemText)
             {
-                [textField addRightButtonOnKeyboardWithText:_toolbarDoneBarButtonItemText target:self action:@selector(doneAction:) shouldShowPlaceholder:_shouldShowTextFieldPlaceholder];
+                rightConfiguration = [[IQBarButtonItemConfiguration alloc] initWithTitle:_toolbarDoneBarButtonItemText action:@selector(doneAction:)];
             }
             else
             {
-                //Now adding textField placeholder text as title of IQToolbar  (Enhancement ID: #27)
-                [textField addDoneOnKeyboardWithTarget:self action:@selector(doneAction:) shouldShowPlaceholder:_shouldShowTextFieldPlaceholder];
+                rightConfiguration = [[IQBarButtonItemConfiguration alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone action:@selector(doneAction:)];
             }
+            rightConfiguration.accessibilityLabel = _toolbarDoneBarButtonItemAccessibilityLabel ? : @"Done";
 
-            textField.inputAccessoryView.tag = kIQDoneButtonToolbarTag; //  (Bug ID: #78)
-        }
-        
-        if ([textField.inputAccessoryView isKindOfClass:[IQToolbar class]] && textField.inputAccessoryView.tag == kIQDoneButtonToolbarTag)
-        {
-            IQToolbar *toolbar = (IQToolbar*)[textField inputAccessoryView];
+            //    If only one object is found, then adding only Done button.
+            if ((siblings.count <= 1 && self.previousNextDisplayMode == IQPreviousNextDisplayModeDefault) || self.previousNextDisplayMode == IQPreviousNextDisplayModeAlwaysHide)
+            {
+                [textField addKeyboardToolbarWithTarget:self titleText:(_shouldShowToolbarPlaceholder ? textField.drawingToolbarPlaceholder : nil) rightBarButtonConfiguration:rightConfiguration previousBarButtonConfiguration:nil nextBarButtonConfiguration:nil];
+
+                textField.inputAccessoryView.tag = kIQDoneButtonToolbarTag; //  (Bug ID: #78)
+            }
+            //If there is multiple siblings of textField
+            else if ((self.previousNextDisplayMode == IQPreviousNextDisplayModeDefault) || self.previousNextDisplayMode == IQPreviousNextDisplayModeAlwaysShow)
+            {
+                IQBarButtonItemConfiguration *prevConfiguration = nil;
+                
+                //Supporting Custom Done button image (Enhancement ID: #366)
+                if (_toolbarPreviousBarButtonItemImage)
+                {
+                    prevConfiguration = [[IQBarButtonItemConfiguration alloc] initWithImage:_toolbarPreviousBarButtonItemImage action:@selector(previousAction:)];
+                }
+                //Supporting Custom Done button text (Enhancement ID: #209, #411, Bug ID: #376)
+                else if (_toolbarPreviousBarButtonItemText)
+                {
+                    prevConfiguration = [[IQBarButtonItemConfiguration alloc] initWithTitle:_toolbarPreviousBarButtonItemText action:@selector(previousAction:)];
+                }
+                else
+                {
+                    prevConfiguration = [[IQBarButtonItemConfiguration alloc] initWithImage:[UIImage keyboardPreviousImage] action:@selector(previousAction:)];
+                }
+                prevConfiguration.accessibilityLabel = _toolbarPreviousBarButtonItemAccessibilityLabel ? : @"Previous";
+                
+                IQBarButtonItemConfiguration *nextConfiguration = nil;
+                
+                //Supporting Custom Done button image (Enhancement ID: #366)
+                if (_toolbarNextBarButtonItemImage)
+                {
+                    nextConfiguration = [[IQBarButtonItemConfiguration alloc] initWithImage:_toolbarNextBarButtonItemImage action:@selector(nextAction:)];
+                }
+                //Supporting Custom Done button text (Enhancement ID: #209, #411, Bug ID: #376)
+                else if (_toolbarNextBarButtonItemText)
+                {
+                    nextConfiguration = [[IQBarButtonItemConfiguration alloc] initWithTitle:_toolbarNextBarButtonItemText action:@selector(nextAction:)];
+                }
+                else
+                {
+                    nextConfiguration = [[IQBarButtonItemConfiguration alloc] initWithImage:[UIImage keyboardNextImage] action:@selector(nextAction:)];
+                }
+                nextConfiguration.accessibilityLabel = _toolbarNextBarButtonItemAccessibilityLabel ? : @"Next";
+
+                [textField addKeyboardToolbarWithTarget:self titleText:(_shouldShowToolbarPlaceholder ? textField.drawingToolbarPlaceholder : nil) rightBarButtonConfiguration:rightConfiguration previousBarButtonConfiguration:prevConfiguration nextBarButtonConfiguration:nextConfiguration];
+
+                textField.inputAccessoryView.tag = kIQPreviousNextButtonToolbarTag; //  (Bug ID: #78)
+            }
+            
+            IQToolbar *toolbar = textField.keyboardToolbar;
             
             //Bar style according to keyboard appearance
             if ([textField respondsToSelector:@selector(keyboardAppearance)])
             {
-                switch ([(UITextField*)textField keyboardAppearance])
+                //Setting toolbar tintColor //  (Enhancement ID: #30)
+                if (_shouldToolbarUsesTextFieldTintColor)
                 {
-                    case UIKeyboardAppearanceAlert:
+                    toolbar.tintColor = [textField tintColor];
+                }
+                else if (_toolbarTintColor)
+                {
+                    toolbar.tintColor = _toolbarTintColor;
+                }
+                else
+                {
+                    toolbar.tintColor = nil;
+                }
+
+                switch ([textField keyboardAppearance])
+                {
+                    case UIKeyboardAppearanceDark:
                     {
                         toolbar.barStyle = UIBarStyleBlack;
-                        [toolbar setTintColor:[UIColor whiteColor]];
+                        [toolbar setBarTintColor:nil];
                     }
                         break;
                     default:
                     {
                         toolbar.barStyle = UIBarStyleDefault;
-                        
-                        //Setting toolbar tintColor //  (Enhancement ID: #30)
-                        if (_shouldToolbarUsesTextFieldTintColor)
-                        {
-                            toolbar.tintColor = [textField tintColor];
-                        }
-                        else if (_toolbarTintColor)
-                        {
-                            toolbar.tintColor = _toolbarTintColor;
-                        }
-                        else
-                        {
-                            toolbar.tintColor = [UIColor blackColor];
-                        }
+                        toolbar.barTintColor = _toolbarBarTintColor;
                     }
                         break;
                 }
-            }
-            
-            //If need to show placeholder
-            if (_shouldShowTextFieldPlaceholder && textField.shouldHideTitle == NO)
-            {
-                //Updating placeholder     //(Bug ID: #148)
-                if ([textField respondsToSelector:@selector(placeholder)])
-                {
-                    if (toolbar.title == nil || [toolbar.title isEqualToString:textField.placeholder] == NO)
-                        [toolbar setTitle:textField.placeholder];
-                }
-                //If doesn't recognised 'placeholder' method, then setting it's title to nil    //(Bug ID: #272)
-                else
-                    [toolbar setTitle:nil];
-                
-                //Setting toolbar title font.   //  (Enhancement ID: #30)
-                if (_placeholderFont && [_placeholderFont isKindOfClass:[UIFont class]])
-                    [toolbar setTitleFont:_placeholderFont];
-            }
-            else
-            {
-                //Updating placeholder     //(Bug ID: #272)
-                [toolbar setTitle:nil];
-            }
-        }
-    }
-    else if(siblings.count)
-    {
-        //	If more than 1 textField is found. then adding previous/next/done buttons on it.
-        for (UITextField *textField in siblings)
-        {
-            //Either there is no inputAccessoryView or if accessoryView is not appropriate for current situation(There is Done toolbar).
-            //setInputAccessoryView: check   (Bug ID: #307)
-            if ([textField respondsToSelector:@selector(setInputAccessoryView:)] && (![textField inputAccessoryView] || [[textField inputAccessoryView] tag] == kIQDoneButtonToolbarTag))
-            {
-                //Supporting Custom Done button image (Enhancement ID: #366)
-                if (_toolbarDoneBarButtonItemImage)
-                {
-                    [textField addPreviousNextRightOnKeyboardWithTarget:self rightButtonImage:_toolbarDoneBarButtonItemImage previousAction:@selector(previousAction:) nextAction:@selector(nextAction:) rightButtonAction:@selector(doneAction:) shouldShowPlaceholder:_shouldShowTextFieldPlaceholder];
-                }
-                //Supporting Custom Done button text (Enhancement ID: #209, #411, Bug ID: #376)
-                else if (_toolbarDoneBarButtonItemText)
-                {
-                    [textField addPreviousNextRightOnKeyboardWithTarget:self rightButtonTitle:_toolbarDoneBarButtonItemText previousAction:@selector(previousAction:) nextAction:@selector(nextAction:) rightButtonAction:@selector(doneAction:) shouldShowPlaceholder:_shouldShowTextFieldPlaceholder];
-                }
-                else
-                {
-                    //Now adding textField placeholder text as title of IQToolbar  (Enhancement ID: #27)
-                    [textField addPreviousNextDoneOnKeyboardWithTarget:self previousAction:@selector(previousAction:) nextAction:@selector(nextAction:) doneAction:@selector(doneAction:) shouldShowPlaceholder:_shouldShowTextFieldPlaceholder];
-                }
-
-                textField.inputAccessoryView.tag = kIQPreviousNextButtonToolbarTag; //  (Bug ID: #78)
-            }
-            
-            if ([textField.inputAccessoryView isKindOfClass:[IQToolbar class]] && textField.inputAccessoryView.tag == kIQPreviousNextButtonToolbarTag)
-            {
-                IQToolbar *toolbar = (IQToolbar*)[textField inputAccessoryView];
-                
-                //Bar style according to keyboard appearance
-                if ([textField respondsToSelector:@selector(keyboardAppearance)])
-                {
-                    switch ([(UITextField*)textField keyboardAppearance])
-                    {
-                        case UIKeyboardAppearanceAlert:
-                        {
-                            toolbar.barStyle = UIBarStyleBlack;
-                            [toolbar setTintColor:[UIColor whiteColor]];
-                        }
-                            break;
-                        default:
-                        {
-                            toolbar.barStyle = UIBarStyleDefault;
-                            
-                            //Setting toolbar tintColor //  (Enhancement ID: #30)
-                            if (_shouldToolbarUsesTextFieldTintColor)
-                            {
-                                toolbar.tintColor = [textField tintColor];
-                            }
-                            else if (_toolbarTintColor)
-                            {
-                                toolbar.tintColor = _toolbarTintColor;
-                            }
-                            else
-                            {
-                                toolbar.tintColor = [UIColor blackColor];
-                            }
-                        }
-                            break;
-                    }
-                }
                 
                 //If need to show placeholder
-                if (_shouldShowTextFieldPlaceholder && textField.shouldHideTitle == NO)
+                if (_shouldShowToolbarPlaceholder &&
+                    textField.shouldHideToolbarPlaceholder == NO)
                 {
-                    //Updating placeholder     //(Bug ID: #148)
-                    if ([textField respondsToSelector:@selector(placeholder)])
+                    //Updating placeholder     //(Bug ID: #148, #272)
+                    if (toolbar.titleBarButton.title == nil ||
+                        [toolbar.titleBarButton.title isEqualToString:textField.drawingToolbarPlaceholder] == NO)
                     {
-                        if (toolbar.title == nil || [toolbar.title isEqualToString:textField.placeholder] == NO)
-                            [toolbar setTitle:textField.placeholder];
+                        [toolbar.titleBarButton setTitle:textField.drawingToolbarPlaceholder];
                     }
-                    //If doesn't recognised 'placeholder' method, then setting it's title to nil    //(Bug ID: #272)
-                    else
-                        [toolbar setTitle:nil];
                     
                     //Setting toolbar title font.   //  (Enhancement ID: #30)
-                    if (_placeholderFont && [_placeholderFont isKindOfClass:[UIFont class]])
-                        [toolbar setTitleFont:_placeholderFont];
+                    if (_placeholderFont &&
+                        [_placeholderFont isKindOfClass:[UIFont class]])
+                    {
+                        [toolbar.titleBarButton setTitleFont:_placeholderFont];
+                    }
+
+                    //Setting toolbar title color.   //  (Enhancement ID: #880)
+                    if (_placeholderColor)
+                    {
+                        [toolbar.titleBarButton setTitleColor:_placeholderColor];
+                    }
+
+                    //Setting toolbar button title color.   //  (Enhancement ID: #880)
+                    if (_placeholderButtonColor)
+                    {
+                        [toolbar.titleBarButton setSelectableTitleColor:_placeholderButtonColor];
+                    }
                 }
                 else
                 {
                     //Updating placeholder     //(Bug ID: #272)
-                    [toolbar setTitle:nil];
+                    toolbar.titleBarButton.title = nil;
                 }
+            }
 
-                //In case of UITableView (Special), the next/previous buttons has to be refreshed everytime.    (Bug ID: #56)
-                //	If firstTextField, then previous should not be enabled.
-                if (siblings[0] == textField)
+            //In case of UITableView (Special), the next/previous buttons has to be refreshed everytime.    (Bug ID: #56)
+            //    If firstTextField, then previous should not be enabled.
+            if (siblings.firstObject == textField)
+            {
+                if (siblings.count == 1)
                 {
-                    [textField setEnablePrevious:NO next:YES];
-                }
-                //	If lastTextField then next should not be enaled.
-                else if ([siblings lastObject] == textField)
-                {
-                    [textField setEnablePrevious:YES next:NO];
+                    textField.keyboardToolbar.previousBarButton.enabled = NO;
+                    textField.keyboardToolbar.nextBarButton.enabled = NO;
                 }
                 else
                 {
-                    [textField setEnablePrevious:YES next:YES];
+                    textField.keyboardToolbar.previousBarButton.enabled = NO;
+                    textField.keyboardToolbar.nextBarButton.enabled = YES;
                 }
+            }
+            //    If lastTextField then next should not be enaled.
+            else if ([siblings lastObject] == textField)
+            {
+                textField.keyboardToolbar.previousBarButton.enabled = YES;
+                textField.keyboardToolbar.nextBarButton.enabled = NO;
+            }
+            else
+            {
+                textField.keyboardToolbar.previousBarButton.enabled = YES;
+                textField.keyboardToolbar.nextBarButton.enabled = YES;
             }
         }
     }
+
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    [self showLog:[NSString stringWithFormat:@"****** %@ ended: %g seconds ******",NSStringFromSelector(_cmd),elapsedTime] indentation:-1];
 }
 
 /** Remove any toolbar if it is IQToolbar. */
 -(void)removeToolbarIfRequired  //  (Bug ID: #18)
 {
-    //	Getting all the sibling textFields.
-    NSArray *siblings = [self responderViews];
+    CFTimeInterval startTime = CACurrentMediaTime();
+    [self showLog:[NSString stringWithFormat:@"****** %@ started ******",NSStringFromSelector(_cmd)] indentation:1];
+
+    //    Getting all the sibling textFields.
+    NSArray<UIView*> *siblings = [self responderViews];
     
+    [self showLog:[NSString stringWithFormat:@"Found %lu responder sibling(s)",(unsigned long)siblings.count]];
+
     for (UITextField *textField in siblings)
     {
         UIView *toolbar = [textField inputAccessoryView];
         
         //  (Bug ID: #78)
         //setInputAccessoryView: check   (Bug ID: #307)
-        if ([textField respondsToSelector:@selector(setInputAccessoryView:)] && ([toolbar isKindOfClass:[IQToolbar class]] && (toolbar.tag == kIQDoneButtonToolbarTag || toolbar.tag == kIQPreviousNextButtonToolbarTag)))
+        if ([textField respondsToSelector:@selector(setInputAccessoryView:)] &&
+            ([toolbar isKindOfClass:[IQToolbar class]] && (toolbar.tag == kIQDoneButtonToolbarTag || toolbar.tag == kIQPreviousNextButtonToolbarTag)))
         {
             textField.inputAccessoryView = nil;
+            [textField reloadInputViews];
         }
     }
+
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    [self showLog:[NSString stringWithFormat:@"****** %@ ended: %g seconds ******",NSStringFromSelector(_cmd),elapsedTime] indentation:-1];
 }
 
-/**	reloadInputViews to reload toolbar buttons enable/disable state on the fly Enhancement ID #434. */
+/**    reloadInputViews to reload toolbar buttons enable/disable state on the fly Enhancement ID #434. */
 - (void)reloadInputViews
 {
-    //	Getting all the sibling textFields.
-    NSArray *siblings = [self responderViews];
-    
-    for (UITextField *textField in siblings)
+    //If enabled then adding toolbar.
+    if ([self privateIsEnableAutoToolbar] == YES)
     {
-        //	If firstTextField, then previous should not be enabled.
-        if (siblings[0] == textField)
-        {
-            if (siblings.count == 1)
-            {
-                [textField setEnablePrevious:NO next:NO];
-            }
-            else
-            {
-                [textField setEnablePrevious:NO next:YES];
-            }
-        }
-        //	If lastTextField then next should not be enaled.
-        else if ([siblings lastObject] == textField)
-        {
-            [textField setEnablePrevious:YES next:NO];
-        }
-        else
-        {
-            [textField setEnablePrevious:YES next:YES];
-        }
+        [self addToolbarIfRequired];
+    }
+    //Else removing toolbar.
+    else
+    {
+        [self removeToolbarIfRequired];
     }
 }
 
 #pragma mark previous/next/done functionality
-/**	previousAction. */
--(void)previousAction:(id)segmentedControl
+/**    previousAction. */
+-(void)previousAction:(IQBarButtonItem*)barButton
 {
     //If user wants to play input Click sound. Then Play Input Click Sound.
     if (_shouldPlayInputClicks)
@@ -1782,19 +2238,37 @@ void _IQShowLog(NSString *logString);
 
     if ([self canGoPrevious])
     {
-        UIView *textFieldRetain = _textFieldView;
-
+        UIView *currentTextFieldView = _textFieldView;
         BOOL isAcceptAsFirstResponder = [self goPrevious];
         
-        if (isAcceptAsFirstResponder == YES && textFieldRetain.previousInvocation)
+        NSInvocation *invocation = barButton.invocation;
+        UIView *sender = currentTextFieldView;
+
+        //Handling search bar special case
         {
-            [textFieldRetain.previousInvocation invoke];
+            UISearchBar *searchBar = currentTextFieldView.textFieldSearchBar;
+            
+            if (searchBar)
+            {
+                invocation = searchBar.keyboardToolbar.previousBarButton.invocation;
+                sender = searchBar;
+            }
+        }
+
+        if (isAcceptAsFirstResponder == YES && invocation)
+        {
+            if (invocation.methodSignature.numberOfArguments > 2)
+            {
+                [invocation setArgument:&sender atIndex:2];
+            }
+
+            [invocation invoke];
         }
     }
 }
 
-/**	nextAction. */
--(void)nextAction:(id)segmentedControl
+/**    nextAction. */
+-(void)nextAction:(IQBarButtonItem*)barButton
 {
     //If user wants to play input Click sound. Then Play Input Click Sound.
     if (_shouldPlayInputClicks)
@@ -1804,18 +2278,36 @@ void _IQShowLog(NSString *logString);
 
     if ([self canGoNext])
     {
-        UIView *textFieldRetain = _textFieldView;
-
+        UIView *currentTextFieldView = _textFieldView;
         BOOL isAcceptAsFirstResponder = [self goNext];
         
-        if (isAcceptAsFirstResponder == YES && textFieldRetain.nextInvocation)
+        NSInvocation *invocation = barButton.invocation;
+        UIView *sender = currentTextFieldView;
+
+        //Handling search bar special case
         {
-            [textFieldRetain.nextInvocation invoke];
+            UISearchBar *searchBar = currentTextFieldView.textFieldSearchBar;
+            
+            if (searchBar)
+            {
+                invocation = searchBar.keyboardToolbar.nextBarButton.invocation;
+                sender = searchBar;
+            }
+        }
+
+        if (isAcceptAsFirstResponder == YES && invocation)
+        {
+            if (invocation.methodSignature.numberOfArguments > 2)
+            {
+                [invocation setArgument:&sender atIndex:2];
+            }
+
+            [invocation invoke];
         }
     }
 }
 
-/**	doneAction. Resigning current textField. */
+/**    doneAction. Resigning current textField. */
 -(void)doneAction:(IQBarButtonItem*)barButton
 {
     //If user wants to play input Click sound. Then Play Input Click Sound.
@@ -1824,13 +2316,31 @@ void _IQShowLog(NSString *logString);
         [[UIDevice currentDevice] playInputClick];
     }
 
-    UIView *textFieldRetain = _textFieldView;
-
+    UIView *currentTextFieldView = _textFieldView;
     BOOL isResignedFirstResponder = [self resignFirstResponder];
     
-    if (isResignedFirstResponder == YES && textFieldRetain.doneInvocation)
+    NSInvocation *invocation = barButton.invocation;
+    UIView *sender = currentTextFieldView;
+
+    //Handling search bar special case
     {
-        [textFieldRetain.doneInvocation invoke];
+        UISearchBar *searchBar = currentTextFieldView.textFieldSearchBar;
+        
+        if (searchBar)
+        {
+            invocation = searchBar.keyboardToolbar.doneBarButton.invocation;
+            sender = searchBar;
+        }
+    }
+
+    if (isResignedFirstResponder == YES && invocation)
+    {
+        if (invocation.methodSignature.numberOfArguments > 2)
+        {
+            [invocation setArgument:&sender atIndex:2];
+        }
+
+        [invocation invoke];
     }
 }
 
@@ -1839,59 +2349,105 @@ void _IQShowLog(NSString *logString);
 /**
  Add customised Notification for third party customised TextField/TextView.
  */
--(void)addTextFieldViewDidBeginEditingNotificationName:(nonnull NSString *)didBeginEditingNotificationName
-                         didEndEditingNotificationName:(nonnull NSString *)didEndEditingNotificationName
+-(void)registerTextFieldViewClass:(nonnull Class)aClass
+  didBeginEditingNotificationName:(nonnull NSString *)didBeginEditingNotificationName
+    didEndEditingNotificationName:(nonnull NSString *)didEndEditingNotificationName
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textFieldViewDidBeginEditing:) name:didBeginEditingNotificationName object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textFieldViewDidEndEditing:) name:didEndEditingNotificationName object:nil];
 }
 
+/**
+ Remove customised Notification for third party customised TextField/TextView.
+ */
+-(void)unregisterTextFieldViewClass:(nonnull Class)aClass
+    didBeginEditingNotificationName:(nonnull NSString *)didBeginEditingNotificationName
+      didEndEditingNotificationName:(nonnull NSString *)didEndEditingNotificationName
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:didBeginEditingNotificationName object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:didEndEditingNotificationName object:nil];
+}
+
+-(void)registerAllNotifications
+{
+    //  Registering for keyboard notification.
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
+    
+    //  Registering for UITextField notification.
+    [self registerTextFieldViewClass:[UITextField class]
+     didBeginEditingNotificationName:UITextFieldTextDidBeginEditingNotification
+       didEndEditingNotificationName:UITextFieldTextDidEndEditingNotification];
+    
+    //  Registering for UITextView notification.
+    [self registerTextFieldViewClass:[UITextView class]
+     didBeginEditingNotificationName:UITextViewTextDidBeginEditingNotification
+       didEndEditingNotificationName:UITextViewTextDidEndEditingNotification];
+    
+    //  Registering for orientation changes notification
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willChangeStatusBarOrientation:) name:UIApplicationWillChangeStatusBarOrientationNotification object:[UIApplication sharedApplication]];
+#pragma clang diagnostic pop
+}
+
+-(void)unregisterAllNotifications
+{
+    //  Unregistering for keyboard notification.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
+
+    //  Unregistering for UITextField notification.
+    [self unregisterTextFieldViewClass:[UITextField class]
+     didBeginEditingNotificationName:UITextFieldTextDidBeginEditingNotification
+       didEndEditingNotificationName:UITextFieldTextDidEndEditingNotification];
+    
+    //  Unregistering for UITextView notification.
+    [self unregisterTextFieldViewClass:[UITextView class]
+     didBeginEditingNotificationName:UITextViewTextDidBeginEditingNotification
+       didEndEditingNotificationName:UITextViewTextDidEndEditingNotification];
+    
+    //  Unregistering for orientation changes notification
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillChangeStatusBarOrientationNotification object:[UIApplication sharedApplication]];
+#pragma clang diagnostic pop
+}
+
+-(void)showLog:(NSString*)logString
+{
+    [self showLog:logString indentation:0];
+}
+
+-(void)showLog:(NSString*)logString indentation:(NSInteger)indent
+{
+    static NSInteger indentation = 0;
+    
+    if (indent < 0)
+    {
+        indentation = MAX(0, indentation + indent);
+    }
+    
+    if (_enableDebugging)
+    {
+        NSMutableString *preLog = [[NSMutableString alloc] init];
+        
+        for (int i = 0; i<=indentation; i++) {
+            [preLog appendString:@"|\t"];
+        }
+
+        [preLog appendString:logString];
+        NSLog(@"%@",preLog);
+    }
+    
+    if (indent > 0)
+    {
+        indentation += indent;
+    }
+}
+
 @end
-
-@implementation IQKeyboardManager(IQKeyboardManagerDeprecated)
-
-/** Disable adjusting view in disabledClass     */
--(void)disableDistanceHandlingInViewControllerClass:(nonnull Class)disabledClass
-{
-    [self.disabledDistanceHandlingClasses addObject:disabledClass];
-}
-
-/** Re-enable adjusting textField in disabledClass  */
--(void)removeDisableDistanceHandlingInViewControllerClass:(nonnull Class)disabledClass
-{
-    [self.disabledDistanceHandlingClasses removeObject:disabledClass];
-}
-
-/** Disable automatic toolbar creation in in toolbarDisabledClass   */
--(void)disableToolbarInViewControllerClass:(Class)toolbarDisabledClass
-{
-    [self.disabledToolbarClasses addObject:toolbarDisabledClass];
-}
-
-/** Re-enable automatic toolbar creation in in toolbarDisabledClass */
--(void)removeDisableToolbarInViewControllerClass:(Class)toolbarDisabledClass
-{
-    [self.disabledToolbarClasses removeObject:toolbarDisabledClass];
-}
-
-/** Consider provided customView class as superView of all inner textField for calculating next/previous button logic.  */
--(void)considerToolbarPreviousNextInViewClass:(Class)toolbarPreviousNextConsideredClass
-{
-    [self.toolbarPreviousNextAllowedClasses addObject:toolbarPreviousNextConsideredClass];
-}
-
-/** Remove Consideration for provided customView class as superView of all inner textField for calculating next/previous button logic.  */
--(void)removeConsiderToolbarPreviousNextInViewClass:(Class)toolbarPreviousNextConsideredClass
-{
-    [self.toolbarPreviousNextAllowedClasses removeObject:toolbarPreviousNextConsideredClass];
-}
-
-@end
-
-
-void _IQShowLog(NSString *logString)
-{
-#if IQKEYBOARDMANAGER_DEBUG
-    NSLog(@"IQKeyboardManager: %@",logString);
-#endif
-}
