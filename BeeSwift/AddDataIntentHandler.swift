@@ -47,8 +47,9 @@ class AddDataIntentHandler: NSObject, AddDataIntentHandling {
             completion(AddDataIntentResponse.failure(goal: goalSlug))
             return
         }
+        let comment = intent.comment ?? ""
                 
-        RequestManager.addDatapoint(urtext: "^ \(value)", slug: goalSlug) { (response) in
+        RequestManager.addDatapoint(urtext: "^ \(value) \"\(comment)\"", slug: goalSlug) { (response) in
             completion(AddDataIntentResponse.success(goal: goalSlug))
         } errorHandler: { (error, errorMessage) in
             completion(AddDataIntentResponse.failure(goal: goalSlug))
