@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-## Reseminata 
+## Replicata 
 
 [The steps to reproduce the bug from scratch:
 1. Go to '...'
