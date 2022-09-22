@@ -23,9 +23,7 @@ assignees: ''
 
 [What actually happened instead]
 
-_Defectus delenda est!_ 
-
-# Nota Nebulosa
+## Nota Nebulosa
 
 [Scratch notes, braindumps, additional context]
 
