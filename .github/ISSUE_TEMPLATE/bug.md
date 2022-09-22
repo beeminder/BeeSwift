@@ -1,15 +1,11 @@
 ---
 name: BUG
-about: A Proper Bug Report with repro steps AKA Defectus Demonstrandum
+about: A Proper Bug Report with replication steps AKA Defectus Demonstrandum
 title: ''
 labels: BUG
 assignees: ''
 
 ---
-
-# Defectus Demonstrandum
-
-[Delete all this boilerplate! Including section headings you don't need.]
 
 ## Reseminata 
 
@@ -21,7 +17,7 @@ assignees: ''
 
 ## Expectata
 
-[A clear/concise description of what you expected to happen]
+[What you expected to happen]
 
 ## Resultata
 
@@ -31,9 +27,16 @@ _Defectus delenda est!_
 
 # Nota Nebulosa
 
-[Scratch notes, braindumps, additional context; don't let the above slow you down from reporting something fishy! Report first, ask questions (and fill in repro steps) later!]
+[Scratch notes, braindumps, additional context]
 
+## Desiderata
 
-# Veni Vidi Vici
+- [ ] Do the thing
+- [ ] Include it in the changelog
 
-["I came, I saw, I conquered", i.e., the report on how it was resolved]
+## Cognata
+
+* #123456
+* #456789
+
+_**Verbata**: no need, to add, keywords, when, first creating, a gissue,_
