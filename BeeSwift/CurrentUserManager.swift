@@ -30,6 +30,7 @@ class CurrentUserManager : NSObject {
     fileprivate let defaultAlertstartKey = "default_alertstart"
     fileprivate let defaultDeadlineKey = "default_deadline"
     fileprivate let beemTZKey = "timezone"
+    fileprivate let cachedLastFetchedGoalsKey = "last_fetched_goals"
     
     var allKeys: [String] {
         [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
@@ -123,6 +124,15 @@ class CurrentUserManager : NSObject {
     func timezone() -> String {
         return userDefaults.object(forKey: beemTZKey) as? String ?? "Unknown"
     }
+
+    func setCachedLastFetchedGoals(_ goals : JSON) {
+        self.set(goals.rawString()!, forKey: self.cachedLastFetchedGoalsKey)
+    }
+
+    private func cachedLastFetchedGoals() -> JSON? {
+        guard let encodedValue = userDefaults.object(forKey: cachedLastFetchedGoalsKey) as? String else { return nil }
+        return JSON.parse(encodedValue)
+    }
     
     func setDeadbeat(_ deadbeat: Bool) {
         if deadbeat {
@@ -182,6 +192,7 @@ class CurrentUserManager : NSObject {
         self.removeObject(forKey: accessTokenKey)
         self.removeObject(forKey: deadbeatKey)
         self.removeObject(forKey: usernameKey)
+        self.removeObject(forKey: cachedLastFetchedGoalsKey)
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
     }
     
@@ -192,20 +203,33 @@ class CurrentUserManager : NSObject {
             return
         }
         RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
-            guard let responseGoals = JSON(responseJSON!).array else { return }
-            var jGoals : [JSONGoal] = []
-            responseGoals.forEach({ (goalJSON) in
-                let g = JSONGoal(json: goalJSON)
-                jGoals.append(g)
-            })
-            self.goals = jGoals
+            let response = JSON(responseJSON!)
+            let jGoals = self.goalsFromJSON(response)!
             self.updateTodayWidget()
             self.goalsFetchedAt = Date()
+            self.setCachedLastFetchedGoals(response)
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
             success?(jGoals)
         }) { (responseError, errorMessage) in
             error?(responseError, errorMessage)
         }
+    }
+
+    /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
+    func staleGoals() -> [JSONGoal]? {
+        guard let goalJSON = self.cachedLastFetchedGoals() else { return nil }
+        return goalsFromJSON(goalJSON)
+    }
+
+    private func goalsFromJSON(_ responseJSON: JSON) -> [JSONGoal]? {
+        guard let responseGoals = responseJSON.array else { return nil }
+        var jGoals : [JSONGoal] = []
+        responseGoals.forEach({ (goalJSON) in
+            let g = JSONGoal(json: goalJSON)
+            jGoals.append(g)
+        })
+        self.goals = jGoals
+        return jGoals
     }
 
     func updateTodayWidget() {
