@@ -21,6 +21,24 @@ Changes to be released in next version
 Others
  * 
 
+6.1 (2022-10-04)
+=================================================
+
+✨ Features
+ * Gallery view shows ticks next to goals which have data for the day (#299)
+
+🙌 Improvements
+ * Shortcuts can now specify a comment when adding data points (#310)
+
+🐛 Bugfix
+ * Fixed HealthKit not performing background sync after upgrade (#313, #314)
+ * Fixed Shortcuts integration failing for most users (#303)
+ * Fix Icon rendering glitch when entering settings dialog multiple times (#307)
+
+⚠️ API Changes
+ * Removes dependencies on some unused API attributes to allow server clean up. (8800d2b)
+
+
 ## 5.9. (2021-01-28)
 =================================================
 
