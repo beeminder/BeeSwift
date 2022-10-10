@@ -259,42 +259,46 @@ extension JSONGoal {
         guard let startDate = calendar.date(byAdding: .day, value: -5, to: endDate) else {
             return
         }
-        
-        collection.enumerateStatistics(from: startDate, to: endDate) { [weak self] statistics, stop in
-            guard let self = self else { return }
-            
-            healthStore.preferredUnits(for: [statistics.quantityType], completion: { [weak self] (units, error) in
-                guard let self = self else { return }
-                guard let unit = units.first?.value else { return }
-                guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
-                
-                guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-                    fatalError("*** Unable to create a quantity type ***")
-                }
 
-                let value: Double? = {
-                    switch quantityType.aggregationStyle {
-                    case .cumulative:
-                        return statistics.sumQuantity()?.doubleValue(for: unit)
-                    case .discrete:
-                        return statistics.minimumQuantity()?.doubleValue(for: unit)
-                    default:
-                        return nil
+        self.fetchRecentDatapoints { datapoints in
+            collection.enumerateStatistics(from: startDate, to: endDate) { [weak self] statistics, stop in
+                guard let self = self else { return }
+
+                healthStore.preferredUnits(for: [statistics.quantityType], completion: { [weak self] (units, error) in
+                    guard let self = self else { return }
+                    guard let unit = units.first?.value else { return }
+                    guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
+
+                    guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+                        fatalError("*** Unable to create a quantity type ***")
                     }
-                }()
-                
-                guard let datapointValue = value else { return }
-                
-                let startDate = statistics.startDate
-                let endDate = statistics.endDate
-                
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyyMMdd"
-                let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
-                let daystamp = formatter.string(from: datapointDate)
-                
-                self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
-            })
+
+                    let value: Double? = {
+                        switch quantityType.aggregationStyle {
+                        case .cumulative:
+                            return statistics.sumQuantity()?.doubleValue(for: unit)
+                        case .discrete:
+                            return statistics.minimumQuantity()?.doubleValue(for: unit)
+                        default:
+                            return nil
+                        }
+                    }()
+
+                    guard let datapointValue = value else { return }
+
+                    let startDate = statistics.startDate
+                    let endDate = statistics.endDate
+
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "yyyyMMdd"
+                    let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
+                    let daystamp = formatter.string(from: datapointDate)
+
+                    self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints, success: success, errorCompletion: errorCompletion)
+                })
+            }
+        } errorCompletion: {
+            errorCompletion?()
         }
     }
     
@@ -394,35 +398,45 @@ extension JSONGoal {
         let datapointDate = (self.deadline.intValue >= 0 && self.healthKitMetric != "timeAsleep" && self.healthKitMetric != "timeInBed") ? bounds[0] : bounds[1]
         return formatter.string(from: datapointDate)
     }
-    
+
     private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, success: (() -> ())?, errorCompletion: (() -> ())?) {
         if datapointValue == 0  {
             success?()
             return
         }
+
         self.fetchRecentDatapoints { datapoints in
-            var matchingDatapoints = self.datapointsMatchingDaystamp(datapoints: datapoints, daystamp: daystamp)
-            if matchingDatapoints.count == 0 {
-                let requestId = "\(daystamp)-\(self.minuteStamp())"
-                let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
-                self.postDatapoint(params: params, success: { (responseObject) in
-                    success?()
-                }, failure: { (error, errorMessage) in
-                    errorCompletion?()
-                })
-            } else if matchingDatapoints.count >= 1 {
-                let firstDatapoint = matchingDatapoints.remove(at: 0)
-                matchingDatapoints.forEach { datapoint in
-                    self.deleteDatapoint(datapoint: datapoint)
-                }
-                self.updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue) {
-                    success?()
-                } errorCompletion: {
-                    errorCompletion?()
-                }
-            }
+            self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints, success: success, errorCompletion: errorCompletion)
         } errorCompletion: {
             errorCompletion?()
+        }
+    }
+
+    private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, recentDatapoints: [JSON], success: (() -> ())?, errorCompletion: (() -> ())?) {
+        if datapointValue == 0  {
+            success?()
+            return
+        }
+
+        var matchingDatapoints = self.datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: daystamp)
+        if matchingDatapoints.count == 0 {
+            let requestId = "\(daystamp)-\(self.minuteStamp())"
+            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
+            self.postDatapoint(params: params, success: { (responseObject) in
+                success?()
+            }, failure: { (error, errorMessage) in
+                errorCompletion?()
+            })
+        } else if matchingDatapoints.count >= 1 {
+            let firstDatapoint = matchingDatapoints.remove(at: 0)
+            matchingDatapoints.forEach { datapoint in
+                self.deleteDatapoint(datapoint: datapoint)
+            }
+            self.updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue) {
+                success?()
+            } errorCompletion: {
+                errorCompletion?()
+            }
         }
     }
 }
