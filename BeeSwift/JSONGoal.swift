@@ -285,18 +285,7 @@ class JSONGoal {
     var deltaColorsWhenAboveIsGoodSide: [UIColor] {
         return deltaColorsWhenBelowIsGoodSide.reversed()
     }
-    
-    func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
-        return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
-            metric.databaseString == self.healthKitMetric
-            }?.hkIdentifier
-    }
-    
-    func hkCategoryTypeIdentifier() -> HKCategoryTypeIdentifier? {
-        return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
-            metric.databaseString == self.healthKitMetric
-            }?.hkCategoryTypeIdentifier
-    }
+
     
     func hideDataEntry() -> Bool {
         return self.autodata.count > 0 || self.won.boolValue

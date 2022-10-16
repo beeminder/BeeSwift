@@ -369,7 +369,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     private func syncHealthDataButtonPressed(numDays: Int) {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        self.goal.hkQueryForLast(days: numDays, success: {
+        HealthStoreManager.sharedManager.syncHealthKitData(goal: self.goal, days: numDays, success: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))

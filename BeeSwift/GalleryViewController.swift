@@ -393,16 +393,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func setupHealthKit() {
-        var permissions = Set<HKObjectType>.init()
-        self.goals.forEach { (goal) in
-            if goal.hkPermissionType() != nil { permissions.insert(goal.hkPermissionType()!) }
+        // TODO: We could potentially merge these together?
+        HealthStoreManager.sharedManager.requestAuthorization(goals: self.goals) { (success, error) in
+            HealthStoreManager.sharedManager.setupHealthKitGoals(goals: self.goals)
         }
-        guard permissions.count > 0 else { return }
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
-        
-        healthStore.requestAuthorization(toShare: nil, read: permissions, completion: { (success, error) in
-            self.goals.forEach { (goal) in goal.setupHealthKit() }
-        })
     }
     
     @objc func fetchGoals() {

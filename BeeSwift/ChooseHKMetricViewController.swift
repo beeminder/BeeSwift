@@ -98,7 +98,7 @@ class ChooseHKMetricViewController: UIViewController {
     func saveMetric(databaseString : String) {
         self.goal!.healthKitMetric = databaseString
         self.goal!.autodata = "apple"
-        self.goal!.setupHealthKit()
+        HealthStoreManager.sharedManager.setupHealthKitGoal(goal: self.goal!)
         
         var params : [String : [String : String]] = [:]
         params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]

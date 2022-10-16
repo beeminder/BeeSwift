@@ -10,7 +10,12 @@ import Foundation
 import SwiftyJSON
 import HealthKit
 
-extension JSONGoal {
+class GoalHealthKitConnection {
+    let goal : JSONGoal
+
+    init(goal: JSONGoal) {
+        self.goal = goal
+    }
     
     private enum HKQueryResult {
         case incomplete
@@ -42,6 +47,18 @@ extension JSONGoal {
                 }
             })
         })
+    }
+
+    func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
+        return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
+            metric.databaseString == self.goal.healthKitMetric
+            }?.hkIdentifier
+    }
+
+    func hkCategoryTypeIdentifier() -> HKCategoryTypeIdentifier? {
+        return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
+            metric.databaseString == self.goal.healthKitMetric
+            }?.hkCategoryTypeIdentifier
     }
     
     func hkSampleType() -> HKSampleType? {
@@ -114,8 +131,8 @@ extension JSONGoal {
         if let s = sample as? HKQuantitySample, let u = units {
             return s.quantity.doubleValue(for: u)
         } else if let s = sample as? HKCategorySample {
-            if (self.healthKitMetric == "timeAsleep" && s.value != HKCategoryValueSleepAnalysis.asleep.rawValue) ||
-                (self.healthKitMetric == "timeInBed" && s.value != HKCategoryValueSleepAnalysis.inBed.rawValue) {
+            if (self.goal.healthKitMetric == "timeAsleep" && s.value != HKCategoryValueSleepAnalysis.asleep.rawValue) ||
+                (self.goal.healthKitMetric == "timeInBed" && s.value != HKCategoryValueSleepAnalysis.inBed.rawValue) {
                 return 0
             } else if self.hkCategoryTypeIdentifier() == .appleStandHour {
                 return Double(s.value)
@@ -151,7 +168,7 @@ extension JSONGoal {
     
     func hkDatapointValueForSamples(samples : [HKSample], units: HKUnit?) -> Double {
         var datapointValue : Double = 0
-        if self.healthKitMetric == "weight" {
+        if self.goal.healthKitMetric == "weight" {
             return self.hkDatapointValueForWeightSamples(samples: samples, units: units)
         }
         
@@ -210,7 +227,7 @@ extension JSONGoal {
         guard let midnight = calendar.date(from: anchorComponents) else {
             fatalError("*** unable to create a valid date from the given components ***")
         }
-        let anchorDate = calendar.date(byAdding: .second, value: self.deadline.intValue, to: midnight)!
+        let anchorDate = calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: midnight)!
         
         var options : HKStatisticsOptions
         if quantityType.aggregationStyle == .cumulative {
@@ -260,7 +277,7 @@ extension JSONGoal {
             return
         }
 
-        self.fetchRecentDatapoints { datapoints in
+        self.goal.fetchRecentDatapoints { datapoints in
             collection.enumerateStatistics(from: startDate, to: endDate) { [weak self] statistics, stop in
                 guard let self = self else { return }
 
@@ -291,7 +308,7 @@ extension JSONGoal {
 
                     let formatter = DateFormatter()
                     formatter.dateFormat = "yyyyMMdd"
-                    let datapointDate = self.deadline.intValue >= 0 ? startDate : endDate
+                    let datapointDate = self.goal.deadline.intValue >= 0 ? startDate : endDate
                     let daystamp = formatter.string(from: datapointDate)
 
                     self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints, success: success, errorCompletion: errorCompletion)
@@ -359,7 +376,7 @@ extension JSONGoal {
     }
     
     private func dateBoundsForDayOffset(dayOffset : Int) -> [Date] {
-        if self.healthKitMetric == "timeAsleep" || self.healthKitMetric == "timeInBed" {
+        if self.goal.healthKitMetric == "timeAsleep" || self.goal.healthKitMetric == "timeInBed" {
             return self.sleepDateBoundsForDayOffset(dayOffset: dayOffset)
         }
         let calendar = Calendar.current
@@ -368,8 +385,8 @@ extension JSONGoal {
         let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
         let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
         
-        let endOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightTonight!)
-        let startOfToday = calendar.date(byAdding: .second, value: self.deadline.intValue, to: localMidnightThisMorning!)
+        let endOfToday = calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: localMidnightTonight!)
+        let startOfToday = calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: localMidnightThisMorning!)
         
         guard let startDate = calendar.date(byAdding: .day, value: dayOffset, to: startOfToday!) else { return [] }
         guard let endDate = calendar.date(byAdding: .day, value: dayOffset, to: endOfToday!) else { return [] }
@@ -395,7 +412,7 @@ extension JSONGoal {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd"
         let bounds = self.dateBoundsForDayOffset(dayOffset: dayOffset)
-        let datapointDate = (self.deadline.intValue >= 0 && self.healthKitMetric != "timeAsleep" && self.healthKitMetric != "timeInBed") ? bounds[0] : bounds[1]
+        let datapointDate = (self.goal.deadline.intValue >= 0 && self.goal.healthKitMetric != "timeAsleep" && self.goal.healthKitMetric != "timeInBed") ? bounds[0] : bounds[1]
         return formatter.string(from: datapointDate)
     }
 
@@ -405,7 +422,7 @@ extension JSONGoal {
             return
         }
 
-        self.fetchRecentDatapoints { datapoints in
+        self.goal.fetchRecentDatapoints { datapoints in
             self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints, success: success, errorCompletion: errorCompletion)
         } errorCompletion: {
             errorCompletion?()
@@ -418,11 +435,11 @@ extension JSONGoal {
             return
         }
 
-        var matchingDatapoints = self.datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: daystamp)
+        var matchingDatapoints = self.goal.datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: daystamp)
         if matchingDatapoints.count == 0 {
-            let requestId = "\(daystamp)-\(self.minuteStamp())"
+            let requestId = "\(daystamp)-\(self.goal.minuteStamp())"
             let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
-            self.postDatapoint(params: params, success: { (responseObject) in
+            self.goal.postDatapoint(params: params, success: { (responseObject) in
                 success?()
             }, failure: { (error, errorMessage) in
                 errorCompletion?()
@@ -430,9 +447,9 @@ extension JSONGoal {
         } else if matchingDatapoints.count >= 1 {
             let firstDatapoint = matchingDatapoints.remove(at: 0)
             matchingDatapoints.forEach { datapoint in
-                self.deleteDatapoint(datapoint: datapoint)
+                self.goal.deleteDatapoint(datapoint: datapoint)
             }
-            self.updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue) {
+            self.goal.updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue) {
                 success?()
             } errorCompletion: {
                 errorCompletion?()
