@@ -21,6 +21,18 @@ Changes to be released in next version
 Others
  * 
 
+
+6.2 (2022-10-14)
+=================================================
+
+🙌 Improvements
+ * Reduce how often we re-fetch datapoints in response to Healthkit metric updates (#318)
+
+🧱 Build
+ * Remove broken tests (#319)
+ * Tests are now run through github action s(#316)
+
+
 6.1 (2022-10-04)
 =================================================
 
