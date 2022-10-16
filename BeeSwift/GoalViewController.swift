@@ -627,11 +627,19 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         guard let datapoint = data[indexPath.row] as? JSON else {
             return cell
         }
-        
-        let text = datapoint["canonical"].string
-        cell.datapointText = text
+        cell.datapointText = displayText(datapoint: datapoint)
         
         return cell
+    }
+
+    func displayText(datapoint: JSON) -> String {
+        let daystamp = Int(datapoint["daystamp"].string ?? "") ?? 0
+        let day = daystamp != 0 ? String(format: "%02d", daystamp % 100) : "??" // Day is two least significant digits of daystamp
+
+        let value = datapoint["value"].numberValue
+        let comment = datapoint["comment"].string ?? ""
+
+        return "\(day) \(value) \(comment)"
     }
     
     // MARK: - SFSafariViewControllerDelegate
