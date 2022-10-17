@@ -26,11 +26,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         IQKeyboardManager.shared().isEnableAutoToolbar = false
 
         if HKHealthStore.isHealthDataAvailable() {
-            // We must register queries for all our healthkit metrics before this method completes in order to successfully be delivered background updates
-            // This means we cannot wait for a round trip to the server to fetch latest goals, so use a potentially stale list from last time we did a successful
-            // update.
+            // We must register queries for all our healthkit metrics before this method completes
+            // in order to successfully be delivered background updates. This means we cannot wait
+            // for a round trip to the server to fetch latest goals, so use a potentially stale
+            // list from last time we did a successful update.
             if let goals = CurrentUserManager.sharedManager.staleGoals() {
-                HealthStoreManager.sharedManager.setupHealthKitGoals(goals: goals)
+                HealthStoreManager.sharedManager.registerObserverQueries(goals: goals)
             }
         }
         

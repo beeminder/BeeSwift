@@ -9,11 +9,15 @@
 import Foundation
 import SwiftyJSON
 import HealthKit
+import OSLog
 
 class GoalHealthKitConnection {
+    let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
+    let healthStore: HKHealthStore
     let goal : JSONGoal
 
-    init(goal: JSONGoal) {
+    init(healthStore: HKHealthStore, goal: JSONGoal) {
+        self.healthStore = healthStore
         self.goal = goal
     }
     
@@ -23,30 +27,21 @@ class GoalHealthKitConnection {
         case failure
     }
     
-    func setupHealthKit() {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+    func setupHealthKit() async throws {
         guard let sampleType = self.hkSampleType() else { return }
-        
-        healthStore.requestAuthorization(toShare: nil, read: [sampleType], completion: { (success, error) in
-            if error != nil {
-                //handle error
-                return
-            }
-            healthStore.enableBackgroundDelivery(for: sampleType, frequency: HKUpdateFrequency.immediate, withCompletion: { (success, error) in
-                if error != nil {
-                    //handle error
-                    return
-                }
-                if self.hkQuantityTypeIdentifier() != nil {
-                    self.setupHKStatisticsCollectionQuery()
-                }
-                else if let query = self.hkObserverQuery() {
-                    healthStore.execute(query)
-                } else {
-                    // big trouble
-                }
-            })
-        })
+        try await healthStore.enableBackgroundDelivery(for: sampleType, frequency: HKUpdateFrequency.immediate)
+        registerObserverQuery()
+    }
+
+    func registerObserverQuery() {
+        if self.hkQuantityTypeIdentifier() != nil {
+            self.setupHKStatisticsCollectionQuery()
+        }
+        else if self.hkSampleType() != nil {
+            self.setupHKObserverQuery()
+        } else {
+            // big trouble
+        }
     }
 
     func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
@@ -71,15 +66,18 @@ class GoalHealthKitConnection {
         return nil
     }
     
-    func hkObserverQuery() -> HKObserverQuery? {
-        guard let sampleType = self.hkSampleType() else { return nil }
-        return HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
-            self.hkQueryForLast(days: 1) {
-                completionHandler()
-            } errorCompletion: {
-                //
+    func setupHKObserverQuery() {
+        guard let sampleType = self.hkSampleType() else { return }
+        let query = HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
+            Task {
+                do {
+                    try await self.hkQueryForLast(days: 1)
+                } catch {
+                    self.logger.error("Error fetching data in response to observer query \(query) error: \(error)")
+                }
             }
         })
+        healthStore.execute(query)
     }
     
     func hkPermissionType() -> HKObjectType? {
@@ -91,40 +89,40 @@ class GoalHealthKitConnection {
         return nil
     }
     
-    func hkQueryForLast(days : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        ((-1*days + 1)...0).forEach({ (dayOffset) in
+    func hkQueryForLast(days : Int) async throws {
+        for dayOffset in ((-1*days + 1)...0) {
             if self.hkQuantityTypeIdentifier() != nil {
-                self.runStatsQuery(dayOffset: dayOffset) {
-                    success?()
-                } errorCompletion: {
-                    errorCompletion?()
-                }
+                try await self.runStatsQuery(dayOffset: dayOffset)
             } else {
-                self.runCategoryTypeQuery(dayOffset: dayOffset) {
-                    success?()
-                } errorCompletion: {
-                    errorCompletion?()
-                }
+                try await self.runCategoryTypeQuery(dayOffset: dayOffset)
             }
-        })
+        }
     }
     
-    private func runCategoryTypeQuery(dayOffset : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+    private func runCategoryTypeQuery(dayOffset : Int) async throws {
         guard let sampleType = self.hkSampleType() else { return }
         let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
-        
-        let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
-            if error != nil || samples == nil { return }
-            
-            let datapointValue = self.hkDatapointValueForSamples(samples: samples!, units: nil)
-            
-            if datapointValue == 0 { return }
-            
-            self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, success: success, errorCompletion: errorCompletion)
+
+        let samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
+            let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
+                if error != nil {
+                    continuation.resume(throwing: error!)
+                } else if samples == nil {
+                    continuation.resume(throwing: RuntimeError("HKSampleQuery did not return samples"))
+                } else {
+                    continuation.resume(returning: samples!)
+                }
+
+
+            })
+            healthStore.execute(query)
         })
-        healthStore.execute(query)
+
+        let datapointValue = self.hkDatapointValueForSamples(samples: samples, units: nil)
+        if datapointValue == 0 { return }
+
+        try await self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp)
     }
     
     func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
@@ -178,19 +176,9 @@ class GoalHealthKitConnection {
         return datapointValue
     }
     
-    func activitySummaryUpdateHandler(query: HKActivitySummaryQuery, summaries: [HKActivitySummary]?, error: Error?) {
-        guard let activitySummaries = summaries else {
-            guard let queryError = error else {
-                fatalError("*** Did not return a valid error object. ***")
-            }
-            print(queryError)
-            return
-        }
-        self.updateBeeminderWithActivitySummaries(summaries: activitySummaries, success: nil, errorCompletion: nil)
-    }
-    
-    func updateBeeminderWithActivitySummaries(summaries: [HKActivitySummary]?, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        summaries?.forEach({ (summary) in
+    func updateBeeminderWithActivitySummaries(summaries: [HKActivitySummary]?) async throws {
+        if summaries == nil { return }
+        for summary in summaries! {
             let calendar = Calendar.current
             let dateComponents = summary.dateComponents(for: Calendar.current)
             guard let summaryDate = calendar.date(from: dateComponents) else { return }
@@ -202,16 +190,11 @@ class GoalHealthKitConnection {
             formatter.dateFormat = "yyyyMMdd"
             let daystamp = formatter.string(from: summaryDate)
             let standHours = summary.appleStandHours
-            self.updateBeeminderWithValue(datapointValue: standHours.doubleValue(for: HKUnit.count()), daystamp: daystamp, success: {
-                success?()
-            }, errorCompletion: {
-                errorCompletion?()
-            })
-        })
+            try await self.updateBeeminderWithValue(datapointValue: standHours.doubleValue(for: HKUnit.count()), daystamp: daystamp)
+        }
     }
     
     func setupHKStatisticsCollectionQuery() {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         if ((self.hkQuantityTypeIdentifier() == nil)) { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
         
@@ -248,79 +231,88 @@ class GoalHealthKitConnection {
                 // Perform proper error handling here
                 return
             }
-            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + .seconds(5), execute: { [weak self] in
-                self?.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
-            })
+            Task(priority: .background) {
+                do {
+                    try await self.updateBeeminderWithStatsCollection(collection: statsCollection)
+                } catch {
+                    self.logger.error("Error updating beeminder based on initial results \(query) error: \(error)")
+                }
+            }
         }
         
         query.statisticsUpdateHandler = {
-            [weak self] query, statistics, collection, error in
+            query, statistics, collection, error in
             
             if HKHealthStore.isHealthDataAvailable() {
-                guard let statsCollection = collection else {
-                    // Perform proper error handling here
-                    return
+                guard let statsCollection = collection else { return }
+
+                Task {
+                    do {
+                        try await self.updateBeeminderWithStatsCollection(collection: statsCollection)
+                    } catch {
+                        self.logger.error("Error updating beeminder based on statistics update \(query) error: \(error)")
+                    }
                 }
-                
-                self?.updateBeeminderWithStatsCollection(collection: statsCollection, success: nil, errorCompletion: nil)
             }
         }
         healthStore.execute(query)
     }
     
-    func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
-        
+    func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection) async throws {
         let endDate = Date()
         let calendar = Calendar.current
         guard let startDate = calendar.date(byAdding: .day, value: -5, to: endDate) else {
             return
         }
 
-        self.goal.fetchRecentDatapoints { datapoints in
-            collection.enumerateStatistics(from: startDate, to: endDate) { [weak self] statistics, stop in
-                guard let self = self else { return }
+        let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[JSON], Error>) in
+            self.goal.fetchRecentDatapoints(success: { datapoints in
+                continuation.resume(returning: datapoints)
+            }, errorCompletion: {
+                continuation.resume(throwing: RuntimeError("Could not fetch recent datapoints"))
+            })
+        }
 
-                healthStore.preferredUnits(for: [statistics.quantityType], completion: { [weak self] (units, error) in
-                    guard let self = self else { return }
-                    guard let unit = units.first?.value else { return }
-                    guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
-
-                    guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-                        fatalError("*** Unable to create a quantity type ***")
-                    }
-
-                    let value: Double? = {
-                        switch quantityType.aggregationStyle {
-                        case .cumulative:
-                            return statistics.sumQuantity()?.doubleValue(for: unit)
-                        case .discrete:
-                            return statistics.minimumQuantity()?.doubleValue(for: unit)
-                        default:
-                            return nil
-                        }
-                    }()
-
-                    guard let datapointValue = value else { return }
-
-                    let startDate = statistics.startDate
-                    let endDate = statistics.endDate
-
-                    let formatter = DateFormatter()
-                    formatter.dateFormat = "yyyyMMdd"
-                    let datapointDate = self.goal.deadline.intValue >= 0 ? startDate : endDate
-                    let daystamp = formatter.string(from: datapointDate)
-
-                    self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints, success: success, errorCompletion: errorCompletion)
-                })
+        for statistics in collection.statistics() {
+            // Ignore statistics which are entirely outside our window
+            if statistics.endDate < startDate || statistics.startDate > endDate {
+                break
             }
-        } errorCompletion: {
-            errorCompletion?()
+
+            let units = try await healthStore.preferredUnits(for: [statistics.quantityType])
+            guard let unit = units.first?.value else { return }
+            guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
+
+            guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+                fatalError("*** Unable to create a quantity type ***")
+            }
+
+            let value: Double? = {
+                switch quantityType.aggregationStyle {
+                case .cumulative:
+                    return statistics.sumQuantity()?.doubleValue(for: unit)
+                case .discrete:
+                    return statistics.minimumQuantity()?.doubleValue(for: unit)
+                default:
+                    return nil
+                }
+            }()
+
+            guard let datapointValue = value else { return }
+
+            let startDate = statistics.startDate
+            let endDate = statistics.endDate
+
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyyMMdd"
+            let datapointDate = self.goal.deadline.intValue >= 0 ? startDate : endDate
+            let daystamp = formatter.string(from: datapointDate)
+
+            try await self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints)
         }
     }
     
-    private func runStatsQuery(dayOffset : Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
+    private func runStatsQuery(dayOffset : Int) async throws {
         guard let sampleType = self.hkSampleType() else { return }
         let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
@@ -332,39 +324,47 @@ class GoalHealthKitConnection {
         } else {
             options = .discreteMin
         }
-        let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: options, completionHandler: { (query, statistics, error) in
-            if error != nil || statistics == nil { return }
-            
-            guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
-                return
-            }
-            guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-                fatalError("*** Unable to create a quantity type ***")
-            }
-            
-            healthStore.preferredUnits(for: [quantityType], completion: { (units, error) in
-                var datapointValue : Double?
-                guard let unit = units.first?.value else { return }
-                
-                if quantityType.aggregationStyle == .cumulative {
-                    let quantity = statistics!.sumQuantity()
-                    datapointValue = quantity?.doubleValue(for: unit)
-                } else if quantityType.aggregationStyle == .discreteArithmetic {
-                    let quantity = statistics!.minimumQuantity()
-                    datapointValue = quantity?.doubleValue(for: unit)
+
+        let statistics = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<HKStatistics, Error>) in
+            let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: options) { (query, statistics, error) in
+                if error != nil {
+                    continuation.resume(throwing: error!)
+                } else if statistics == nil {
+                    continuation.resume(throwing: RuntimeError("Statistics unexpectedly nil"))
+                } else {
+                    continuation.resume(returning: statistics!)
                 }
-                
-                if datapointValue == nil || datapointValue == 0  { return }
-                
-                self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp, success: {
-                    success?()
-                }, errorCompletion: {
-                    errorCompletion?()
-                })
-            })
+
+            }
+            healthStore.execute(statsQuery)
         })
-        
-        healthStore.execute(statsQuery)
+
+        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
+            return
+        }
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+            throw RuntimeError("*** Unable to create a quantity type ***")
+        }
+
+        let units = try await healthStore.preferredUnits(for: [quantityType])
+
+        var datapointValue : Double?
+        guard let unit = units.first?.value else { return }
+
+        let aggStyle : HKQuantityAggregationStyle
+        if #available(iOS 13.0, *) { aggStyle = .discreteArithmetic } else { aggStyle = .discrete }
+
+        if quantityType.aggregationStyle == .cumulative {
+            let quantity = statistics.sumQuantity()
+            datapointValue = quantity?.doubleValue(for: unit)
+        } else if quantityType.aggregationStyle == aggStyle {
+            let quantity = statistics.minimumQuantity()
+            datapointValue = quantity?.doubleValue(for: unit)
+        }
+
+        if datapointValue == nil || datapointValue == 0  { return }
+
+        try await self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp)
     }
     
     private func predicateForDayOffset(dayOffset : Int) -> NSPredicate? {
@@ -413,22 +413,23 @@ class GoalHealthKitConnection {
         return formatter.string(from: datapointDate)
     }
 
-    private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, success: (() -> ())?, errorCompletion: (() -> ())?) {
+    private func updateBeeminderWithValue(datapointValue : Double, daystamp : String) async throws {
         if datapointValue == 0  {
-            success?()
             return
         }
 
-        self.goal.fetchRecentDatapoints { datapoints in
-            self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints, success: success, errorCompletion: errorCompletion)
-        } errorCompletion: {
-            errorCompletion?()
+        let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[JSON], Error>) in
+            self.goal.fetchRecentDatapoints(success: { datapoints in
+                continuation.resume(returning: datapoints)
+            }, errorCompletion: {
+                continuation.resume(throwing: RuntimeError("Could not fetch recent datapoints"))
+            })
         }
+        try await self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints)
     }
 
-    private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, recentDatapoints: [JSON], success: (() -> ())?, errorCompletion: (() -> ())?) {
+    private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, recentDatapoints: [JSON]) async throws {
         if datapointValue == 0  {
-            success?()
             return
         }
 
@@ -436,20 +437,28 @@ class GoalHealthKitConnection {
         if matchingDatapoints.count == 0 {
             let requestId = "\(daystamp)-\(self.goal.minuteStamp())"
             let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
-            self.goal.postDatapoint(params: params, success: { (responseObject) in
-                success?()
-            }, failure: { (error, errorMessage) in
-                errorCompletion?()
-            })
+
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                self.goal.postDatapoint(params: params, success: { (responseObject) in
+                    continuation.resume()
+                }, failure: { (error, errorMessage) in
+                    continuation.resume(throwing: error!)
+                })
+            }
+
+
         } else if matchingDatapoints.count >= 1 {
             let firstDatapoint = matchingDatapoints.remove(at: 0)
             matchingDatapoints.forEach { datapoint in
                 self.goal.deleteDatapoint(datapoint: datapoint)
             }
-            self.goal.updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue) {
-                success?()
-            } errorCompletion: {
-                errorCompletion?()
+
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                self.goal.updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue, success: {
+                    continuation.resume()
+                }, errorCompletion: {
+                    continuation.resume(throwing: RuntimeError("Error updating data point"))
+                })
             }
         }
     }

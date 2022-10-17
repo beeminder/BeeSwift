@@ -12,7 +12,7 @@ import HealthKit
 class HealthStoreManager :NSObject {
     static let sharedManager = HealthStoreManager()
 
-    var healthStore : HKHealthStore?
+    private var healthStore : HKHealthStore?
 
     /// The Connection objects responsible for updating goals based on their healthkit metrics
     /// Dictionary key is the goal id, as this is stable across goal renames
@@ -29,47 +29,96 @@ class HealthStoreManager :NSObject {
             connections.removeValue(forKey: goal.id)
             return nil
         } else {
-            return connections[goal.id] ?? GoalHealthKitConnection(goal: goal)
+            return connections[goal.id] ?? GoalHealthKitConnection(healthStore: healthStore!, goal: goal)
         }
     }
 
-    func requestAuthorization(goals: [JSONGoal], completion: @escaping (Bool, Error?) -> Void) {
-        ensureHealthStoreCreated();
-        let goalConnections = goals.map { self.connectionFor(goal:$0) }.compactMap { $0 }
+    private func requestAuthorization(read: Set<HKObjectType>) async throws {
+        // TODO: This should share code with GoalHealthKitConnection
+        // NOTE: Can be neater when we target iOS15
+        try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Void, Error>) in
+            self.healthStore!.requestAuthorization(toShare: nil, read: read) { success, error in
+                if error != nil {
+                    continuation.resume(throwing: error!)
+                } else if success == false {
+                    continuation.resume(throwing: RuntimeError("Error requesting HealthKit authorization"))
+                } else {
+                    continuation.resume()
+                }
+            }
+        })
+    }
 
-        var permissions = Set<HKObjectType>.init()
-        goalConnections.forEach { (connection) in
+    func requestAuthorization(metric: HealthKitMetric) async throws {
+        ensureHealthStoreCreated()
+
+        var sampleType: HKSampleType?
+        if metric.hkIdentifier != nil {
+            sampleType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
+        } else if metric.hkCategoryTypeIdentifier != nil {
+            sampleType = HKObjectType.categoryType(forIdentifier: metric.hkCategoryTypeIdentifier!)
+        } else {
+            throw RuntimeError("No identifier or category for metric \(metric)")
+        }
+
+        try await self.requestAuthorization(read: [sampleType!])
+    }
+
+    func setupHealthKitGoal(goal: JSONGoal) async throws {
+        try await self.setupHealthKitGoals(goals: [goal])
+    }
+
+    func setupHealthKitGoals(goals: [JSONGoal]) async throws {
+        ensureHealthStoreCreated();
+        let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
+
+        var permissions = Set<HKObjectType>()
+        for connection in goalConnections {
             if let permissionType = connection.hkPermissionType() {
                permissions.insert(permissionType)
             }
         }
-        guard permissions.count > 0 else { return }
+        if permissions.count > 0 {
+            try await self.requestAuthorization(read: permissions)
+        }
 
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
-        healthStore.requestAuthorization(toShare: nil, read: permissions, completion: completion)
-    }
-
-    func setupHealthKitGoals(goals: [JSONGoal]) {
-        ensureHealthStoreCreated();
-        let goalConnections = goals.map { self.connectionFor(goal:$0) }.compactMap { $0 }
-        goalConnections.forEach { (connection) in
-            connection.setupHealthKit()
+        // TODO: Where do exceptions go?
+        await withThrowingTaskGroup(of: Void.self) { group in
+            for connection in goalConnections {
+                group.addTask {
+                    // TODO: This could do terrible things around repeated auth requests
+                    try await connection.setupHealthKit()
+                }
+            }
         }
     }
 
-    func setupHealthKitGoal(goal: JSONGoal) {
-        ensureHealthStoreCreated();
-        if let connection = self.connectionFor(goal: goal) {
-            connection.setupHealthKit()
+    func registerObserverQueries(goals: [JSONGoal]) {
+        ensureHealthStoreCreated()
+        let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
+        for connection in goalConnections {
+            connection.registerObserverQuery()
         }
     }
 
-    func syncHealthKitData(goal: JSONGoal, days: Int, success: (() -> ())?, errorCompletion: (() -> ())?) {
+    func syncHealthKitData(goal: JSONGoal, days: Int) async throws {
         ensureHealthStoreCreated();
-        if let connection = self.connectionFor(goal: goal) {
-            connection.hkQueryForLast(days: days, success: success, errorCompletion: errorCompletion)
-        } else {
-            errorCompletion?()
+        guard let connection = self.connectionFor(goal: goal) else {
+            throw RuntimeError("Failed to find connection for goal")
         }
+        try await connection.hkQueryForLast(days: days)
+    }
+}
+
+// TODO: More descriptive error?
+struct RuntimeError: Error {
+    let message: String
+
+    init(_ message: String) {
+        self.message = message
+    }
+
+    public var localizedDescription: String {
+        return message
     }
 }
