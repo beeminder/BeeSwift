@@ -20,13 +20,8 @@ class ChooseGoalSortViewController: UIViewController {
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
-            if #available(iOS 11.0, *) {
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
-            } else {
-                make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
-                make.top.equalTo(self.topLayoutGuide.snp.bottom)
-            }
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
         }
         self.tableView.delegate = self
         self.tableView.dataSource = self

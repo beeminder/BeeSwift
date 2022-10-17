@@ -30,18 +30,8 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         let button = BSButton()
         button.setTitle("Forgot password?", for: .normal)
         button.titleLabel?.font = UIFont.beeminder.defaultFontHeavy
-        if #available(iOS 13.0, *) {
-            button.setTitleColor(UIColor.label, for: .normal)
-        } else {
-            button.setTitleColor(UIColor.beeminder.gray, for: .normal)
-        }
-        
-        if #available(iOS 13.0, *) {
-            button.backgroundColor = UIColor.systemBackground
-        } else {
-            button.backgroundColor = UIColor.white
-        }
-        
+        button.setTitleColor(UIColor.label, for: .normal)
+        button.backgroundColor = UIColor.systemBackground
         button.addTarget(self, action: #selector(SignInViewController.resetPasswordTapped), for: .touchUpInside)
 
         return button
@@ -58,11 +48,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignedIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
-        if #available(iOS 13.0, *) {
-            self.view.backgroundColor = UIColor.systemBackground
-        } else {
-            self.view.backgroundColor = UIColor.white
-        }
+        self.view.backgroundColor = UIColor.systemBackground
         
         
         self.beeImageView.image = UIImage(named: "website_logo_mid")

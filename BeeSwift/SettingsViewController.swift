@@ -17,36 +17,23 @@ class SettingsViewController: UIViewController {
     
     override func viewDidLoad() {
         self.title = "Settings"
-        if #available(iOS 13.0, *) {
-            self.view.backgroundColor = .systemBackground
-        } else {
-            self.view.backgroundColor = .white
-        }
+        self.view.backgroundColor = .systemBackground
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         
         self.view.addSubview(self.tableView)
+
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
-            if #available(iOS 11.0, *) {
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
-                make.bottom.equalTo(self.view.snp.bottom)
-            } else {
-                make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
-                make.top.equalTo(self.topLayoutGuide.snp.bottom)
-            }
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
+            make.bottom.equalTo(self.view.snp.bottom)
         }
         
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.isScrollEnabled = false
         self.tableView.tableFooterView = UIView()
-        if #available(iOS 13.0, *) {
-            self.view.backgroundColor = .systemBackground
-        } else {
-            self.view.backgroundColor = .white
-        }
         self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
 
         if let info = Bundle.main.infoDictionary {
@@ -57,11 +44,7 @@ class SettingsViewController: UIViewController {
             versionLabel.text = "Version: \(appVersion) (\(appBuild))"
             self.view.addSubview(versionLabel)
             versionLabel.snp.makeConstraints { (make) in
-                if #available(iOS 11.0, *) {
-                    make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-10)
-                } else {
-                    make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-10)
-                }
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-10)
                 make.width.equalTo(self.view)
             }
             versionLabel.textAlignment = .center

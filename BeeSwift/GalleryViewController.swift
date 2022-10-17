@@ -44,19 +44,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
-        if #available(iOS 13.0, *) {
-            self.collectionView?.backgroundColor = .systemBackground
-        } else {
-            self.collectionView?.backgroundColor = UIColor.white
-        }
-        
+        self.collectionView?.backgroundColor = .systemBackground
         self.collectionView?.alwaysBounceVertical = true
         self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
-        if #available(iOS 13.0, *) {
-            self.view.backgroundColor = .systemBackground
-        } else {
-            self.view.backgroundColor = .white
-        }
+
+        self.view.backgroundColor = .systemBackground
         self.title = "Goals"
         
         let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
@@ -154,13 +146,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.collectionView!.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.searchBar.snp.bottom)
-            if #available(iOS 11.0, *) {
-                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
-                make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
-            } else {
-                make.left.equalTo(0)
-                make.right.equalTo(0)
-            }
+            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
+            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(0)
         }
         

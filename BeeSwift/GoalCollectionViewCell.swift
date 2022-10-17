@@ -37,40 +37,33 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(self.todaytaLabel)
         self.contentView.addSubview(self.thumbnailImageView)
         self.contentView.addSubview(self.safesumLabel)
-        if #available(iOS 13.0, *) {
-            self.contentView.backgroundColor = .systemBackground
-        }
+        self.contentView.backgroundColor = .systemBackground
+
         self.slugLabel.font = UIFont.beeminder.defaultFontHeavy
+        self.slugLabel.textColor = .label
         self.slugLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.margin)
             make.top.equalTo(10)
             make.width.lessThanOrEqualTo(self.contentView).multipliedBy(0.35)
         }
-        if #available(iOS 13.0, *) {
-            self.slugLabel.textColor = .label
-        }
         
         self.titleLabel.font = UIFont.beeminder.defaultFont
-        if #available(iOS 13.0, *) {
-            self.titleLabel.textColor = .label
-        }
+        self.titleLabel.textColor = .label
+        self.titleLabel.textAlignment = .left
         self.titleLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.slugLabel)
             make.left.equalTo(self.slugLabel.snp.right).offset(10)
             make.right.lessThanOrEqualTo(self.todaytaLabel.snp.left).offset(-10)
         }
-        self.titleLabel.textAlignment = .left
         
         self.todaytaLabel.font = UIFont.beeminder.defaultFont
-        if #available(iOS 13.0, *) {
-            self.todaytaLabel.textColor = .label
-        }
+        self.todaytaLabel.textColor = .label
+        self.todaytaLabel.textAlignment = .right
         self.todaytaLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.slugLabel)
             make.right.equalTo(-self.margin)
         }
         self.todaytaLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        self.todaytaLabel.textAlignment = .right
 
         self.thumbnailImageView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0).offset(self.margin)

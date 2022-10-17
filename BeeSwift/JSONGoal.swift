@@ -52,15 +52,9 @@ class JSONGoal {
         self.alertstart = json["alertstart"].number!
         if let lasttouchString = json["lasttouch"].string {
             let lastTouchDate: Date? = {
-                if #available(iOS 11.0, *) {
-                    let df = ISO8601DateFormatter()
-                    df.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-                    return df.date(from: lasttouchString)
-                } else {
-                    let df = DateFormatter()
-                    df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                    return df.date(from: lasttouchString)
-                }
+                let df = ISO8601DateFormatter()
+                df.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                return df.date(from: lasttouchString)
             }()
             
             if let date = lastTouchDate {

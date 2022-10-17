@@ -56,11 +56,7 @@ class EditNotificationsViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        if #available(iOS 13.0, *) {
-            self.view.backgroundColor = UIColor.systemBackground
-        } else {
-            self.view.backgroundColor = UIColor.white
-        }
+        self.view.backgroundColor = UIColor.systemBackground
         
         self.view.addSubview(self.leadTimeLabel)
         self.leadTimeLabel.snp.makeConstraints { (make) -> Void in

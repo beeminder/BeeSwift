@@ -19,11 +19,7 @@ class ConfigureNotificationsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Notifications"
-        if #available(iOS 13.0, *) {
-            self.view.backgroundColor = .systemBackground
-        } else {
-            self.view.backgroundColor = .white
-        }
+        self.view.backgroundColor = .systemBackground
         
         self.view.addSubview(self.settingsButton)
         self.settingsButton.isHidden = true
@@ -41,13 +37,9 @@ class ConfigureNotificationsViewController: UIViewController {
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
-            if #available(iOS 11.0, *) {
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(10)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
-            } else {
-                make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(10)
-                make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
-            }
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(10)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
+
         }
         self.tableView.isHidden = true
         self.tableView.delegate = self
