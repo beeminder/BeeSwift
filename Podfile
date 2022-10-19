@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '11.0'
+platform :ios, '14.0'
 use_frameworks!
 inhibit_all_warnings!
 target 'BeeSwift' do
@@ -35,7 +35,7 @@ post_install do |installer|
       config.build_settings['SWIFT_VERSION'] = '5.0'
       config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
       config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
     end
   end
 end
