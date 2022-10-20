@@ -53,11 +53,7 @@ class HealthKitConfigTableViewCell: UITableViewCell {
     }
     
     func configure() {
-        if #available(iOS 13.0, *) {
-            self.backgroundColor = UIColor.secondarySystemBackground
-        } else {
-            self.backgroundColor = UIColor.clear
-        }
+        self.backgroundColor = UIColor.secondarySystemBackground
         self.accessoryType = .none
         self.selectionStyle = .none
         

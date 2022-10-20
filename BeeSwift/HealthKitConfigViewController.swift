@@ -20,11 +20,7 @@ class HealthKitConfigViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if #available(iOS 13.0, *) {
-            self.view.backgroundColor = .systemBackground
-        } else {
-            self.view.backgroundColor = .white
-        }
+        self.view.backgroundColor = .systemBackground
         self.title = "Health app integration"
         let backItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         self.navigationItem.backBarButtonItem = backItem

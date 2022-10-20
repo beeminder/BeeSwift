@@ -346,13 +346,10 @@ class GoalHealthKitConnection {
                 var datapointValue : Double?
                 guard let unit = units.first?.value else { return }
                 
-                let aggStyle : HKQuantityAggregationStyle
-                if #available(iOS 13.0, *) { aggStyle = .discreteArithmetic } else { aggStyle = .discrete }
-                
                 if quantityType.aggregationStyle == .cumulative {
                     let quantity = statistics!.sumQuantity()
                     datapointValue = quantity?.doubleValue(for: unit)
-                } else if quantityType.aggregationStyle == aggStyle {
+                } else if quantityType.aggregationStyle == .discreteArithmetic {
                     let quantity = statistics!.minimumQuantity()
                     datapointValue = quantity?.doubleValue(for: unit)
                 }

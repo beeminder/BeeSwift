@@ -37,12 +37,8 @@ class TimerViewController: UIViewController {
         let exitButton = BSButton()
         self.view.addSubview(exitButton)
         exitButton.snp.makeConstraints { (make) in
-            if #available(iOS 11.0, *) {
-                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
-            } else {
-                make.left.bottom.equalTo(0)
-            }
+            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
             make.right.equalTo(self.view.snp.centerX)
         }
         exitButton.backgroundColor = .clear
@@ -72,12 +68,8 @@ class TimerViewController: UIViewController {
         self.view.addSubview(resetButton)
         resetButton.snp.makeConstraints { (make) in
             make.left.equalTo(self.view.snp.centerX)
-            if #available(iOS 11.0, *) {
-                make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
-            } else {
-                make.right.bottom.equalTo(0)
-            }
+            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
         }
         resetButton.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
         resetButton.setTitle("Reset", for: .normal)

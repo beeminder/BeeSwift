@@ -42,22 +42,14 @@ class SettingsTableViewCell: UITableViewCell {
         self.contentView.addSubview(self.settingsImage)
         
         self.selectionStyle = .none
-        if #available(iOS 13.0, *) {
-            self.backgroundColor = .secondarySystemBackground
-        } else {
-            self.backgroundColor = .white
-        }
-        
-        if #available(iOS 13.0, *) {
-            self.titleLabel.textColor = .label
-        } else {
-            self.titleLabel.textColor = UIColor.beeminder.gray
-        }
-        
+        self.backgroundColor = .secondarySystemBackground
+
+        self.titleLabel.textColor = .label
         self.titleLabel.snp.remakeConstraints { (make) -> Void in
             make.centerY.equalTo(self.contentView)
             make.left.equalTo(self.settingsImage.snp.right).offset(10)
         }
+        
         self.settingsImage.snp.remakeConstraints({ (make) in
             make.centerY.equalTo(self.contentView)
             make.left.equalTo(10)
