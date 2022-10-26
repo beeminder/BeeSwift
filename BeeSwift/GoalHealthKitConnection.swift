@@ -102,7 +102,7 @@ class GoalHealthKitConnection {
     }
     
     private func runCategoryTypeQuery(dayOffset : Int) async throws {
-        logger.notice("Starting: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+        logger.notice("Starting: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) offset \(dayOffset)")
 
         guard let sampleType = self.hkSampleType() else { return }
         let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
@@ -124,7 +124,10 @@ class GoalHealthKitConnection {
         })
 
         let datapointValue = self.hkDatapointValueForSamples(samples: samples, units: nil)
-        if datapointValue == 0 { return }
+        if datapointValue == 0 {
+            logger.notice("Skipping: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) as value is 0")
+            return
+        }
 
         try await self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp)
 
@@ -325,7 +328,7 @@ class GoalHealthKitConnection {
     }
     
     private func runStatsQuery(dayOffset : Int) async throws {
-        logger.notice("Started: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+        logger.notice("Started: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) offset \(dayOffset)")
 
         guard let sampleType = self.hkSampleType() else { return }
         let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
