@@ -22,7 +22,6 @@ platform :ios do
   end
   lane :build do
     build_app(scheme: "BeeSwift")
-    sentry_upload_dsym()
   end
   lane :beta do
     # Ensure that your git status is not dirty
