@@ -41,6 +41,7 @@ class GoalHealthKitConnection {
             self.setupHKObserverQuery()
         } else {
             // big trouble
+            logger.error("Failed to register query for \(self.goal.healthKitMetric ?? "nil", privacy: .public) with neither hkQuantityTypeIdentifier nor hkSampleType")
         }
     }
 
@@ -69,6 +70,7 @@ class GoalHealthKitConnection {
     func setupHKObserverQuery() {
         guard let sampleType = self.hkSampleType() else { return }
         let query = HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
+            self.logger.notice("ObserverQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) received update")
             Task {
                 do {
                     try await self.hkQueryForLast(days: 1)
@@ -100,6 +102,8 @@ class GoalHealthKitConnection {
     }
     
     private func runCategoryTypeQuery(dayOffset : Int) async throws {
+        logger.notice("Starting: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+
         guard let sampleType = self.hkSampleType() else { return }
         let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
@@ -123,6 +127,8 @@ class GoalHealthKitConnection {
         if datapointValue == 0 { return }
 
         try await self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp)
+
+        logger.notice("Completed: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
     }
     
     func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
@@ -195,6 +201,8 @@ class GoalHealthKitConnection {
     }
     
     func setupHKStatisticsCollectionQuery() {
+        logger.notice("Starting: setupHKStatisticsCollectionQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+
         if ((self.hkQuantityTypeIdentifier() == nil)) { return }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
         
@@ -226,6 +234,7 @@ class GoalHealthKitConnection {
                                                 intervalComponents: interval)
         query.initialResultsHandler = {
             query, collection, error in
+            self.logger.notice("Initial Data: setupHKStatisticsCollectionQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
             
             guard let statsCollection = collection else {
                 // Perform proper error handling here
@@ -242,6 +251,7 @@ class GoalHealthKitConnection {
         
         query.statisticsUpdateHandler = {
             query, statistics, collection, error in
+            self.logger.notice("Statistics Update: setupHKStatisticsCollectionQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
             
             if HKHealthStore.isHealthDataAvailable() {
                 guard let statsCollection = collection else { return }
@@ -256,6 +266,8 @@ class GoalHealthKitConnection {
             }
         }
         healthStore.execute(query)
+
+        logger.notice("Complete: setupHKStatisticsCollectionQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
     }
     
     func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection) async throws {
@@ -276,7 +288,7 @@ class GoalHealthKitConnection {
         for statistics in collection.statistics() {
             // Ignore statistics which are entirely outside our window
             if statistics.endDate < startDate || statistics.startDate > endDate {
-                break
+                continue
             }
 
             let units = try await healthStore.preferredUnits(for: [statistics.quantityType])
@@ -313,6 +325,8 @@ class GoalHealthKitConnection {
     }
     
     private func runStatsQuery(dayOffset : Int) async throws {
+        logger.notice("Started: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+
         guard let sampleType = self.hkSampleType() else { return }
         let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
@@ -365,6 +379,8 @@ class GoalHealthKitConnection {
         if datapointValue == nil || datapointValue == 0  { return }
 
         try await self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp)
+
+        logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
     }
     
     private func predicateForDayOffset(dayOffset : Int) -> NSPredicate? {
