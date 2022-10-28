@@ -15,6 +15,7 @@ class GoalHealthKitConnection {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
     let healthStore: HKHealthStore
     let goal : JSONGoal
+    var haveRegisteredObserverQuery = false
 
     init(healthStore: HKHealthStore, goal: JSONGoal) {
         self.healthStore = healthStore
@@ -34,11 +35,17 @@ class GoalHealthKitConnection {
     }
 
     func registerObserverQuery() {
+        if haveRegisteredObserverQuery {
+            return
+        }
+
         if self.hkQuantityTypeIdentifier() != nil {
             self.setupHKStatisticsCollectionQuery()
+            haveRegisteredObserverQuery = true
         }
         else if self.hkSampleType() != nil {
             self.setupHKObserverQuery()
+            haveRegisteredObserverQuery = true
         } else {
             // big trouble
             logger.error("Failed to register query for \(self.goal.healthKitMetric ?? "nil", privacy: .public) with neither hkQuantityTypeIdentifier nor hkSampleType")
