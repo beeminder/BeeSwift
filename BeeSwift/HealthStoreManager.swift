@@ -8,9 +8,11 @@
 
 import Foundation
 import HealthKit
+import OSLog
 
 class HealthStoreManager :NSObject {
     static let sharedManager = HealthStoreManager()
+    let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
 
     private var healthStore : HKHealthStore?
 
@@ -29,7 +31,10 @@ class HealthStoreManager :NSObject {
             connections.removeValue(forKey: goal.id)
             return nil
         } else {
-            return connections[goal.id] ?? GoalHealthKitConnection(healthStore: healthStore!, goal: goal)
+            if connections[goal.id] == nil {
+                connections[goal.id] = GoalHealthKitConnection(healthStore: healthStore!, goal: goal)
+            }
+            return connections[goal.id]
         }
     }
 
