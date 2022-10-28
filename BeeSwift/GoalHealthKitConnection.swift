@@ -238,9 +238,15 @@ class GoalHealthKitConnection {
         query.initialResultsHandler = {
             query, collection, error in
             self.logger.notice("Initial Data: setupHKStatisticsCollectionQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+
+            guard error == nil else {
+                self.logger.error("setupHKStatisticsCollectionQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error in initial results \(error)")
+                return
+            }
             
             guard let statsCollection = collection else {
                 // Perform proper error handling here
+                self.logger.error("setupHKStatisticsCollectionQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): collection was nil")
                 return
             }
             Task(priority: .background) {
@@ -254,10 +260,18 @@ class GoalHealthKitConnection {
         
         query.statisticsUpdateHandler = {
             query, statistics, collection, error in
-            self.logger.notice("Statistics Update: setupHKStatisticsCollectionQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+            self.logger.error("statisticsUpdateHandler(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Start")
+
+            guard error == nil else {
+                self.logger.error("statisticsUpdateHandler(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error \(error)")
+                return
+            }
             
             if HKHealthStore.isHealthDataAvailable() {
-                guard let statsCollection = collection else { return }
+                guard let statsCollection = collection else {
+                    self.logger.error("statisticsUpdateHandler(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Collection is nil")
+                    return
+                }
 
                 Task {
                     do {
@@ -266,6 +280,8 @@ class GoalHealthKitConnection {
                         self.logger.error("Error updating beeminder based on statistics update \(query) error: \(error)")
                     }
                 }
+            } else {
+                self.logger.warning("statisticsUpdateHandler(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Heath Data Not Available")
             }
         }
         healthStore.execute(query)
@@ -274,9 +290,11 @@ class GoalHealthKitConnection {
     }
     
     func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection) async throws {
+        logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Started")
         let endDate = Date()
         let calendar = Calendar.current
         guard let startDate = calendar.date(byAdding: .day, value: -5, to: endDate) else {
+            logger.error("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): No startDate")
             return
         }
 
@@ -288,15 +306,25 @@ class GoalHealthKitConnection {
             })
         }
 
+        logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Considering \(collection.statistics().count) points")
         for statistics in collection.statistics() {
             // Ignore statistics which are entirely outside our window
             if statistics.endDate < startDate || statistics.startDate > endDate {
                 continue
             }
 
+            logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Processing data for \(statistics.startDate, privacy: .public)")
+
             let units = try await healthStore.preferredUnits(for: [statistics.quantityType])
-            guard let unit = units.first?.value else { return }
-            guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else { return }
+            guard let unit = units.first?.value else {
+                logger.error("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): No preferred units")
+                return
+
+            }
+            guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
+                logger.error("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): No quantityTypeIdentifier")
+                return
+            }
 
             guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
                 fatalError("*** Unable to create a quantity type ***")
@@ -313,7 +341,10 @@ class GoalHealthKitConnection {
                 }
             }()
 
-            guard let datapointValue = value else { return }
+            guard let datapointValue = value else {
+                logger.error("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): No datapoint value")
+                return
+            }
 
             let startDate = statistics.startDate
             let endDate = statistics.endDate
@@ -325,6 +356,7 @@ class GoalHealthKitConnection {
 
             try await self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints)
         }
+        logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Completed")
     }
     
     private func runStatsQuery(dayOffset : Int) async throws {
