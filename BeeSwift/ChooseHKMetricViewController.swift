@@ -8,8 +8,10 @@
 
 import UIKit
 import HealthKit
+import OSLog
 
 class ChooseHKMetricViewController: UIViewController {
+    fileprivate let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ChooseHKMetricViewController")
     fileprivate let cellReuseIdentifier = "hkMetricTableViewCell"
     fileprivate var tableView = UITableView()
     var goal : JSONGoal!
@@ -73,47 +75,54 @@ class ChooseHKMetricViewController: UIViewController {
     
     @objc func saveButtonPressed() {
         guard let selectedRow = self.tableView.indexPathForSelectedRow?.row else { return }
-        guard let healthStore = HealthStoreManager.sharedManager.healthStore else { return }
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
         let metric = self.sortedHKMetrics[selectedRow]
-        if metric.hkIdentifier != nil {
-            let metricType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
-            healthStore.requestAuthorization(toShare: nil, read: [metricType], completion: { (success, error) in
-                self.saveMetric(databaseString: metric.databaseString!)
-            })
-        } else if metric.hkCategoryTypeIdentifier != nil {
-            let categoryType = HKObjectType.categoryType(forIdentifier: metric.hkCategoryTypeIdentifier!)
-            healthStore.requestAuthorization(toShare: nil, read: [categoryType!], completion: { (success, error) in
-                self.saveMetric(databaseString: metric.databaseString!)
-            })
+
+        Task(priority: .userInitiated) {
+            do {
+                try await HealthStoreManager.sharedManager.requestAuthorization(metric: metric)
+            } catch {
+                logger.error("Error requesting authorization \(error)")
+                hud?.hide(true)
+                return
+            }
+            self.saveMetric(databaseString: metric.databaseString!)
         }
-        
     }
     
     func saveMetric(databaseString : String) {
+        let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+
         self.goal!.healthKitMetric = databaseString
         self.goal!.autodata = "apple"
-        HealthStoreManager.sharedManager.setupHealthKitGoal(goal: self.goal!)
-        
-        var params : [String : [String : String]] = [:]
-        params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
-        
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
-                let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+        Task {
+            do {
+                try await HealthStoreManager.sharedManager.setupHealthKitGoal(goal: self.goal!)
+            } catch {
+                logger.error("Error setting up goal \(error)")
+                hud?.hide(true)
+                return
+            }
+            
+            var params : [String : [String : String]] = [:]
+            params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
+            
+            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
                 hud?.hide(true, afterDelay: 2)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.navigationController?.popViewController(animated: true)
                 }
-        }) { (responseError, errorMessage) -> Void in
-            self.tableView.reloadData()
-            if let errorString = responseError?.localizedDescription {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-                let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+            }) { (responseError, errorMessage) -> Void in
+                self.tableView.reloadData()
+                if let errorString = responseError?.localizedDescription {
+                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                    let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                }
             }
         }
     }

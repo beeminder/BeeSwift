@@ -380,9 +380,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func setupHealthKit() {
-        // TODO: We could potentially merge these together?
-        HealthStoreManager.sharedManager.requestAuthorization(goals: self.goals) { (success, error) in
-            HealthStoreManager.sharedManager.setupHealthKitGoals(goals: self.goals)
+        Task {
+            do {
+                try await HealthStoreManager.sharedManager.setupHealthKitGoals(goals: self.goals)
+            } catch {
+                // We should display an error UI
+            }
         }
     }
     

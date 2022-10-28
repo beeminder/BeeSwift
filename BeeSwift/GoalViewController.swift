@@ -348,15 +348,19 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     private func syncHealthDataButtonPressed(numDays: Int) {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        HealthStoreManager.sharedManager.syncHealthKitData(goal: self.goal, days: numDays, success: {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
-            })
-        }) {
-            DispatchQueue.main.async {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        Task {
+            do {
+                try await HealthStoreManager.sharedManager.syncHealthKitData(goal: self.goal, days: numDays)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                    hud?.mode = .customView
+                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                    hud?.hide(true, afterDelay: 2)
+                })
+            } catch {
+                // TODO: Log this error?
+                DispatchQueue.main.async {
+                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                }
             }
         }
     }
