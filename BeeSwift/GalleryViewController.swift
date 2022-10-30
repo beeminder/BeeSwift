@@ -12,9 +12,12 @@ import MBProgressHUD
 import SwiftyJSON
 import HealthKit
 import SafariServices
+import OSLog
 
 
-class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {    
+class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {
+    let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
+
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewFlowLayout?
     let lastUpdatedView = UIView()
@@ -34,6 +37,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        logger.notice("viewDidLoad")
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
@@ -360,6 +365,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func didFetchGoals() {
+        logger.notice("didFetchGoals")
         self.sortGoals()
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
@@ -390,6 +396,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func fetchGoals() {
+        logger.notice("fetchGoals")
         if self.goals.count == 0 {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }

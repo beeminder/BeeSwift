@@ -32,6 +32,7 @@ class HealthStoreManager :NSObject {
             return nil
         } else {
             if connections[goal.id] == nil {
+                logger.notice("Creating connection for \(goal.slug, privacy: .public) (\(goal.id, privacy: .public)) to metric \(goal.healthKitMetric ?? "nil", privacy: .public)")
                 connections[goal.id] = GoalHealthKitConnection(healthStore: healthStore!, goal: goal)
             }
             return connections[goal.id]
@@ -55,6 +56,7 @@ class HealthStoreManager :NSObject {
     }
 
     func requestAuthorization(metric: HealthKitMetric) async throws {
+        logger.notice("requestAuthorization for \(metric.databaseString ?? "nil", privacy: .public)")
         ensureHealthStoreCreated()
 
         var sampleType: HKSampleType?
@@ -74,7 +76,9 @@ class HealthStoreManager :NSObject {
     }
 
     func setupHealthKitGoals(goals: [JSONGoal]) async throws {
+        logger.notice("setupHealthKitGoals for \(goals.count, privacy: .public) goals")
         ensureHealthStoreCreated();
+
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
 
         var permissions = Set<HKObjectType>()
@@ -99,7 +103,9 @@ class HealthStoreManager :NSObject {
     }
 
     func registerObserverQueries(goals: [JSONGoal]) {
+        logger.notice("registerObserverQueries")
         ensureHealthStoreCreated()
+
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
         for connection in goalConnections {
             connection.registerObserverQuery()
@@ -107,7 +113,9 @@ class HealthStoreManager :NSObject {
     }
 
     func syncHealthKitData(goal: JSONGoal, days: Int) async throws {
+        logger.notice("syncHealthKitData")
         ensureHealthStoreCreated();
+
         guard let connection = self.connectionFor(goal: goal) else {
             throw RuntimeError("Failed to find connection for goal")
         }

@@ -35,7 +35,10 @@ class GoalHealthKitConnection {
     }
 
     func registerObserverQuery() {
+        logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): requested")
+
         if haveRegisteredObserverQuery {
+            logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): skipping because done before")
             return
         }
 
@@ -50,6 +53,7 @@ class GoalHealthKitConnection {
             // big trouble
             logger.error("Failed to register query for \(self.goal.healthKitMetric ?? "nil", privacy: .public) with neither hkQuantityTypeIdentifier nor hkSampleType")
         }
+        logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): done")
     }
 
     func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
@@ -244,35 +248,38 @@ class GoalHealthKitConnection {
                                                 intervalComponents: interval)
         query.initialResultsHandler = {
             query, collection, error in
-            self.logger.notice("Initial Data: setupHKStatisticsCollectionQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+            self.logger.notice("setupHKStatisticsCollectionQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)).initialData: Started")
+
+            self.logger.notice("setupHKStatisticsCollectionQuery.initialData(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Collection \(collection, privacy: .public)")
+            self.logger.notice("setupHKStatisticsCollectionQuery.initialData(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error \(error, privacy: .public)")
 
             guard error == nil else {
-                self.logger.error("setupHKStatisticsCollectionQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error in initial results \(error)")
+                self.logger.error("setupHKStatisticsCollectionQuery.initialData(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error in initial results \(error)")
                 return
             }
             
             guard let statsCollection = collection else {
                 // Perform proper error handling here
-                self.logger.error("setupHKStatisticsCollectionQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): collection was nil")
+                self.logger.error("setupHKStatisticsCollectionQuery.initialData(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): collection was nil")
                 return
             }
             Task(priority: .background) {
                 do {
                     try await self.updateBeeminderWithStatsCollection(collection: statsCollection)
                 } catch {
-                    self.logger.error("Error updating beeminder based on initial results \(query) error: \(error)")
+                    self.logger.error("setupHKStatisticsCollectionQuery.initialData(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error updating beeminder error: \(error)")
                 }
             }
+            self.logger.notice("setupHKStatisticsCollectionQuery.initialData(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Done")
         }
         
         query.statisticsUpdateHandler = {
             query, statistics, collection, error in
-            self.logger.error("statisticsUpdateHandler(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Start")
+            self.logger.notice("statisticsUpdateHandler(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Start")
 
-            guard error == nil else {
-                self.logger.error("statisticsUpdateHandler(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error \(error)")
-                return
-            }
+            self.logger.notice("statisticsUpdateHandler(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Statistics \(statistics, privacy: .public)")
+            self.logger.notice("statisticsUpdateHandler(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Collection \(collection, privacy: .public)")
+            self.logger.notice("statisticsUpdateHandler(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error \(error, privacy: .public)")
             
             if HKHealthStore.isHealthDataAvailable() {
                 guard let statsCollection = collection else {
@@ -352,6 +359,8 @@ class GoalHealthKitConnection {
                 logger.error("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): No datapoint value")
                 return
             }
+
+            logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): \(statistics.startDate, privacy: .public) value is \(datapointValue, privacy: .public)")
 
             let startDate = statistics.startDate
             let endDate = statistics.endDate
@@ -487,12 +496,15 @@ class GoalHealthKitConnection {
     }
 
     private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, recentDatapoints: [JSON]) async throws {
+        logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Daystamp \(daystamp, privacy: .public) value \(datapointValue, privacy: .public)")
         if datapointValue == 0  {
             return
         }
 
         var matchingDatapoints = self.goal.datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: daystamp)
         if matchingDatapoints.count == 0 {
+            logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Creating new point (none match)")
+
             let requestId = "\(daystamp)-\(self.goal.minuteStamp())"
             let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
 
@@ -500,6 +512,7 @@ class GoalHealthKitConnection {
                 self.goal.postDatapoint(params: params, success: { (responseObject) in
                     continuation.resume()
                 }, failure: { (error, errorMessage) in
+                    self.logger.error("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error creating new point: \(error, privacy: .public) - \(errorMessage ?? "nil", privacy: .public)")
                     continuation.resume(throwing: error!)
                 })
             }
@@ -508,13 +521,16 @@ class GoalHealthKitConnection {
         } else if matchingDatapoints.count >= 1 {
             let firstDatapoint = matchingDatapoints.remove(at: 0)
             matchingDatapoints.forEach { datapoint in
+                logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Deleting data point \(datapoint["id"].string ?? "nil", privacy: .public)")
                 self.goal.deleteDatapoint(datapoint: datapoint)
             }
 
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Updating data point \(firstDatapoint["id"].string ?? "nil", privacy: .public) with value \(datapointValue, privacy: .public)")
                 self.goal.updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue, success: {
                     continuation.resume()
                 }, errorCompletion: {
+                    self.logger.error("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error updating point")
                     continuation.resume(throwing: RuntimeError("Error updating data point"))
                 })
             }
