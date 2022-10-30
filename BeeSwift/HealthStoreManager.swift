@@ -26,14 +26,20 @@ class HealthStoreManager :NSObject {
 
     /// Gets or creates an appropriate connection object for the supplied goal
     private func connectionFor(goal: JSONGoal) -> GoalHealthKitConnection? {
-        if goal.healthKitMetric == "" {
+        if (goal.healthKitMetric ?? "") == "" {
             // Goal does not have a metric. Make sure any connection is removed
             connections.removeValue(forKey: goal.id)
             return nil
         } else {
             if connections[goal.id] == nil {
                 logger.notice("Creating connection for \(goal.slug, privacy: .public) (\(goal.id, privacy: .public)) to metric \(goal.healthKitMetric ?? "nil", privacy: .public)")
-                connections[goal.id] = GoalHealthKitConnection(healthStore: healthStore!, goal: goal)
+
+                guard let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
+                    metric.databaseString == goal.healthKitMetric
+                }) else {
+                    return nil
+                }
+                connections[goal.id] = GoalHealthKitConnection(healthStore: healthStore!, goal: goal, hkQuantityTypeIdentifier: metric.hkIdentifier, hkCategoryTypeIdentifier: metric.hkCategoryTypeIdentifier)
             }
             return connections[goal.id]
         }

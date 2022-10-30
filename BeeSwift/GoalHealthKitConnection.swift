@@ -15,11 +15,17 @@ class GoalHealthKitConnection {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
     let healthStore: HKHealthStore
     let goal : JSONGoal
+    let hkQuantityTypeIdentifier: HKQuantityTypeIdentifier?
+    let hkCategoryTypeIdentifier: HKCategoryTypeIdentifier?
+
+
     var haveRegisteredObserverQuery = false
 
-    init(healthStore: HKHealthStore, goal: JSONGoal) {
+    init(healthStore: HKHealthStore, goal: JSONGoal, hkQuantityTypeIdentifier: HKQuantityTypeIdentifier?, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier?) {
         self.healthStore = healthStore
         self.goal = goal
+        self.hkQuantityTypeIdentifier = hkQuantityTypeIdentifier
+        self.hkCategoryTypeIdentifier = hkCategoryTypeIdentifier
     }
     
     private enum HKQueryResult {
@@ -42,7 +48,7 @@ class GoalHealthKitConnection {
             return
         }
 
-        if self.hkQuantityTypeIdentifier() != nil {
+        if self.hkQuantityTypeIdentifier != nil {
             self.setupHKStatisticsCollectionQuery()
             haveRegisteredObserverQuery = true
         }
@@ -55,25 +61,13 @@ class GoalHealthKitConnection {
         }
         logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): done")
     }
-
-    func hkQuantityTypeIdentifier() -> HKQuantityTypeIdentifier? {
-        return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
-            metric.databaseString == self.goal.healthKitMetric
-            }?.hkIdentifier
-    }
-
-    func hkCategoryTypeIdentifier() -> HKCategoryTypeIdentifier? {
-        return HealthKitConfig.shared.metrics.first { (metric) -> Bool in
-            metric.databaseString == self.goal.healthKitMetric
-            }?.hkCategoryTypeIdentifier
-    }
     
     func hkSampleType() -> HKSampleType? {
-        if self.hkQuantityTypeIdentifier() != nil {
-            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
+        if self.hkQuantityTypeIdentifier != nil {
+            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier!)
         }
-        if self.hkCategoryTypeIdentifier() != nil {
-            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        if self.hkCategoryTypeIdentifier != nil {
+            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier!)
         }
         return nil
     }
@@ -94,17 +88,17 @@ class GoalHealthKitConnection {
     }
     
     func hkPermissionType() -> HKObjectType? {
-        if self.hkQuantityTypeIdentifier() != nil {
-            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!)
-        } else if self.hkCategoryTypeIdentifier() != nil {
-            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier()!)
+        if self.hkQuantityTypeIdentifier != nil {
+            return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier!)
+        } else if self.hkCategoryTypeIdentifier != nil {
+            return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier!)
         }
         return nil
     }
     
     func hkQueryForLast(days : Int) async throws {
         for dayOffset in ((-1*days + 1)...0) {
-            if self.hkQuantityTypeIdentifier() != nil {
+            if self.hkQuantityTypeIdentifier != nil {
                 try await self.runStatsQuery(dayOffset: dayOffset)
             } else {
                 try await self.runCategoryTypeQuery(dayOffset: dayOffset)
@@ -152,12 +146,12 @@ class GoalHealthKitConnection {
             if (self.goal.healthKitMetric == "timeAsleep" && s.value != HKCategoryValueSleepAnalysis.asleep.rawValue) ||
                 (self.goal.healthKitMetric == "timeInBed" && s.value != HKCategoryValueSleepAnalysis.inBed.rawValue) {
                 return 0
-            } else if self.hkCategoryTypeIdentifier() == .appleStandHour {
+            } else if self.hkCategoryTypeIdentifier == .appleStandHour {
                 return Double(s.value)
-            } else if self.hkCategoryTypeIdentifier() == .sleepAnalysis {
+            } else if self.hkCategoryTypeIdentifier == .sleepAnalysis {
                 return s.endDate.timeIntervalSince(s.startDate)/3600.0
             }
-            if self.hkCategoryTypeIdentifier() == .mindfulSession {
+            if self.hkCategoryTypeIdentifier == .mindfulSession {
                 return s.endDate.timeIntervalSince(s.startDate)/60.0
             }
         }
@@ -217,8 +211,8 @@ class GoalHealthKitConnection {
     func setupHKStatisticsCollectionQuery() {
         logger.notice("Starting: setupHKStatisticsCollectionQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
 
-        if ((self.hkQuantityTypeIdentifier() == nil)) { return }
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
+        if ((self.hkQuantityTypeIdentifier == nil)) { return }
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier!) else { return }
         
         let calendar = Calendar.current
         var interval = DateComponents()
@@ -335,7 +329,7 @@ class GoalHealthKitConnection {
                 return
 
             }
-            guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
+            guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier else {
                 logger.error("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): No quantityTypeIdentifier")
                 return
             }
@@ -383,7 +377,7 @@ class GoalHealthKitConnection {
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
         
         var options : HKStatisticsOptions
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier()!) else { return }
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier!) else { return }
         if quantityType.aggregationStyle == .cumulative {
             options = .cumulativeSum
         } else {
@@ -404,7 +398,7 @@ class GoalHealthKitConnection {
             healthStore.execute(statsQuery)
         })
 
-        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier() else {
+        guard let quantityTypeIdentifier = self.hkQuantityTypeIdentifier else {
             return
         }
         guard let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
