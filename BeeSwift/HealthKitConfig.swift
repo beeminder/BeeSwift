@@ -12,11 +12,21 @@ import HealthKit
 struct HealthKitMetric {
     let humanText : String
     let databaseString : String?
-    let hkIdentifier : HKQuantityTypeIdentifier?
-    let hkCategoryTypeIdentifier : HKCategoryTypeIdentifier?
+    fileprivate let hkIdentifier : HKQuantityTypeIdentifier?
+    fileprivate let hkCategoryTypeIdentifier : HKCategoryTypeIdentifier?
 
     func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection {
         return GoalHealthKitConnection(healthStore: healthStore, goal: goal, hkQuantityTypeIdentifier: hkIdentifier, hkCategoryTypeIdentifier: hkCategoryTypeIdentifier)
+    }
+
+    func sampleType() throws -> HKSampleType {
+        if hkIdentifier != nil {
+            return HKObjectType.quantityType(forIdentifier: hkIdentifier!)!
+        } else if hkCategoryTypeIdentifier != nil {
+            return HKObjectType.categoryType(forIdentifier: hkCategoryTypeIdentifier!)!
+        } else {
+            throw RuntimeError("No identifier or category for metric \(self)")
+        }
     }
 }
 

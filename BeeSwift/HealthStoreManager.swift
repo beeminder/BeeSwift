@@ -65,16 +65,7 @@ class HealthStoreManager :NSObject {
         logger.notice("requestAuthorization for \(metric.databaseString ?? "nil", privacy: .public)")
         ensureHealthStoreCreated()
 
-        var sampleType: HKSampleType?
-        if metric.hkIdentifier != nil {
-            sampleType = HKObjectType.quantityType(forIdentifier: metric.hkIdentifier!)!
-        } else if metric.hkCategoryTypeIdentifier != nil {
-            sampleType = HKObjectType.categoryType(forIdentifier: metric.hkCategoryTypeIdentifier!)
-        } else {
-            throw RuntimeError("No identifier or category for metric \(metric)")
-        }
-
-        try await self.requestAuthorization(read: [sampleType!])
+        try await self.requestAuthorization(read: [metric.sampleType()])
     }
 
     func setupHealthKitGoal(goal: JSONGoal) async throws {
