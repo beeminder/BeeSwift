@@ -23,7 +23,7 @@ struct QuantityHealthKitMetric : HealthKitMetric {
     fileprivate let hkIdentifier : HKQuantityTypeIdentifier
 
     func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection {
-        return GoalHealthKitConnection(healthStore: healthStore, goal: goal, hkQuantityTypeIdentifier: hkIdentifier, hkCategoryTypeIdentifier: nil)
+        return GoalQuantityHealthKitConnection(healthStore: healthStore, goal: goal, hkQuantityTypeIdentifier: hkIdentifier)
     }
 
     func sampleType() throws -> HKSampleType {
@@ -37,7 +37,7 @@ struct CategoryHealthKitMetric : HealthKitMetric {
     fileprivate let hkCategoryTypeIdentifier : HKCategoryTypeIdentifier
 
     func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection {
-        return GoalHealthKitConnection(healthStore: healthStore, goal: goal, hkQuantityTypeIdentifier: nil, hkCategoryTypeIdentifier: hkCategoryTypeIdentifier)
+        return GoalCategoryHealthKitConnection(healthStore: healthStore, goal: goal, hkCategoryTypeIdentifier: hkCategoryTypeIdentifier)
     }
 
     func sampleType() throws -> HKSampleType {
