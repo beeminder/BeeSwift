@@ -39,7 +39,7 @@ class HealthStoreManager :NSObject {
                 }) else {
                     return nil
                 }
-                connections[goal.id] = GoalHealthKitConnection(healthStore: healthStore!, goal: goal, hkQuantityTypeIdentifier: metric.hkIdentifier, hkCategoryTypeIdentifier: metric.hkCategoryTypeIdentifier)
+                connections[goal.id] = metric.createConnection(healthStore: healthStore!, goal: goal)
             }
             return connections[goal.id]
         }
@@ -126,18 +126,5 @@ class HealthStoreManager :NSObject {
             throw RuntimeError("Failed to find connection for goal")
         }
         try await connection.hkQueryForLast(days: days)
-    }
-}
-
-// TODO: More descriptive error?
-struct RuntimeError: Error {
-    let message: String
-
-    init(_ message: String) {
-        self.message = message
-    }
-
-    public var localizedDescription: String {
-        return message
     }
 }

@@ -14,6 +14,10 @@ struct HealthKitMetric {
     let databaseString : String?
     let hkIdentifier : HKQuantityTypeIdentifier?
     let hkCategoryTypeIdentifier : HKCategoryTypeIdentifier?
+
+    func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection {
+        return GoalHealthKitConnection(healthStore: healthStore, goal: goal, hkQuantityTypeIdentifier: hkIdentifier, hkCategoryTypeIdentifier: hkCategoryTypeIdentifier)
+    }
 }
 
 class HealthKitConfig : NSObject {

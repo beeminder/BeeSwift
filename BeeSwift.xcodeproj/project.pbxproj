@@ -28,7 +28,6 @@
 		A142492A1FD0788F007736B3 /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11488BD1EE9B0CE003316E1 /* UIDevice.swift */; };
 		A142492D1FD079B4007736B3 /* SignedRequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A142492C1FD079B4007736B3 /* SignedRequestManager.swift */; };
 		A142492E1FD0A56A007736B3 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A158DDB51E46EEA10031BD4F /* HealthKit.framework */; };
-		A14249301FD0A5A4007736B3 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
 		A1453B351AED9184006F48DA /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B341AED9184006F48DA /* UIColorExtension.swift */; };
 		A1453B391AEDA71D006F48DA /* BSLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B381AEDA71D006F48DA /* BSLabel.swift */; };
 		A1453B3D1AEDFA52006F48DA /* CurrentUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */; };
@@ -82,6 +81,10 @@
 		E4B0A33028C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A33128C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
+		E4E6426A290E22E6004F3EA9 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
+		E4E6426B290E22E9004F3EA9 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
+		E4E6426C290E22EF004F3EA9 /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */; };
+		E4E6426D290E22F0004F3EA9 /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */; };
 		E52094FE2741D72300CB766F /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */; };
 		E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E557610026549DD10076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
@@ -102,7 +105,6 @@
 		E5CF51832612434A00546184 /* BSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1781AB21DE50F59000B96C5 /* BSTextField.swift */; };
 		E5CF51892612434E00546184 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B341AED9184006F48DA /* UIColorExtension.swift */; };
 		E5CF518F2612435000546184 /* UIFontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */; };
-		E5CF51952612435800546184 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
 		E5CF519B2612435B00546184 /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11488BD1EE9B0CE003316E1 /* UIDevice.swift */; };
 		E5CF51A12612436200546184 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
 		E5CF51A72612436200546184 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
@@ -1068,12 +1070,13 @@
 				A12E69511BD3EF0200AB94C2 /* TodayViewController.swift in Sources */,
 				A1D853291EB0EA2400FC75DE /* BSLabel.swift in Sources */,
 				A1D8532A1EB0EA2B00FC75DE /* BSButton.swift in Sources */,
-				A14249301FD0A5A4007736B3 /* HealthKitConfig.swift in Sources */,
+				E4E6426A290E22E6004F3EA9 /* HealthKitConfig.swift in Sources */,
 				A1D8532D1EB0EA8100FC75DE /* UIColorExtension.swift in Sources */,
 				A142492A1FD0788F007736B3 /* UIDevice.swift in Sources */,
 				A1D8532C1EB0EA5700FC75DE /* UIFontExtension.swift in Sources */,
 				A1D853261EB0332D00FC75DE /* Constants.swift in Sources */,
 				A14249211FD07514007736B3 /* CurrentUserManager.swift in Sources */,
+				E4E6426C290E22EF004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
 				A13C9CFB2345C18D002912C4 /* JSONGoal.swift in Sources */,
 				A142491F1FD073EC007736B3 /* RequestManager.swift in Sources */,
 				A1D8532B1EB0EA2D00FC75DE /* BSTextField.swift in Sources */,
@@ -1163,14 +1166,15 @@
 			files = (
 				E5CF51832612434A00546184 /* BSTextField.swift in Sources */,
 				E55FAB19261240F800A0CF88 /* CurrentUserManager.swift in Sources */,
-				E5CF51952612435800546184 /* HealthKitConfig.swift in Sources */,
 				E5F7C55026113C330095684F /* AddDataIntents.intentdefinition in Sources */,
 				E5CF51AD2612437400546184 /* JSONGoal.swift in Sources */,
+				E4E6426B290E22E9004F3EA9 /* HealthKitConfig.swift in Sources */,
 				E5CF51822612434700546184 /* BSLabel.swift in Sources */,
 				E557610026549DD10076B95A /* AddDataIntentHandler.swift in Sources */,
 				E5CF51702612432400546184 /* RequestManager.swift in Sources */,
 				E5CF519B2612435B00546184 /* UIDevice.swift in Sources */,
 				E5CF516A2612431600546184 /* Constants.swift in Sources */,
+				E4E6426D290E22F0004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
 				E5CF517C2612434300546184 /* BSButton.swift in Sources */,
 				E5CF51892612434E00546184 /* UIColorExtension.swift in Sources */,
 				E457BE5D28C192B50012F5D0 /* IntentHandler.swift in Sources */,
