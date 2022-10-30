@@ -9,24 +9,39 @@
 import Foundation
 import HealthKit
 
-struct HealthKitMetric {
+protocol HealthKitMetric {
+    var humanText : String { get }
+    var databaseString : String { get }
+
+    func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection
+    func sampleType() throws -> HKSampleType
+}
+
+struct QuantityHealthKitMetric : HealthKitMetric {
     let humanText : String
-    let databaseString : String?
-    fileprivate let hkIdentifier : HKQuantityTypeIdentifier?
-    fileprivate let hkCategoryTypeIdentifier : HKCategoryTypeIdentifier?
+    let databaseString : String
+    fileprivate let hkIdentifier : HKQuantityTypeIdentifier
 
     func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection {
-        return GoalHealthKitConnection(healthStore: healthStore, goal: goal, hkQuantityTypeIdentifier: hkIdentifier, hkCategoryTypeIdentifier: hkCategoryTypeIdentifier)
+        return GoalHealthKitConnection(healthStore: healthStore, goal: goal, hkQuantityTypeIdentifier: hkIdentifier, hkCategoryTypeIdentifier: nil)
     }
 
     func sampleType() throws -> HKSampleType {
-        if hkIdentifier != nil {
-            return HKObjectType.quantityType(forIdentifier: hkIdentifier!)!
-        } else if hkCategoryTypeIdentifier != nil {
-            return HKObjectType.categoryType(forIdentifier: hkCategoryTypeIdentifier!)!
-        } else {
-            throw RuntimeError("No identifier or category for metric \(self)")
-        }
+        return HKObjectType.quantityType(forIdentifier: hkIdentifier)!
+    }
+}
+
+struct CategoryHealthKitMetric : HealthKitMetric {
+    let humanText : String
+    let databaseString : String
+    fileprivate let hkCategoryTypeIdentifier : HKCategoryTypeIdentifier
+
+    func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection {
+        return GoalHealthKitConnection(healthStore: healthStore, goal: goal, hkQuantityTypeIdentifier: nil, hkCategoryTypeIdentifier: hkCategoryTypeIdentifier)
+    }
+
+    func sampleType() throws -> HKSampleType {
+        return HKObjectType.categoryType(forIdentifier: hkCategoryTypeIdentifier)!
     }
 }
 
@@ -34,33 +49,29 @@ class HealthKitConfig : NSObject {
     static let shared = HealthKitConfig()
     
     var metrics : [HealthKitMetric] {
-        var mets = [
-            HealthKitMetric.init(humanText: "Steps", databaseString: "steps", hkIdentifier: HKQuantityTypeIdentifier.stepCount, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Active energy", databaseString: "activeEnergy", hkIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Exercise time", databaseString: "exerciseTime", hkIdentifier: HKQuantityTypeIdentifier.appleExerciseTime, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Weight", databaseString: "weight", hkIdentifier: HKQuantityTypeIdentifier.bodyMass, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Cycling distance", databaseString: "cyclingDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceCycling, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Walking/running distance", databaseString: "walkRunDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceWalkingRunning, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Nike Fuel", databaseString: "nikeFuel", hkIdentifier: HKQuantityTypeIdentifier.nikeFuel, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Water", databaseString: "water", hkIdentifier: HKQuantityTypeIdentifier.dietaryWater, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Time in bed", databaseString: "timeInBed", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.sleepAnalysis),
-            HealthKitMetric.init(humanText: "Time asleep", databaseString: "timeAsleep", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.sleepAnalysis),
-//            HealthKitMetric.init(humanText: "Stand hours", databaseString: "standHour", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.appleStandHour),
-            HealthKitMetric.init(humanText: "Resting energy", databaseString: "basalEnergy", hkIdentifier: HKQuantityTypeIdentifier.basalEnergyBurned, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Dietary energy", databaseString: "dietaryEnergy", hkIdentifier: HKQuantityTypeIdentifier.dietaryEnergyConsumed, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Dietary protein", databaseString: "dietaryProtein", hkIdentifier: HKQuantityTypeIdentifier.dietaryProtein, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Dietary sugar", databaseString: "dietarySugar", hkIdentifier: HKQuantityTypeIdentifier.dietarySugar, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Dietary carbs", databaseString: "dietaryCarbs", hkIdentifier: HKQuantityTypeIdentifier.dietaryCarbohydrates, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Dietary fat", databaseString: "dietaryFat", hkIdentifier: HKQuantityTypeIdentifier.dietaryFatTotal, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Dietary saturated fat", databaseString: "dietarySaturatedFat", hkIdentifier: HKQuantityTypeIdentifier.dietaryFatSaturated, hkCategoryTypeIdentifier: nil),
-            HealthKitMetric.init(humanText: "Dietary sodium", databaseString: "dietarySodium", hkIdentifier: HKQuantityTypeIdentifier.dietarySodium, hkCategoryTypeIdentifier: nil),
-            
+        return [
+            QuantityHealthKitMetric.init(humanText: "Steps", databaseString: "steps", hkIdentifier: HKQuantityTypeIdentifier.stepCount),
+            QuantityHealthKitMetric.init(humanText: "Active energy", databaseString: "activeEnergy", hkIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned),
+            QuantityHealthKitMetric.init(humanText: "Exercise time", databaseString: "exerciseTime", hkIdentifier: HKQuantityTypeIdentifier.appleExerciseTime),
+            QuantityHealthKitMetric.init(humanText: "Weight", databaseString: "weight", hkIdentifier: HKQuantityTypeIdentifier.bodyMass),
+            QuantityHealthKitMetric.init(humanText: "Cycling distance", databaseString: "cyclingDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceCycling),
+            QuantityHealthKitMetric.init(humanText: "Walking/running distance", databaseString: "walkRunDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceWalkingRunning),
+            QuantityHealthKitMetric.init(humanText: "Nike Fuel", databaseString: "nikeFuel", hkIdentifier: HKQuantityTypeIdentifier.nikeFuel),
+            QuantityHealthKitMetric.init(humanText: "Water", databaseString: "water", hkIdentifier: HKQuantityTypeIdentifier.dietaryWater),
+            CategoryHealthKitMetric.init(humanText: "Time in bed", databaseString: "timeInBed", hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.sleepAnalysis),
+            CategoryHealthKitMetric.init(humanText: "Time asleep", databaseString: "timeAsleep", hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.sleepAnalysis),
+//            CategoryHealthKitMetric.init(humanText: "Stand hours", databaseString: "standHour", hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.appleStandHour),
+            QuantityHealthKitMetric.init(humanText: "Resting energy", databaseString: "basalEnergy", hkIdentifier: HKQuantityTypeIdentifier.basalEnergyBurned),
+            QuantityHealthKitMetric.init(humanText: "Dietary energy", databaseString: "dietaryEnergy", hkIdentifier: HKQuantityTypeIdentifier.dietaryEnergyConsumed),
+            QuantityHealthKitMetric.init(humanText: "Dietary protein", databaseString: "dietaryProtein", hkIdentifier: HKQuantityTypeIdentifier.dietaryProtein),
+            QuantityHealthKitMetric.init(humanText: "Dietary sugar", databaseString: "dietarySugar", hkIdentifier: HKQuantityTypeIdentifier.dietarySugar),
+            QuantityHealthKitMetric.init(humanText: "Dietary carbs", databaseString: "dietaryCarbs", hkIdentifier: HKQuantityTypeIdentifier.dietaryCarbohydrates),
+            QuantityHealthKitMetric.init(humanText: "Dietary fat", databaseString: "dietaryFat", hkIdentifier: HKQuantityTypeIdentifier.dietaryFatTotal),
+            QuantityHealthKitMetric.init(humanText: "Dietary saturated fat", databaseString: "dietarySaturatedFat", hkIdentifier: HKQuantityTypeIdentifier.dietaryFatSaturated),
+            QuantityHealthKitMetric.init(humanText: "Dietary sodium", databaseString: "dietarySodium", hkIdentifier: HKQuantityTypeIdentifier.dietarySodium),
+            QuantityHealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", hkIdentifier: HKQuantityTypeIdentifier.swimmingStrokeCount),
+            QuantityHealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceSwimming),
+            CategoryHealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.mindfulSession)
         ]
-        
-        mets.append(HealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", hkIdentifier: HKQuantityTypeIdentifier.swimmingStrokeCount, hkCategoryTypeIdentifier: nil))
-        mets.append(HealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", hkIdentifier: HKQuantityTypeIdentifier.distanceSwimming, hkCategoryTypeIdentifier: nil))
-        mets.append(HealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", hkIdentifier: nil, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.mindfulSession))
-
-        return mets
     }
 }

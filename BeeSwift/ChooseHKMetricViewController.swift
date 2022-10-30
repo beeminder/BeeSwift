@@ -87,7 +87,7 @@ class ChooseHKMetricViewController: UIViewController {
                 hud?.hide(true)
                 return
             }
-            self.saveMetric(databaseString: metric.databaseString!)
+            self.saveMetric(databaseString: metric.databaseString)
         }
     }
     
