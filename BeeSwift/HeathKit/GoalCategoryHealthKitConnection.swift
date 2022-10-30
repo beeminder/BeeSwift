@@ -31,7 +31,7 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
     override func setupQuery() {
         guard let sampleType = self.hkSampleType() else { return }
         let query = HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
-            self.logger.notice("ObserverQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) received update")
+            self.logger.notice("ObserverQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) received update query \(query, privacy: .public) error \(error, privacy: .public)")
             Task {
                 do {
                     try await self.hkQueryForLast(days: 1)
