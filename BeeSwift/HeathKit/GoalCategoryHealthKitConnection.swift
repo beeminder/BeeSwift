@@ -35,6 +35,7 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
             Task {
                 do {
                     try await self.hkQueryForLast(days: 1)
+                    completionHandler()
                 } catch {
                     self.logger.error("Error fetching data in response to observer query \(query) error: \(error)")
                 }
