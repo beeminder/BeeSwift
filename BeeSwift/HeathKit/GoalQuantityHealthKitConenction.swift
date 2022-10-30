@@ -9,7 +9,7 @@ import SwiftyJSON
 import HealthKit
 import OSLog
 
-class GoalQuantityHealthKitConnection : GoalHealthKitConnection {
+class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalQuantityHealthKitConnection")
 
     let hkQuantityTypeIdentifier: HKQuantityTypeIdentifier

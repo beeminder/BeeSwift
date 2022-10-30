@@ -83,15 +83,18 @@
 		E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4E6426A290E22E6004F3EA9 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
 		E4E6426B290E22E9004F3EA9 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
-		E4E6426C290E22EF004F3EA9 /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */; };
-		E4E6426D290E22F0004F3EA9 /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */; };
+		E4E6426C290E22EF004F3EA9 /* BaseGoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* BaseGoalHealthKitConnection.swift */; };
+		E4E6426D290E22F0004F3EA9 /* BaseGoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* BaseGoalHealthKitConnection.swift */; };
 		E4E64270290E2847004F3EA9 /* GoalQuantityHealthKitConenction.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6426F290E2847004F3EA9 /* GoalQuantityHealthKitConenction.swift */; };
 		E4E64272290E2899004F3EA9 /* GoalCategoryHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E64271290E2899004F3EA9 /* GoalCategoryHealthKitConnection.swift */; };
 		E4E64273290E293E004F3EA9 /* GoalCategoryHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E64271290E2899004F3EA9 /* GoalCategoryHealthKitConnection.swift */; };
 		E4E64274290E293F004F3EA9 /* GoalCategoryHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E64271290E2899004F3EA9 /* GoalCategoryHealthKitConnection.swift */; };
 		E4E64275290E2942004F3EA9 /* GoalQuantityHealthKitConenction.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6426F290E2847004F3EA9 /* GoalQuantityHealthKitConenction.swift */; };
 		E4E64276290E2943004F3EA9 /* GoalQuantityHealthKitConenction.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6426F290E2847004F3EA9 /* GoalQuantityHealthKitConenction.swift */; };
-		E52094FE2741D72300CB766F /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */; };
+		E4E64278290E3271004F3EA9 /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E64277290E3271004F3EA9 /* GoalHealthKitConnection.swift */; };
+		E4E64279290E32B8004F3EA9 /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E64277290E3271004F3EA9 /* GoalHealthKitConnection.swift */; };
+		E4E6427A290E32B9004F3EA9 /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E64277290E3271004F3EA9 /* GoalHealthKitConnection.swift */; };
+		E52094FE2741D72300CB766F /* BaseGoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* BaseGoalHealthKitConnection.swift */; };
 		E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E557610026549DD10076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E55FAB19261240F800A0CF88 /* CurrentUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */; };
@@ -287,7 +290,8 @@
 		E457BE5C28C192B50012F5D0 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
 		E4E6426F290E2847004F3EA9 /* GoalQuantityHealthKitConenction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalQuantityHealthKitConenction.swift; sourceTree = "<group>"; };
 		E4E64271290E2899004F3EA9 /* GoalCategoryHealthKitConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalCategoryHealthKitConnection.swift; sourceTree = "<group>"; };
-		E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalHealthKitConnection.swift; sourceTree = "<group>"; };
+		E4E64277290E3271004F3EA9 /* GoalHealthKitConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalHealthKitConnection.swift; sourceTree = "<group>"; };
+		E52094FD2741D72300CB766F /* BaseGoalHealthKitConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseGoalHealthKitConnection.swift; sourceTree = "<group>"; };
 		E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AddDataIntents.intentdefinition; sourceTree = "<group>"; };
 		E55760F426549D310076B95A /* AddDataIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataIntentHandler.swift; sourceTree = "<group>"; };
 		E55FEE6A23FF7552007C20B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -574,9 +578,10 @@
 			isa = PBXGroup;
 			children = (
 				A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */,
-				E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */,
+				E52094FD2741D72300CB766F /* BaseGoalHealthKitConnection.swift */,
 				E4E6426F290E2847004F3EA9 /* GoalQuantityHealthKitConenction.swift */,
 				E4E64271290E2899004F3EA9 /* GoalCategoryHealthKitConnection.swift */,
+				E4E64277290E3271004F3EA9 /* GoalHealthKitConnection.swift */,
 			);
 			path = HeathKit;
 			sourceTree = "<group>";
@@ -1095,8 +1100,9 @@
 				A1D853261EB0332D00FC75DE /* Constants.swift in Sources */,
 				A14249211FD07514007736B3 /* CurrentUserManager.swift in Sources */,
 				E4E64275290E2942004F3EA9 /* GoalQuantityHealthKitConenction.swift in Sources */,
-				E4E6426C290E22EF004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
+				E4E6426C290E22EF004F3EA9 /* BaseGoalHealthKitConnection.swift in Sources */,
 				A13C9CFB2345C18D002912C4 /* JSONGoal.swift in Sources */,
+				E4E64279290E32B8004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
 				A142491F1FD073EC007736B3 /* RequestManager.swift in Sources */,
 				A1D8532B1EB0EA2D00FC75DE /* BSTextField.swift in Sources */,
 				A1D853281EB0DE0700FC75DE /* TodayTableViewCell.swift in Sources */,
@@ -1125,8 +1131,9 @@
 				A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */,
 				A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */,
 				A1E619001E86980900D8ED93 /* HealthKitConfig.swift in Sources */,
+				E4E64278290E3271004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
 				A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */,
-				E52094FE2741D72300CB766F /* GoalHealthKitConnection.swift in Sources */,
+				E52094FE2741D72300CB766F /* BaseGoalHealthKitConnection.swift in Sources */,
 				A1453B391AEDA71D006F48DA /* BSLabel.swift in Sources */,
 				A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */,
 				A1F8F07B232C05410060B83E /* JSONGoal.swift in Sources */,
@@ -1197,8 +1204,9 @@
 				E5CF519B2612435B00546184 /* UIDevice.swift in Sources */,
 				E5CF516A2612431600546184 /* Constants.swift in Sources */,
 				E4E64276290E2943004F3EA9 /* GoalQuantityHealthKitConenction.swift in Sources */,
-				E4E6426D290E22F0004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
+				E4E6426D290E22F0004F3EA9 /* BaseGoalHealthKitConnection.swift in Sources */,
 				E5CF517C2612434300546184 /* BSButton.swift in Sources */,
+				E4E6427A290E32B9004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
 				E5CF51892612434E00546184 /* UIColorExtension.swift in Sources */,
 				E457BE5D28C192B50012F5D0 /* IntentHandler.swift in Sources */,
 				E5CF518F2612435000546184 /* UIFontExtension.swift in Sources */,

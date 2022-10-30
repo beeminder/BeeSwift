@@ -9,7 +9,7 @@ import Foundation
 import HealthKit
 import OSLog
 
-class GoalCategoryHealthKitConnection : GoalHealthKitConnection {
+class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalCategoryHealthKitConnection")
 
     let hkCategoryTypeIdentifier: HKCategoryTypeIdentifier
