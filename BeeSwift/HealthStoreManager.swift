@@ -46,8 +46,6 @@ class HealthStoreManager :NSObject {
     }
 
     private func requestAuthorization(read: Set<HKObjectType>) async throws {
-        // TODO: This should share code with GoalHealthKitConnection
-        // NOTE: Can be neater when we target iOS15
         try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Void, Error>) in
             self.healthStore!.requestAuthorization(toShare: nil, read: read) { success, error in
                 if error != nil {
