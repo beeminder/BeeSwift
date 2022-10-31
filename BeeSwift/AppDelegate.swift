@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // for a round trip to the server to fetch latest goals, so use a potentially stale
             // list from last time we did a successful update.
             if let goals = CurrentUserManager.sharedManager.staleGoals() {
-                HealthStoreManager.sharedManager.registerObserverQueries(goals: goals)
+                HealthStoreManager.sharedManager.silentlyInstallObservers(goals: goals)
             }
         }
         

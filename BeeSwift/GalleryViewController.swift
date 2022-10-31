@@ -388,7 +388,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func setupHealthKit() {
         Task {
             do {
-                try await HealthStoreManager.sharedManager.setupHealthKitGoals(goals: self.goals)
+                try await HealthStoreManager.sharedManager.ensureUpdatesRegularly(goals: self.goals)
             } catch {
                 // We should display an error UI
             }

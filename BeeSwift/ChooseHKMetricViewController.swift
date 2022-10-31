@@ -98,7 +98,7 @@ class ChooseHKMetricViewController: UIViewController {
         self.goal!.autodata = "apple"
         Task {
             do {
-                try await HealthStoreManager.sharedManager.setupHealthKitGoal(goal: self.goal!)
+                try await HealthStoreManager.sharedManager.ensureUpdatesRegularly(goal: self.goal!)
             } catch {
                 logger.error("Error setting up goal \(error)")
                 hud?.hide(true)

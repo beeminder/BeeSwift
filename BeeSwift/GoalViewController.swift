@@ -350,7 +350,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         hud?.mode = .indeterminate
         Task {
             do {
-                try await HealthStoreManager.sharedManager.syncHealthKitData(goal: self.goal, days: numDays)
+                try await HealthStoreManager.sharedManager.updateWithRecentData(goal: self.goal, days: numDays)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                     hud?.mode = .customView
                     hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
