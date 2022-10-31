@@ -23,7 +23,7 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
         self.goal = goal
     }
 
-    internal func runQuery(dayOffset : Int) async throws {
+    public func hkQueryForLast(days : Int) async throws {
         preconditionFailure("This method must be overridden")
     }
 
@@ -66,12 +66,6 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
         haveRegisteredObserverQuery = true
 
         logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): done")
-    }
-    
-    func hkQueryForLast(days : Int) async throws {
-        for dayOffset in ((-1*days + 1)...0) {
-            try await self.runQuery(dayOffset: dayOffset)
-        }
     }
     
     internal func predicateForDayOffset(dayOffset : Int) -> NSPredicate? {

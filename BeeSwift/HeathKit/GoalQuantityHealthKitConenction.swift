@@ -95,12 +95,10 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
         logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Completed")
     }
 
-    internal override func runQuery(dayOffset : Int) async throws {
-        logger.notice("Started: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) offset \(dayOffset)")
+    internal override func hkQueryForLast(days : Int) async throws {
+        logger.notice("Started: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) days \(days)")
 
         guard let sampleType = self.hkSampleType() else { return }
-        let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
-        let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
 
         var options : HKStatisticsOptions
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else { return }
@@ -109,44 +107,41 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
         } else {
             options = .discreteMin
         }
-
-        let statistics = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<HKStatistics, Error>) in
-            let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: options) { (query, statistics, error) in
-                if error != nil {
-                    continuation.resume(throwing: error!)
-                } else if statistics == nil {
-                    continuation.resume(throwing: RuntimeError("Statistics unexpectedly nil"))
-                } else {
-                    continuation.resume(returning: statistics!)
-                }
-
-            }
-            healthStore.execute(statsQuery)
-        })
-
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {
-            throw RuntimeError("*** Unable to create a quantity type ***")
-        }
-
         let units = try await healthStore.preferredUnits(for: [quantityType])
 
-        var datapointValue : Double?
-        guard let unit = units.first?.value else { return }
+        for dayOffset in ((-1*days + 1)...0) {
+            let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
+            let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
 
-        let aggStyle : HKQuantityAggregationStyle
-        if #available(iOS 13.0, *) { aggStyle = .discreteArithmetic } else { aggStyle = .discrete }
+            let statistics = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<HKStatistics, Error>) in
+                let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: options) { (query, statistics, error) in
+                    if error != nil {
+                        continuation.resume(throwing: error!)
+                    } else if statistics == nil {
+                        continuation.resume(throwing: RuntimeError("Statistics unexpectedly nil"))
+                    } else {
+                        continuation.resume(returning: statistics!)
+                    }
 
-        if quantityType.aggregationStyle == .cumulative {
-            let quantity = statistics.sumQuantity()
-            datapointValue = quantity?.doubleValue(for: unit)
-        } else if quantityType.aggregationStyle == aggStyle {
-            let quantity = statistics.minimumQuantity()
-            datapointValue = quantity?.doubleValue(for: unit)
+                }
+                healthStore.execute(statsQuery)
+            })
+
+            var datapointValue : Double?
+            guard let unit = units.first?.value else { return }
+
+            if quantityType.aggregationStyle == .cumulative {
+                let quantity = statistics.sumQuantity()
+                datapointValue = quantity?.doubleValue(for: unit)
+            } else if quantityType.aggregationStyle == .discreteArithmetic {
+                let quantity = statistics.minimumQuantity()
+                datapointValue = quantity?.doubleValue(for: unit)
+            }
+
+            if datapointValue == nil || datapointValue == 0  { return }
+
+            try await self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp)
         }
-
-        if datapointValue == nil || datapointValue == 0  { return }
-
-        try await self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp)
 
         logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
     }

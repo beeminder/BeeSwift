@@ -44,7 +44,14 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
     }
 
 
-    internal override func runQuery(dayOffset : Int) async throws {
+    override func hkQueryForLast(days : Int) async throws {
+        for dayOffset in ((-1*days + 1)...0) {
+            try await self.runQuery(dayOffset: dayOffset)
+        }
+    }
+
+
+    internal func runQuery(dayOffset : Int) async throws {
         logger.notice("Starting: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) offset \(dayOffset)")
 
         guard let sampleType = self.hkSampleType() else { return }
