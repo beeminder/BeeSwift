@@ -12,7 +12,7 @@ import OSLog
 
 class HealthStoreManager :NSObject {
     static let sharedManager = HealthStoreManager()
-    let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
 
     private var healthStore : HKHealthStore?
 
