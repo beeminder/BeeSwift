@@ -27,7 +27,70 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
         return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)
     }
 
-    func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection) async throws {
+    override func hkQueryForLast(days : Int) async throws {
+        logger.notice("Started: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) days \(days)")
+
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else { return }
+        let predicate = self.predicateForLast(days: days)
+        let options : HKStatisticsOptions = quantityType.aggregationStyle == .cumulative ? .cumulativeSum : .discreteMin
+
+        let statsCollection = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<HKStatisticsCollection, Error>) in
+            let query = HKStatisticsCollectionQuery(quantityType: quantityType,
+                                                    quantitySamplePredicate: predicate,
+                                                    options: options,
+                                                    anchorDate: anchorDate(),
+                                                    intervalComponents: DateComponents(day:1))
+            query.initialResultsHandler = {
+                query, collection, error in
+                if error != nil {
+                    continuation.resume(throwing: error!)
+                } else if collection == nil {
+                    continuation.resume(throwing: RuntimeError("HKStatisticsCollectionQuery returned a nil collection"))
+                } else {
+                    continuation.resume(returning: collection!)
+                }
+            }
+            healthStore.execute(query)
+        }
+
+        // TODO: This needs a date range
+        try await self.updateBeeminderWithStatsCollection(collection: statsCollection)
+
+        logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+    }
+
+    private func predicateForLast(days : Int) -> NSPredicate? {
+        let startTime = goalAwareStartOfDay(daysAgo: days)
+        return HKQuery.predicateForSamples(withStart: startTime, end: nil)
+    }
+
+    private func goalAwareStartOfDay(daysAgo : Int) -> Date {
+        let calendar = Calendar.current
+
+        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
+        let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
+
+        let startOfToday = calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: localMidnightThisMorning!)
+
+        return calendar.date(byAdding: .day, value: -daysAgo, to: startOfToday!)!
+    }
+
+    private func anchorDate() -> Date {
+        let calendar = Calendar.current
+        var anchorComponents = calendar.dateComponents([.day, .month, .year, .weekday], from: Date())
+
+        // TODO: This will use the local timezone instead of the goal timezone which causes a number of bugs
+        anchorComponents.hour = 0
+        anchorComponents.minute = 0
+        anchorComponents.second = 0
+
+        guard let midnight = calendar.date(from: anchorComponents) else {
+            fatalError("*** unable to create a valid date from the given components ***")
+        }
+        return calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: midnight)!
+    }
+
+    private func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection) async throws {
         logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Started")
         let endDate = Date()
         let calendar = Calendar.current
@@ -93,75 +156,5 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
             try await self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints)
         }
         logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Completed")
-    }
-
-    internal func predicateForLast(days : Int) -> NSPredicate? {
-        let startTime = goalAwareStartOfDay(daysAgo: days)
-        return HKQuery.predicateForSamples(withStart: startTime, end: nil)
-    }
-
-    internal func goalAwareStartOfDay(daysAgo : Int) -> Date {
-        let calendar = Calendar.current
-
-        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
-        let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
-
-        let startOfToday = calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: localMidnightThisMorning!)
-
-        return calendar.date(byAdding: .day, value: -daysAgo, to: startOfToday!)!
-    }
-
-    internal override func hkQueryForLast(days : Int) async throws {
-        logger.notice("Started: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) days \(days)")
-
-        guard let sampleType = self.hkSampleType() else { return }
-
-        var options : HKStatisticsOptions
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else { return }
-        if quantityType.aggregationStyle == .cumulative {
-            options = .cumulativeSum
-        } else {
-            options = .discreteMin
-        }
-        let units = try await healthStore.preferredUnits(for: [quantityType])
-
-        let predicate = self.predicateForLast(days: days)
-        let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
-
-        for dayOffset in ((-1*days + 1)...0) {
-            let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
-            let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
-
-            let statistics = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<HKStatistics, Error>) in
-                let statsQuery = HKStatisticsQuery.init(quantityType: sampleType as! HKQuantityType, quantitySamplePredicate: predicate, options: options) { (query, statistics, error) in
-                    if error != nil {
-                        continuation.resume(throwing: error!)
-                    } else if statistics == nil {
-                        continuation.resume(throwing: RuntimeError("Statistics unexpectedly nil"))
-                    } else {
-                        continuation.resume(returning: statistics!)
-                    }
-
-                }
-                healthStore.execute(statsQuery)
-            })
-
-            var datapointValue : Double?
-            guard let unit = units.first?.value else { return }
-
-            if quantityType.aggregationStyle == .cumulative {
-                let quantity = statistics.sumQuantity()
-                datapointValue = quantity?.doubleValue(for: unit)
-            } else if quantityType.aggregationStyle == .discreteArithmetic {
-                let quantity = statistics.minimumQuantity()
-                datapointValue = quantity?.doubleValue(for: unit)
-            }
-
-            if datapointValue == nil || datapointValue == 0  { return }
-
-            try await self.updateBeeminderWithValue(datapointValue: datapointValue!, daystamp: daystamp)
-        }
-
-        logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
     }
 }

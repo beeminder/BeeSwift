@@ -50,7 +50,6 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
         }
     }
 
-
     internal func runQuery(dayOffset : Int) async throws {
         logger.notice("Starting: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) offset \(dayOffset)")
 
