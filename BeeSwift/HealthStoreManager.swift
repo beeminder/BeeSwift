@@ -14,15 +14,11 @@ class HealthStoreManager :NSObject {
     static let sharedManager = HealthStoreManager()
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
 
-    private var healthStore : HKHealthStore?
+    private let healthStore = HKHealthStore()
 
     /// The Connection objects responsible for updating goals based on their healthkit metrics
     /// Dictionary key is the goal id, as this is stable across goal renames
     private var connections: [String: GoalHealthKitConnection] = [:]
-    
-    private func ensureHealthStoreCreated() {
-        self.healthStore = HKHealthStore()
-    }
 
     /// Gets or creates an appropriate connection object for the supplied goal
     private func connectionFor(goal: JSONGoal) -> GoalHealthKitConnection? {
@@ -39,7 +35,7 @@ class HealthStoreManager :NSObject {
                 }) else {
                     return nil
                 }
-                connections[goal.id] = metric.createConnection(healthStore: healthStore!, goal: goal)
+                connections[goal.id] = metric.createConnection(healthStore: healthStore, goal: goal)
             }
             return connections[goal.id]
         }
@@ -47,7 +43,7 @@ class HealthStoreManager :NSObject {
 
     private func requestAuthorization(read: Set<HKObjectType>) async throws {
         try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Void, Error>) in
-            self.healthStore!.requestAuthorization(toShare: nil, read: read) { success, error in
+            self.healthStore.requestAuthorization(toShare: nil, read: read) { success, error in
                 if error != nil {
                     continuation.resume(throwing: error!)
                 } else if success == false {
@@ -61,7 +57,6 @@ class HealthStoreManager :NSObject {
 
     func requestAuthorization(metric: HealthKitMetric) async throws {
         logger.notice("requestAuthorization for \(metric.databaseString, privacy: .public)")
-        ensureHealthStoreCreated()
 
         try await self.requestAuthorization(read: [metric.sampleType()])
     }
@@ -72,7 +67,6 @@ class HealthStoreManager :NSObject {
 
     func setupHealthKitGoals(goals: [JSONGoal]) async throws {
         logger.notice("setupHealthKitGoals for \(goals.count, privacy: .public) goals")
-        ensureHealthStoreCreated();
 
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
 
@@ -99,7 +93,6 @@ class HealthStoreManager :NSObject {
 
     func registerObserverQueries(goals: [JSONGoal]) {
         logger.notice("registerObserverQueries")
-        ensureHealthStoreCreated()
 
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
         for connection in goalConnections {
@@ -109,7 +102,6 @@ class HealthStoreManager :NSObject {
 
     func syncHealthKitData(goal: JSONGoal, days: Int) async throws {
         logger.notice("syncHealthKitData")
-        ensureHealthStoreCreated();
 
         guard let connection = self.connectionFor(goal: goal) else {
             throw RuntimeError("Failed to find connection for goal")
