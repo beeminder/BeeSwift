@@ -23,10 +23,6 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
         self.goal = goal
     }
 
-    internal func setupQuery() {
-        preconditionFailure("This method must be overridden")
-    }
-
     internal func runQuery(dayOffset : Int) async throws {
         preconditionFailure("This method must be overridden")
     }
@@ -53,7 +49,20 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
             return
         }
 
-        self.setupQuery()
+        guard let sampleType = self.hkSampleType() else { return }
+        let query = HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
+            self.logger.notice("ObserverQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) received update query \(query, privacy: .public) error \(error, privacy: .public)")
+            Task {
+                do {
+                    try await self.hkQueryForLast(days: 1)
+                    completionHandler()
+                } catch {
+                    self.logger.error("Error fetching data in response to observer query \(query) error: \(error)")
+                }
+            }
+        })
+        healthStore.execute(query)
+
         haveRegisteredObserverQuery = true
 
         logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): done")
