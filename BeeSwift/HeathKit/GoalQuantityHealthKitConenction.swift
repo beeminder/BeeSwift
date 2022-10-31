@@ -95,6 +95,22 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
         logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Completed")
     }
 
+    internal func predicateForLast(days : Int) -> NSPredicate? {
+        let startTime = goalAwareStartOfDay(daysAgo: days)
+        return HKQuery.predicateForSamples(withStart: startTime, end: nil)
+    }
+
+    internal func goalAwareStartOfDay(daysAgo : Int) -> Date {
+        let calendar = Calendar.current
+
+        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
+        let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
+
+        let startOfToday = calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: localMidnightThisMorning!)
+
+        return calendar.date(byAdding: .day, value: -daysAgo, to: startOfToday!)!
+    }
+
     internal override func hkQueryForLast(days : Int) async throws {
         logger.notice("Started: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) days \(days)")
 
@@ -108,6 +124,9 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
             options = .discreteMin
         }
         let units = try await healthStore.preferredUnits(for: [quantityType])
+
+        let predicate = self.predicateForLast(days: days)
+        let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
 
         for dayOffset in ((-1*days + 1)...0) {
             let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
