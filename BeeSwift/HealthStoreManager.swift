@@ -60,7 +60,7 @@ class HealthStoreManager :NSObject {
     }
 
     func requestAuthorization(metric: HealthKitMetric) async throws {
-        logger.notice("requestAuthorization for \(metric.databaseString ?? "nil", privacy: .public)")
+        logger.notice("requestAuthorization for \(metric.databaseString, privacy: .public)")
         ensureHealthStoreCreated()
 
         try await self.requestAuthorization(read: [metric.sampleType()])
