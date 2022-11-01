@@ -1,24 +1,85 @@
 //
-//  GoalHealthKitConnection.swift
+//  JSONGoal+Healthkit.swift
 //  BeeSwift
 //
-//  Created by Theo Spears on 10/29/22.
-//  Copyright © 2022 APB. All rights reserved.
+//  Created by Andrew Brett on 11/14/21.
+//  Copyright © 2021 APB. All rights reserved.
 //
 
 import Foundation
+import SwiftyJSON
 import HealthKit
+import OSLog
 
-protocol GoalHealthKitConnection {
-    /// The permission required for this connection to read data from HealthKit
-    func hkPermissionType() -> HKObjectType
+class GoalHealthKitConnection {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
+    private let healthStore: HKHealthStore
+    private let goal : JSONGoal
+    private var haveRegisteredObserverQuery = false
+
+    public let metric : HealthKitMetric
+
+    init(goal: JSONGoal, metric : HealthKitMetric, healthStore: HKHealthStore) {
+        self.goal = goal
+        self.metric = metric
+        self.healthStore = healthStore
+
+    }
 
     /// Perform an initial sync and register for changes to the relevant metric so the goal can be kept up to date
-    func setupHealthKit() async throws
+    public func setupHealthKit() async throws {
+        try await healthStore.enableBackgroundDelivery(for: metric.sampleType(), frequency: HKUpdateFrequency.immediate)
+        registerObserverQuery()
+    }
 
     /// Register for changes to the relevant metric. Assumes permission and background delivery already enabled
-    func registerObserverQuery()
+    public func registerObserverQuery() {
+        logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): requested")
+
+        if haveRegisteredObserverQuery {
+            logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): skipping because done before")
+            return
+        }
+
+        let query = HKObserverQuery(sampleType: metric.sampleType(), predicate: nil, updateHandler: { (query, completionHandler, error) in
+            self.logger.notice("ObserverQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) received update query \(query, privacy: .public) error \(error, privacy: .public)")
+            Task {
+                do {
+                    try await self.hkQueryForLast(days: 1)
+                    completionHandler()
+                } catch {
+                    self.logger.error("Error fetching data in response to observer query \(query) error: \(error)")
+                }
+            }
+        })
+        healthStore.execute(query)
+
+        haveRegisteredObserverQuery = true
+
+        logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): done")
+    }
 
     /// Explicitly sync goal data for the number of days specified
-    func hkQueryForLast(days : Int) async throws
+    public func hkQueryForLast(days : Int) async throws {
+        let newDataPoints = try await metric.recentDataPoints(days: days, deadline: self.goal.deadline.intValue, healthStore: healthStore)
+        let nonZeroDataPoints =  newDataPoints.filter { (_, value: Double, _) in value != 0 }
+        try await goal.updateToMatchDataPoints(healthKitDataPoints: nonZeroDataPoints)
+
+        logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+    }
+
+}
+
+
+// TODO: More descriptive error?
+struct RuntimeError: Error {
+    let message: String
+
+    init(_ message: String) {
+        self.message = message
+    }
+
+    public var localizedDescription: String {
+        return message
+    }
 }

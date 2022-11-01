@@ -48,7 +48,7 @@ class HealthStoreManager :NSObject {
 
         var permissions = Set<HKObjectType>()
         for connection in goalConnections {
-            permissions.insert(connection.hkPermissionType())
+            permissions.insert(connection.metric.permissionType())
         }
         if permissions.count > 0 {
             try await self.requestAuthorization(read: permissions)
@@ -105,7 +105,7 @@ class HealthStoreManager :NSObject {
                 }) else {
                     return nil
                 }
-                connections[goal.id] = metric.createConnection(healthStore: healthStore, goal: goal)
+                connections[goal.id] =  GoalHealthKitConnection(goal: goal, metric: metric, healthStore: healthStore)
             }
             return connections[goal.id]
         }

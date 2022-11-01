@@ -10,6 +10,10 @@ protocol HealthKitMetric {
     var humanText : String { get }
     var databaseString : String { get }
 
-    func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection
-    func sampleType() throws -> HKSampleType
+    /// The permission required for this connection to read data from HealthKit
+    func permissionType() -> HKObjectType
+    func sampleType() -> HKSampleType
+
+    func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [DataPoint]
+
 }
