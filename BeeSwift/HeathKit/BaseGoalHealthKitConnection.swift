@@ -74,41 +74,8 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
 
         logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): done")
     }
-    
-    internal func predicateForDayOffset(dayOffset : Int) -> NSPredicate? {
-        let bounds = dateBoundsForDayOffset(dayOffset: dayOffset)
-        return HKQuery.predicateForSamples(withStart: bounds[0], end: bounds[1], options: .strictEndDate)
-    }
-    
-    internal func dateBoundsForDayOffset(dayOffset : Int) -> [Date] {
-        let calendar = Calendar.current
-        
-        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
-        let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
-        let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
-        
-        let endOfToday = calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: localMidnightTonight!)
-        let startOfToday = calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: localMidnightThisMorning!)
-        
-        guard let startDate = calendar.date(byAdding: .day, value: dayOffset, to: startOfToday!) else { return [] }
-        guard let endDate = calendar.date(byAdding: .day, value: dayOffset, to: endOfToday!) else { return [] }
-        
-        return [startDate, endDate]
-    }
-    
-    internal func dayStampFromDayOffset(dayOffset : Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
-        let bounds = self.dateBoundsForDayOffset(dayOffset: dayOffset)
-        let datapointDate = (self.goal.deadline.intValue >= 0 && self.goal.healthKitMetric != "timeAsleep" && self.goal.healthKitMetric != "timeInBed") ? bounds[0] : bounds[1]
-        return formatter.string(from: datapointDate)
-    }
 
-    internal func updateBeeminderWithValue(datapointValue : Double, daystamp : String) async throws {
-        if datapointValue == 0  {
-            return
-        }
-
+    internal func updateBeeminderToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
         let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[JSON], Error>) in
             self.goal.fetchRecentDatapoints(success: { datapoints in
                 continuation.resume(returning: datapoints)
@@ -116,10 +83,14 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
                 continuation.resume(throwing: RuntimeError("Could not fetch recent datapoints"))
             })
         }
-        try await self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints)
+
+        for (daystamp, newValue, comment) in healthKitDataPoints {
+            // TODO: Take comment as input
+            try await self.updateBeeminderWithValue(datapointValue: newValue, daystamp: daystamp, recentDatapoints: datapoints)
+        }
     }
 
-    internal func updateBeeminderWithValue(datapointValue : Double, daystamp : String, recentDatapoints: [JSON]) async throws {
+    private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, recentDatapoints: [JSON]) async throws {
         logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Daystamp \(daystamp, privacy: .public) value \(datapointValue, privacy: .public)")
         if datapointValue == 0  {
             return
@@ -158,21 +129,6 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
                     continuation.resume(throwing: RuntimeError("Error updating data point"))
                 })
             }
-        }
-    }
-
-    internal func updateBeeminderToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
-        let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[JSON], Error>) in
-            self.goal.fetchRecentDatapoints(success: { datapoints in
-                continuation.resume(returning: datapoints)
-            }, errorCompletion: {
-                continuation.resume(throwing: RuntimeError("Could not fetch recent datapoints"))
-            })
-        }
-
-        for (daystamp, newValue, comment) in healthKitDataPoints {
-            // TODO: Take comment as input
-            try await self.updateBeeminderWithValue(datapointValue: newValue, daystamp: daystamp, recentDatapoints: datapoints)
         }
     }
 }

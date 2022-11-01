@@ -19,7 +19,6 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
         super.init(healthStore: healthStore, goal: goal)
     }
 
-
     override func hkSampleType() -> HKSampleType {
         return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier)!
     }
@@ -78,14 +77,40 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
         return (daystamp: daystamp, value: datapointValue, comment: "Auto-entered via Apple Health")
     }
 
-    internal override func dateBoundsForDayOffset(dayOffset : Int) -> [Date] {
+    private func predicateForDayOffset(dayOffset : Int) -> NSPredicate? {
+        let bounds = dateBoundsForDayOffset(dayOffset: dayOffset)
+        return HKQuery.predicateForSamples(withStart: bounds[0], end: bounds[1], options: .strictEndDate)
+    }
+
+    private func dayStampFromDayOffset(dayOffset : Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+        let bounds = self.dateBoundsForDayOffset(dayOffset: dayOffset)
+        let datapointDate = (self.goal.deadline.intValue >= 0 && self.goal.healthKitMetric != "timeAsleep" && self.goal.healthKitMetric != "timeInBed") ? bounds[0] : bounds[1]
+        return formatter.string(from: datapointDate)
+    }
+
+    private func dateBoundsForDayOffset(dayOffset : Int) -> [Date] {
         if self.goal.healthKitMetric == "timeAsleep" || self.goal.healthKitMetric == "timeInBed" {
             return self.sleepDateBoundsForDayOffset(dayOffset: dayOffset)
         }
-        return super.dateBoundsForDayOffset(dayOffset: dayOffset)
+
+        let calendar = Calendar.current
+
+        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
+        let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
+        let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
+
+        let endOfToday = calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: localMidnightTonight!)
+        let startOfToday = calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: localMidnightThisMorning!)
+
+        guard let startDate = calendar.date(byAdding: .day, value: dayOffset, to: startOfToday!) else { return [] }
+        guard let endDate = calendar.date(byAdding: .day, value: dayOffset, to: endOfToday!) else { return [] }
+
+        return [startDate, endDate]
     }
 
-    func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
+    private func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
         if let s = sample as? HKQuantitySample, let u = units {
             return s.quantity.doubleValue(for: u)
         } else if let s = sample as? HKCategorySample {
@@ -104,7 +129,7 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
         return 0
     }
 
-    func hkDatapointValueForSamples(samples : [HKSample], units: HKUnit?) -> Double {
+    private func hkDatapointValueForSamples(samples : [HKSample], units: HKUnit?) -> Double {
         var datapointValue : Double = 0
         if self.goal.healthKitMetric == "weight" {
             return self.hkDatapointValueForWeightSamples(samples: samples, units: units)
@@ -116,7 +141,7 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
         return datapointValue
     }
 
-    internal func hkDatapointValueForWeightSamples(samples : [HKSample], units: HKUnit?) -> Double {
+    private func hkDatapointValueForWeightSamples(samples : [HKSample], units: HKUnit?) -> Double {
         var datapointValue : Double = 0
         let weights = samples.map { (sample) -> Double? in
             let s = sample as? HKQuantitySample
@@ -135,7 +160,4 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
         }
         return datapointValue
     }
-
-
-
 }
