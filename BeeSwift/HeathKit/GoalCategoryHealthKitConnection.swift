@@ -45,6 +45,7 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
 
 
     override func hkQueryForLast(days : Int) async throws {
+        // TODO: Turn this into a map, and then update afterwards
         for dayOffset in ((-1*days + 1)...0) {
             try await self.runQuery(dayOffset: dayOffset)
         }

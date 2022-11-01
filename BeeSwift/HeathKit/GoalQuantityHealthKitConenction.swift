@@ -9,6 +9,8 @@ import SwiftyJSON
 import HealthKit
 import OSLog
 
+
+
 class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalQuantityHealthKitConnection")
 
@@ -28,9 +30,18 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
     }
 
     override func hkQueryForLast(days : Int) async throws {
+        let newDataPoints = try await recentDataPoints(days: days)
+        try await updateBeeminderToMatchDataPoints(healthKitDataPoints: newDataPoints)
+
+        logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+    }
+
+    private func recentDataPoints(days : Int) async throws -> [DataPoint] {
         logger.notice("Started: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) days \(days)")
 
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else { return }
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {
+            throw RuntimeError("Unable to look up a quantityType")
+        }
         let predicate = self.predicateForLast(days: days)
         let options : HKStatisticsOptions = quantityType.aggregationStyle == .cumulative ? .cumulativeSum : .discreteMin
 
@@ -53,10 +64,8 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
             healthStore.execute(query)
         }
 
-        // TODO: This needs a date range
-        try await self.updateBeeminderWithStatsCollection(collection: statsCollection)
-
-        logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+        // TODO: This should maybe have a timezone filter?
+        return try await datapointsForCollection(collection: statsCollection)
     }
 
     private func predicateForLast(days : Int) -> NSPredicate? {
@@ -90,24 +99,20 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
         return calendar.date(byAdding: .second, value: self.goal.deadline.intValue, to: midnight)!
     }
 
-    private func updateBeeminderWithStatsCollection(collection : HKStatisticsCollection) async throws {
+    private func datapointsForCollection(collection : HKStatisticsCollection) async throws -> [DataPoint] {
         logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Started")
+
+        // TODO: These should be paseed in
         let endDate = Date()
         let calendar = Calendar.current
         guard let startDate = calendar.date(byAdding: .day, value: -5, to: endDate) else {
-            logger.error("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): No startDate")
-            return
-        }
-
-        let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[JSON], Error>) in
-            self.goal.fetchRecentDatapoints(success: { datapoints in
-                continuation.resume(returning: datapoints)
-            }, errorCompletion: {
-                continuation.resume(throwing: RuntimeError("Could not fetch recent datapoints"))
-            })
+            throw RuntimeError("Cannot find calculate start date")
         }
 
         logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Considering \(collection.statistics().count) points")
+
+        var results : [DataPoint] = []
+
         for statistics in collection.statistics() {
             // Ignore statistics which are entirely outside our window
             if statistics.endDate < startDate || statistics.startDate > endDate {
@@ -118,13 +123,11 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
 
             let units = try await healthStore.preferredUnits(for: [statistics.quantityType])
             guard let unit = units.first?.value else {
-                logger.error("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): No preferred units")
-                return
-
+                throw RuntimeError("No preferred units")
             }
 
             guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {
-                fatalError("*** Unable to create a quantity type ***")
+                throw RuntimeError("Unable to look up a quantityType")
             }
 
             let value: Double? = {
@@ -140,7 +143,7 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
 
             guard let datapointValue = value else {
                 logger.error("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): No datapoint value")
-                return
+                continue
             }
 
             logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): \(statistics.startDate, privacy: .public) value is \(datapointValue, privacy: .public)")
@@ -153,8 +156,11 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
             let datapointDate = self.goal.deadline.intValue >= 0 ? startDate : endDate
             let daystamp = formatter.string(from: datapointDate)
 
-            try await self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp, recentDatapoints: datapoints)
+            results.append((daystamp: daystamp, value: datapointValue, comment: "Auto-entered via Apple Health"))
         }
         logger.notice("updateBeeminderWithStatsCollection(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Completed")
+
+        return results
     }
+
 }

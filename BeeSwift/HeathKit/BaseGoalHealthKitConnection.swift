@@ -11,6 +11,8 @@ import SwiftyJSON
 import HealthKit
 import OSLog
 
+typealias DataPoint = (daystamp: String, value: Double, comment: String)
+
 class BaseGoalHealthKitConnection : GoalHealthKitConnection {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
     let healthStore: HKHealthStore
@@ -151,6 +153,21 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
                     continuation.resume(throwing: RuntimeError("Error updating data point"))
                 })
             }
+        }
+    }
+
+    internal func updateBeeminderToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
+        let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[JSON], Error>) in
+            self.goal.fetchRecentDatapoints(success: { datapoints in
+                continuation.resume(returning: datapoints)
+            }, errorCompletion: {
+                continuation.resume(throwing: RuntimeError("Could not fetch recent datapoints"))
+            })
+        }
+
+        for (daystamp, newValue, comment) in healthKitDataPoints {
+            // TODO: Take comment as input
+            try await self.updateBeeminderWithValue(datapointValue: newValue, daystamp: daystamp, recentDatapoints: datapoints)
         }
     }
 }
