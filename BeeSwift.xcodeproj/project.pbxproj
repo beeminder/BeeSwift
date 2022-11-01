@@ -97,6 +97,9 @@
 		E4E642882910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */; };
 		E4E642892910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */; };
 		E4E6428A2910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */; };
+		E4E642902910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6428F2910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift */; };
+		E4E642912910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6428F2910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift */; };
+		E4E642922910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6428F2910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift */; };
 		E52094FE2741D72300CB766F /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */; };
 		E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E557610026549DD10076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
@@ -295,6 +298,7 @@
 		E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MindfulSessionHealthKitMetric.swift; sourceTree = "<group>"; };
+		E4E6428F2910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepAnalysisHealthKitMetric.swift; sourceTree = "<group>"; };
 		E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalHealthKitConnection.swift; sourceTree = "<group>"; };
 		E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AddDataIntents.intentdefinition; sourceTree = "<group>"; };
 		E55760F426549D310076B95A /* AddDataIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataIntentHandler.swift; sourceTree = "<group>"; };
@@ -587,6 +591,7 @@
 				E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */,
 				E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */,
 				E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */,
+				E4E6428F2910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift */,
 			);
 			path = HeathKit;
 			sourceTree = "<group>";
@@ -1102,6 +1107,7 @@
 				E4E6426A290E22E6004F3EA9 /* HealthKitConfig.swift in Sources */,
 				A1D8532D1EB0EA8100FC75DE /* UIColorExtension.swift in Sources */,
 				E4E6427D2910C3AB004F3EA9 /* HealthKitMetric.swift in Sources */,
+				E4E642912910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift in Sources */,
 				A142492A1FD0788F007736B3 /* UIDevice.swift in Sources */,
 				A1D8532C1EB0EA5700FC75DE /* UIFontExtension.swift in Sources */,
 				A1D853261EB0332D00FC75DE /* Constants.swift in Sources */,
@@ -1142,6 +1148,7 @@
 				A1E619001E86980900D8ED93 /* HealthKitConfig.swift in Sources */,
 				A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */,
 				E52094FE2741D72300CB766F /* GoalHealthKitConnection.swift in Sources */,
+				E4E642902910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift in Sources */,
 				A1453B391AEDA71D006F48DA /* BSLabel.swift in Sources */,
 				A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */,
 				A1F8F07B232C05410060B83E /* JSONGoal.swift in Sources */,
@@ -1208,6 +1215,7 @@
 				E4E6426B290E22E9004F3EA9 /* HealthKitConfig.swift in Sources */,
 				E5CF51822612434700546184 /* BSLabel.swift in Sources */,
 				E4E6427E2910C3AB004F3EA9 /* HealthKitMetric.swift in Sources */,
+				E4E642922910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift in Sources */,
 				E557610026549DD10076B95A /* AddDataIntentHandler.swift in Sources */,
 				E5CF51702612432400546184 /* RequestManager.swift in Sources */,
 				E5CF519B2612435B00546184 /* UIDevice.swift in Sources */,

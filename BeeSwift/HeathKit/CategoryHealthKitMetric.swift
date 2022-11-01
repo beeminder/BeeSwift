@@ -37,19 +37,7 @@ class CategoryHealthKitMetric : HealthKitMetric {
         return results
     }
 
-    private func sleepDateBoundsForDayOffset(dayOffset : Int) -> [Date] {
-        let calendar = Calendar.current
 
-        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
-
-        let sixPmToday = calendar.date(bySettingHour: 18, minute: 0, second: 0, of: calendar.date(from: components)!)
-        let sixPmTomorrow = calendar.date(byAdding: .day, value: 1, to: sixPmToday!)
-
-        guard let startDate = calendar.date(byAdding: .day, value: dayOffset, to: sixPmToday!) else { return [] }
-        guard let endDate = calendar.date(byAdding: .day, value: dayOffset, to: sixPmTomorrow!) else { return [] }
-
-        return [startDate, endDate]
-    }
 
     private func getDataPoint(dayOffset : Int, deadline : Int, healthStore : HKHealthStore) async throws -> DataPoint {
         CategoryHealthKitMetric.logger.notice("Starting: runCategoryTypeQuery for \(self.databaseString, privacy: .public) offset \(dayOffset)")
@@ -84,19 +72,16 @@ class CategoryHealthKitMetric : HealthKitMetric {
         return HKQuery.predicateForSamples(withStart: bounds[0], end: bounds[1], options: .strictEndDate)
     }
 
-    private func dayStampFromDayOffset(dayOffset : Int, deadline : Int) -> String {
+    internal func dayStampFromDayOffset(dayOffset : Int, deadline : Int) -> String {
+        let bounds = self.dateBoundsForDayOffset(dayOffset: dayOffset, deadline: deadline)
+        let datapointDate = deadline >= 0 ? bounds[0] : bounds[1]
+
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd"
-        let bounds = self.dateBoundsForDayOffset(dayOffset: dayOffset, deadline: deadline)
-        let datapointDate = (deadline >= 0 && databaseString != "timeAsleep" && databaseString != "timeInBed") ? bounds[0] : bounds[1]
         return formatter.string(from: datapointDate)
     }
 
-    private func dateBoundsForDayOffset(dayOffset : Int, deadline : Int) -> [Date] {
-        if databaseString == "timeAsleep" || databaseString == "timeInBed" {
-            return self.sleepDateBoundsForDayOffset(dayOffset: dayOffset)
-        }
-
+    func dateBoundsForDayOffset(dayOffset : Int, deadline : Int) -> [Date] {
         let calendar = Calendar.current
 
         let components = calendar.dateComponents(in: TimeZone.current, from: Date())
@@ -116,13 +101,8 @@ class CategoryHealthKitMetric : HealthKitMetric {
         if let s = sample as? HKQuantitySample, let u = units {
             return s.quantity.doubleValue(for: u)
         } else if let s = sample as? HKCategorySample {
-            if (databaseString == "timeAsleep" && s.value != HKCategoryValueSleepAnalysis.asleep.rawValue) ||
-                (databaseString == "timeInBed" && s.value != HKCategoryValueSleepAnalysis.inBed.rawValue) {
-                return 0
-            } else if self.hkCategoryTypeIdentifier == .appleStandHour {
+            if self.hkCategoryTypeIdentifier == .appleStandHour {
                 return Double(s.value)
-            } else if self.hkCategoryTypeIdentifier == .sleepAnalysis {
-                return s.endDate.timeIntervalSince(s.startDate)/3600.0
             }
         }
         return 0
