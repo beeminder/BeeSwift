@@ -93,10 +93,22 @@ class HealthStoreManager :NSObject {
     /// Gets or creates an appropriate connection object for the supplied goal
     private func connectionFor(goal: JSONGoal) -> GoalHealthKitConnection? {
         if (goal.healthKitMetric ?? "") == "" {
-            // Goal does not have a metric. Make sure any connection is removed
-            connections.removeValue(forKey: goal.id)
+            // Goal does not have a metric. Make sure any prior connection is removed
+            if let connection = connections[goal.id] {
+                connection.unregisterObserverQuery()
+                connections.removeValue(forKey: goal.id)
+            }
             return nil
         } else {
+            // If a connection exists but is for the wrong metric then remove it
+            if let connection = connections[goal.id] {
+                if connection.metric.databaseString != goal.healthKitMetric {
+                    connection.unregisterObserverQuery()
+                    connections.removeValue(forKey: goal.id)
+                }
+            }
+
+            // If there is no connection (or we just removed it) then create a new one
             if connections[goal.id] == nil {
                 logger.notice("Creating connection for \(goal.slug, privacy: .public) (\(goal.id, privacy: .public)) to metric \(goal.healthKitMetric ?? "nil", privacy: .public)")
 
@@ -107,6 +119,8 @@ class HealthStoreManager :NSObject {
                 }
                 connections[goal.id] =  GoalHealthKitConnection(goal: goal, metric: metric, healthStore: healthStore)
             }
+
+            // Return the cached connection
             return connections[goal.id]
         }
     }

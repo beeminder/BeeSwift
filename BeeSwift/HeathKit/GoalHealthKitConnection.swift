@@ -15,7 +15,7 @@ class GoalHealthKitConnection {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
     private let healthStore: HKHealthStore
     private let goal : JSONGoal
-    private var haveRegisteredObserverQuery = false
+    private var observerQuery : HKObserverQuery? = nil
 
     public let metric : HealthKitMetric
 
@@ -36,7 +36,7 @@ class GoalHealthKitConnection {
     public func registerObserverQuery() {
         logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): requested")
 
-        if haveRegisteredObserverQuery {
+        guard observerQuery == nil else {
             logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): skipping because done before")
             return
         }
@@ -54,9 +54,19 @@ class GoalHealthKitConnection {
         })
         healthStore.execute(query)
 
-        haveRegisteredObserverQuery = true
+        // Once we have successfully executed the query then keep track of it to stop later
+        self.observerQuery = query
 
         logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): done")
+    }
+
+    /// Remove any registered queries to prevent further updates
+    public func unregisterObserverQuery() {
+        guard let query = self.observerQuery else {
+            logger.warning("unregisterObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Attempted to unregister query when not registered")
+            return
+        }
+        healthStore.stop(query)
     }
 
     /// Explicitly sync goal data for the number of days specified
