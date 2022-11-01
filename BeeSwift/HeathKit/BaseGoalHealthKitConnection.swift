@@ -11,8 +11,6 @@ import SwiftyJSON
 import HealthKit
 import OSLog
 
-typealias DataPoint = (daystamp: String, value: Double, comment: String)
-
 class BaseGoalHealthKitConnection : GoalHealthKitConnection {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
     let healthStore: HKHealthStore
@@ -39,7 +37,7 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
 
     func hkQueryForLast(days : Int) async throws {
         let newDataPoints = try await recentDataPoints(days: days)
-        try await updateBeeminderToMatchDataPoints(healthKitDataPoints: newDataPoints)
+        try await goal.updateToMatchDataPoints(healthKitDataPoints: newDataPoints)
 
         logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
     }
@@ -75,59 +73,6 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
         logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): done")
     }
 
-    internal func updateBeeminderToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
-        let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[JSON], Error>) in
-            self.goal.fetchRecentDatapoints(success: { datapoints in
-                continuation.resume(returning: datapoints)
-            }, errorCompletion: {
-                continuation.resume(throwing: RuntimeError("Could not fetch recent datapoints"))
-            })
-        }
-
-        for (daystamp, newValue, comment) in healthKitDataPoints {
-            try await self.updateBeeminderWithValue(datapointValue: newValue, daystamp: daystamp, comment: comment, recentDatapoints: datapoints)
-        }
-    }
-
-    private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, comment: String, recentDatapoints: [JSON]) async throws {
-        logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Daystamp \(daystamp, privacy: .public) value \(datapointValue, privacy: .public)")
-        if datapointValue == 0  {
-            return
-        }
-
-        var matchingDatapoints = self.goal.datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: daystamp)
-        if matchingDatapoints.count == 0 {
-            logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Creating new point (none match)")
-
-            let requestId = "\(daystamp)-\(self.goal.minuteStamp())"
-            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"\(comment)\"", "requestid": requestId]
-
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                self.goal.postDatapoint(params: params, success: { (responseObject) in
-                    continuation.resume()
-                }, failure: { (error, errorMessage) in
-                    self.logger.error("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error creating new point: \(error, privacy: .public) - \(errorMessage ?? "nil", privacy: .public)")
-                    continuation.resume(throwing: error!)
-                })
-            }
-        } else if matchingDatapoints.count >= 1 {
-            let firstDatapoint = matchingDatapoints.remove(at: 0)
-            matchingDatapoints.forEach { datapoint in
-                logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Deleting data point \(datapoint["id"].string ?? "nil", privacy: .public)")
-                self.goal.deleteDatapoint(datapoint: datapoint)
-            }
-
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Updating data point \(firstDatapoint["id"].string ?? "nil", privacy: .public) with value \(datapointValue, privacy: .public)")
-                self.goal.updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue, success: {
-                    continuation.resume()
-                }, errorCompletion: {
-                    self.logger.error("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Error updating point")
-                    continuation.resume(throwing: RuntimeError("Error updating data point"))
-                })
-            }
-        }
-    }
 }
 
 

@@ -11,6 +11,8 @@ import SwiftyJSON
 import HealthKit
 import UserNotifications
 
+typealias DataPoint = (daystamp: String, value: Double, comment: String)
+
 class JSONGoal {
     var autodata: String = ""
     var delta_text: String = ""
@@ -344,6 +346,51 @@ class JSONGoal {
     
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
         RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
+    }
+
+    func updateToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
+        let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[JSON], Error>) in
+            self.fetchRecentDatapoints(success: { datapoints in
+                continuation.resume(returning: datapoints)
+            }, errorCompletion: {
+                continuation.resume(throwing: RuntimeError("Could not fetch recent datapoints"))
+            })
+        }
+
+        for newDataPoint in healthKitDataPoints {
+            try await self.updateToMatchDataPoint(newDataPoint: newDataPoint, recentDatapoints: datapoints)
+        }
+    }
+
+    private func updateToMatchDataPoint(newDataPoint : DataPoint, recentDatapoints: [JSON]) async throws {
+        let (daystamp, datapointValue, comment) = newDataPoint
+
+        var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: daystamp)
+        if matchingDatapoints.count == 0 {
+            let requestId = "\(daystamp)-\(minuteStamp())"
+            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"\(comment)\"", "requestid": requestId]
+
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                postDatapoint(params: params, success: { (responseObject) in
+                    continuation.resume()
+                }, failure: { (error, errorMessage) in
+                    continuation.resume(throwing: error!)
+                })
+            }
+        } else if matchingDatapoints.count >= 1 {
+            let firstDatapoint = matchingDatapoints.remove(at: 0)
+            matchingDatapoints.forEach { datapoint in
+                deleteDatapoint(datapoint: datapoint)
+            }
+
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue, success: {
+                    continuation.resume()
+                }, errorCompletion: {
+                    continuation.resume(throwing: RuntimeError("Error updating data point"))
+                })
+            }
+        }
     }
 }
 
