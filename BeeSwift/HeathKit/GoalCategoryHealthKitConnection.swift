@@ -20,12 +20,12 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
     }
 
 
-    override func hkSampleType() -> HKSampleType? {
-        return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier)
+    override func hkSampleType() -> HKSampleType {
+        return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier)!
     }
 
-    override func hkPermissionType() -> HKObjectType? {
-        return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier)
+    override func hkPermissionType() -> HKObjectType {
+        return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier)!
     }
 
     override func recentDataPoints(days : Int) async throws -> [DataPoint] {
@@ -53,14 +53,11 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
     private func getDataPoint(dayOffset : Int) async throws -> DataPoint {
         logger.notice("Starting: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) offset \(dayOffset)")
 
-        guard let sampleType =  self.hkSampleType() else {
-            throw RuntimeError("Cannot get sample type")
-        }
         let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
 
         let samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
-            let query = HKSampleQuery.init(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
+            let query = HKSampleQuery.init(sampleType: hkSampleType(), predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: { (query, samples, error) in
                 if error != nil {
                     continuation.resume(throwing: error!)
                 } else if samples == nil {

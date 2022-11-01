@@ -29,11 +29,11 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
         preconditionFailure("This method must be overridden")
     }
 
-    internal func hkSampleType() -> HKSampleType? {
+    internal func hkSampleType() -> HKSampleType {
         preconditionFailure("This method must be overridden")
     }
 
-    func hkPermissionType() -> HKObjectType? {
+    func hkPermissionType() -> HKObjectType {
         preconditionFailure("This method must be overridden")
     }
 
@@ -45,8 +45,7 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
     }
 
     func setupHealthKit() async throws {
-        guard let sampleType = self.hkSampleType() else { return }
-        try await healthStore.enableBackgroundDelivery(for: sampleType, frequency: HKUpdateFrequency.immediate)
+        try await healthStore.enableBackgroundDelivery(for: hkSampleType(), frequency: HKUpdateFrequency.immediate)
         registerObserverQuery()
     }
 
@@ -58,8 +57,7 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
             return
         }
 
-        guard let sampleType = self.hkSampleType() else { return }
-        let query = HKObserverQuery(sampleType: sampleType, predicate: nil, updateHandler: { (query, completionHandler, error) in
+        let query = HKObserverQuery(sampleType: hkSampleType(), predicate: nil, updateHandler: { (query, completionHandler, error) in
             self.logger.notice("ObserverQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) received update query \(query, privacy: .public) error \(error, privacy: .public)")
             Task {
                 do {

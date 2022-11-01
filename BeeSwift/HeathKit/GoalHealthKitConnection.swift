@@ -11,7 +11,7 @@ import HealthKit
 
 protocol GoalHealthKitConnection {
     /// The permission required for this connection to read data from HealthKit
-    func hkPermissionType() -> HKObjectType?
+    func hkPermissionType() -> HKObjectType
 
     /// Perform an initial sync and register for changes to the relevant metric so the goal can be kept up to date
     func setupHealthKit() async throws

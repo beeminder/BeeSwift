@@ -21,12 +21,12 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
         super.init(healthStore: healthStore, goal: goal)
     }
 
-    override func hkSampleType() -> HKSampleType? {
-        return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)
+    override func hkSampleType() -> HKSampleType {
+        return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)!
     }
 
-    override func hkPermissionType() -> HKObjectType? {
-        return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)
+    override func hkPermissionType() -> HKObjectType {
+        return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)!
     }
 
     override func recentDataPoints(days : Int) async throws -> [DataPoint] {

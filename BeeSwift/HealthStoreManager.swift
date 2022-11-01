@@ -48,9 +48,7 @@ class HealthStoreManager :NSObject {
 
         var permissions = Set<HKObjectType>()
         for connection in goalConnections {
-            if let permissionType = connection.hkPermissionType() {
-               permissions.insert(permissionType)
-            }
+            permissions.insert(connection.hkPermissionType())
         }
         if permissions.count > 0 {
             try await self.requestAuthorization(read: permissions)
