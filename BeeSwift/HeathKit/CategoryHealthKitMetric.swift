@@ -8,12 +8,18 @@ import Foundation
 import HealthKit
 import OSLog
 
-struct CategoryHealthKitMetric : HealthKitMetric {
+class CategoryHealthKitMetric : HealthKitMetric {
     private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CategoryHealthKitMetric")
 
     let humanText : String
     let databaseString : String
     let hkCategoryTypeIdentifier : HKCategoryTypeIdentifier
+
+    internal init(humanText: String, databaseString: String, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier) {
+        self.humanText = humanText
+        self.databaseString = databaseString
+        self.hkCategoryTypeIdentifier = hkCategoryTypeIdentifier
+    }
 
     func sampleType() -> HKSampleType {
         return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier)!
@@ -46,7 +52,7 @@ struct CategoryHealthKitMetric : HealthKitMetric {
     }
 
     private func getDataPoint(dayOffset : Int, deadline : Int, healthStore : HKHealthStore) async throws -> DataPoint {
-        CategoryHealthKitMetric.logger.notice("Starting: runCategoryTypeQuery for \(databaseString, privacy: .public) offset \(dayOffset)")
+        CategoryHealthKitMetric.logger.notice("Starting: runCategoryTypeQuery for \(self.databaseString, privacy: .public) offset \(dayOffset)")
 
         let predicate = self.predicateForDayOffset(dayOffset: dayOffset, deadline: deadline)
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset, deadline: deadline)
@@ -68,7 +74,7 @@ struct CategoryHealthKitMetric : HealthKitMetric {
 
         let datapointValue = self.hkDatapointValueForSamples(samples: samples, units: nil)
 
-        CategoryHealthKitMetric.logger.notice("Completed: runCategoryTypeQuery for \(databaseString, privacy: .public)")
+        CategoryHealthKitMetric.logger.notice("Completed: runCategoryTypeQuery for \(self.databaseString, privacy: .public)")
 
         return (daystamp: daystamp, value: datapointValue, comment: "Auto-entered via Apple Health")
     }
@@ -106,7 +112,7 @@ struct CategoryHealthKitMetric : HealthKitMetric {
         return [startDate, endDate]
     }
 
-    private func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
+    func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
         if let s = sample as? HKQuantitySample, let u = units {
             return s.quantity.doubleValue(for: u)
         } else if let s = sample as? HKCategorySample {
@@ -117,9 +123,6 @@ struct CategoryHealthKitMetric : HealthKitMetric {
                 return Double(s.value)
             } else if self.hkCategoryTypeIdentifier == .sleepAnalysis {
                 return s.endDate.timeIntervalSince(s.startDate)/3600.0
-            }
-            if self.hkCategoryTypeIdentifier == .mindfulSession {
-                return s.endDate.timeIntervalSince(s.startDate)/60.0
             }
         }
         return 0

@@ -94,6 +94,9 @@
 		E4E642842910C442004F3EA9 /* CategoryHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */; };
 		E4E642852910C442004F3EA9 /* CategoryHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */; };
 		E4E642862910C442004F3EA9 /* CategoryHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */; };
+		E4E642882910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */; };
+		E4E642892910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */; };
+		E4E6428A2910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */; };
 		E52094FE2741D72300CB766F /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */; };
 		E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E557610026549DD10076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
@@ -291,6 +294,7 @@
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryHealthKitMetric.swift; sourceTree = "<group>"; };
+		E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MindfulSessionHealthKitMetric.swift; sourceTree = "<group>"; };
 		E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalHealthKitConnection.swift; sourceTree = "<group>"; };
 		E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AddDataIntents.intentdefinition; sourceTree = "<group>"; };
 		E55760F426549D310076B95A /* AddDataIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataIntentHandler.swift; sourceTree = "<group>"; };
@@ -579,6 +583,7 @@
 			children = (
 				A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */,
 				E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */,
+				E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */,
 				E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */,
 				E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */,
 				E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */,
@@ -1091,6 +1096,7 @@
 			files = (
 				E4B0A32F28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */,
 				A12E69511BD3EF0200AB94C2 /* TodayViewController.swift in Sources */,
+				E4E642892910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */,
 				A1D853291EB0EA2400FC75DE /* BSLabel.swift in Sources */,
 				A1D8532A1EB0EA2B00FC75DE /* BSButton.swift in Sources */,
 				E4E6426A290E22E6004F3EA9 /* HealthKitConfig.swift in Sources */,
@@ -1114,6 +1120,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4E642882910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */,
 				A1453B3F1AEDFCC8006F48DA /* SignInViewController.swift in Sources */,
 				E4E6427C2910C3AB004F3EA9 /* HealthKitMetric.swift in Sources */,
 				A1453B3D1AEDFA52006F48DA /* CurrentUserManager.swift in Sources */,
@@ -1195,6 +1202,7 @@
 			files = (
 				E5CF51832612434A00546184 /* BSTextField.swift in Sources */,
 				E55FAB19261240F800A0CF88 /* CurrentUserManager.swift in Sources */,
+				E4E6428A2910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */,
 				E5F7C55026113C330095684F /* AddDataIntents.intentdefinition in Sources */,
 				E5CF51AD2612437400546184 /* JSONGoal.swift in Sources */,
 				E4E6426B290E22E9004F3EA9 /* HealthKitConfig.swift in Sources */,

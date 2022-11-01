@@ -8,12 +8,18 @@ import Foundation
 import HealthKit
 import OSLog
 
-struct QuantityHealthKitMetric : HealthKitMetric {
-    private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "QuantityHealthKitMetric")
+class QuantityHealthKitMetric : HealthKitMetric {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "QuantityHealthKitMetric")
 
     let humanText : String
     let databaseString : String
     let hkQuantityTypeIdentifier : HKQuantityTypeIdentifier
+
+    internal init(humanText: String, databaseString: String, hkQuantityTypeIdentifier: HKQuantityTypeIdentifier) {
+        self.humanText = humanText
+        self.databaseString = databaseString
+        self.hkQuantityTypeIdentifier = hkQuantityTypeIdentifier
+    }
 
     func sampleType() -> HKSampleType {
         return HKObjectType.quantityType(forIdentifier: hkQuantityTypeIdentifier)!
@@ -24,7 +30,7 @@ struct QuantityHealthKitMetric : HealthKitMetric {
     }
 
     func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [DataPoint] {
-        QuantityHealthKitMetric.logger.notice("Started: runStatsQuery for \(databaseString, privacy: .public) days \(days)")
+        logger.notice("Started: runStatsQuery for \(self.databaseString, privacy: .public) days \(days)")
 
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {
             throw RuntimeError("Unable to look up a quantityType")
@@ -87,7 +93,7 @@ struct QuantityHealthKitMetric : HealthKitMetric {
     }
 
     private func datapointsForCollection(collection : HKStatisticsCollection, deadline : Int, healthStore: HKHealthStore) async throws -> [DataPoint] {
-        QuantityHealthKitMetric.logger.notice("updateBeeminderWithStatsCollection(\(databaseString, privacy: .public)): Started")
+        logger.notice("updateBeeminderWithStatsCollection(\(self.databaseString, privacy: .public)): Started")
 
         // TODO: These should be paseed in
         let endDate = Date()
@@ -96,7 +102,7 @@ struct QuantityHealthKitMetric : HealthKitMetric {
             throw RuntimeError("Cannot find calculate start date")
         }
 
-        QuantityHealthKitMetric.logger.notice("updateBeeminderWithStatsCollection(\(databaseString, privacy: .public)): Considering \(collection.statistics().count) points")
+        logger.notice("updateBeeminderWithStatsCollection(\(self.databaseString, privacy: .public)): Considering \(collection.statistics().count) points")
 
         var results : [DataPoint] = []
 
@@ -106,7 +112,7 @@ struct QuantityHealthKitMetric : HealthKitMetric {
                 continue
             }
 
-            QuantityHealthKitMetric.logger.notice("updateBeeminderWithStatsCollection(\(databaseString, privacy: .public)): Processing data for \(statistics.startDate, privacy: .public)")
+            logger.notice("updateBeeminderWithStatsCollection(\(self.databaseString, privacy: .public)): Processing data for \(statistics.startDate, privacy: .public)")
 
             let units = try await healthStore.preferredUnits(for: [statistics.quantityType])
             guard let unit = units.first?.value else {
@@ -129,11 +135,11 @@ struct QuantityHealthKitMetric : HealthKitMetric {
             }()
 
             guard let datapointValue = value else {
-                QuantityHealthKitMetric.logger.error("updateBeeminderWithStatsCollection(\(databaseString, privacy: .public)): No datapoint value")
+                logger.error("updateBeeminderWithStatsCollection(\(self.databaseString, privacy: .public)): No datapoint value")
                 continue
             }
 
-            QuantityHealthKitMetric.logger.notice("updateBeeminderWithStatsCollection(\(databaseString, privacy: .public)): \(statistics.startDate, privacy: .public) value is \(datapointValue, privacy: .public)")
+            logger.notice("updateBeeminderWithStatsCollection(\(self.databaseString, privacy: .public)): \(statistics.startDate, privacy: .public) value is \(datapointValue, privacy: .public)")
 
             let startDate = statistics.startDate
             let endDate = statistics.endDate
@@ -145,7 +151,7 @@ struct QuantityHealthKitMetric : HealthKitMetric {
 
             results.append((daystamp: daystamp, value: datapointValue, comment: "Auto-entered via Apple Health"))
         }
-        QuantityHealthKitMetric.logger.notice("updateBeeminderWithStatsCollection(\(databaseString, privacy: .public)): Completed")
+        logger.notice("updateBeeminderWithStatsCollection(\(self.databaseString, privacy: .public)): Completed")
 
         return results
     }

@@ -35,7 +35,7 @@ class HealthKitConfig : NSObject {
             QuantityHealthKitMetric.init(humanText: "Dietary sodium", databaseString: "dietarySodium", hkQuantityTypeIdentifier: HKQuantityTypeIdentifier.dietarySodium),
             QuantityHealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", hkQuantityTypeIdentifier: HKQuantityTypeIdentifier.swimmingStrokeCount),
             QuantityHealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", hkQuantityTypeIdentifier: HKQuantityTypeIdentifier.distanceSwimming),
-            CategoryHealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.mindfulSession)
+            MindfulSessionHealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.mindfulSession)
         ]
     }
 }
