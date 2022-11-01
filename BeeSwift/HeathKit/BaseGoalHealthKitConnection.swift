@@ -25,7 +25,7 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
         self.goal = goal
     }
 
-    public func hkQueryForLast(days : Int) async throws {
+    internal func recentDataPoints(days : Int) async throws -> [DataPoint] {
         preconditionFailure("This method must be overridden")
     }
 
@@ -35,6 +35,13 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
 
     func hkPermissionType() -> HKObjectType? {
         preconditionFailure("This method must be overridden")
+    }
+
+    func hkQueryForLast(days : Int) async throws {
+        let newDataPoints = try await recentDataPoints(days: days)
+        try await updateBeeminderToMatchDataPoints(healthKitDataPoints: newDataPoints)
+
+        logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
     }
 
     func setupHealthKit() async throws {

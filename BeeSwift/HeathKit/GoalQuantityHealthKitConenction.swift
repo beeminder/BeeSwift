@@ -29,14 +29,7 @@ class GoalQuantityHealthKitConnection : BaseGoalHealthKitConnection {
         return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)
     }
 
-    override func hkQueryForLast(days : Int) async throws {
-        let newDataPoints = try await recentDataPoints(days: days)
-        try await updateBeeminderToMatchDataPoints(healthKitDataPoints: newDataPoints)
-
-        logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
-    }
-
-    private func recentDataPoints(days : Int) async throws -> [DataPoint] {
+    override func recentDataPoints(days : Int) async throws -> [DataPoint] {
         logger.notice("Started: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) days \(days)")
 
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {

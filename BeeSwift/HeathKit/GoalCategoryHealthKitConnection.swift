@@ -28,6 +28,13 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
         return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier)
     }
 
+    override func recentDataPoints(days : Int) async throws -> [DataPoint] {
+        var results : [DataPoint] = []
+        for dayOffset in ((-1*days + 1)...0) {
+            results.append(try await self.getDataPoint(dayOffset: dayOffset))
+        }
+        return results
+    }
 
     private func sleepDateBoundsForDayOffset(dayOffset : Int) -> [Date] {
         let calendar = Calendar.current
@@ -43,18 +50,12 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
         return [startDate, endDate]
     }
 
-
-    override func hkQueryForLast(days : Int) async throws {
-        // TODO: Turn this into a map, and then update afterwards
-        for dayOffset in ((-1*days + 1)...0) {
-            try await self.runQuery(dayOffset: dayOffset)
-        }
-    }
-
-    internal func runQuery(dayOffset : Int) async throws {
+    private func getDataPoint(dayOffset : Int) async throws -> DataPoint {
         logger.notice("Starting: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) offset \(dayOffset)")
 
-        guard let sampleType = self.hkSampleType() else { return }
+        guard let sampleType =  self.hkSampleType() else {
+            throw RuntimeError("Cannot get sample type")
+        }
         let predicate = self.predicateForDayOffset(dayOffset: dayOffset)
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset)
 
@@ -74,14 +75,10 @@ class GoalCategoryHealthKitConnection : BaseGoalHealthKitConnection {
         })
 
         let datapointValue = self.hkDatapointValueForSamples(samples: samples, units: nil)
-        if datapointValue == 0 {
-            logger.notice("Skipping: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) as value is 0")
-            return
-        }
-
-        try await self.updateBeeminderWithValue(datapointValue: datapointValue, daystamp: daystamp)
 
         logger.notice("Completed: runCategoryTypeQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+
+        return (daystamp: daystamp, value: datapointValue, comment: "Auto-entered via Apple Health")
     }
 
     internal override func dateBoundsForDayOffset(dayOffset : Int) -> [Date] {
