@@ -9,42 +9,6 @@
 import Foundation
 import HealthKit
 
-protocol HealthKitMetric {
-    var humanText : String { get }
-    var databaseString : String { get }
-
-    func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection
-    func sampleType() throws -> HKSampleType
-}
-
-struct QuantityHealthKitMetric : HealthKitMetric {
-    let humanText : String
-    let databaseString : String
-    fileprivate let hkIdentifier : HKQuantityTypeIdentifier
-
-    func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection {
-        return GoalQuantityHealthKitConnection(healthStore: healthStore, goal: goal, hkQuantityTypeIdentifier: hkIdentifier)
-    }
-
-    func sampleType() throws -> HKSampleType {
-        return HKObjectType.quantityType(forIdentifier: hkIdentifier)!
-    }
-}
-
-struct CategoryHealthKitMetric : HealthKitMetric {
-    let humanText : String
-    let databaseString : String
-    fileprivate let hkCategoryTypeIdentifier : HKCategoryTypeIdentifier
-
-    func createConnection(healthStore: HKHealthStore, goal: JSONGoal) -> GoalHealthKitConnection {
-        return GoalCategoryHealthKitConnection(healthStore: healthStore, goal: goal, hkCategoryTypeIdentifier: hkCategoryTypeIdentifier)
-    }
-
-    func sampleType() throws -> HKSampleType {
-        return HKObjectType.categoryType(forIdentifier: hkCategoryTypeIdentifier)!
-    }
-}
-
 class HealthKitConfig : NSObject {
     static let shared = HealthKitConfig()
     
