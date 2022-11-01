@@ -37,7 +37,8 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
 
     func hkQueryForLast(days : Int) async throws {
         let newDataPoints = try await recentDataPoints(days: days)
-        try await goal.updateToMatchDataPoints(healthKitDataPoints: newDataPoints)
+        let nonZeroDataPoints =  newDataPoints.filter { (_, value: Double, _) in value != 0 }
+        try await goal.updateToMatchDataPoints(healthKitDataPoints: nonZeroDataPoints)
 
         logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
     }
