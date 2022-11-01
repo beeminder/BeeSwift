@@ -130,32 +130,8 @@ class CategoryHealthKitMetric : HealthKitMetric {
 
     private func hkDatapointValueForSamples(samples : [HKSample], units: HKUnit?) -> Double {
         var datapointValue : Double = 0
-        if databaseString == "weight" {
-            return self.hkDatapointValueForWeightSamples(samples: samples, units: units)
-        }
-
         samples.forEach { (sample) in
             datapointValue += self.hkDatapointValueForSample(sample: sample, units: units)
-        }
-        return datapointValue
-    }
-
-    private func hkDatapointValueForWeightSamples(samples : [HKSample], units: HKUnit?) -> Double {
-        var datapointValue : Double = 0
-        let weights = samples.map { (sample) -> Double? in
-            let s = sample as? HKQuantitySample
-            if s != nil { return (s?.quantity.doubleValue(for: units!))! }
-            else {
-                return nil
-            }
-        }
-        let weight = weights.min { (w1, w2) -> Bool in
-            if w1 == nil { return true }
-            if w2 == nil { return false }
-            return w2! > w1!
-        }
-        if weight != nil {
-            datapointValue = weight!!
         }
         return datapointValue
     }
