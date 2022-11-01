@@ -85,12 +85,11 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
         }
 
         for (daystamp, newValue, comment) in healthKitDataPoints {
-            // TODO: Take comment as input
-            try await self.updateBeeminderWithValue(datapointValue: newValue, daystamp: daystamp, recentDatapoints: datapoints)
+            try await self.updateBeeminderWithValue(datapointValue: newValue, daystamp: daystamp, comment: comment, recentDatapoints: datapoints)
         }
     }
 
-    private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, recentDatapoints: [JSON]) async throws {
+    private func updateBeeminderWithValue(datapointValue : Double, daystamp : String, comment: String, recentDatapoints: [JSON]) async throws {
         logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Daystamp \(daystamp, privacy: .public) value \(datapointValue, privacy: .public)")
         if datapointValue == 0  {
             return
@@ -101,7 +100,7 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
             logger.notice("updateBeeminderWithValue(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Creating new point (none match)")
 
             let requestId = "\(daystamp)-\(self.goal.minuteStamp())"
-            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"Auto-entered via Apple Health\"", "requestid": requestId]
+            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"\(comment)\"", "requestid": requestId]
 
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 self.goal.postDatapoint(params: params, success: { (responseObject) in
@@ -111,8 +110,6 @@ class BaseGoalHealthKitConnection : GoalHealthKitConnection {
                     continuation.resume(throwing: error!)
                 })
             }
-
-
         } else if matchingDatapoints.count >= 1 {
             let firstDatapoint = matchingDatapoints.remove(at: 0)
             matchingDatapoints.forEach { datapoint in
