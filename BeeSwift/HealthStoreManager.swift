@@ -88,7 +88,7 @@ class HealthStoreManager :NSObject {
         logger.notice("syncHealthKitData")
 
         guard let connection = self.connectionFor(goal: goal) else {
-            throw RuntimeError("Failed to find connection for goal")
+            throw HealthKitError("Failed to find connection for goal")
         }
         try await connection.updateWithRecentData(days: days)
     }
@@ -134,7 +134,7 @@ class HealthStoreManager :NSObject {
                 if error != nil {
                     continuation.resume(throwing: error!)
                 } else if success == false {
-                    continuation.resume(throwing: RuntimeError("Error requesting HealthKit authorization"))
+                    continuation.resume(throwing: HealthKitError("Error requesting HealthKit authorization"))
                 } else {
                     continuation.resume()
                 }

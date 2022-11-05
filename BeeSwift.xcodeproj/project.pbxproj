@@ -75,6 +75,9 @@
 		A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */; };
 		D25716F2B8CCFE41DCD5CD5C /* Pods_BeeSwiftIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45017ADDD1E7A7E50917F8D4 /* Pods_BeeSwiftIntents.framework */; };
 		D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */; };
+		E42CB452291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
+		E42CB453291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
+		E42CB454291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
 		E457BE5D28C192B50012F5D0 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E457BE5C28C192B50012F5D0 /* IntentHandler.swift */; };
 		E4B0A32E28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A32F28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
@@ -293,6 +296,7 @@
 		C622986C48BC5CA5BBB7E3C7 /* Pods-BeeSwiftToday.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftToday.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftToday/Pods-BeeSwiftToday.debug.xcconfig"; sourceTree = "<group>"; };
 		DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeeSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E029CC25A4BEE8E42BD37670 /* Pods-BeeSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwift/Pods-BeeSwift.release.xcconfig"; sourceTree = "<group>"; };
+		E42CB451291727B200A35AB9 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
 		E457BE5C28C192B50012F5D0 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityHealthKitMetric.swift; sourceTree = "<group>"; };
@@ -592,6 +596,7 @@
 				E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */,
 				E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */,
 				E4E6428F2910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift */,
+				E42CB451291727B200A35AB9 /* HealthKitError.swift */,
 			);
 			path = HeathKit;
 			sourceTree = "<group>";
@@ -1103,6 +1108,7 @@
 				A12E69511BD3EF0200AB94C2 /* TodayViewController.swift in Sources */,
 				E4E642892910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */,
 				A1D853291EB0EA2400FC75DE /* BSLabel.swift in Sources */,
+				E42CB453291727B200A35AB9 /* HealthKitError.swift in Sources */,
 				A1D8532A1EB0EA2B00FC75DE /* BSButton.swift in Sources */,
 				E4E6426A290E22E6004F3EA9 /* HealthKitConfig.swift in Sources */,
 				A1D8532D1EB0EA8100FC75DE /* UIColorExtension.swift in Sources */,
@@ -1151,6 +1157,7 @@
 				E4E642902910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift in Sources */,
 				A1453B391AEDA71D006F48DA /* BSLabel.swift in Sources */,
 				A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */,
+				E42CB452291727B200A35AB9 /* HealthKitError.swift in Sources */,
 				A1F8F07B232C05410060B83E /* JSONGoal.swift in Sources */,
 				A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */,
 				A149B3721AEF54D100F19A09 /* BSButton.swift in Sources */,
@@ -1211,6 +1218,7 @@
 				E55FAB19261240F800A0CF88 /* CurrentUserManager.swift in Sources */,
 				E4E6428A2910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */,
 				E5F7C55026113C330095684F /* AddDataIntents.intentdefinition in Sources */,
+				E42CB454291727B200A35AB9 /* HealthKitError.swift in Sources */,
 				E5CF51AD2612437400546184 /* JSONGoal.swift in Sources */,
 				E4E6426B290E22E9004F3EA9 /* HealthKitConfig.swift in Sources */,
 				E5CF51822612434700546184 /* BSLabel.swift in Sources */,

@@ -48,7 +48,7 @@ class CategoryHealthKitMetric : HealthKitMetric {
                 if error != nil {
                     continuation.resume(throwing: error!)
                 } else if samples == nil {
-                    continuation.resume(throwing: RuntimeError("HKSampleQuery did not return samples"))
+                    continuation.resume(throwing: HealthKitError("HKSampleQuery did not return samples"))
                 } else {
                     continuation.resume(returning: samples!)
                 }

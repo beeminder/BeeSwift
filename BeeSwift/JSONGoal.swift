@@ -353,7 +353,7 @@ class JSONGoal {
             self.fetchRecentDatapoints(success: { datapoints in
                 continuation.resume(returning: datapoints)
             }, errorCompletion: {
-                continuation.resume(throwing: RuntimeError("Could not fetch recent datapoints"))
+                continuation.resume(throwing: HealthKitError("Could not fetch recent datapoints"))
             })
         }
 
@@ -387,7 +387,7 @@ class JSONGoal {
                 updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue, success: {
                     continuation.resume()
                 }, errorCompletion: {
-                    continuation.resume(throwing: RuntimeError("Error updating data point"))
+                    continuation.resume(throwing: HealthKitError("Error updating data point"))
                 })
             }
         }

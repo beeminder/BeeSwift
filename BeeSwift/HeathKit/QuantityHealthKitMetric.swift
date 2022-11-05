@@ -33,7 +33,7 @@ class QuantityHealthKitMetric : HealthKitMetric {
         logger.notice("Started: runStatsQuery for \(self.databaseString, privacy: .public) days \(days)")
 
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {
-            throw RuntimeError("Unable to look up a quantityType")
+            throw HealthKitError("Unable to look up a quantityType")
         }
         let predicate = self.predicateForLast(days: days, deadline: deadline)
         let options : HKStatisticsOptions = quantityType.aggregationStyle == .cumulative ? .cumulativeSum : .discreteMin
@@ -49,7 +49,7 @@ class QuantityHealthKitMetric : HealthKitMetric {
                 if error != nil {
                     continuation.resume(throwing: error!)
                 } else if collection == nil {
-                    continuation.resume(throwing: RuntimeError("HKStatisticsCollectionQuery returned a nil collection"))
+                    continuation.resume(throwing: HealthKitError("HKStatisticsCollectionQuery returned a nil collection"))
                 } else {
                     continuation.resume(returning: collection!)
                 }
@@ -99,7 +99,7 @@ class QuantityHealthKitMetric : HealthKitMetric {
         let endDate = Date()
         let calendar = Calendar.current
         guard let startDate = calendar.date(byAdding: .day, value: -5, to: endDate) else {
-            throw RuntimeError("Cannot find calculate start date")
+            throw HealthKitError("Cannot find calculate start date")
         }
 
         logger.notice("updateBeeminderWithStatsCollection(\(self.databaseString, privacy: .public)): Considering \(collection.statistics().count) points")
@@ -116,11 +116,11 @@ class QuantityHealthKitMetric : HealthKitMetric {
 
             let units = try await healthStore.preferredUnits(for: [statistics.quantityType])
             guard let unit = units.first?.value else {
-                throw RuntimeError("No preferred units")
+                throw HealthKitError("No preferred units")
             }
 
             guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {
-                throw RuntimeError("Unable to look up a quantityType")
+                throw HealthKitError("Unable to look up a quantityType")
             }
 
             let value: Double? = {
