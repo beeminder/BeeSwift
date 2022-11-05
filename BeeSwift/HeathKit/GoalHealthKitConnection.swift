@@ -45,7 +45,7 @@ class GoalHealthKitConnection {
             self.logger.notice("ObserverQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) received update query \(query, privacy: .public) error \(error, privacy: .public)")
             Task {
                 do {
-                    try await self.hkQueryForLast(days: 1)
+                    try await self.updateWithRecentData(days: 1)
                     completionHandler()
                 } catch {
                     self.logger.error("Error fetching data in response to observer query \(query) error: \(error)")
@@ -70,7 +70,7 @@ class GoalHealthKitConnection {
     }
 
     /// Explicitly sync goal data for the number of days specified
-    public func hkQueryForLast(days : Int) async throws {
+    public func updateWithRecentData(days : Int) async throws {
         let newDataPoints = try await metric.recentDataPoints(days: days, deadline: self.goal.deadline.intValue, healthStore: healthStore)
         let nonZeroDataPoints =  newDataPoints.filter { (_, value: Double, _) in value != 0 }
         try await goal.updateToMatchDataPoints(healthKitDataPoints: nonZeroDataPoints)

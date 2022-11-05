@@ -90,7 +90,7 @@ class HealthStoreManager :NSObject {
         guard let connection = self.connectionFor(goal: goal) else {
             throw RuntimeError("Failed to find connection for goal")
         }
-        try await connection.hkQueryForLast(days: days)
+        try await connection.updateWithRecentData(days: days)
     }
 
     /// Gets or creates an appropriate connection object for the supplied goal
