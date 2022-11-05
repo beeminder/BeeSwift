@@ -81,6 +81,9 @@ class HealthStoreManager :NSObject {
     /// Immediately update the supplied goal based on HealthKit's data record
     ///
     /// Any existing beeminder records for the date range provided will be updated or deleted.
+    /// - Parameters:
+    ///   - goal: The healthkit-connected goal to be updated
+    ///   - days: How many days of history to update. Supplying 1 will update the current day.
     public func updateWithRecentData(goal: JSONGoal, days: Int) async throws {
         logger.notice("syncHealthKitData")
 

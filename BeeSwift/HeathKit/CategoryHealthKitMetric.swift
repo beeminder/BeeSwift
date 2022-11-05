@@ -54,8 +54,6 @@ class CategoryHealthKitMetric : HealthKitMetric {
                 } else {
                     continuation.resume(returning: samples!)
                 }
-
-
             })
             healthStore.execute(query)
         })
