@@ -37,8 +37,6 @@ class CategoryHealthKitMetric : HealthKitMetric {
         return results
     }
 
-
-
     private func getDataPoint(dayOffset : Int, deadline : Int, healthStore : HKHealthStore) async throws -> DataPoint {
         CategoryHealthKitMetric.logger.notice("Starting: runCategoryTypeQuery for \(self.databaseString, privacy: .public) offset \(dayOffset)")
 
