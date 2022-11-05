@@ -13,8 +13,10 @@ import AlamofireImage
 import SafariServices
 import Intents
 import BeeKit
+import OSLog
 
 class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+    private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
     
     var goal : JSONGoal!
     
@@ -357,7 +359,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                     hud?.hide(true, afterDelay: 2)
                 })
             } catch {
-                // TODO: Log this error?
+                logger.error("Error Syncing Health Data: \(error, privacy: .public)")
                 DispatchQueue.main.async {
                     MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 }

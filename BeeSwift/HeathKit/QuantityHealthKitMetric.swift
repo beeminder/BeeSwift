@@ -57,8 +57,8 @@ class QuantityHealthKitMetric : HealthKitMetric {
             healthStore.execute(query)
         }
 
-        // TODO: This should maybe have a timezone filter?
-        return try await datapointsForCollection(collection: statsCollection, deadline: deadline, healthStore: healthStore)
+        // TODO: It would be possible for Apple to give us more data than requested in the statsCollection, we should consider passing through the number of days to filter here
+        return try await datapointsForCollection(collection: statsCollection, days: days, deadline: deadline, healthStore: healthStore)
     }
 
     private func predicateForLast(days : Int, deadline : Int) -> NSPredicate? {
@@ -78,10 +78,10 @@ class QuantityHealthKitMetric : HealthKitMetric {
     }
 
     private func anchorDate(deadline : Int) -> Date {
+        // TODO: This will use the device local timezone instead of the user's beeminder timezone
         let calendar = Calendar.current
         var anchorComponents = calendar.dateComponents([.day, .month, .year, .weekday], from: Date())
 
-        // TODO: This will use the local timezone instead of the goal timezone which causes a number of bugs
         anchorComponents.hour = 0
         anchorComponents.minute = 0
         anchorComponents.second = 0
@@ -92,13 +92,12 @@ class QuantityHealthKitMetric : HealthKitMetric {
         return calendar.date(byAdding: .second, value: deadline, to: midnight)!
     }
 
-    private func datapointsForCollection(collection : HKStatisticsCollection, deadline : Int, healthStore: HKHealthStore) async throws -> [DataPoint] {
+    private func datapointsForCollection(collection : HKStatisticsCollection, days: Int, deadline : Int, healthStore: HKHealthStore) async throws -> [DataPoint] {
         logger.notice("updateBeeminderWithStatsCollection(\(self.databaseString, privacy: .public)): Started")
 
-        // TODO: These should be paseed in
         let endDate = Date()
         let calendar = Calendar.current
-        guard let startDate = calendar.date(byAdding: .day, value: -5, to: endDate) else {
+        guard let startDate = calendar.date(byAdding: .day, value: -days, to: endDate) else {
             throw HealthKitError("Cannot find calculate start date")
         }
 

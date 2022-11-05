@@ -8,8 +8,11 @@
 
 import Foundation
 import HealthKit
+import OSLog
 
 class SleepAnalysisHealthKitMetric : CategoryHealthKitMetric {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "SleepAnalysisHealthKitMetric")
+
     let hourInSeconds = 3600.0
     let hkCategoryValueSleepAnalysis : HKCategoryValueSleepAnalysis
 
@@ -20,7 +23,7 @@ class SleepAnalysisHealthKitMetric : CategoryHealthKitMetric {
 
     override func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
         guard let categorySample = sample as? HKCategorySample else {
-            // TODO: Warn
+            logger.warning("Encountered a sleep sample which was not a HKCategorySample: \(sample)")
             return 0
         }
 

@@ -54,14 +54,13 @@ class HealthStoreManager :NSObject {
             try await self.requestAuthorization(read: permissions)
         }
 
-        // TODO: Where do exceptions go?
-        await withThrowingTaskGroup(of: Void.self) { group in
+        try await withThrowingTaskGroup(of: Void.self) { group in
             for connection in goalConnections {
                 group.addTask {
-                    // TODO: This could do terrible things around repeated auth requests
                     try await connection.setupHealthKit()
                 }
             }
+            try await group.waitForAll()
         }
     }
 
