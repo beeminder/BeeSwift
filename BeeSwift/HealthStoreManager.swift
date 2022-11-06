@@ -42,8 +42,6 @@ class HealthStoreManager :NSObject {
     /// It is safe to pass the same goal or set of goals to this function multiple times, this function
     /// will ensure duplicate observers are not installed.
     public func ensureUpdatesRegularly(goals: [JSONGoal]) async throws {
-        logger.notice("setupHealthKitGoals for \(goals.count, privacy: .public) goals")
-
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
 
         var permissions = Set<HKObjectType>()
@@ -69,7 +67,7 @@ class HealthStoreManager :NSObject {
     /// This function will never show a permissions dialog - instead it will not update for
     /// metrics where we do not have permission.
     public func silentlyInstallObservers(goals: [JSONGoal]) {
-        logger.notice("registerObserverQueries")
+        logger.notice("Silently installing observer queries")
 
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
         for connection in goalConnections {
@@ -84,8 +82,6 @@ class HealthStoreManager :NSObject {
     ///   - goal: The healthkit-connected goal to be updated
     ///   - days: How many days of history to update. Supplying 1 will update the current day.
     public func updateWithRecentData(goal: JSONGoal, days: Int) async throws {
-        logger.notice("syncHealthKitData")
-
         guard let connection = self.connectionFor(goal: goal) else {
             throw HealthKitError("Failed to find connection for goal")
         }
@@ -112,14 +108,14 @@ class HealthStoreManager :NSObject {
 
             // If there is no connection (or we just removed it) then create a new one
             if connections[goal.id] == nil {
-                logger.notice("Creating connection for \(goal.slug, privacy: .public) (\(goal.id, privacy: .public)) to metric \(goal.healthKitMetric ?? "nil", privacy: .public)")
+                logger.notice("Creating connection for \(goal.slug, privacy: .private) (\(goal.id, privacy: .public)) to metric \(goal.healthKitMetric ?? "nil", privacy: .public)")
 
                 guard let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
                     metric.databaseString == goal.healthKitMetric
                 }) else {
                     return nil
                 }
-                connections[goal.id] =  GoalHealthKitConnection(goal: goal, metric: metric, healthStore: healthStore)
+                connections[goal.id] = GoalHealthKitConnection(goal: goal, metric: metric, healthStore: healthStore)
             }
 
             // Return the cached connection

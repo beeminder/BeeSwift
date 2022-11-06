@@ -9,7 +9,7 @@ import HealthKit
 import OSLog
 
 class CategoryHealthKitMetric : HealthKitMetric {
-    private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CategoryHealthKitMetric")
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CategoryHealthKitMetric")
 
     let humanText : String
     let databaseString : String
@@ -30,6 +30,8 @@ class CategoryHealthKitMetric : HealthKitMetric {
     }
 
     func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [DataPoint] {
+        logger.notice("Fetching \(days) recent data points for \(self.databaseString, privacy: .public)")
+
         var results : [DataPoint] = []
         for dayOffset in ((-1*days + 1)...0) {
             results.append(try await self.getDataPoint(dayOffset: dayOffset, deadline: deadline, healthStore: healthStore))
@@ -38,8 +40,6 @@ class CategoryHealthKitMetric : HealthKitMetric {
     }
 
     private func getDataPoint(dayOffset : Int, deadline : Int, healthStore : HKHealthStore) async throws -> DataPoint {
-        CategoryHealthKitMetric.logger.notice("Starting: runCategoryTypeQuery for \(self.databaseString, privacy: .public) offset \(dayOffset)")
-
         let predicate = self.predicateForDayOffset(dayOffset: dayOffset, deadline: deadline)
         let daystamp = self.dayStampFromDayOffset(dayOffset: dayOffset, deadline: deadline)
 
@@ -57,9 +57,6 @@ class CategoryHealthKitMetric : HealthKitMetric {
         })
 
         let datapointValue = self.hkDatapointValueForSamples(samples: samples, units: nil)
-
-        CategoryHealthKitMetric.logger.notice("Completed: runCategoryTypeQuery for \(self.databaseString, privacy: .public)")
-
         return (daystamp: daystamp, value: datapointValue, comment: "Auto-entered via Apple Health")
     }
 

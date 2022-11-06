@@ -34,15 +34,19 @@ class GoalHealthKitConnection {
 
     /// Register for changes to the relevant metric. Assumes permission and background delivery already enabled
     public func registerObserverQuery() {
-        logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): requested")
-
         guard observerQuery == nil else {
-            logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): skipping because done before")
             return
         }
+        logger.notice("Registering observer query for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
 
         let query = HKObserverQuery(sampleType: metric.sampleType(), predicate: nil, updateHandler: { (query, completionHandler, error) in
-            self.logger.notice("ObserverQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) received update query \(query, privacy: .public) error \(error, privacy: .public)")
+            self.logger.notice("ObserverQuery response for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+
+            guard error == nil else {
+                self.logger.error("ObserverQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) was error: \(error, privacy: .public)")
+                return
+            }
+
             Task {
                 do {
                     try await self.updateWithRecentData(days: 1)
@@ -56,8 +60,6 @@ class GoalHealthKitConnection {
 
         // Once we have successfully executed the query then keep track of it to stop later
         self.observerQuery = query
-
-        logger.notice("registerObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): done")
     }
 
     /// Remove any registered queries to prevent further updates
@@ -66,6 +68,8 @@ class GoalHealthKitConnection {
             logger.warning("unregisterObserverQuery(\(self.goal.healthKitMetric ?? "nil", privacy: .public)): Attempted to unregister query when not registered")
             return
         }
+        logger.notice("Unregistering observer query for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
+
         healthStore.stop(query)
     }
 
@@ -74,8 +78,6 @@ class GoalHealthKitConnection {
         let newDataPoints = try await metric.recentDataPoints(days: days, deadline: self.goal.deadline.intValue, healthStore: healthStore)
         let nonZeroDataPoints =  newDataPoints.filter { (_, value: Double, _) in value != 0 }
         try await goal.updateToMatchDataPoints(healthKitDataPoints: nonZeroDataPoints)
-
-        logger.notice("Complete: runStatsQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
     }
 
 }
