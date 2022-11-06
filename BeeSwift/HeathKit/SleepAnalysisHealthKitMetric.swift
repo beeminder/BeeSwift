@@ -35,29 +35,4 @@ class SleepAnalysisHealthKitMetric : CategoryHealthKitMetric {
 
         return 0
     }
-
-    override func dayStampFromDayOffset(dayOffset : Int, deadline : Int) -> String {
-        let bounds = self.dateBoundsForDayOffset(dayOffset: dayOffset, deadline: deadline)
-        let datapointDate = bounds[1]
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
-        return formatter.string(from: datapointDate)
-    }
-
-    override func dateBoundsForDayOffset(dayOffset : Int, deadline : Int) -> [Date] {
-        let calendar = Calendar.current
-
-        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
-
-        let sixPmToday = calendar.date(bySettingHour: 18, minute: 0, second: 0, of: calendar.date(from: components)!)
-        let sixPmTomorrow = calendar.date(byAdding: .day, value: 1, to: sixPmToday!)
-
-        guard let startDate = calendar.date(byAdding: .day, value: dayOffset, to: sixPmToday!) else { return [] }
-        guard let endDate = calendar.date(byAdding: .day, value: dayOffset, to: sixPmTomorrow!) else { return [] }
-
-        return [startDate, endDate]
-    }
-
-    
 }
