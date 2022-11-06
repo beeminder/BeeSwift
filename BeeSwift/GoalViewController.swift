@@ -13,8 +13,10 @@ import AlamofireImage
 import SafariServices
 import Intents
 import BeeKit
+import OSLog
 
 class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+    private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
     
     var goal : JSONGoal!
     
@@ -348,15 +350,19 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     private func syncHealthDataButtonPressed(numDays: Int) {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        HealthStoreManager.sharedManager.syncHealthKitData(goal: self.goal, days: numDays, success: {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
-            })
-        }) {
-            DispatchQueue.main.async {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        Task {
+            do {
+                try await HealthStoreManager.sharedManager.updateWithRecentData(goal: self.goal, days: numDays)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                    hud?.mode = .customView
+                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                    hud?.hide(true, afterDelay: 2)
+                })
+            } catch {
+                logger.error("Error Syncing Health Data: \(error, privacy: .public)")
+                DispatchQueue.main.async {
+                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                }
             }
         }
     }

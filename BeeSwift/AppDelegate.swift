@@ -11,12 +11,17 @@ import IQKeyboardManager
 import HealthKit
 import AlamofireNetworkActivityIndicator
 import BeeKit
+import OSLog
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    let logger = Logger(subsystem: "com.beeminder.beeminder", category: "AppDelegate")
+
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        logger.notice("application:didFinishLaunchingWithOptions")
+
         resetStateIfUITesting()
         removeAllLocalNotifications()
 
@@ -26,11 +31,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         IQKeyboardManager.shared().isEnableAutoToolbar = false
 
         if HKHealthStore.isHealthDataAvailable() {
-            // We must register queries for all our healthkit metrics before this method completes in order to successfully be delivered background updates
-            // This means we cannot wait for a round trip to the server to fetch latest goals, so use a potentially stale list from last time we did a successful
-            // update.
+            // We must register queries for all our healthkit metrics before this method completes
+            // in order to successfully be delivered background updates. This means we cannot wait
+            // for a round trip to the server to fetch latest goals, so use a potentially stale
+            // list from last time we did a successful update.
             if let goals = CurrentUserManager.sharedManager.staleGoals() {
-                HealthStoreManager.sharedManager.setupHealthKitGoals(goals: goals)
+                HealthStoreManager.sharedManager.silentlyInstallObservers(goals: goals)
             }
         }
         
@@ -45,6 +51,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
+        logger.notice("application:didReceiveRemoteNotification")
+
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             //
         }) { (error, errorMessage) in
@@ -53,26 +61,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
+        logger.notice("applicationWillResignActive")
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
+        logger.notice("applicationDidEnterBackground")
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
+        logger.notice("applicationWillEnterForeground")
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
         NotificationCenter.default.post(name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
+        logger.notice("applicationDidBecomeActive")
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
+        logger.notice("applicationWillTerminate")
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
@@ -80,6 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     ///
     /// and for iOS 13 and over: https://developer.apple.com/documentation/backgroundtasks/bgapprefreshtask
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        logger.notice("application:performFetchWithCompletionHandler")
         CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
             completionHandler(.newData)
         }) { (error, errorMessage) in
@@ -90,6 +104,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
+        logger.notice("application:open:options")
         if url.scheme == "beeminder" {
             if let query = url.query {
                 let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
@@ -102,6 +117,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        logger.notice("application:open:sourceApplication:annotation")
         if url.scheme == "beeminder" {
             if let query = url.query {
                 let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
@@ -114,6 +130,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        logger.notice("application:didRegisterForRemoteNotificationsWithDeviceToken")
         let token = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
 
         SignedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: ["device_token" : token], success: { (responseObject) -> Void in
@@ -124,6 +141,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        logger.notice("application:didFailToRegisterForRemoteNotificationsWithError")
 //        RemoteNotificationsManager.sharedManager.didFailToRegisterForRemoteNotificationsWithError(error)
     }
     

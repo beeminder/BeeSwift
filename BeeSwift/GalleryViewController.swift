@@ -12,9 +12,12 @@ import MBProgressHUD
 import SwiftyJSON
 import HealthKit
 import SafariServices
+import OSLog
 
 
-class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {    
+class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {
+    let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
+
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewFlowLayout?
     let lastUpdatedView = UIView()
@@ -380,9 +383,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func setupHealthKit() {
-        // TODO: We could potentially merge these together?
-        HealthStoreManager.sharedManager.requestAuthorization(goals: self.goals) { (success, error) in
-            HealthStoreManager.sharedManager.setupHealthKitGoals(goals: self.goals)
+        Task {
+            do {
+                try await HealthStoreManager.sharedManager.ensureUpdatesRegularly(goals: self.goals)
+            } catch {
+                // We should display an error UI
+            }
         }
     }
     
