@@ -621,19 +621,20 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         let daystamp = Int(datapoint["daystamp"].string ?? "") ?? 0
         let day = daystamp != 0 ? String(format: "%02d", daystamp % 100) : "??" // Day is two least significant digits of daystamp
 
-        let value = datapoint["value"].double!
-        let comment = datapoint["comment"].string ?? ""
-
         var formattedValue: String
         if goal.hhmmformat {
+            let value = datapoint["value"].doubleValue
             let hours = Int(value)
             let minutes = Int(value.truncatingRemainder(dividingBy: 1) * 60)
             formattedValue = String(hours) + ":" + String(format: "%02d", minutes)
         } else {
-            formattedValue = String(value)
+            formattedValue = datapoint["value"].number.map { $0.stringValue } ?? "?"
         }
 
+        let comment = datapoint["comment"].string ?? ""
+
         return "\(day) \(formattedValue) \(comment)"
+
     }
     
     // MARK: - SFSafariViewControllerDelegate
