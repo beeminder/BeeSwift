@@ -41,6 +41,7 @@ class JSONGoal {
     var use_defaults: NSNumber?
     var queued: Bool?
     var todayta: Bool = false
+    var hhmmformat: Bool = false
     var recent_data: Array<Any>?
     
     init(json: JSON) {
@@ -91,6 +92,7 @@ class JSONGoal {
         
         self.healthKitMetric = json["healthkitmetric"].string
         self.todayta = json["todayta"].bool!
+        self.hhmmformat = json["hhmmformat"].bool!
         
         var datapoints : Array<JSON> = json["recent_data"].arrayValue
         datapoints.reverse()
