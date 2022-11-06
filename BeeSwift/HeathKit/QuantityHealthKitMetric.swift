@@ -62,11 +62,11 @@ class QuantityHealthKitMetric : HealthKitMetric {
     }
 
     private func predicateForLast(days : Int, deadline : Int) -> NSPredicate? {
-        let startTime = goalAwareStartOfDay(daysAgo: days, deadline: deadline)
+        let startTime = goalAwareStartOfDay(days: days, deadline: deadline)
         return HKQuery.predicateForSamples(withStart: startTime, end: nil)
     }
 
-    private func goalAwareStartOfDay(daysAgo : Int, deadline : Int) -> Date {
+    private func goalAwareStartOfDay(days : Int, deadline : Int) -> Date {
         let calendar = Calendar.current
 
         let components = calendar.dateComponents(in: TimeZone.current, from: Date())
@@ -74,7 +74,8 @@ class QuantityHealthKitMetric : HealthKitMetric {
 
         let startOfToday = calendar.date(byAdding: .second, value: deadline, to: localMidnightThisMorning!)
 
-        return calendar.date(byAdding: .day, value: -daysAgo, to: startOfToday!)!
+        let dayOffset = -days + 1 // One day should fetch only today
+        return calendar.date(byAdding: .day, value: dayOffset, to: startOfToday!)!
     }
 
     private func anchorDate(deadline : Int) -> Date {
