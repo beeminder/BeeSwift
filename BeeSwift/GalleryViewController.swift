@@ -116,7 +116,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.outofdateLabel.numberOfLines = 0
         self.outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
         self.outofdateLabel.textAlignment = .center
-        self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
         self.outofdateLabel.snp.makeConstraints { (make) in
             make.top.equalTo(3)
             make.bottom.equalTo(-3)
@@ -165,35 +164,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.fetchGoals()
         
-        _ = try? VersionManager.sharedManager.appStoreVersion { (version, error) in
-            if let error = error {
-                print(error)
-            } else if let appStoreVersion = version, let currentVersion = VersionManager.sharedManager.currentVersion() {
-                if currentVersion < appStoreVersion {
-                    DispatchQueue.main.sync {
-                        self.outofdateView.snp.remakeConstraints { (make) -> Void in
-                            make.left.equalTo(0)
-                            make.right.equalTo(0)
-                            make.top.equalTo(self.deadbeatView.snp.bottom)
-                            make.height.equalTo(42)
-                        }
-                    }
-                }
-            }
-        }
-        
-        VersionManager.sharedManager.checkIfUpdateRequired { (required, error) in
-            if required && error == nil {
-                self.outofdateView.snp.remakeConstraints { (make) -> Void in
-                    make.left.equalTo(0)
-                    make.right.equalTo(0)
-                    make.top.equalTo(self.deadbeatView.snp.bottom)
-                    make.height.equalTo(42)
-                }
-                self.outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
-                self.collectionView?.isHidden = true
-            }
-        }
+
         
         if CurrentUserManager.sharedManager.signedIn() {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
@@ -203,6 +174,41 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                         UIApplication.shared.registerForRemoteNotifications()
                     }
                 }
+            }
+        }
+
+        Task {
+            do {
+                let updateState = try await VersionManager.sharedManager.updateState()
+
+                DispatchQueue.main.async {
+                    switch updateState {
+                    case .UpdateRequired:
+                        self.outofdateView.snp.remakeConstraints { (make) -> Void in
+                            make.left.equalTo(0)
+                            make.right.equalTo(0)
+                            make.top.equalTo(self.deadbeatView.snp.bottom)
+                            make.height.equalTo(42)
+                        }
+                        self.outofdateLabel.isHidden = false
+                        self.outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
+                        self.collectionView?.isHidden = true
+                    case .UpdateSuggested:
+                        self.outofdateView.snp.remakeConstraints { (make) -> Void in
+                            make.left.equalTo(0)
+                            make.right.equalTo(0)
+                            make.top.equalTo(self.deadbeatView.snp.bottom)
+                            make.height.equalTo(42)
+                        }
+                        self.outofdateLabel.isHidden = false
+                        self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
+                        self.collectionView?.isHidden = false
+                    case .UpToDate:
+                        self.collectionView?.isHidden = false
+                    }
+                }
+            } catch let error as VersionError {
+                logger.error("Error checking for current version: \(error)")
             }
         }
     }
@@ -438,7 +444,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return VersionManager.sharedManager.updateRequired() ? 0 : self.filteredGoals.count + 1
+        return VersionManager.sharedManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count + 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
