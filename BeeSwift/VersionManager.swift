@@ -17,6 +17,11 @@ enum UpdateState {
     case UpToDate, UpdateSuggested, UpdateRequired
 }
 
+// We release new versions of the app incrementally over the course of 7 days. We allow slightly more
+// time than this to pass before suggesting users upgrade to avoid excess nagging.
+fileprivate let dayInSeconds = 24.0 * 60.0 * 60.0
+fileprivate let ageOfReleaseToWarn: TimeInterval = 10.0 * dayInSeconds
+
 class VersionManager : NSObject {
     static let sharedManager = VersionManager()
 
@@ -29,18 +34,24 @@ class VersionManager : NSObject {
 
     func updateState() async throws -> UpdateState {
         let currentVersion = VersionManager.sharedManager.currentVersion()
+        let now = Date()
 
-        async let appStoreVersion = VersionManager.sharedManager.appStoreVersion()
+        async let (version: appStoreVersion, releaseDate: appStoreReleaseDate) = VersionManager.sharedManager.appStoreVersion()
         async let updateRequired = VersionManager.sharedManager.checkIfUpdateRequired()
 
         if try await updateRequired {
             updateState = UpdateState.UpdateRequired
-        } else if try await currentVersion < appStoreVersion {
-            updateState = UpdateState.UpdateSuggested
-        } else {
-            updateState = UpdateState.UpToDate
+            return updateState
         }
 
+        let newerVersionAvailable = try await currentVersion < appStoreVersion
+        let currentVersionHasFullyRolledOut = try await (appStoreReleaseDate + ageOfReleaseToWarn) < now
+        if newerVersionAvailable && currentVersionHasFullyRolledOut {
+            updateState = UpdateState.UpdateSuggested
+            return updateState
+        }
+
+        updateState = UpdateState.UpToDate
         return updateState
     }
 
@@ -69,20 +80,26 @@ class VersionManager : NSObject {
         return currentVersion.compare("\(minVersion)", options: .numeric) == .orderedAscending
     }
     
-    private func appStoreVersion() async throws -> String {
+    private func appStoreVersion() async throws -> (version: String, releaseDate: Date) {
         guard let info = Bundle.main.infoDictionary,
             let identifier = info["CFBundleIdentifier"] as? String,
             let url = URL(string: "https://itunes.apple.com/lookup?bundleId=\(identifier)") else {
                 throw VersionError.invalidBundleInfo
         }
 
+        let dateFormatter = ISO8601DateFormatter()
+
         let (data, _) = try await URLSession.shared.data(from: url)
 
         let json = try JSONSerialization.jsonObject(with: data, options: [.allowFragments]) as? [String: Any]
-        guard let result = (json?["results"] as? [Any])?.first as? [String: Any], let version = result["version"] as? String else {
+        guard let result = (json?["results"] as? [Any])?.first as? [String: Any],
+              let version = result["version"] as? String,
+              let currentVersionReleaseDateString = result["currentVersionReleaseDate"] as? String,
+              let currentVersionReleaseDate = dateFormatter.date(from: currentVersionReleaseDateString)
+        else {
             throw VersionError.invalidAppStoreResponse
         }
 
-        return version
+        return (version: version, releaseDate: currentVersionReleaseDate)
     }
 }
