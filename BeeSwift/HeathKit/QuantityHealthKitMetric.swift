@@ -13,11 +13,13 @@ class QuantityHealthKitMetric : HealthKitMetric {
 
     let humanText : String
     let databaseString : String
+    let category : HealthKitCategory
     let hkQuantityTypeIdentifier : HKQuantityTypeIdentifier
 
-    internal init(humanText: String, databaseString: String, hkQuantityTypeIdentifier: HKQuantityTypeIdentifier) {
+    internal init(humanText: String, databaseString: String, category : HealthKitCategory, hkQuantityTypeIdentifier: HKQuantityTypeIdentifier) {
         self.humanText = humanText
         self.databaseString = databaseString
+        self.category = category
         self.hkQuantityTypeIdentifier = hkQuantityTypeIdentifier
     }
 

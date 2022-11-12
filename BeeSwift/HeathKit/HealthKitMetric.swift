@@ -9,6 +9,7 @@ import HealthKit
 protocol HealthKitMetric {
     var humanText : String { get }
     var databaseString : String { get }
+    var category : HealthKitCategory { get }
 
     /// The permission required for this connection to read data from HealthKit
     func permissionType() -> HKObjectType
