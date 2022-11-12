@@ -3,29 +3,29 @@ platform :ios, '14.0'
 use_frameworks!
 inhibit_all_warnings!
 target 'BeeSwift' do
-	pod "Alamofire", '~> 4.9'
-	pod "AlamofireImage", '~> 3.6'
-	pod 'AlamofireNetworkActivityIndicator', '~> 2.4'
+	pod "Alamofire", '~> 5.6.2'
+	pod "AlamofireImage", '~> 4.2.0'
+	pod 'AlamofireNetworkActivityIndicator', '~> 3.1.0'
 	pod 'SnapKit', '~> 4.0'
 	pod "SwiftyJSON"	
 	pod "MBProgressHUD"
 	pod 'IQKeyboardManager'
 end
 target 'BeeSwiftToday' do
-	pod 'Alamofire', '~> 4.9'
-	pod 'AlamofireImage', '~>3.6'
+	pod 'Alamofire', '~> 5.6.2'
+	pod 'AlamofireImage', '~> 4.2.0'
 	pod 'SnapKit', '~> 4.0'
 	pod "SwiftyJSON"
 	pod "MBProgressHUD"	
 end
 target 'BeeSwiftIntents' do
-	pod 'Alamofire', '~> 4.9'
+	pod 'Alamofire', '~> 5.6.2'
 	pod 'SwiftyJSON'
 end
 target 'BeeSwiftTests' do
-	pod "Alamofire", '~> 4.9'
-	pod "AlamofireImage", '~> 3.6'
-	pod 'AlamofireNetworkActivityIndicator', '~> 2.4'
+	pod "Alamofire", '~> 5.6.2'
+	pod "AlamofireImage", '~> 4.2.0'
+	pod 'AlamofireNetworkActivityIndicator', '~> 3.1.0'
 	pod 'SnapKit', '~> 4.0'
 	pod "SwiftyJSON"
 end
