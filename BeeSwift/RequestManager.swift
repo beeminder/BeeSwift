@@ -15,54 +15,50 @@ class RequestManager {
     static let baseURLString = Config.init().baseURLString
     
     class func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
-        Alamofire.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: SessionManager.defaultHTTPHeaders).validate().responseJSON { response in
+        AF.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: HTTPHeaders.default).validate().responseJSON { response in
             switch response.result {
-            case .success:
-                success?(response.result.value)
-            case .failure(let e):
-                if let error = e as? AFError {
-                    switch error {
-                    case .responseValidationFailed(let reason):
-                        print(reason)
-                        switch reason {
-                        case .dataFileNil, .dataFileReadFailed:
-                            print("Downloaded file could not be read")
-                        case .missingContentType(let acceptableContentTypes):
-                            print("Content Type Missing: \(acceptableContentTypes)")
-                        case .unacceptableContentType(let acceptableContentTypes, let responseContentType):
-                            print("Response content type: \(responseContentType) was unacceptable: \(acceptableContentTypes)")
-                        case .unacceptableStatusCode(let code):
-                            if code == 401 {
-                                CurrentUserManager.sharedManager.signOut()
-                            }
-                            print("Response status code was unacceptable: \(code)")
-                        @unknown default:
-                            print(reason)
-                            break
+            case .success(let value):
+                success?(value)
+            case .failure(let error):
+                switch error {
+                case .responseValidationFailed(let reason):
+                    print(reason)
+                    switch reason {
+                    case .dataFileNil, .dataFileReadFailed:
+                        print("Downloaded file could not be read")
+                    case .missingContentType(let acceptableContentTypes):
+                        print("Content Type Missing: \(acceptableContentTypes)")
+                    case .unacceptableContentType(let acceptableContentTypes, let responseContentType):
+                        print("Response content type: \(responseContentType) was unacceptable: \(acceptableContentTypes)")
+                    case .unacceptableStatusCode(let code):
+                        if code == 401 {
+                            CurrentUserManager.sharedManager.signOut()
                         }
-                    case .invalidURL(let url):
-                        print(url)
-                        break
-                    case .parameterEncodingFailed(let reason):
-                        print(reason)
-                        break
-                    case .multipartEncodingFailed(let reason):
-                        print(reason)
-                        break
-                    case .responseSerializationFailed(let reason):
-                        print(reason)
-                        break
+                        print("Response status code was unacceptable: \(code)")
+                    case .customValidationFailed(let error):
+                        print("Custom validation failed: \(error)")
                     @unknown default:
-                        print(error)
+                        print(reason)
+                        break
                     }
-                    errorHandler?(response.error, JSON(data: response.data!)["error_message"].string)
+                case .invalidURL(let url):
+                    print(url)
+                    break
+                case .parameterEncodingFailed(let reason):
+                    print(reason)
+                    break
+                case .multipartEncodingFailed(let reason):
+                    print(reason)
+                    break
+                case .responseSerializationFailed(let reason):
+                    print(reason)
+                    break
+                default:
                     print(error)
-                    return
                 }
                 errorHandler?(response.error, JSON(data: response.data!)["error_message"].string)
-                print(e)
-            @unknown default:
-                errorHandler?(response.error, JSON(data: response.data!)["error_message"].string)
+                print(error)
+                return
             }
         }
     }
