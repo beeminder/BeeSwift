@@ -12,13 +12,14 @@ import BeeKit
 
 class SignedRequestManager: RequestManager {
     
-    class func signedGET(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
-        RequestManager.rawRequest(url: url, method: .get, parameters: SignedRequestManager.signedParameters(RequestManager.authedParams(parameters)), success: success, errorHandler: errorHandler)
+    class func signedGET(url: String, parameters: [String: Any]?) async throws -> Any? {
+        let params = SignedRequestManager.signedParameters(RequestManager.authedParams(parameters))
+        return try await RequestManager.rawRequest(url: url, method: .get, parameters: params)
     }
     
-    class func signedPOST(url: String, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
+    class func signedPOST(url: String, parameters: [String: Any]?) async throws -> Any? {
         let params = SignedRequestManager.signedParameters(RequestManager.authedParams(parameters))
-        RequestManager.rawRequest(url: url, method: .post, parameters: params, success: success, errorHandler: errorHandler)
+        return try await RequestManager.rawRequest(url: url, method: .post, parameters: params)
     }
     
     fileprivate class func signedParameters(_ params: [String: Any]?) -> [String: Any]? {

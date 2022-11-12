@@ -57,47 +57,62 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
     }
     
     override func sendLeadTimeToServer(_ timer : Timer) {
-        let userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
-        let leadtime = userInfo["leadtime"]
-        let params = [ "leadtime" : leadtime, "use_defaults" : false ]
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params as [String : Any],
-            success: { (responseObject) -> Void in
-                self.goal!.leadtime = leadtime!
-                self.goal!.use_defaults = NSNumber(value: false as Bool)
-                self.useDefaultsSwitch.isOn = false
-            }) { (error, errorMessage) -> Void in
+        Task {
+            let userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
+            let leadtime = userInfo["leadtime"]
+            let params = [ "leadtime" : leadtime, "use_defaults" : false ]
+            do {
+                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params as [String : Any])
+                DispatchQueue.main.sync {
+                    self.goal!.leadtime = leadtime!
+                    self.goal!.use_defaults = NSNumber(value: false as Bool)
+                    self.useDefaultsSwitch.isOn = false
+                }
+            } catch {
+                // TODO: Log error
                 // show alert
+            }
         }
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if self.timePickerEditingMode == .alertstart {
             self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
-            let params = ["alertstart" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
-                success: { (responseObject) -> Void in
-                    self.goal!.alertstart = self.midnightOffsetFromTimePickerView()
-                    self.goal!.use_defaults = NSNumber(value: false as Bool)
-                    self.useDefaultsSwitch.isOn = false
-                }) { (error, errorMessage) -> Void in
+            Task {
+                do {
+                    let params = ["alertstart" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
+                    let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
+                    DispatchQueue.main.sync {
+                        self.goal!.alertstart = self.midnightOffsetFromTimePickerView()
+                        self.goal!.use_defaults = NSNumber(value: false as Bool)
+                        self.useDefaultsSwitch.isOn = false
+                    }
+                } catch {
+                    // TODO: Log failure
                     //foo
+                }
             }
         }
         if self.timePickerEditingMode == .deadline {
             self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
-            let params = ["deadline" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
-                success: { (responseObject) -> Void in
-                    self.goal?.deadline = self.midnightOffsetFromTimePickerView()
-                    self.goal!.use_defaults = NSNumber(value: false as Bool)
-                    self.useDefaultsSwitch.isOn = false
-                }) { (responseError, errorMessage) -> Void in
-                    if let errorString = responseError?.localizedDescription {
+            Task {
+                do {
+                    let params = ["deadline" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
+                    let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
+                    DispatchQueue.main.sync {
+                        self.goal?.deadline = self.midnightOffsetFromTimePickerView()
+                        self.goal!.use_defaults = NSNumber(value: false as Bool)
+                        self.useDefaultsSwitch.isOn = false
+                    }
+                } catch {
+                    let errorString = error.localizedDescription
+                    DispatchQueue.main.sync {
                         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                         let alert = UIAlertController(title: "Error saving to Beeminder", message: errorString, preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                         self.present(alert, animated: true, completion: nil)
                     }
+                }
             }
         }
     }
@@ -106,24 +121,31 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         if self.useDefaultsSwitch.isOn {
             let alertController = UIAlertController(title: "Confirm", message: "This will wipe out your current settings for this goal. Are you sure?", preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
-                let params = ["use_defaults" : true]
-                RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
-                    success: { (responseObject) -> Void in
+
+                Task {
+                    do {
+                        let params = ["use_defaults" : true]
+                        let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
                         self.goal?.use_defaults = NSNumber(value: true as Bool)
-                        CurrentUserManager.sharedManager.syncNotificationDefaults({ () -> Void in
-                            self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
-                            self.updateLeadTimeLabel()
-                            self.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-                            self.deadline   = CurrentUserManager.sharedManager.defaultDeadline()
-                            self.goal!.leadtime = CurrentUserManager.sharedManager.defaultLeadTime()
-                            self.goal!.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-                            self.goal!.deadline = CurrentUserManager.sharedManager.defaultDeadline()
-                            self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
-                            }, failure: { () -> Void in
-                                // foo
-                        })
-                    }) { (error, errorMessage) -> Void in
-                        //foo
+                        CurrentUserManager.sharedManager.syncNotificationDefaults({
+                            DispatchQueue.main.sync {
+                                self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
+                                self.updateLeadTimeLabel()
+                                self.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
+                                self.deadline   = CurrentUserManager.sharedManager.defaultDeadline()
+                                self.goal!.leadtime = CurrentUserManager.sharedManager.defaultLeadTime()
+                                self.goal!.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
+                                self.goal!.deadline = CurrentUserManager.sharedManager.defaultDeadline()
+                                self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
+                            }
+                        }) {
+                            // TODO: Log failure
+                            // foo
+                        }
+                    } catch {
+                        // TODO: Log failure
+                        // foo
+                    }
                 }
             }))
             alertController.addAction(UIAlertAction(title: "No", style: .cancel, handler: { (action) -> Void in
@@ -132,12 +154,15 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             self.present(alertController, animated: true, completion: nil)
         }
         else {
-            let params = ["use_defaults" : false]
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params,
-                success: { (responseObject) -> Void in
-                    self.goal?.use_defaults = NSNumber(value: false as Bool)
-                }) { (error, errorMessage) -> Void in
-                    //foo
+            Task {
+                do {
+                    let params = ["use_defaults" : false]
+                    let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
+                        self.goal?.use_defaults = NSNumber(value: false as Bool)
+                } catch {
+                    // TODO: Log error
+                    // foo
+                }
             }
         }
     }

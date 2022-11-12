@@ -168,24 +168,31 @@ class TimerViewController: UIViewController {
         if self.slug == nil { return }
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug!)/datapoints.json", parameters: params, success: { (responseObject) in
-            hud?.mode = .text
-            hud?.labelText = "Added!"
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            })
-            if let goalVC = self.presentingViewController?.children.last as? GoalViewController {
-                goalVC.refreshGoal()
-                goalVC.pollUntilGraphUpdates()
+
+        Task {
+            do {
+                let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
+                let _ = try await RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug!)/datapoints.json", parameters: params)
+                DispatchQueue.main.sync {
+                    hud?.mode = .text
+                    hud?.labelText = "Added!"
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+                        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                    })
+                    if let goalVC = self.presentingViewController?.children.last as? GoalViewController {
+                        goalVC.refreshGoal()
+                        goalVC.pollUntilGraphUpdates()
+                    }
+                    self.resetButtonPressed()
+                }
+            } catch {
+                DispatchQueue.main.sync {
+                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                    let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
+                    self.present(alertController, animated: true)
+                }
             }
-            self.resetButtonPressed()
-        }) { (error, errorMessage) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
-            self.present(alertController, animated: true)
         }
-        
     }
 }

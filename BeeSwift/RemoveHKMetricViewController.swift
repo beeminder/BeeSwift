@@ -68,22 +68,28 @@ class RemoveHKMetricViewController: UIViewController {
         let params: [String: [String: String]] = ["ii_params": ["name": "", "metric": ""]]
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
-            
-            self.goal = JSONGoal(json: JSON(responseObject!))
 
-            hud?.mode = .customView
-            hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-            
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: self, userInfo: ["goal": self.goal as Any])
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                hud?.hide(true, afterDelay: 2)
-                self.navigationController?.popViewController(animated: true)
-            })
-        }) { (error, errorMessage) -> Void in
-            // bar
+        Task {
+            do {
+                let responseObject = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
+
+                self.goal = JSONGoal(json: JSON(responseObject!))
+
+                DispatchQueue.main.sync {
+                    hud?.mode = .customView
+                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: self, userInfo: ["goal": self.goal as Any])
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                    hud?.hide(true, afterDelay: 2)
+                    self.navigationController?.popViewController(animated: true)
+                })
+            } catch {
+                // TODO: Log error
+                // bar
+            }
         }
     }
 }

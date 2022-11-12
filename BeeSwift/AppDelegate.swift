@@ -81,7 +81,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidBecomeActive(_ application: UIApplication) {
         logger.notice("applicationDidBecomeActive")
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
+        CurrentUserManager.sharedManager.fetchGoals(success: nil, errorHandler: nil)
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -131,12 +131,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         logger.notice("application:didRegisterForRemoteNotificationsWithDeviceToken")
-        let token = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+        Task {
+            let token = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
 
-        SignedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: ["device_token" : token], success: { (responseObject) -> Void in
-            //foo
-        }) { (error, errorMessage) -> Void in
-            //bar
+            do {
+                let _ = try await SignedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: ["device_token" : token])
+            } catch {
+                // TODO: Log error
+            }
         }
     }
 
