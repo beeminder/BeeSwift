@@ -15,10 +15,11 @@ class RequestManager {
     static let baseURLString = Config.init().baseURLString
     
     class func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?, success: ((Any?) -> Void)?, errorHandler: ((Error?, String?) -> Void)?) {
-        AF.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: HTTPHeaders.default).validate().responseJSON { response in
+        AF.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: HTTPHeaders.default).validate().response { response in
             switch response.result {
-            case .success(let value):
-                success?(value)
+            case .success(let data):
+                let asJSON = data.flatMap{d in try? JSONSerialization.jsonObject(with: d)}
+                success?(asJSON)
             case .failure(let error):
                 switch error {
                 case .responseValidationFailed(let reason):
