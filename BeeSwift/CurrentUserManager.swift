@@ -221,9 +221,13 @@ class CurrentUserManager : NSObject {
                 self.updateTodayWidget()
                 self.goalsFetchedAt = Date()
                 self.setCachedLastFetchedGoals(response)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
+                DispatchQueue.main.sync {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
 
-                success?(jGoals)
+                    // Callback success on main thread. This is not in our contract, but callers assuming this
+                    // appear to have worked before
+                    success?(jGoals)
+                }
             } catch {
                 errorHandler?(error, "TODO: Provide error message")
                 return
