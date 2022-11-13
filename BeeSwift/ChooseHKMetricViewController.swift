@@ -13,6 +13,7 @@ import OSLog
 class ChooseHKMetricViewController: UIViewController {
     fileprivate let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ChooseHKMetricViewController")
     fileprivate let cellReuseIdentifier = "hkMetricTableViewCell"
+    fileprivate let headerReusedIdentifier = "hkMetricTableHeader"
     fileprivate var tableView = UITableView()
     var goal : JSONGoal!
 
@@ -134,25 +135,38 @@ class ChooseHKMetricViewController: UIViewController {
 }
 
 extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSource {
-    
     var sortedHKMetrics: [HealthKitMetric] {
         HealthKitConfig.shared.metrics.sorted { (lhs, rhs) -> Bool in
             lhs.humanText < rhs.humanText
         }
     }
 
+    var sortedMetricsByCategory: Dictionary<HealthKitCategory, [HealthKitMetric]> {
+        var result = Dictionary<HealthKitCategory, [HealthKitMetric]>()
+        for category in HealthKitCategory.allCases {
+            result[category] = sortedHKMetrics.filter { $0.category == category }
+        }
+        return result
+    }
+
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return HealthKitCategory.allCases.count
+    }
+
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return HealthKitCategory.allCases[section].rawValue
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.sortedHKMetrics.count
+        let category = HealthKitCategory.allCases[section]
+        return self.sortedMetricsByCategory[category]!.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let section = HealthKitCategory.allCases[indexPath.section]
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitMetricTableViewCell
         
-        cell.metric = self.sortedHKMetrics[indexPath.row].humanText
+        cell.metric = self.sortedMetricsByCategory[section]![indexPath.row].humanText
         if tableView.indexPathForSelectedRow == indexPath {
             cell.accessoryType = .checkmark
         } else {

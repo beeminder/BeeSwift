@@ -9,32 +9,47 @@
 import Foundation
 import HealthKit
 
+
 class HealthKitConfig : NSObject {
     static let shared = HealthKitConfig()
     
     let metrics : [HealthKitMetric] = [
-        QuantityHealthKitMetric.init(humanText: "Steps", databaseString: "steps", hkQuantityTypeIdentifier: .stepCount),
-        QuantityHealthKitMetric.init(humanText: "Active energy", databaseString: "activeEnergy", hkQuantityTypeIdentifier: .activeEnergyBurned),
-        QuantityHealthKitMetric.init(humanText: "Exercise time", databaseString: "exerciseTime", hkQuantityTypeIdentifier: .appleExerciseTime),
-        QuantityHealthKitMetric.init(humanText: "Weight", databaseString: "weight", hkQuantityTypeIdentifier: .bodyMass),
-        QuantityHealthKitMetric.init(humanText: "Cycling distance", databaseString: "cyclingDistance", hkQuantityTypeIdentifier: .distanceCycling),
-        QuantityHealthKitMetric.init(humanText: "Walking/running distance", databaseString: "walkRunDistance", hkQuantityTypeIdentifier: .distanceWalkingRunning),
-        QuantityHealthKitMetric.init(humanText: "Nike Fuel", databaseString: "nikeFuel", hkQuantityTypeIdentifier: .nikeFuel),
-        QuantityHealthKitMetric.init(humanText: "Water", databaseString: "water", hkQuantityTypeIdentifier: .dietaryWater),
-        SleepAnalysisHealthKitMetric.init(humanText: "Time in bed", databaseString: "timeInBed", hkCategoryTypeIdentifier: .sleepAnalysis, hkCategoryValueSleepAnalysis: .inBed),
-        SleepAnalysisHealthKitMetric.init(humanText: "Time asleep", databaseString: "timeAsleep", hkCategoryTypeIdentifier: .sleepAnalysis, hkCategoryValueSleepAnalysis: .asleep),
-        // CategoryHealthKitMetric.init(humanText: "Stand hours", databaseString: "standHour", hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.appleStandHour),
-        QuantityHealthKitMetric.init(humanText: "Resting energy", databaseString: "basalEnergy", hkQuantityTypeIdentifier: .basalEnergyBurned),
-        QuantityHealthKitMetric.init(humanText: "Dietary energy", databaseString: "dietaryEnergy", hkQuantityTypeIdentifier: .dietaryEnergyConsumed),
-        QuantityHealthKitMetric.init(humanText: "Dietary protein", databaseString: "dietaryProtein", hkQuantityTypeIdentifier: .dietaryProtein),
-        QuantityHealthKitMetric.init(humanText: "Dietary sugar", databaseString: "dietarySugar", hkQuantityTypeIdentifier: .dietarySugar),
-        QuantityHealthKitMetric.init(humanText: "Dietary carbs", databaseString: "dietaryCarbs", hkQuantityTypeIdentifier: .dietaryCarbohydrates),
-        QuantityHealthKitMetric.init(humanText: "Dietary fat", databaseString: "dietaryFat", hkQuantityTypeIdentifier: .dietaryFatTotal),
-        QuantityHealthKitMetric.init(humanText: "Dietary saturated fat", databaseString: "dietarySaturatedFat", hkQuantityTypeIdentifier: .dietaryFatSaturated),
-        QuantityHealthKitMetric.init(humanText: "Dietary sodium", databaseString: "dietarySodium", hkQuantityTypeIdentifier: .dietarySodium),
-        QuantityHealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", hkQuantityTypeIdentifier: .swimmingStrokeCount),
-        QuantityHealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", hkQuantityTypeIdentifier: .distanceSwimming),
-        MindfulSessionHealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", hkCategoryTypeIdentifier: .mindfulSession)
+        // Activity
+        QuantityHealthKitMetric.init(humanText: "Active energy", databaseString: "activeEnergy", category: .Activity, hkQuantityTypeIdentifier: .activeEnergyBurned),
+        QuantityHealthKitMetric.init(humanText: "Cycling distance", databaseString: "cyclingDistance", category: .Activity, hkQuantityTypeIdentifier: .distanceCycling),
+        QuantityHealthKitMetric.init(humanText: "Exercise time", databaseString: "exerciseTime", category: .Activity, hkQuantityTypeIdentifier: .appleExerciseTime),
+        QuantityHealthKitMetric.init(humanText: "Nike Fuel", databaseString: "nikeFuel", category: .Activity, hkQuantityTypeIdentifier: .nikeFuel),
+        QuantityHealthKitMetric.init(humanText: "Resting energy", databaseString: "basalEnergy", category: .Activity, hkQuantityTypeIdentifier: .basalEnergyBurned),
+        // CategoryHealthKitMetric.init(humanText: "Stand hours", databaseString: "standHour", category: .Activity, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.appleStandHour),
+        QuantityHealthKitMetric.init(humanText: "Steps", databaseString: "steps", category: .Activity, hkQuantityTypeIdentifier: .stepCount),
+        QuantityHealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", category: .Activity, hkQuantityTypeIdentifier: .distanceSwimming),
+        QuantityHealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", category: .Activity, hkQuantityTypeIdentifier: .swimmingStrokeCount),
+        QuantityHealthKitMetric.init(humanText: "Walking/running distance", databaseString: "walkRunDistance", category: .Activity, hkQuantityTypeIdentifier: .distanceWalkingRunning),
+
+        // Body Measurements
+        QuantityHealthKitMetric.init(humanText: "Weight", databaseString: "weight", category: .BodyMeasurements, hkQuantityTypeIdentifier: .bodyMass),
+
+        // Heart
+
+        // Mindfulness
+        MindfulSessionHealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", category: .Mindfulness, hkCategoryTypeIdentifier: .mindfulSession),
+
+        // Nutrition
+        QuantityHealthKitMetric.init(humanText: "Dietary carbs", databaseString: "dietaryCarbs", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryCarbohydrates),
+        QuantityHealthKitMetric.init(humanText: "Dietary energy", databaseString: "dietaryEnergy", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryEnergyConsumed),
+        QuantityHealthKitMetric.init(humanText: "Dietary fat", databaseString: "dietaryFat", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryFatTotal),
+        QuantityHealthKitMetric.init(humanText: "Dietary protein", databaseString: "dietaryProtein", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryProtein),
+        QuantityHealthKitMetric.init(humanText: "Dietary saturated fat", databaseString: "dietarySaturatedFat", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryFatSaturated),
+        QuantityHealthKitMetric.init(humanText: "Dietary sodium", databaseString: "dietarySodium", category: .Nutrition, hkQuantityTypeIdentifier: .dietarySodium),
+        QuantityHealthKitMetric.init(humanText: "Dietary sugar", databaseString: "dietarySugar", category: .Nutrition, hkQuantityTypeIdentifier: .dietarySugar),
+        QuantityHealthKitMetric.init(humanText: "Water", databaseString: "water", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryWater),
+
+        // Sleep
+        SleepAnalysisHealthKitMetric.init(humanText: "Time asleep", databaseString: "timeAsleep", category: .Sleep, hkCategoryTypeIdentifier: .sleepAnalysis, hkCategoryValueSleepAnalysis: .asleep),
+        SleepAnalysisHealthKitMetric.init(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep,  hkCategoryTypeIdentifier: .sleepAnalysis, hkCategoryValueSleepAnalysis: .inBed),
+
+        // Other
+
     ]
 
 }

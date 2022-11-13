@@ -16,9 +16,9 @@ class SleepAnalysisHealthKitMetric : CategoryHealthKitMetric {
     let hourInSeconds = 3600.0
     let hkCategoryValueSleepAnalysis : HKCategoryValueSleepAnalysis
 
-    init(humanText: String, databaseString: String, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier, hkCategoryValueSleepAnalysis : HKCategoryValueSleepAnalysis) {
+    init(humanText: String, databaseString: String, category: HealthKitCategory, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier, hkCategoryValueSleepAnalysis : HKCategoryValueSleepAnalysis) {
         self.hkCategoryValueSleepAnalysis = hkCategoryValueSleepAnalysis
-        super.init(humanText: humanText, databaseString: databaseString, hkCategoryTypeIdentifier: hkCategoryTypeIdentifier)
+        super.init(humanText: humanText, databaseString: databaseString, category: category, hkCategoryTypeIdentifier: hkCategoryTypeIdentifier)
     }
 
     override func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
