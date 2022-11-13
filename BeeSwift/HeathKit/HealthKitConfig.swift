@@ -9,15 +9,6 @@
 import Foundation
 import HealthKit
 
-enum HealthKitCategory : String {
-    case Activity = "Activity"
-    case BodyMeasurements = "Body Measurements"
-    case Heart = "Heart"
-    case Mindfulness = "Mindfulness"
-    case Nutrition = "Nutrition"
-    case Sleep = "Sleep"
-    case Other = "Other Data"
-}
 
 class HealthKitConfig : NSObject {
     static let shared = HealthKitConfig()

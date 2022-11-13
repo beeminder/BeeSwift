@@ -6,6 +6,16 @@
 import Foundation
 import HealthKit
 
+enum HealthKitCategory : String, CaseIterable {
+    case Activity = "Activity"
+    case BodyMeasurements = "Body Measurements"
+    case Heart = "Heart"
+    case Mindfulness = "Mindfulness"
+    case Nutrition = "Nutrition"
+    case Sleep = "Sleep"
+    case Other = "Other Data"
+}
+
 protocol HealthKitMetric {
     var humanText : String { get }
     var databaseString : String { get }
