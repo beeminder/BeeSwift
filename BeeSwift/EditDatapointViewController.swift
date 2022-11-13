@@ -191,7 +191,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                     "urtext": self.urtext()
                 ]
                 let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params)
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                     hud?.mode = .customView
                     hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
@@ -199,7 +199,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 }
             } catch {
                 // TODO: Log error
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     let _ = MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 }
             }
@@ -217,7 +217,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             do {
                 let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params)
 
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                     hud?.mode = .customView
                     hud?.customView = UIImageView(image: UIImage(named: "checkmark"))

@@ -111,7 +111,7 @@ class ChooseHKMetricViewController: UIViewController {
 
             do {
                 let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     hud?.mode = .customView
                     hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
                     hud?.hide(true, afterDelay: 2)

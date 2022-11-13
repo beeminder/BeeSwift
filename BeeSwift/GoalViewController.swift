@@ -420,7 +420,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 let _ = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil)
                 self.pollUntilGraphUpdates()
             } catch {
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alert, animated: true, completion: nil)
@@ -533,7 +533,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         Task {
             do {
                 let _ = try await RequestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug)
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     self.commentTextField.text = ""
                     self.refreshGoal()
                     self.pollUntilGraphUpdates()
@@ -541,7 +541,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                     CurrentUserManager.sharedManager.fetchGoals(success: nil, errorHandler: nil)
                 }
             } catch {
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     self.submitButton.isUserInteractionEnabled = true
                     MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                     let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
@@ -564,7 +564,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         Task {
             do {
                 let responseObject = try await RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil)
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     self.goal = JSONGoal(json: JSON(responseObject!))
                     self.datapointsTableView.reloadData()
                     self.refreshCountdown()

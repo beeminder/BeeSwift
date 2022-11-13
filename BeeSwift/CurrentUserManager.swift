@@ -221,7 +221,7 @@ class CurrentUserManager : NSObject {
                 self.updateTodayWidget()
                 self.goalsFetchedAt = Date()
                 self.setCachedLastFetchedGoals(response)
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
 
                     // Callback success on main thread. This is not in our contract, but callers assuming this

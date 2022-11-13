@@ -173,7 +173,7 @@ class TimerViewController: UIViewController {
             do {
                 let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
                 let _ = try await RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug!)/datapoints.json", parameters: params)
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     hud?.mode = .text
                     hud?.labelText = "Added!"
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
@@ -186,7 +186,7 @@ class TimerViewController: UIViewController {
                     self.resetButtonPressed()
                 }
             } catch {
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                     let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: "OK", style: .cancel))

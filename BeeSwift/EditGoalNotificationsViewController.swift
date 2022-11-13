@@ -63,7 +63,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             let params = [ "leadtime" : leadtime, "use_defaults" : false ]
             do {
                 let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params as [String : Any])
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     self.goal!.leadtime = leadtime!
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
                     self.useDefaultsSwitch.isOn = false
@@ -82,7 +82,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 do {
                     let params = ["alertstart" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
                     let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
-                    DispatchQueue.main.sync {
+                    DispatchQueue.main.async {
                         self.goal!.alertstart = self.midnightOffsetFromTimePickerView()
                         self.goal!.use_defaults = NSNumber(value: false as Bool)
                         self.useDefaultsSwitch.isOn = false
@@ -99,14 +99,14 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 do {
                     let params = ["deadline" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
                     let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
-                    DispatchQueue.main.sync {
+                    DispatchQueue.main.async {
                         self.goal?.deadline = self.midnightOffsetFromTimePickerView()
                         self.goal!.use_defaults = NSNumber(value: false as Bool)
                         self.useDefaultsSwitch.isOn = false
                     }
                 } catch {
                     let errorString = error.localizedDescription
-                    DispatchQueue.main.sync {
+                    DispatchQueue.main.async {
                         MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                         let alert = UIAlertController(title: "Error saving to Beeminder", message: errorString, preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -128,7 +128,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                         let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
                         self.goal?.use_defaults = NSNumber(value: true as Bool)
                         CurrentUserManager.sharedManager.syncNotificationDefaults({
-                            DispatchQueue.main.sync {
+                            DispatchQueue.main.async {
                                 self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
                                 self.updateLeadTimeLabel()
                                 self.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()

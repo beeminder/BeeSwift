@@ -75,7 +75,7 @@ class RemoveHKMetricViewController: UIViewController {
 
                 self.goal = JSONGoal(json: JSON(responseObject!))
 
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     hud?.mode = .customView
                     hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
 
