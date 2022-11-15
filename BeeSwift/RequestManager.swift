@@ -10,12 +10,28 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 import BeeKit
+import OSLog
+
+struct ServerError: Error {
+    let message: String
+    let requestError: Error
+
+    init(_ message: String, requestError: Error) {
+        self.message = message
+        self.requestError = requestError
+    }
+
+    public var localizedDescription: String {
+        return message
+    }
+}
 
 class RequestManager {
     static let baseURLString = Config.init().baseURLString
+    private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
     
     class func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?) async throws -> Any? {
-        let response = await AF.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: HTTPHeaders.default).serializingData().response
+        let response = await AF.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: HTTPHeaders.default).validate().serializingData().response
 
         switch response.result {
         case .success(let data):
@@ -23,45 +39,23 @@ class RequestManager {
             return asJSON
 
         case .failure(let error):
-            // TODO: Extract any server error message and throw
-            switch error {
-            case .responseValidationFailed(let reason):
-                print(reason)
-                switch reason {
-                case .dataFileNil, .dataFileReadFailed:
-                    print("Downloaded file could not be read")
-                case .missingContentType(let acceptableContentTypes):
-                    print("Content Type Missing: \(acceptableContentTypes)")
-                case .unacceptableContentType(let acceptableContentTypes, let responseContentType):
-                    print("Response content type: \(responseContentType) was unacceptable: \(acceptableContentTypes)")
-                case .unacceptableStatusCode(let code):
+            logger.error("Error issuing request \(url): \(error, privacy: .public)")
+
+            // Log out the user on an unauthorized response
+            if case .responseValidationFailed(let reason) = error {
+                if case .unacceptableStatusCode(let code) = reason {
                     if code == 401 {
                         CurrentUserManager.sharedManager.signOut()
                     }
-                    print("Response status code was unacceptable: \(code)")
-                case .customValidationFailed(let error):
-                    print("Custom validation failed: \(error)")
-                @unknown default:
-                    print(reason)
-                    break
                 }
-            case .invalidURL(let url):
-                print(url)
-                break
-            case .parameterEncodingFailed(let reason):
-                print(reason)
-                break
-            case .multipartEncodingFailed(let reason):
-                print(reason)
-                break
-            case .responseSerializationFailed(let reason):
-                print(reason)
-                break
-            default:
-                print(error)
             }
 
-            // TODO: Extract `JSON(data: response.data!)["error_message"].string` and include if relevant
+            // If we receive an error message from the server use it as our user-visible error
+            if let data = response.data,
+               let errorMessage = JSON(data: data)["error_message"].string {
+                throw ServerError(errorMessage, requestError: error)
+            }
+
             throw error;
         }
     }
