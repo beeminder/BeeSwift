@@ -31,7 +31,10 @@ class RequestManager {
     private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
     
     class func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?) async throws -> Any? {
-        let response = await AF.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: HTTPHeaders.default).validate().serializingData().response
+        let response = await AF.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: HTTPHeaders.default)
+            .validate()
+            .serializingData(emptyRequestMethods: [HTTPMethod.post])
+            .response
 
         switch response.result {
         case .success(let data):
