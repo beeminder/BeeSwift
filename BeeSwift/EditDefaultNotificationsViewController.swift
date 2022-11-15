@@ -7,8 +7,10 @@
 //
 
 import Foundation
+import OSLog
 
 class EditDefaultNotificationsViewController: EditNotificationsViewController {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDefaultNotificationsViewController")
     
     override init() {
         super.init()
@@ -30,7 +32,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                 let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
                 CurrentUserManager.sharedManager.setDefaultLeadTime(leadtime)
             } catch {
-                // TODO: Logging
+                logger.error("Error setting default leadtime: \(error)")
                 // show alert
             }
         }
@@ -50,7 +52,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                     let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
                     CurrentUserManager.sharedManager.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
                 } catch {
-                    // TODO: Log error
+                    logger.error("Error setting default alert start: \(error)")
                     //foo
                 }
             }
@@ -63,7 +65,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                     let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
                     CurrentUserManager.sharedManager.setDefaultDeadline(self.midnightOffsetFromTimePickerView())
                 } catch {
-                    // TODO: Log error
+                    logger.error("Error setting default deadline: \(error)")
                     //foo
                 }
             }

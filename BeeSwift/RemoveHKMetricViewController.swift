@@ -8,8 +8,10 @@
 
 import UIKit
 import SwiftyJSON
+import OSLog
 
 class RemoveHKMetricViewController: UIViewController {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RemoveHKMetricViewController")
     
     var goal : JSONGoal!
     
@@ -87,7 +89,7 @@ class RemoveHKMetricViewController: UIViewController {
                     self.navigationController?.popViewController(animated: true)
                 })
             } catch {
-                // TODO: Log error
+                logger.error("Error disconnecting metric from apple heath: \(error)")
                 // bar
             }
         }

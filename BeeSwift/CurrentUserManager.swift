@@ -153,7 +153,7 @@ class CurrentUserManager : NSObject {
                 self.handleSuccessfulSignin(JSON(response!))
             } catch {
 
-                self.handleFailedSignin(error, errorMessage: "TODO: Get Error Message")
+                self.handleFailedSignin(error, errorMessage: error.localizedDescription)
             }
         }
     }
@@ -229,8 +229,7 @@ class CurrentUserManager : NSObject {
                     success?(jGoals)
                 }
             } catch {
-                errorHandler?(error, "TODO: Provide error message")
-                return
+                errorHandler?(error, error.localizedDescription)
             }
         }
 

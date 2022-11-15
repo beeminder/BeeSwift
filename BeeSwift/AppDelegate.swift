@@ -137,7 +137,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             do {
                 let _ = try await SignedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: ["device_token" : token])
             } catch {
-                // TODO: Log error
+                logger.error("Error sending device push token: \(error)")
             }
         }
     }

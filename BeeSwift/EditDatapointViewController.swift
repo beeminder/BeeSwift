@@ -9,8 +9,10 @@
 import UIKit
 import SwiftyJSON
 import MBProgressHUD
+import OSLog
 
 class EditDatapointViewController: UIViewController, UITextFieldDelegate {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDatapointViewController")
     
     var datapointJSON : JSON?
     var goalSlug : String?
@@ -198,7 +200,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                     hud?.hide(true, afterDelay: 2)
                 }
             } catch {
-                // TODO: Log error
+                logger.error("Error updating datapoint for goal \(self.goalSlug ?? "<nil>"): \(error)")
                 DispatchQueue.main.async {
                     let _ = MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 }
@@ -227,7 +229,8 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                     self.navigationController?.popViewController(animated: true)
                 }
             } catch {
-                // TODO: Log error
+                logger.error("Error deleting datapoint for goal \(self.goalSlug ?? "<nil>"): \(error)")
+
             }
         }
     }

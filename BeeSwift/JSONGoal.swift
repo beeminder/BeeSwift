@@ -9,11 +9,14 @@
 import Foundation
 import SwiftyJSON
 import HealthKit
+import OSLog
 import UserNotifications
 
 typealias DataPoint = (daystamp: String, value: Double, comment: String)
 
 class JSONGoal {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "JSONGoal")
+
     var autodata: String = ""
     var delta_text: String = ""
     var graph_url: String?
@@ -349,7 +352,7 @@ class JSONGoal {
             do {
                 let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil)
             } catch {
-                // TODO: Log error
+                logger.error("Error deleting datapoint: \(error)")
             }
         }
     }
@@ -360,7 +363,7 @@ class JSONGoal {
                 let response = try await RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
                 success?(response)
             } catch {
-                failure?(error, "TODO: Error Message")
+                failure?(error, error.localizedDescription)
             }
         }
     }

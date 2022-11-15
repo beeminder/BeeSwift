@@ -8,8 +8,11 @@
 
 import Foundation
 import UIKit
+import OSLog
 
 class EditGoalNotificationsViewController : EditNotificationsViewController {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditGoalNotificationsViewController")
+
     var goal : JSONGoal? {
         didSet {
 
@@ -69,7 +72,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     self.useDefaultsSwitch.isOn = false
                 }
             } catch {
-                // TODO: Log error
+                logger.error("Error sending lead time to server: \(error)")
                 // show alert
             }
         }
@@ -88,7 +91,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                         self.useDefaultsSwitch.isOn = false
                     }
                 } catch {
-                    // TODO: Log failure
+                    logger.error("Error setting alert start \(error)")
                     //foo
                 }
             }
@@ -139,11 +142,11 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                                 self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
                             }
                         }) {
-                            // TODO: Log failure
+                            self.logger.error("Error syncing notification defaults")
                             // foo
                         }
                     } catch {
-                        // TODO: Log failure
+                        self.logger.error("Error setting goal to use defaults: \(error)")
                         // foo
                     }
                 }
@@ -160,7 +163,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
                         self.goal?.use_defaults = NSNumber(value: false as Bool)
                 } catch {
-                    // TODO: Log error
+                    logger.error("Error setting goal to NOT use defaults: \(error)")
                     // foo
                 }
             }

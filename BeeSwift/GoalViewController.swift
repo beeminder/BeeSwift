@@ -579,7 +579,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                     }
                 }
             } catch {
-                // TODO: Log failure
+                logger.error("Error refreshing details for goal \(self.goal.slug): \(error)")
                 // foo
             }
         }
