@@ -9,8 +9,10 @@
 import UIKit
 import SwiftyJSON
 import MBProgressHUD
+import OSLog
 
 class EditDatapointViewController: UIViewController, UITextFieldDelegate {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDatapointViewController")
     
     var datapointJSON : JSON?
     var goalSlug : String?
@@ -183,18 +185,26 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         self.view.endEditing(true)
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        let params = [
-            "access_token": CurrentUserManager.sharedManager.accessToken!,
-            "urtext": self.urtext()
-        ]
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
-            let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
-            hud?.mode = .customView
-            hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-            hud?.hide(true, afterDelay: 2)
-        }) { (error, errorMessage) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            // alert
+
+        Task {
+            do {
+                let params = [
+                    "access_token": CurrentUserManager.sharedManager.accessToken!,
+                    "urtext": self.urtext()
+                ]
+                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params)
+                DispatchQueue.main.async {
+                    let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+                    hud?.mode = .customView
+                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                    hud?.hide(true, afterDelay: 2)
+                }
+            } catch {
+                logger.error("Error updating datapoint for goal \(self.goalSlug ?? "<nil>"): \(error)")
+                DispatchQueue.main.async {
+                    let _ = MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                }
+            }
         }
     }
     
@@ -204,16 +214,24 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         ]
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params, success: { (response) in
-            let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
-            hud?.mode = .customView
-            hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-            hud?.hide(true, afterDelay: 2)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                self.navigationController?.popViewController(animated: true)
+
+        Task {
+            do {
+                let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params)
+
+                DispatchQueue.main.async {
+                    let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+                    hud?.mode = .customView
+                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                    hud?.hide(true, afterDelay: 2)
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            } catch {
+                logger.error("Error deleting datapoint for goal \(self.goalSlug ?? "<nil>"): \(error)")
+
             }
-        }) { (error, errorMessage) in
-            //
         }
     }
     

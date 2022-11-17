@@ -108,22 +108,24 @@ class ChooseHKMetricViewController: UIViewController {
             
             var params : [String : [String : String]] = [:]
             params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
-            
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params, success: { (responseObject) -> Void in
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
+
+            do {
+                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
+                DispatchQueue.main.async {
+                    hud?.mode = .customView
+                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                    hud?.hide(true, afterDelay: 2)
+                }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.navigationController?.popViewController(animated: true)
                 }
-            }) { (responseError, errorMessage) -> Void in
+            } catch {
                 self.tableView.reloadData()
-                if let errorString = responseError?.localizedDescription {
-                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-                    let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    self.present(alert, animated: true, completion: nil)
-                }
+                let errorString = error.localizedDescription
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
             }
         }
     }

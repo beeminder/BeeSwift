@@ -147,10 +147,14 @@ class CurrentUserManager : NSObject {
     }
     
     func signInWithEmail(_ email: String, password: String) {
-        RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>, success: { (responseObject) in
-            self.handleSuccessfulSignin(JSON(responseObject!))
-            }) { (responseError, errorMessage) in
-                if responseError != nil { self.handleFailedSignin(responseError!, errorMessage: errorMessage) }
+        Task {
+            do {
+               let response = try await RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>)
+                self.handleSuccessfulSignin(JSON(response!))
+            } catch {
+
+                self.handleFailedSignin(error, errorMessage: error.localizedDescription)
+            }
         }
     }
     
@@ -168,16 +172,22 @@ class CurrentUserManager : NSObject {
     }
     
     func syncNotificationDefaults(_ success: (() -> Void)?, failure: (() -> Void)?) {
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: [:],
-            success: { (responseObject) -> Void in
-                let responseJSON = JSON(responseObject!)
+        Task {
+            do {
+                let response = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: [:])
+                let responseJSON = JSON(response!)
                 self.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
                 self.set(responseJSON["default_deadline"].number!, forKey: "default_deadline")
                 self.set(responseJSON["default_leadtime"].number!, forKey: "default_leadtime")
-                if (success != nil) { success!() }
-        }, errorHandler: { (error, errorMessage) -> Void in
-                if (failure != nil) { failure!() }
-        })
+            } catch {
+                failure?()
+                return
+            }
+
+            // Success callback should not be within error handle as we do not want to call the error callback
+            // if the success callback fails (not our problem)
+            success?()
+        }
     }
     
     func handleFailedSignin(_ responseError: Error, errorMessage : String?) {
@@ -186,6 +196,14 @@ class CurrentUserManager : NSObject {
     }
     
     func signOut() {
+        // Force sign out to run on main thread as we dispatch to other arbitrary code
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self.signOut()
+            }
+            return
+        }
+
         self.goals = []
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
@@ -196,23 +214,35 @@ class CurrentUserManager : NSObject {
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
     }
     
-    func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, error: ((_ error : Error?, _ errorMessage : String?) -> ())?) {
-        guard let username = self.username else {
-            CurrentUserManager.sharedManager.signOut()
-            success?([])
-            return
+    func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, errorHandler: ((_ error : Error?, _ errorMessage : String?) -> ())?) {
+        Task {
+            guard let username = self.username else {
+                DispatchQueue.main.async {
+                    CurrentUserManager.sharedManager.signOut()
+                    success?([])
+                }
+                return
+            }
+
+            do {
+                let responseObject = try await RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)
+                let response = JSON(responseObject!)
+                let jGoals = self.goalsFromJSON(response)!
+                self.updateTodayWidget()
+                self.goalsFetchedAt = Date()
+                self.setCachedLastFetchedGoals(response)
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
+
+                    // Callback success on main thread. This is not in our contract, but callers assuming this
+                    // appear to have worked before
+                    success?(jGoals)
+                }
+            } catch {
+                errorHandler?(error, error.localizedDescription)
+            }
         }
-        RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil, success: { (responseJSON) in
-            let response = JSON(responseJSON!)
-            let jGoals = self.goalsFromJSON(response)!
-            self.updateTodayWidget()
-            self.goalsFetchedAt = Date()
-            self.setCachedLastFetchedGoals(response)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
-            success?(jGoals)
-        }) { (responseError, errorMessage) in
-            error?(responseError, errorMessage)
-        }
+
     }
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.

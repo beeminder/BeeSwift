@@ -414,13 +414,18 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     @objc func refreshButtonPressed() {
         self.scrollView.refreshControl?.endRefreshing()
         MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
-        
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil, success: { (responseObject) in
-            self.pollUntilGraphUpdates()
-        }) { (error, errorMessage) in
-            let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
+
+        Task {
+            do {
+                let _ = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil)
+                self.pollUntilGraphUpdates()
+            } catch {
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
         }
     }
     
@@ -525,18 +530,25 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.submitButton.isUserInteractionEnabled = false
         self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
 
-        RequestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug) { (responseObject) in
-            self.commentTextField.text = ""
-            self.refreshGoal()
-            self.pollUntilGraphUpdates()
-            self.submitButton.isUserInteractionEnabled = true
-            CurrentUserManager.sharedManager.fetchGoals(success: nil, error: nil)
-        } errorHandler: { (error, errorMessage) in
-            self.submitButton.isUserInteractionEnabled = true
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
-            self.present(alertController, animated: true)
+        Task {
+            do {
+                let _ = try await RequestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug)
+                DispatchQueue.main.async {
+                    self.commentTextField.text = ""
+                    self.refreshGoal()
+                    self.pollUntilGraphUpdates()
+                    self.submitButton.isUserInteractionEnabled = true
+                    CurrentUserManager.sharedManager.fetchGoals(success: nil, errorHandler: nil)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.submitButton.isUserInteractionEnabled = true
+                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                    let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
+                    self.present(alertController, animated: true)
+                }
+            }
         }
     }
     
@@ -549,21 +561,27 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshGoal() {
-        RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil, success: { (responseObject) in
-            self.goal = JSONGoal(json: JSON(responseObject!))
-            self.datapointsTableView.reloadData()
-            self.refreshCountdown()
-            self.setValueTextField()
-            self.valueTextFieldValueChanged()
-            self.deltasLabel.attributedText = self.goal!.attributedDeltaText
-            if (!self.goal.queued!) {
-                self.setGraphImage()
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-                self.pollTimer?.invalidate()
-                self.pollTimer = nil
+        Task {
+            do {
+                let responseObject = try await RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil)
+                DispatchQueue.main.async {
+                    self.goal = JSONGoal(json: JSON(responseObject!))
+                    self.datapointsTableView.reloadData()
+                    self.refreshCountdown()
+                    self.setValueTextField()
+                    self.valueTextFieldValueChanged()
+                    self.deltasLabel.attributedText = self.goal!.attributedDeltaText
+                    if (!self.goal.queued!) {
+                        self.setGraphImage()
+                        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                        self.pollTimer?.invalidate()
+                        self.pollTimer = nil
+                    }
+                }
+            } catch {
+                logger.error("Error refreshing details for goal \(self.goal.slug): \(error)")
+                // foo
             }
-        }) { (error, errorMessage) in
-            // foo
         }
     }
     

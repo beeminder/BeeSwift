@@ -9,11 +9,14 @@
 import Foundation
 import SwiftyJSON
 import HealthKit
+import OSLog
 import UserNotifications
 
 typealias DataPoint = (daystamp: String, value: Double, comment: String)
 
 class JSONGoal {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "JSONGoal")
+
     var autodata: String = ""
     var delta_text: String = ""
     var graph_url: String?
@@ -296,12 +299,15 @@ class JSONGoal {
     }
     
     func fetchRecentDatapoints(success: @escaping ((_ datapoints : [JSON]) -> ()), errorCompletion: (() -> ())?) {
-        let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
-        RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: { (response) in
-            let responseJSON = JSON(response!)
-            success(responseJSON.array!)
-        }) { (error, errorMessage) in
-            errorCompletion?()
+        Task {
+            let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
+            do {
+                let response = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
+                let responseJSON = JSON(response!)
+                success(responseJSON.array!)
+            } catch {
+                errorCompletion?()
+            }
         }
     }
     
@@ -316,38 +322,50 @@ class JSONGoal {
     }
     
     func updateDatapoint(datapoint : JSON, datapointValue : Double, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        let val = datapoint["value"].double
-        if datapointValue == val {
-            success?()
-            return
+        Task {
+            let val = datapoint["value"].double
+            if datapointValue == val {
+                success?()
+                return
+            }
+            let daystamp = datapoint["daystamp"].string!
+            let requestId = "\(daystamp)-\(self.minuteStamp())"
+            let params = [
+                "access_token": CurrentUserManager.sharedManager.accessToken!,
+                "value": "\(datapointValue)",
+                "comment": "Auto-updated via Apple Health",
+                "requestid": requestId
+            ]
+            let datapointID = datapoint["id"].string
+            do {
+                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params)
+                success?()
+            } catch {
+                errorCompletion?()
+            }
         }
-        let daystamp = datapoint["daystamp"].string!
-        let requestId = "\(daystamp)-\(self.minuteStamp())"
-        let params = [
-            "access_token": CurrentUserManager.sharedManager.accessToken!,
-            "value": "\(datapointValue)",
-            "comment": "Auto-updated via Apple Health",
-            "requestid": requestId
-        ]
-        let datapointID = datapoint["id"].string
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params, success: { (responseObject) in
-            success?()
-        }, errorHandler: { (error, errorMessage) in
-            errorCompletion?()
-        })
     }
     
     func deleteDatapoint(datapoint : JSON) {
-        let datapointID = datapoint["id"].string
-        RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil, success: { (response) in
-            //
-        }) { (error, errorMessage) in
-            //
+        Task {
+            let datapointID = datapoint["id"].string
+            do {
+                let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil)
+            } catch {
+                logger.error("Error deleting datapoint: \(error)")
+            }
         }
     }
     
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
-        RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params, success: success, errorHandler: failure)
+        Task {
+            do {
+                let response = try await RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
+                success?(response)
+            } catch {
+                failure?(error, error.localizedDescription)
+            }
+        }
     }
 
     func updateToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {

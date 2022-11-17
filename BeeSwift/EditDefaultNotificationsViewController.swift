@@ -7,8 +7,10 @@
 //
 
 import Foundation
+import OSLog
 
 class EditDefaultNotificationsViewController: EditNotificationsViewController {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDefaultNotificationsViewController")
     
     override init() {
         super.init()
@@ -22,14 +24,17 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     }
     
     override func sendLeadTimeToServer(_ timer : Timer) {
-        let userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
-        guard let leadtime = userInfo["leadtime"] else { return }
-        let params = [ "default_leadtime" : leadtime ]
-        RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
-            success: { (responseObject) -> Void in
+        Task {
+            let userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
+            guard let leadtime = userInfo["leadtime"] else { return }
+            let params = [ "default_leadtime" : leadtime ]
+            do {
+                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
                 CurrentUserManager.sharedManager.setDefaultLeadTime(leadtime)
-            }) { (error, errorMessage) -> Void in
+            } catch {
+                logger.error("Error setting default leadtime: \(error)")
                 // show alert
+            }
         }
     }
     
@@ -42,21 +47,27 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
         if self.timePickerEditingMode == .alertstart {
             self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
             let params = ["default_alertstart" : self.midnightOffsetFromTimePickerView()]
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
-                success: { (responseObject) -> Void in
+            Task {
+                do {
+                    let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
                     CurrentUserManager.sharedManager.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
-                }) { (error, errorMessage) -> Void in
+                } catch {
+                    logger.error("Error setting default alert start: \(error)")
                     //foo
+                }
             }
         }
         if self.timePickerEditingMode == .deadline {
             self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
             let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
-            RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params,
-                success: { (responseObject) -> Void in
+            Task {
+                do {
+                    let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
                     CurrentUserManager.sharedManager.setDefaultDeadline(self.midnightOffsetFromTimePickerView())
-                }) { (error, errorMessage) -> Void in
+                } catch {
+                    logger.error("Error setting default deadline: \(error)")
                     //foo
+                }
             }
         }
     }

@@ -60,13 +60,7 @@ class VersionManager : NSObject {
     }
     
     private func checkIfUpdateRequired() async throws -> Bool {
-        let responseJSON = try await withCheckedThrowingContinuation { continuation in
-            RequestManager.get(url: "api/private/app_versions.json",
-                               parameters: nil,
-                               success: { responseJSON in continuation.resume(returning: responseJSON) },
-                               errorHandler: { (responseError, responseMessage) in continuation.resume(throwing: responseError!) }
-                               )
-        }
+        let responseJSON = try await RequestManager.get(url: "api/private/app_versions.json", parameters: nil)
 
         guard let response = JSON(responseJSON!).dictionary else {
             throw VersionError.invalidServerResponse
