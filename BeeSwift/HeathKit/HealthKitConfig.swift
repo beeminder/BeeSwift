@@ -35,6 +35,7 @@ class HealthKitConfig : NSObject {
         MindfulSessionHealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", category: .Mindfulness, hkCategoryTypeIdentifier: .mindfulSession),
 
         // Nutrition
+        QuantityHealthKitMetric.init(humanText: "Dietary Caffeine", databaseString: "caffeine", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryCaffeine),
         QuantityHealthKitMetric.init(humanText: "Dietary carbs", databaseString: "dietaryCarbs", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryCarbohydrates),
         QuantityHealthKitMetric.init(humanText: "Dietary energy", databaseString: "dietaryEnergy", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryEnergyConsumed),
         QuantityHealthKitMetric.init(humanText: "Dietary fat", databaseString: "dietaryFat", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryFatTotal),
@@ -42,6 +43,13 @@ class HealthKitConfig : NSObject {
         QuantityHealthKitMetric.init(humanText: "Dietary saturated fat", databaseString: "dietarySaturatedFat", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryFatSaturated),
         QuantityHealthKitMetric.init(humanText: "Dietary sodium", databaseString: "dietarySodium", category: .Nutrition, hkQuantityTypeIdentifier: .dietarySodium),
         QuantityHealthKitMetric.init(humanText: "Dietary sugar", databaseString: "dietarySugar", category: .Nutrition, hkQuantityTypeIdentifier: .dietarySugar),
+        QuantityHealthKitMetric.init(humanText: "Vitamin A", databaseString: "dietaryVitaminA", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminA),
+        QuantityHealthKitMetric.init(humanText: "Vitamin B6", databaseString: "dietaryVitaminB6", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminB6),
+        QuantityHealthKitMetric.init(humanText: "Vitamin B12", databaseString: "dietaryVitaminB12", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminB12),
+        QuantityHealthKitMetric.init(humanText: "Vitamin C", databaseString: "dietaryVitaminC", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminC),
+        QuantityHealthKitMetric.init(humanText: "Vitamin D", databaseString: "dietaryVitaminD", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminD),
+        QuantityHealthKitMetric.init(humanText: "Vitamin E", databaseString: "dietaryVitaminE", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminE),
+        QuantityHealthKitMetric.init(humanText: "Vitamin K", databaseString: "dietaryVitaminK", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminK),
         QuantityHealthKitMetric.init(humanText: "Water", databaseString: "water", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryWater),
 
         // Sleep
