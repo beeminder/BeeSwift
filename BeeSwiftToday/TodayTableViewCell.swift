@@ -203,6 +203,6 @@ class TodayTableViewCell: UITableViewCell {
             return
         }
         
-        self.graphImageView.af_setImage(withURL: thumbUrl, placeholderImage: thumbnailPlaceholder, progressQueue: DispatchQueue.global(qos: .background), imageTransition: .crossDissolve(0.4), runImageTransitionIfCached: false)
+        self.graphImageView.af.setImage(withURL: thumbUrl, placeholderImage: thumbnailPlaceholder, progressQueue: DispatchQueue.global(qos: .background), imageTransition: .crossDissolve(0.4), runImageTransitionIfCached: false)
     }
 }
