@@ -196,6 +196,14 @@ class CurrentUserManager : NSObject {
     }
     
     func signOut() {
+        // Force sign out to run on main thread as we dispatch to other arbitrary code
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self.signOut()
+            }
+            return
+        }
+
         self.goals = []
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
         NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
@@ -209,8 +217,10 @@ class CurrentUserManager : NSObject {
     func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, errorHandler: ((_ error : Error?, _ errorMessage : String?) -> ())?) {
         Task {
             guard let username = self.username else {
-                CurrentUserManager.sharedManager.signOut()
-                success?([])
+                DispatchQueue.main.async {
+                    CurrentUserManager.sharedManager.signOut()
+                    success?([])
+                }
                 return
             }
 
