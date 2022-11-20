@@ -320,7 +320,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             })
             syncTodayButton.setTitle("Sync with Health app", for: .normal)
             syncTodayButton.addTarget(self, action: #selector(self.syncTodayButtonPressed), for: .touchUpInside)
-            
+
             let syncWeekButton = BSButton()
             appleSyncView.addSubview(syncWeekButton)
             syncWeekButton.snp.makeConstraints({ (make) in
@@ -340,31 +340,37 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func syncTodayButtonPressed() {
-        self.syncHealthDataButtonPressed(numDays: 1)
+        Task { @MainActor in
+            await self.syncHealthDataButtonPressed(numDays: 1)
+        }
     }
     
     @objc func syncWeekButtonPressed() {
-        self.syncHealthDataButtonPressed(numDays: 7)
+        Task { @MainActor in
+            await self.syncHealthDataButtonPressed(numDays: 7)
+        }
     }
 
-    private func syncHealthDataButtonPressed(numDays: Int) {
+    private func syncHealthDataButtonPressed(numDays: Int) async {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
-        Task {
-            do {
-                try await HealthStoreManager.sharedManager.updateWithRecentData(goal: self.goal, days: numDays)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                    hud?.mode = .customView
-                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                    hud?.hide(true, afterDelay: 2)
-                })
-            } catch {
-                logger.error("Error Syncing Health Data: \(error, privacy: .public)")
-                DispatchQueue.main.async {
-                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-                }
+
+        do {
+            try await HealthStoreManager.sharedManager.updateWithRecentData(goal: self.goal, days: numDays)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                hud?.mode = .customView
+                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud?.hide(true, afterDelay: 2)
+            })
+        } catch {
+            logger.error("Error Syncing Health Data: \(error, privacy: .public)")
+            DispatchQueue.main.async {
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             }
+            return
         }
+
+        refreshGoal()
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -415,16 +421,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.scrollView.refreshControl?.endRefreshing()
         MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
 
-        Task {
+        Task { @MainActor in
             do {
                 let _ = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil)
                 self.pollUntilGraphUpdates()
             } catch {
-                DispatchQueue.main.async {
-                    let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    self.present(alert, animated: true, completion: nil)
-                }
+                let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
             }
         }
     }
@@ -524,30 +528,26 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func submitDatapoint() {
-        self.view.endEditing(true)
-        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
-        self.submitButton.isUserInteractionEnabled = false
-        self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
+        Task { @MainActor in
+            self.view.endEditing(true)
+            let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+            hud?.mode = .indeterminate
+            self.submitButton.isUserInteractionEnabled = false
+            self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
 
-        Task {
             do {
                 let _ = try await RequestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug)
-                DispatchQueue.main.async {
-                    self.commentTextField.text = ""
-                    self.refreshGoal()
-                    self.pollUntilGraphUpdates()
-                    self.submitButton.isUserInteractionEnabled = true
-                    CurrentUserManager.sharedManager.fetchGoals(success: nil, errorHandler: nil)
-                }
+                self.commentTextField.text = ""
+                self.refreshGoal() // TODO: How should sequencing here work?
+                self.pollUntilGraphUpdates()
+                self.submitButton.isUserInteractionEnabled = true
+                CurrentUserManager.sharedManager.fetchGoals(success: nil, errorHandler: nil)
             } catch {
-                DispatchQueue.main.async {
-                    self.submitButton.isUserInteractionEnabled = true
-                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-                    let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
-                    self.present(alertController, animated: true)
-                }
+                self.submitButton.isUserInteractionEnabled = true
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
+                self.present(alertController, animated: true)
             }
         }
     }
@@ -561,22 +561,20 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshGoal() {
-        Task {
+        Task { @MainActor in
             do {
                 let responseObject = try await RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil)
-                DispatchQueue.main.async {
-                    self.goal = JSONGoal(json: JSON(responseObject!))
-                    self.datapointsTableView.reloadData()
-                    self.refreshCountdown()
-                    self.setValueTextField()
-                    self.valueTextFieldValueChanged()
-                    self.deltasLabel.attributedText = self.goal!.attributedDeltaText
-                    if (!self.goal.queued!) {
-                        self.setGraphImage()
-                        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-                        self.pollTimer?.invalidate()
-                        self.pollTimer = nil
-                    }
+                self.goal = JSONGoal(json: JSON(responseObject!))
+                self.datapointsTableView.reloadData()
+                self.refreshCountdown()
+                self.setValueTextField()
+                self.valueTextFieldValueChanged()
+                self.deltasLabel.attributedText = self.goal!.attributedDeltaText
+                if (!self.goal.queued!) {
+                    self.setGraphImage()
+                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                    self.pollTimer?.invalidate()
+                    self.pollTimer = nil
                 }
             } catch {
                 logger.error("Error refreshing details for goal \(self.goal.slug): \(error)")
