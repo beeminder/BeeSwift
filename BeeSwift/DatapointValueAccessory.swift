@@ -10,20 +10,42 @@ import Foundation
 import UIKit
 
 class DatapointValueAccessory : UIInputView {
+    let showAccessory: Bool
     var valueField : UITextField?
     var colonButton: UIButton?
 
     init() {
-        super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 44), inputViewStyle: .keyboard)
+        showAccessory = DatapointValueAccessory.shouldShowAccessory()
+        if showAccessory {
+            super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 44), inputViewStyle: .keyboard)
+        } else {
+            super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0), inputViewStyle: .keyboard)
+        }
         setupView()
     }
 
     required init?(coder: NSCoder) {
+        showAccessory = DatapointValueAccessory.shouldShowAccessory()
         super.init(coder: coder)
         setupView()
     }
 
+    static func shouldShowAccessory() -> Bool {
+        switch UIDevice.current.userInterfaceIdiom {
+        case .pad, .mac:
+            return false
+        case .phone, .carPlay, .tv, .unspecified:
+             return true
+        @unknown default:
+            return true
+        }
+    }
+
     private func setupView() {
+        if !showAccessory {
+            return
+        }
+
         let colonButton = UIButton()
         self.colonButton = colonButton
         self.addSubview(colonButton)
