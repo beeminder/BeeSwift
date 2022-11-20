@@ -20,6 +20,9 @@ class HealthStoreManager :NSObject {
     /// Dictionary key is the goal id, as this is stable across goal renames
     private var connections: [String: GoalHealthKitConnection] = [:]
 
+    /// Protect concurrent modifications to the connections dictionary
+    private let connectionsSemaphore = DispatchSemaphore(value: 1)
+
     /// Request acess to HealthKit data for the supplied metric
     ///
     /// This function will throw an exception on a major failure. However, it will return silently if the user chooses
@@ -90,13 +93,14 @@ class HealthStoreManager :NSObject {
 
     /// Gets or creates an appropriate connection object for the supplied goal
     private func connectionFor(goal: JSONGoal) -> GoalHealthKitConnection? {
+        connectionsSemaphore.wait()
+
         if (goal.healthKitMetric ?? "") == "" {
             // Goal does not have a metric. Make sure any prior connection is removed
             if let connection = connections[goal.id] {
                 connection.unregisterObserverQuery()
                 connections.removeValue(forKey: goal.id)
             }
-            return nil
         } else {
             // If a connection exists but is for the wrong metric then remove it
             if let connection = connections[goal.id] {
@@ -110,17 +114,17 @@ class HealthStoreManager :NSObject {
             if connections[goal.id] == nil {
                 logger.notice("Creating connection for \(goal.slug, privacy: .private) (\(goal.id, privacy: .public)) to metric \(goal.healthKitMetric ?? "nil", privacy: .public)")
 
-                guard let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
+                if let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
                     metric.databaseString == goal.healthKitMetric
-                }) else {
-                    return nil
+                }) {
+                    connections[goal.id] = GoalHealthKitConnection(goal: goal, metric: metric, healthStore: healthStore)
                 }
-                connections[goal.id] = GoalHealthKitConnection(goal: goal, metric: metric, healthStore: healthStore)
             }
 
-            // Return the cached connection
-            return connections[goal.id]
         }
+        connectionsSemaphore.signal()
+
+        return connections[goal.id]
     }
 
     private func requestAuthorization(read: Set<HKObjectType>) async throws {
