@@ -93,11 +93,12 @@ class ChooseHKMetricViewController: UIViewController {
     }
     
     func saveMetric(databaseString : String) {
-        let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+        Task { @MainActor in
+            let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
 
-        self.goal!.healthKitMetric = databaseString
-        self.goal!.autodata = "apple"
-        Task {
+            self.goal!.healthKitMetric = databaseString
+            self.goal!.autodata = "apple"
+            
             do {
                 try await HealthStoreManager.sharedManager.ensureUpdatesRegularly(goal: self.goal!)
             } catch {
@@ -111,11 +112,9 @@ class ChooseHKMetricViewController: UIViewController {
 
             do {
                 let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
-                DispatchQueue.main.async {
-                    hud?.mode = .customView
-                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                    hud?.hide(true, afterDelay: 2)
-                }
+                hud?.mode = .customView
+                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud?.hide(true, afterDelay: 2)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.navigationController?.popViewController(animated: true)
                 }

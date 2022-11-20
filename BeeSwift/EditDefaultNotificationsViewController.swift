@@ -24,7 +24,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     }
     
     override func sendLeadTimeToServer(_ timer : Timer) {
-        Task {
+        Task { @MainActor in
             let userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
             guard let leadtime = userInfo["leadtime"] else { return }
             let params = [ "default_leadtime" : leadtime ]
@@ -44,10 +44,10 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if self.timePickerEditingMode == .alertstart {
-            self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
-            let params = ["default_alertstart" : self.midnightOffsetFromTimePickerView()]
-            Task {
+        Task { @MainActor in
+            if self.timePickerEditingMode == .alertstart {
+                self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
+                let params = ["default_alertstart" : self.midnightOffsetFromTimePickerView()]
                 do {
                     let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
                     CurrentUserManager.sharedManager.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
@@ -56,11 +56,9 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                     //foo
                 }
             }
-        }
-        if self.timePickerEditingMode == .deadline {
-            self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
-            let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
-            Task {
+            if self.timePickerEditingMode == .deadline {
+                self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
+                let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
                 do {
                     let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
                     CurrentUserManager.sharedManager.setDefaultDeadline(self.midnightOffsetFromTimePickerView())

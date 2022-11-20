@@ -131,7 +131,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         logger.notice("application:didRegisterForRemoteNotificationsWithDeviceToken")
-        Task {
+        Task { @MainActor in
             let token = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
 
             do {

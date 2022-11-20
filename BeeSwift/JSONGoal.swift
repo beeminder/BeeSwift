@@ -299,7 +299,7 @@ class JSONGoal {
     }
     
     func fetchRecentDatapoints(success: @escaping ((_ datapoints : [JSON]) -> ()), errorCompletion: (() -> ())?) {
-        Task {
+        Task { @MainActor in
             let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
             do {
                 let response = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
@@ -322,7 +322,7 @@ class JSONGoal {
     }
     
     func updateDatapoint(datapoint : JSON, datapointValue : Double, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        Task {
+        Task { @MainActor in
             let val = datapoint["value"].double
             if datapointValue == val {
                 success?()
@@ -347,7 +347,7 @@ class JSONGoal {
     }
     
     func deleteDatapoint(datapoint : JSON) {
-        Task {
+        Task { @MainActor in
             let datapointID = datapoint["id"].string
             do {
                 let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil)
@@ -358,7 +358,7 @@ class JSONGoal {
     }
     
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
-        Task {
+        Task { @MainActor in
             do {
                 let response = try await RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
                 success?(response)
