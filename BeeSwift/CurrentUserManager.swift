@@ -147,7 +147,7 @@ class CurrentUserManager : NSObject {
     }
     
     func signInWithEmail(_ email: String, password: String) {
-        Task {
+        Task { @MainActor in
             do {
                let response = try await RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>)
                 self.handleSuccessfulSignin(JSON(response!))
@@ -172,7 +172,7 @@ class CurrentUserManager : NSObject {
     }
     
     func syncNotificationDefaults(_ success: (() -> Void)?, failure: (() -> Void)?) {
-        Task {
+        Task { @MainActor in
             do {
                 let response = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: [:])
                 let responseJSON = JSON(response!)
@@ -215,7 +215,7 @@ class CurrentUserManager : NSObject {
     }
     
     func fetchGoals(success: ((_ goals : [JSONGoal]) -> ())?, errorHandler: ((_ error : Error?, _ errorMessage : String?) -> ())?) {
-        Task {
+        Task { @MainActor in
             guard let username = self.username else {
                 DispatchQueue.main.async {
                     CurrentUserManager.sharedManager.signOut()

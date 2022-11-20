@@ -177,35 +177,33 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
 
-        Task {
+        Task { @MainActor in
             do {
                 let updateState = try await VersionManager.sharedManager.updateState()
 
-                DispatchQueue.main.async {
-                    switch updateState {
-                    case .UpdateRequired:
-                        self.outofdateView.snp.remakeConstraints { (make) -> Void in
-                            make.left.equalTo(0)
-                            make.right.equalTo(0)
-                            make.top.equalTo(self.deadbeatView.snp.bottom)
-                            make.height.equalTo(42)
-                        }
-                        self.outofdateLabel.isHidden = false
-                        self.outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
-                        self.collectionView?.isHidden = true
-                    case .UpdateSuggested:
-                        self.outofdateView.snp.remakeConstraints { (make) -> Void in
-                            make.left.equalTo(0)
-                            make.right.equalTo(0)
-                            make.top.equalTo(self.deadbeatView.snp.bottom)
-                            make.height.equalTo(42)
-                        }
-                        self.outofdateLabel.isHidden = false
-                        self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
-                        self.collectionView?.isHidden = false
-                    case .UpToDate:
-                        self.collectionView?.isHidden = false
+                switch updateState {
+                case .UpdateRequired:
+                    self.outofdateView.snp.remakeConstraints { (make) -> Void in
+                        make.left.equalTo(0)
+                        make.right.equalTo(0)
+                        make.top.equalTo(self.deadbeatView.snp.bottom)
+                        make.height.equalTo(42)
                     }
+                    self.outofdateLabel.isHidden = false
+                    self.outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
+                    self.collectionView?.isHidden = true
+                case .UpdateSuggested:
+                    self.outofdateView.snp.remakeConstraints { (make) -> Void in
+                        make.left.equalTo(0)
+                        make.right.equalTo(0)
+                        make.top.equalTo(self.deadbeatView.snp.bottom)
+                        make.height.equalTo(42)
+                    }
+                    self.outofdateLabel.isHidden = false
+                    self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
+                    self.collectionView?.isHidden = false
+                case .UpToDate:
+                    self.collectionView?.isHidden = false
                 }
             } catch let error as VersionError {
                 logger.error("Error checking for current version: \(error)")
@@ -389,7 +387,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func setupHealthKit() {
-        Task {
+        Task { @MainActor in
             do {
                 try await HealthStoreManager.sharedManager.ensureUpdatesRegularly(goals: self.goals)
             } catch {

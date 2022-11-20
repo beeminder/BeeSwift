@@ -71,18 +71,16 @@ class RemoveHKMetricViewController: UIViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud?.mode = .indeterminate
 
-        Task {
+        Task { @MainActor in
             do {
                 let responseObject = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
 
                 self.goal = JSONGoal(json: JSON(responseObject!))
 
-                DispatchQueue.main.async {
-                    hud?.mode = .customView
-                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud?.mode = .customView
+                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
 
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: self, userInfo: ["goal": self.goal as Any])
-                }
+                NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: self, userInfo: ["goal": self.goal as Any])
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                     hud?.hide(true, afterDelay: 2)

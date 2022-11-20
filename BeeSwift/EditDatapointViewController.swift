@@ -182,49 +182,43 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func updateButtonPressed() {
-        self.view.endEditing(true)
-        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
+        Task { @MainActor in
+            self.view.endEditing(true)
+            let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+            hud?.mode = .indeterminate
 
-        Task {
             do {
                 let params = [
                     "access_token": CurrentUserManager.sharedManager.accessToken!,
                     "urtext": self.urtext()
                 ]
                 let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params)
-                DispatchQueue.main.async {
-                    let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
-                    hud?.mode = .customView
-                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                    hud?.hide(true, afterDelay: 2)
-                }
+                let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+                hud?.mode = .customView
+                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud?.hide(true, afterDelay: 2)
             } catch {
                 logger.error("Error updating datapoint for goal \(self.goalSlug ?? "<nil>"): \(error)")
-                DispatchQueue.main.async {
-                    let _ = MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-                }
+                let _ = MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             }
         }
     }
     
     func deleteDatapoint() {
-        let params = [
-            "access_token": CurrentUserManager.sharedManager.accessToken!
-        ]
-        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
+        Task { @MainActor in
+            let params = [
+                "access_token": CurrentUserManager.sharedManager.accessToken!
+            ]
+            let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+            hud?.mode = .indeterminate
 
-        Task {
             do {
                 let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params)
 
-                DispatchQueue.main.async {
-                    let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
-                    hud?.mode = .customView
-                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                    hud?.hide(true, afterDelay: 2)
-                }
+                let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+                hud?.mode = .customView
+                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud?.hide(true, afterDelay: 2)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.navigationController?.popViewController(animated: true)
                 }
