@@ -173,24 +173,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.valueTextField.textAlignment = .center
         self.valueTextField.keyboardType = .decimalPad
         
-        let accessory = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        accessory.backgroundColor = UIColor.white
+        let accessory = DatapointValueAccessory()
+        accessory.valueField = self.valueTextField
         self.valueTextField.inputAccessoryView = accessory
-        let colonButton = UIButton()
-        accessory.addSubview(colonButton)
-        accessory.clipsToBounds = true
-        colonButton.snp.makeConstraints { (make) -> Void in
-            make.width.equalTo(accessory).multipliedBy(1.0/3.0).offset(-1)
-            make.height.equalTo(accessory)
-            make.left.equalTo(-1)
-            make.top.equalTo(0)
-        }
-        colonButton.setTitle(":", for: UIControl.State())
-        colonButton.layer.borderWidth = 1
-        colonButton.layer.borderColor = UIColor.beeminder.gray.cgColor
-        colonButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 26)
-        colonButton.setTitleColor(UIColor.black, for: UIControl.State())
-        colonButton.addTarget(self, action: #selector(self.colonButtonPressed), for: .touchUpInside)
         self.valueTextField.addTarget(self, action: #selector(GoalViewController.valueTextFieldValueChanged), for: .editingChanged)
         self.valueTextField.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.dateTextField.snp.right).offset(10)
@@ -427,10 +412,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
             }
         }
-    }
-    
-    @objc func colonButtonPressed() {
-        self.valueTextField.text?.append(":")
     }
     
     @objc func refreshCountdown() {
