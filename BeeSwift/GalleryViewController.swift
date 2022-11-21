@@ -32,8 +32,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var goals : Array<JSONGoal> = []
-    var filteredGoals : Array<JSONGoal> = []
+    var goals : Array<Goal> = []
+    var filteredGoals : Array<Goal> = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -482,7 +482,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let goal:JSONGoal = self.filteredGoals[(indexPath as NSIndexPath).row]
+        let goal:Goal = self.filteredGoals[(indexPath as NSIndexPath).row]
         
         cell.goal = goal
         
@@ -517,7 +517,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
-    func openGoal(_ goal: JSONGoal) {
+    func openGoal(_ goal: Goal) {
         let goalViewController = GoalViewController()
         goalViewController.goal = goal
         self.navigationController?.pushViewController(goalViewController, animated: true)

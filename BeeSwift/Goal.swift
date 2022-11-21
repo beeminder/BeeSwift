@@ -14,8 +14,8 @@ import UserNotifications
 
 typealias DataPoint = (daystamp: String, value: Double, comment: String)
 
-class JSONGoal {
-    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "JSONGoal")
+class Goal {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
 
     var autodata: String = ""
     var delta_text: String = ""
@@ -414,7 +414,7 @@ class JSONGoal {
     }
 }
 
-extension JSONGoal {
+extension Goal {
     var cacheBustingThumbUrl: String {
         let thumbUrlStr = self.thumb_url!
         return cacheBuster(thumbUrlStr)
@@ -426,7 +426,7 @@ extension JSONGoal {
     }
 }
 
-private extension JSONGoal {
+private extension Goal {
     func cacheBuster(_ originUrlStr: String) -> String {
         guard let lastTouch = self.lasttouch else {
             return originUrlStr
@@ -440,7 +440,7 @@ private extension JSONGoal {
     }
 }
 
-extension JSONGoal {
+extension Goal {
     var isDataProvidedAutomatically: Bool {
         return !self.autodata.isEmpty
     }

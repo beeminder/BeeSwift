@@ -14,7 +14,7 @@ class TimerViewController: UIViewController {
     
     let timerLabel = BSLabel()
     let startStopButton = BSButton()
-    var goal : JSONGoal?
+    var goal : Goal?
     var timingSince: Date?
     var timer: Timer?
     var slug: String?

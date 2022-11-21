@@ -10,7 +10,7 @@ import UIKit
 
 class HealthKitConfigTableViewCell: UITableViewCell {
 
-    var goal : JSONGoal? {
+    var goal : Goal? {
         didSet {
             self.goalnameLabel.text = self.goal?.slug
             self.autodataNameLabel.text = self.goal?.humanizedAutodata

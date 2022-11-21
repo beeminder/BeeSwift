@@ -18,7 +18,7 @@ import OSLog
 class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
     
-    var goal : JSONGoal!
+    var goal : Goal!
     
     fileprivate var cellIdentifier = "datapointCell"
     fileprivate var goalImageView = UIImageView()
@@ -552,7 +552,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         Task { @MainActor in
             do {
                 let responseObject = try await RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil)
-                self.goal = JSONGoal(json: JSON(responseObject!))
+                self.goal = Goal(json: JSON(responseObject!))
                 self.datapointsTableView.reloadData()
                 self.refreshCountdown()
                 self.setValueTextField()
