@@ -51,6 +51,12 @@ class Goal {
     
     init(json: JSON) {
         self.id = json["id"].string!
+        self.updateToMatch(json: json)
+    }
+
+    func updateToMatch(json: JSON) {
+        assert(self.id == json["id"].string!, "Cannot change goal id. Tried to change from \(id) to \(json["id"].string ?? "")")
+
         self.title = json["title"].string!
         self.slug = json["slug"].string!
         self.deadline = json["deadline"].number!
@@ -100,6 +106,8 @@ class Goal {
         datapoints.reverse()
         self.recent_data = Array(datapoints)
     }
+
+
     
     var rateString :String {
         guard let r = self.rate else { return "" }
