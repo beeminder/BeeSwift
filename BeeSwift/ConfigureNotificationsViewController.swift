@@ -8,8 +8,10 @@
 
 import UIKit
 import SwiftyJSON
+import OSLog
 
 class ConfigureNotificationsViewController: UIViewController {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ConfigureNotificationsViewController")
     
     fileprivate var goals : [JSONGoal] = []
     fileprivate var cellReuseIdentifier = "configureNotificationsTableViewCell"
@@ -84,15 +86,17 @@ class ConfigureNotificationsViewController: UIViewController {
     }
     
     func fetchGoals() {
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
-            self.goals = goals
-            self.sortGoals()
-            self.tableView.reloadData()
-        }) { (error, errorMessage) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            if UIApplication.shared.applicationState == .active {
-                if let errorString = error?.localizedDescription {
-                    let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
+        Task { @MainActor in
+            do {
+                let goals = try await CurrentUserManager.sharedManager.fetchGoals()
+                self.goals = goals
+                self.sortGoals()
+            } catch {
+                logger.error("Failure fetching goals: \(error)")
+
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                if UIApplication.shared.applicationState == .active {
+                    let alert = UIAlertController(title: "Error fetching goals", message: error.localizedDescription, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alert, animated: true, completion: nil)
                 }

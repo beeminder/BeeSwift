@@ -53,11 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
         logger.notice("application:didReceiveRemoteNotification")
 
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
-            //
-        }) { (error, errorMessage) in
-            //
-        }
+        refreshGoalsAndLogErrors()
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -81,7 +77,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidBecomeActive(_ application: UIApplication) {
         logger.notice("applicationDidBecomeActive")
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        CurrentUserManager.sharedManager.fetchGoals(success: nil, errorHandler: nil)
+        refreshGoalsAndLogErrors()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -94,10 +90,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     /// and for iOS 13 and over: https://developer.apple.com/documentation/backgroundtasks/bgapprefreshtask
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         logger.notice("application:performFetchWithCompletionHandler")
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
-            completionHandler(.newData)
-        }) { (error, errorMessage) in
-            completionHandler(.failed)
+        Task { @MainActor in
+            do {
+                let _ = try await CurrentUserManager.sharedManager.fetchGoals()
+                completionHandler(.newData)
+            } catch {
+                logger.error("Failed to refresh goals for background update: \(error)")
+                completionHandler(.failed)
+            }
         }
     }
     
@@ -151,6 +151,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UIApplication.shared.applicationIconBadgeNumber = CurrentUserManager.sharedManager.goals.filter({ (goal: JSONGoal) -> Bool in
             return goal.relativeLane.intValue < -1
         }).count
+    }
+
+    private func refreshGoalsAndLogErrors() {
+        Task { @MainActor in
+            do {
+                let _ = try await CurrentUserManager.sharedManager.fetchGoals()
+            } catch {
+                logger.error("Error refreshing goals: \(error)")
+            }
+        }
     }
     
     // MARK: - UNUserNotificationCenterDelegate
