@@ -55,6 +55,7 @@ class Goal {
     }
 
     func updateToMatch(json: JSON) {
+        // TODO: This should be protected by a lock
         assert(self.id == json["id"].string!, "Cannot change goal id. Tried to change from \(id) to \(json["id"].string ?? "")")
 
         self.title = json["title"].string!
@@ -107,8 +108,6 @@ class Goal {
         self.recent_data = Array(datapoints)
     }
 
-
-    
     var rateString :String {
         guard let r = self.rate else { return "" }
         let formatter = NumberFormatter()
@@ -301,6 +300,19 @@ class Goal {
         let formatter = DateFormatter()
         formatter.dateFormat = "YYYYMMddHHmm"
         return formatter.string(from: Date())
+    }
+
+    func refresh() async throws {
+        let responseObject = try await RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil)
+        self.updateToMatch(json: JSON(responseObject!))
+    }
+
+    func waitForUpdatedGraph() async throws {
+        // TODO: We need to check for an existing task and wait on it instead of triggering an additional set of requests if relevant. Might need locking around task creation?
+        while self.queued! {
+            try await refresh()
+            try await Task.sleep(nanoseconds: 2_000_000_000)
+        }
     }
     
     func fetchRecentDatapoints(success: @escaping ((_ datapoints : [JSON]) -> ()), errorCompletion: (() -> ())?) {
