@@ -56,7 +56,8 @@ class Goal {
         self.deadline = json["deadline"].number!
         self.leadtime = json["leadtime"].number!
         self.alertstart = json["alertstart"].number!
-        if let lasttouchString = json["lasttouch"].string {
+
+        self.lasttouch = json["lasttouch"].string.flatMap { lasttouchString in
             let lastTouchDate: Date? = {
                 let df = ISO8601DateFormatter()
                 df.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -64,36 +65,32 @@ class Goal {
             }()
             
             if let date = lastTouchDate {
-                self.lasttouch = NSNumber(value: date.timeIntervalSince1970)
+                return NSNumber(value: date.timeIntervalSince1970)
             }
+            return nil
         }
+
         self.queued = json["queued"].bool!
-        
         self.losedate = json["losedate"].number!
         self.runits = json["runits"].string!
         self.yaxis = json["yaxis"].string!
-        if json["rate"].number != nil { self.rate = json["rate"].number! }
-        if json["delta_text"].string != nil { self.delta_text = json["delta_text"].string! }
+        self.rate = json["rate"].number
+        self.delta_text = json["delta_text"].string ?? ""
         self.won = json["won"].number!
-        if json["lane"].number != nil { self.lane = json["lane"].number! }
+        self.lane = json["lane"].number
         self.yaw = json["yaw"].number!
         self.dir = json["dir"].number!
-        if json["limsum"].string != nil { self.limsum = json["limsum"].string! }
-        if json["safesum"].string != nil { self.safesum = json["safesum"].string! }
-        if json["safebuf"].number != nil { self.safebuf = json["safebuf"].number! }
+        self.limsum = json["limsum"].string
+        self.safesum = json["safesum"].string
+        self.safebuf = json["safebuf"].number
         self.use_defaults = json["use_defaults"].bool! as NSNumber
-        if let safebump = json["safebump"].number {
-            self.safebump = safebump
-        }
-        if let curval = json["curval"].number {
-            self.curval = curval
-        }
+        self.safebump = json["safebump"].number
+        self.curval = json["curval"].number
         self.pledge = json["pledge"].number!
-        let ad : String? = json["autodata"].string
-        if ad != nil { self.autodata = ad! } else { self.autodata = "" }
+        self.autodata = json["autodata"].string ?? ""
         
-        if json["graph_url"].string != nil { self.graph_url = json["graph_url"].string! }
-        if json["thumb_url"].string != nil { self.thumb_url = json["thumb_url"].string! }
+        self.graph_url = json["graph_url"].string
+        self.thumb_url = json["thumb_url"].string
         
         self.healthKitMetric = json["healthkitmetric"].string
         self.todayta = json["todayta"].bool!
