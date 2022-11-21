@@ -48,7 +48,7 @@ class RequestManager {
             if case .responseValidationFailed(let reason) = error {
                 if case .unacceptableStatusCode(let code) = reason {
                     if code == 401 {
-                        CurrentUserManager.sharedManager.signOut()
+                        await CurrentUserManager.sharedManager.signOut()
                     }
                 }
             }

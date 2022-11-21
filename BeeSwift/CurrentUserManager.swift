@@ -149,13 +149,13 @@ class CurrentUserManager : NSObject {
     func signInWithEmail(_ email: String, password: String) async {
         do {
            let response = try await RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>)
-            self.handleSuccessfulSignin(JSON(response!))
+            await self.handleSuccessfulSignin(JSON(response!))
         } catch {
-            self.handleFailedSignin(error, errorMessage: error.localizedDescription)
+            await self.handleFailedSignin(error, errorMessage: error.localizedDescription)
         }
     }
     
-    func handleSuccessfulSignin(_ responseJSON: JSON) {
+    func handleSuccessfulSignin(_ responseJSON: JSON) async {
         if responseJSON["deadbeat"].boolValue {
             self.setDeadbeat(true)
         }
@@ -165,7 +165,9 @@ class CurrentUserManager : NSObject {
         self.set(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
         self.set(responseJSON[defaultLeadtimeKey].number!, forKey: defaultLeadtimeKey)
         self.set(responseJSON[beemTZKey].string!, forKey: beemTZKey)
-        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
+        await Task { @MainActor in
+            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
+        }.value
     }
     
     func syncNotificationDefaults() async throws {
@@ -177,33 +179,32 @@ class CurrentUserManager : NSObject {
 
     }
     
-    func handleFailedSignin(_ responseError: Error, errorMessage : String?) {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: self, userInfo: ["error" : responseError])
-        self.signOut()
+    func handleFailedSignin(_ responseError: Error, errorMessage : String?) async {
+        await Task { @MainActor in
+            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: self, userInfo: ["error" : responseError])
+        }.value
+        await self.signOut()
     }
     
-    func signOut() {
-        // Force sign out to run on main thread as we dispatch to other arbitrary code
-        if !Thread.isMainThread {
-            DispatchQueue.main.async {
-                self.signOut()
-            }
-            return
-        }
-
+    func signOut() async {
         self.goals = []
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
-        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
+
+        await Task { @MainActor in
+            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
+        }.value
         self.removeObject(forKey: accessTokenKey)
         self.removeObject(forKey: deadbeatKey)
         self.removeObject(forKey: usernameKey)
         self.removeObject(forKey: cachedLastFetchedGoalsKey)
-        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
+        await Task { @MainActor in
+            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
+        }.value
     }
     
     func fetchGoals() async throws -> [JSONGoal] {
         guard let username = self.username else {
-            CurrentUserManager.sharedManager.signOut()
+            await CurrentUserManager.sharedManager.signOut()
             return []
         }
 
@@ -213,7 +214,10 @@ class CurrentUserManager : NSObject {
         self.updateTodayWidget()
         self.goalsFetchedAt = Date()
         self.setCachedLastFetchedGoals(response)
-        NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
+
+        await Task { @MainActor in
+            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
+        }.value
 
         return jGoals
     }

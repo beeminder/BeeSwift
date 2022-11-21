@@ -58,8 +58,10 @@ class SettingsViewController: UIViewController {
     }
     
     func signOutButtonPressed() {
-        CurrentUserManager.sharedManager.signOut()
-        self.navigationController?.popViewController(animated: true)
+        Task { @MainActor in
+            await CurrentUserManager.sharedManager.signOut()
+            self.navigationController?.popViewController(animated: true)
+        }
     }    
 }
 
