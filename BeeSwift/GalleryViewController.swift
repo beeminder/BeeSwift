@@ -397,24 +397,26 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func fetchGoals() {
-        if self.goals.count == 0 {
-            MBProgressHUD.showAdded(to: self.view, animated: true)
-        }
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
-            self.goals = goals
-            self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
-            self.didFetchGoals()
-        }) { (error, errorMessage) in
-            if UIApplication.shared.applicationState == .active {
-                if let errorString = error?.localizedDescription {
-                    let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
+        Task { @MainActor in
+            if self.goals.count == 0 {
+                MBProgressHUD.showAdded(to: self.view, animated: true)
+            }
+
+            do {
+                let goals = try await CurrentUserManager.sharedManager.fetchGoals()
+                self.goals = goals
+                self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
+                self.didFetchGoals()
+            } catch {
+                if UIApplication.shared.applicationState == .active {
+                    let alert = UIAlertController(title: "Error fetching goals", message: error.localizedDescription, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alert, animated: true, completion: nil)
                 }
+                self.collectionView?.refreshControl?.endRefreshing()
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                self.collectionView!.reloadData()
             }
-            self.collectionView?.refreshControl?.endRefreshing()
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            self.collectionView!.reloadData()
         }
     }
     

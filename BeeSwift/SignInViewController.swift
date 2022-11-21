@@ -235,13 +235,15 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     }
     
     @objc func signInButtonPressed() {
-        guard let email = self.emailTextField.text?.trimmingCharacters(in: .whitespaces), let password = self.passwordTextField.text, !email.isEmpty, !password.isEmpty else {
-            self.present(self.missingDataOnSignIn, animated: true, completion: nil)
-            return
+        Task { @MainActor in
+            guard let email = self.emailTextField.text?.trimmingCharacters(in: .whitespaces), let password = self.passwordTextField.text, !email.isEmpty, !password.isEmpty else {
+                self.present(self.missingDataOnSignIn, animated: true, completion: nil)
+                return
+            }
+
+            MBProgressHUD.showAdded(to: self.view, animated: true)
+            await CurrentUserManager.sharedManager.signInWithEmail(email, password: password)
         }
-        
-        MBProgressHUD.showAdded(to: self.view, animated: true)
-        CurrentUserManager.sharedManager.signInWithEmail(email, password: password)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

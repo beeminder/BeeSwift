@@ -522,13 +522,20 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.refreshGoal() // TODO: How should sequencing here work?
                 self.pollUntilGraphUpdates()
                 self.submitButton.isUserInteractionEnabled = true
-                CurrentUserManager.sharedManager.fetchGoals(success: nil, errorHandler: nil)
             } catch {
                 self.submitButton.isUserInteractionEnabled = true
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
                 self.present(alertController, animated: true)
+
+                return
+            }
+
+            do {
+                let _ = try await CurrentUserManager.sharedManager.fetchGoals()
+            } catch {
+                logger.error("Failed up refresh goals after posting: \(error)")
             }
         }
     }

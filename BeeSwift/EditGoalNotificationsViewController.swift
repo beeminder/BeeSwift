@@ -119,23 +119,28 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                         let params = ["use_defaults" : true]
                         let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
                         self.goal?.use_defaults = NSNumber(value: true as Bool)
-                        CurrentUserManager.sharedManager.syncNotificationDefaults({
-                            self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
-                            self.updateLeadTimeLabel()
-                            self.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-                            self.deadline   = CurrentUserManager.sharedManager.defaultDeadline()
-                            self.goal!.leadtime = CurrentUserManager.sharedManager.defaultLeadTime()
-                            self.goal!.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-                            self.goal!.deadline = CurrentUserManager.sharedManager.defaultDeadline()
-                            self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
-                        }) {
-                            self.logger.error("Error syncing notification defaults")
-                            // foo
-                        }
                     } catch {
                         self.logger.error("Error setting goal to use defaults: \(error)")
-                        // foo
+                        // TODO: Show UI failure
+                        return
                     }
+
+                    do {
+                        try await CurrentUserManager.sharedManager.syncNotificationDefaults()
+                    } catch {
+                        self.logger.error("Error syncing notification defaults")
+                        // TODO: Show UI failure
+                        return
+                    }
+
+                    self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
+                    self.updateLeadTimeLabel()
+                    self.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
+                    self.deadline   = CurrentUserManager.sharedManager.defaultDeadline()
+                    self.goal!.leadtime = CurrentUserManager.sharedManager.defaultLeadTime()
+                    self.goal!.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
+                    self.goal!.deadline = CurrentUserManager.sharedManager.defaultDeadline()
+                    self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
                 }
             }))
             alertController.addAction(UIAlertAction(title: "No", style: .cancel, handler: { (action) -> Void in

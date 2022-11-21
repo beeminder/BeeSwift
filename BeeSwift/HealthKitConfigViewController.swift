@@ -10,8 +10,10 @@ import UIKit
 import HealthKit
 import UserNotifications
 import SwiftyJSON
+import OSLog
 
 class HealthKitConfigViewController: UIViewController {
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthKitConfigViewController")
     
     var tableView = UITableView()
     var goals : [JSONGoal] = []
@@ -63,23 +65,26 @@ class HealthKitConfigViewController: UIViewController {
     }
     
     @objc func fetchGoals() {
-        self.tableView.refreshControl?.endRefreshing()
+        Task { @MainActor in
+            self.tableView.refreshControl?.endRefreshing()
 
-        MBProgressHUD.showAdded(to: self.view, animated: true)
-        CurrentUserManager.sharedManager.fetchGoals(success: { (goals) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            self.goals = goals
-            self.sortGoals()
-            self.tableView.reloadData()
-        }) { (error, errorMessage) in
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-            if UIApplication.shared.applicationState == .active {
-                if let errorString = error?.localizedDescription {
-                    let alert = UIAlertController(title: "Error fetching goals", message: errorString, preferredStyle: .alert)
+            MBProgressHUD.showAdded(to: self.view, animated: true)
+            do {
+                let goals = try await CurrentUserManager.sharedManager.fetchGoals()
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                self.goals = goals
+                self.sortGoals()
+            } catch {
+                logger.error("Error fetching goals: \(error)")
+
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                if UIApplication.shared.applicationState == .active {
+                    let alert = UIAlertController(title: "Error fetching goals", message: error.localizedDescription, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alert, animated: true, completion: nil)
                 }
             }
+
             self.tableView.reloadData()
         }
     }
