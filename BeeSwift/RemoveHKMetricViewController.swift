@@ -13,7 +13,7 @@ import OSLog
 class RemoveHKMetricViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RemoveHKMetricViewController")
     
-    var goal : JSONGoal!
+    var goal : Goal!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,7 +75,7 @@ class RemoveHKMetricViewController: UIViewController {
             do {
                 let responseObject = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
 
-                self.goal = JSONGoal(json: JSON(responseObject!))
+                self.goal = Goal(json: JSON(responseObject!))
 
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))

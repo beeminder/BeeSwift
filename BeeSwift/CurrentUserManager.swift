@@ -77,7 +77,7 @@ class CurrentUserManager : NSObject {
         UserDefaults.standard.removeObject(forKey: key)
     }
     
-    var goals : [JSONGoal] = []
+    var goals : [Goal] = []
     var goalsFetchedAt : Date = Date()
     
     var accessToken :String? {
@@ -202,7 +202,7 @@ class CurrentUserManager : NSObject {
         }.value
     }
     
-    func fetchGoals() async throws -> [JSONGoal] {
+    func fetchGoals() async throws -> [Goal] {
         guard let username = self.username else {
             await CurrentUserManager.sharedManager.signOut()
             return []
@@ -223,16 +223,16 @@ class CurrentUserManager : NSObject {
     }
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
-    func staleGoals() -> [JSONGoal]? {
+    func staleGoals() -> [Goal]? {
         guard let goalJSON = self.cachedLastFetchedGoals() else { return nil }
         return goalsFromJSON(goalJSON)
     }
 
-    private func goalsFromJSON(_ responseJSON: JSON) -> [JSONGoal]? {
+    private func goalsFromJSON(_ responseJSON: JSON) -> [Goal]? {
         guard let responseGoals = responseJSON.array else { return nil }
-        var jGoals : [JSONGoal] = []
+        var jGoals : [Goal] = []
         responseGoals.forEach({ (goalJSON) in
-            let g = JSONGoal(json: goalJSON)
+            let g = Goal(json: goalJSON)
             jGoals.append(g)
         })
         self.goals = jGoals

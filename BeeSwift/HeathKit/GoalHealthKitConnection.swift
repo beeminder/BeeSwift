@@ -1,5 +1,5 @@
 //
-//  JSONGoal+Healthkit.swift
+//  GoalHealthKitConnection.swift
 //  BeeSwift
 //
 //  Created by Andrew Brett on 11/14/21.
@@ -14,12 +14,12 @@ import OSLog
 class GoalHealthKitConnection {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
     private let healthStore: HKHealthStore
-    private let goal : JSONGoal
+    private let goal : Goal
     private var observerQuery : HKObserverQuery? = nil
 
     public let metric : HealthKitMetric
 
-    init(goal: JSONGoal, metric : HealthKitMetric, healthStore: HKHealthStore) {
+    init(goal: Goal, metric : HealthKitMetric, healthStore: HKHealthStore) {
         self.goal = goal
         self.metric = metric
         self.healthStore = healthStore

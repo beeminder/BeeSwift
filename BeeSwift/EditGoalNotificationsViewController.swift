@@ -13,14 +13,14 @@ import OSLog
 class EditGoalNotificationsViewController : EditNotificationsViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditGoalNotificationsViewController")
 
-    var goal : JSONGoal? {
+    var goal : Goal? {
         didSet {
 
         }
     }
     fileprivate var useDefaultsSwitch = UISwitch()
     
-    init(goal : JSONGoal) {
+    init(goal : Goal) {
         super.init()
         self.goal = goal
         self.leadTimeStepper.value = goal.leadtime!.doubleValue

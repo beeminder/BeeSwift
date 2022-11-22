@@ -16,7 +16,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
-    var goal: JSONGoal? {
+    var goal: Goal? {
         didSet {
             self.thumbnailImageView.image = nil
             self.setThumbnailImage()
