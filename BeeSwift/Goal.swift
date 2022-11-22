@@ -48,6 +48,9 @@ class Goal {
     var todayta: Bool = false
     var hhmmformat: Bool = false
     var recent_data: Array<Any>?
+
+    let updateToMatchSemaphore = DispatchSemaphore(value: 1)
+    var waitForUpdatedGraphTask: Task<Void, Error>?
     
     init(json: JSON) {
         self.id = json["id"].string!
@@ -55,8 +58,9 @@ class Goal {
     }
 
     func updateToMatch(json: JSON) {
-        // TODO: This should be protected by a lock
         assert(self.id == json["id"].string!, "Cannot change goal id. Tried to change from \(id) to \(json["id"].string ?? "")")
+
+        updateToMatchSemaphore.wait()
 
         self.title = json["title"].string!
         self.slug = json["slug"].string!
@@ -106,6 +110,8 @@ class Goal {
         var datapoints : Array<JSON> = json["recent_data"].arrayValue
         datapoints.reverse()
         self.recent_data = Array(datapoints)
+
+        updateToMatchSemaphore.signal()
     }
 
     var rateString :String {
@@ -307,11 +313,30 @@ class Goal {
         self.updateToMatch(json: JSON(responseObject!))
     }
 
+    @MainActor
     func waitForUpdatedGraph() async throws {
-        // TODO: We need to check for an existing task and wait on it instead of triggering an additional set of requests if relevant. Might need locking around task creation?
-        while self.queued! {
-            try await refresh()
-            try await Task.sleep(nanoseconds: 2_000_000_000)
+        // Pay careful attention to the synchronicity of this function.
+        // It is on the MainActor, so only one threaded copy can run at once, but multiple copies can
+        // interleve at async points. It is important the state of the self.waitForUpdatedGraphTask
+        // variable is safe across these points
+
+        if self.waitForUpdatedGraphTask == nil {
+            self.waitForUpdatedGraphTask = Task {
+                while self.queued! {
+                    try await Task.sleep(nanoseconds: 2_000_000_000)
+                    try await refresh()
+                }
+            }
+        }
+        let waitForUpdatedGraphTask = self.waitForUpdatedGraphTask
+
+        try await self.waitForUpdatedGraphTask!.value
+
+        // It is possible while we were suspended another invocation of this method cleared the
+        // member variable, and then a third invocation started waiting again. We should only clear
+        // if the task still matches the one we were waiting on.
+        if waitForUpdatedGraphTask == self.waitForUpdatedGraphTask {
+            self.waitForUpdatedGraphTask = nil
         }
     }
     
