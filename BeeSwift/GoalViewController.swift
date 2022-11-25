@@ -487,9 +487,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.valueDecimalRemnant = abs(fractPart)
         if intPart < 0 && self.valueDecimalRemnant > 0 { self.valueStepper.value = intPart - 1 }
     }
-    
+
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if (textField.isEqual(self.valueTextField)) {
+            // Only allow a single decimal separator (, or .)
             if textField.text!.components(separatedBy: ".").count > 1 {
                 if string == "." || string == "," { return false }
             }
@@ -497,7 +498,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 textField.text = textField.text! + "."
                 return false
             }
-            if (string as NSString).rangeOfCharacter(from: CharacterSet(charactersIn: "1234567890.").inverted).location != NSNotFound {
+            // Only allow a single : time separator
+            if textField.text!.components(separatedBy: ":").count > 1 && string == ":" {
+                return false
+            }
+            if (string as NSString).rangeOfCharacter(from: CharacterSet(charactersIn: "1234567890.:").inverted).location != NSNotFound {
                 return false
             }
         }
