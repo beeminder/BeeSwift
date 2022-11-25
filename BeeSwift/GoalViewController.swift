@@ -323,6 +323,15 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
     }
+
+    override func viewDidLayoutSubviews() {
+        // Ensure the submit button is always visible below the keyboard when interacting with
+        // the submit datapoint controls
+        let addDataPointAdditionalKeyboardDistance = self.submitButton.frame.height
+        self.dateTextField.keyboardDistanceFromTextField = addDataPointAdditionalKeyboardDistance
+        self.valueTextField.keyboardDistanceFromTextField = addDataPointAdditionalKeyboardDistance
+        self.commentTextField.keyboardDistanceFromTextField = addDataPointAdditionalKeyboardDistance
+    }
     
     @objc func syncTodayButtonPressed() {
         Task { @MainActor in
