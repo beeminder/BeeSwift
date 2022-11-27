@@ -49,16 +49,16 @@ class ChooseHKMetricViewController: UIViewController {
         instructionsLabel.textAlignment = .center
         
         
-        let saveButton = BSButton()
-        self.view.addSubview(saveButton)
-        saveButton.snp.makeConstraints { (make) in
+        let selectButton = BSButton()
+        self.view.addSubview(selectButton)
+        selectButton.snp.makeConstraints { (make) in
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-20)
             make.centerX.equalTo(self.view)
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }
-        saveButton.setTitle("Save", for: .normal)
-        saveButton.addTarget(self, action: #selector(self.saveButtonPressed), for: .touchUpInside)
+        selectButton.setTitle("Select", for: .normal)
+        selectButton.addTarget(self, action: #selector(self.selectButtonPressed), for: .touchUpInside)
         
         self.view.addSubview(self.tableView)
         self.tableView.delegate = self
@@ -68,66 +68,26 @@ class ChooseHKMetricViewController: UIViewController {
             make.centerX.equalTo(self.view)
             make.left.equalTo(0)
             make.right.equalTo(0)
-            make.bottom.equalTo(saveButton.snp.top).offset(-20)
+            make.bottom.equalTo(selectButton.snp.top).offset(-20)
         }
         self.tableView.tableFooterView = UIView()
         self.tableView.register(HealthKitMetricTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
     }
     
-    @objc func saveButtonPressed() {
-        guard let indexPath = self.tableView.indexPathForSelectedRow else { return }
-        let section = HealthKitCategory.allCases[indexPath.section]
-        let metric = self.sortedMetricsByCategory[section]![indexPath.row]
+    @objc func selectButtonPressed() {
+        Task { @MainActor in
+            guard let indexPath = self.tableView.indexPathForSelectedRow else { return }
+            let section = HealthKitCategory.allCases[indexPath.section]
+            let metric = self.sortedMetricsByCategory[section]![indexPath.row]
 
-        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
-
-        Task(priority: .userInitiated) {
             do {
                 try await HealthStoreManager.sharedManager.requestAuthorization(metric: metric)
             } catch {
-                logger.error("Error requesting authorization \(error)")
-                hud?.hide(true)
+                logger.error("Error requesting permission for metric: \(error)")
                 return
             }
-            self.saveMetric(databaseString: metric.databaseString)
-        }
-    }
-    
-    func saveMetric(databaseString : String) {
-        Task { @MainActor in
-            let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
 
-            self.goal!.healthKitMetric = databaseString
-            self.goal!.autodata = "apple"
-            
-            do {
-                try await HealthStoreManager.sharedManager.ensureUpdatesRegularly(goal: self.goal!)
-            } catch {
-                logger.error("Error setting up goal \(error)")
-                hud?.hide(true)
-                return
-            }
-            
-            var params : [String : [String : String]] = [:]
-            params = ["ii_params" : ["name" : "apple", "metric" : self.goal!.healthKitMetric!]]
-
-            do {
-                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    self.navigationController?.popViewController(animated: true)
-                }
-            } catch {
-                self.tableView.reloadData()
-                let errorString = error.localizedDescription
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-                let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
-            }
+            self.navigationController?.pushViewController(ConfigureHKMetricViewController(goal: self.goal, metric: metric), animated: true)
         }
     }
 

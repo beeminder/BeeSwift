@@ -95,6 +95,8 @@
 		E4B0833D293810EB00A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
 		E4B0833E293810F600A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
 		E4B0833F293810F600A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
+		E4B0833B2934620500A71564 /* DatapointTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833A2934620500A71564 /* DatapointTableViewController.swift */; };
+		E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */; };
 		E4B0A32E28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A32F28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A33028C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
@@ -322,6 +324,7 @@
 		E48E271F2973261F008013C0 /* BackgroundUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundUpdates.swift; sourceTree = "<group>"; };
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
+		E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureHKMetricViewController.swift; sourceTree = "<group>"; };
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryHealthKitMetric.swift; sourceTree = "<group>"; };
@@ -526,6 +529,7 @@
 				A196CB191AE4142E00B90A3E /* AppDelegate.swift */,
 				E48E271F2973261F008013C0 /* BackgroundUpdates.swift */,
 				A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */,
+				E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */,
 				A10D4E921B07948500A72D29 /* DatapointsTableView.swift */,
 				A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */,
 				A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */,
@@ -1175,6 +1179,7 @@
 				A1453B3D1AEDFA52006F48DA /* CurrentUserManager.swift in Sources */,
 				A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */,
 				A1781AB31DE50F59000B96C5 /* BSTextField.swift in Sources */,
+				E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */,
 				A1BD0D1C1AEB34E0001EDE8B /* GalleryNavigationController.swift in Sources */,
 				A196CB1F1AE4142F00B90A3E /* GalleryViewController.swift in Sources */,
 				A1BE73AA1E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift in Sources */,
