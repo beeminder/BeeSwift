@@ -48,15 +48,27 @@ class Goal {
     var todayta: Bool = false
     var hhmmformat: Bool = false
     var recent_data: Array<Any>?
+
+    let updateToMatchSemaphore = DispatchSemaphore(value: 1)
+    var waitForUpdatedGraphTask: Task<Void, Error>?
     
     init(json: JSON) {
         self.id = json["id"].string!
+        self.updateToMatch(json: json)
+    }
+
+    func updateToMatch(json: JSON) {
+        assert(self.id == json["id"].string!, "Cannot change goal id. Tried to change from \(id) to \(json["id"].string ?? "")")
+
+        updateToMatchSemaphore.wait()
+
         self.title = json["title"].string!
         self.slug = json["slug"].string!
         self.deadline = json["deadline"].number!
         self.leadtime = json["leadtime"].number!
         self.alertstart = json["alertstart"].number!
-        if let lasttouchString = json["lasttouch"].string {
+
+        self.lasttouch = json["lasttouch"].string.flatMap { lasttouchString in
             let lastTouchDate: Date? = {
                 let df = ISO8601DateFormatter()
                 df.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -64,36 +76,32 @@ class Goal {
             }()
             
             if let date = lastTouchDate {
-                self.lasttouch = NSNumber(value: date.timeIntervalSince1970)
+                return NSNumber(value: date.timeIntervalSince1970)
             }
+            return nil
         }
+
         self.queued = json["queued"].bool!
-        
         self.losedate = json["losedate"].number!
         self.runits = json["runits"].string!
         self.yaxis = json["yaxis"].string!
-        if json["rate"].number != nil { self.rate = json["rate"].number! }
-        if json["delta_text"].string != nil { self.delta_text = json["delta_text"].string! }
+        self.rate = json["rate"].number
+        self.delta_text = json["delta_text"].string ?? ""
         self.won = json["won"].number!
-        if json["lane"].number != nil { self.lane = json["lane"].number! }
+        self.lane = json["lane"].number
         self.yaw = json["yaw"].number!
         self.dir = json["dir"].number!
-        if json["limsum"].string != nil { self.limsum = json["limsum"].string! }
-        if json["safesum"].string != nil { self.safesum = json["safesum"].string! }
-        if json["safebuf"].number != nil { self.safebuf = json["safebuf"].number! }
+        self.limsum = json["limsum"].string
+        self.safesum = json["safesum"].string
+        self.safebuf = json["safebuf"].number
         self.use_defaults = json["use_defaults"].bool! as NSNumber
-        if let safebump = json["safebump"].number {
-            self.safebump = safebump
-        }
-        if let curval = json["curval"].number {
-            self.curval = curval
-        }
+        self.safebump = json["safebump"].number
+        self.curval = json["curval"].number
         self.pledge = json["pledge"].number!
-        let ad : String? = json["autodata"].string
-        if ad != nil { self.autodata = ad! } else { self.autodata = "" }
+        self.autodata = json["autodata"].string ?? ""
         
-        if json["graph_url"].string != nil { self.graph_url = json["graph_url"].string! }
-        if json["thumb_url"].string != nil { self.thumb_url = json["thumb_url"].string! }
+        self.graph_url = json["graph_url"].string
+        self.thumb_url = json["thumb_url"].string
         
         self.healthKitMetric = json["healthkitmetric"].string
         self.todayta = json["todayta"].bool!
@@ -102,8 +110,10 @@ class Goal {
         var datapoints : Array<JSON> = json["recent_data"].arrayValue
         datapoints.reverse()
         self.recent_data = Array(datapoints)
+
+        updateToMatchSemaphore.signal()
     }
-    
+
     var rateString :String {
         guard let r = self.rate else { return "" }
         let formatter = NumberFormatter()
@@ -296,6 +306,38 @@ class Goal {
         let formatter = DateFormatter()
         formatter.dateFormat = "YYYYMMddHHmm"
         return formatter.string(from: Date())
+    }
+
+    func refresh() async throws {
+        let responseObject = try await RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil)
+        self.updateToMatch(json: JSON(responseObject!))
+    }
+
+    @MainActor
+    func waitForUpdatedGraph() async throws {
+        // Pay careful attention to the synchronicity of this function.
+        // It is on the MainActor, so only one threaded copy can run at once, but multiple copies can
+        // interleve at async points. It is important the state of the self.waitForUpdatedGraphTask
+        // variable is safe across these points
+
+        if self.waitForUpdatedGraphTask == nil {
+            self.waitForUpdatedGraphTask = Task {
+                while self.queued! {
+                    try await Task.sleep(nanoseconds: 2_000_000_000)
+                    try await refresh()
+                }
+            }
+        }
+        let waitForUpdatedGraphTask = self.waitForUpdatedGraphTask
+
+        try await self.waitForUpdatedGraphTask!.value
+
+        // It is possible while we were suspended another invocation of this method cleared the
+        // member variable, and then a third invocation started waiting again. We should only clear
+        // if the task still matches the one we were waiting on.
+        if waitForUpdatedGraphTask == self.waitForUpdatedGraphTask {
+            self.waitForUpdatedGraphTask = nil
+        }
     }
     
     func fetchRecentDatapoints(success: @escaping ((_ datapoints : [JSON]) -> ()), errorCompletion: (() -> ())?) {

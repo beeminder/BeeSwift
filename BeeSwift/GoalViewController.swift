@@ -351,11 +351,14 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
 
         do {
             try await HealthStoreManager.sharedManager.updateWithRecentData(goal: self.goal, days: numDays)
+            try await ensureGoalAndGraphUpToDate()
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
                 hud?.hide(true, afterDelay: 2)
             })
+
         } catch {
             logger.error("Error Syncing Health Data: \(error, privacy: .public)")
             DispatchQueue.main.async {
@@ -364,7 +367,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             return
         }
 
-        refreshGoal()
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -378,7 +380,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.refreshGoal()
+        Task { @MainActor in
+            do {
+                try await self.ensureGoalAndGraphUpToDate()
+            } catch {
+                logger.error("Error refreshing details for goal \(self.goal.slug): \(error)")
+            }
+        }
     }
     
     @objc func timerButtonPressed() {
@@ -412,18 +420,19 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refreshButtonPressed() {
-        self.scrollView.refreshControl?.endRefreshing()
-        MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
-
         Task { @MainActor in
+            self.scrollView.refreshControl?.endRefreshing()
+            MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
+
             do {
-                let _ = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)/refresh_graph.json", parameters: nil)
-                self.pollUntilGraphUpdates()
+                try await ensureGoalAndGraphUpToDate()
             } catch {
                 let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             }
+            
+            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
         }
     }
     
@@ -533,9 +542,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             do {
                 let _ = try await RequestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug)
                 self.commentTextField.text = ""
-                self.refreshGoal() // TODO: How should sequencing here work?
-                self.pollUntilGraphUpdates()
+
+                try await ensureGoalAndGraphUpToDate()
+
                 self.submitButton.isUserInteractionEnabled = true
+                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             } catch {
                 self.submitButton.isUserInteractionEnabled = true
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
@@ -553,35 +564,22 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
     }
-    
-    func pollUntilGraphUpdates() {
-        if self.pollTimer != nil { return }
-        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
-        hud?.show(true)
-        self.pollTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.refreshGoal), userInfo: nil, repeats: true)
+
+    func ensureGoalAndGraphUpToDate() async throws {
+        try await self.goal.refresh()
+        updateInterfaceToMatchGoal()
+        try await self.goal.waitForUpdatedGraph()
+        updateInterfaceToMatchGoal()
     }
-    
-    @objc func refreshGoal() {
-        Task { @MainActor in
-            do {
-                let responseObject = try await RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil)
-                self.goal = Goal(json: JSON(responseObject!))
-                self.datapointsTableView.reloadData()
-                self.refreshCountdown()
-                self.setValueTextField()
-                self.valueTextFieldValueChanged()
-                self.deltasLabel.attributedText = self.goal!.attributedDeltaText
-                if (!self.goal.queued!) {
-                    self.setGraphImage()
-                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
-                    self.pollTimer?.invalidate()
-                    self.pollTimer = nil
-                }
-            } catch {
-                logger.error("Error refreshing details for goal \(self.goal.slug): \(error)")
-                // foo
-            }
+
+    func updateInterfaceToMatchGoal() {
+        self.datapointsTableView.reloadData()
+        self.refreshCountdown()
+        self.setValueTextField()
+        self.valueTextFieldValueChanged()
+        self.deltasLabel.attributedText = self.goal!.attributedDeltaText
+        if (!self.goal.queued!) {
+            self.setGraphImage()
         }
     }
     
