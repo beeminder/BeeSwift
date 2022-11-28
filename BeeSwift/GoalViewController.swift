@@ -15,13 +15,13 @@ import Intents
 import BeeKit
 import OSLog
 
-class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+class GoalViewController: UIViewController,  UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
     
     var goal : Goal!
-    
-    fileprivate var cellIdentifier = "datapointCell"
+
     fileprivate var goalImageView = UIImageView()
+    fileprivate var datapointTableController = DatapointTableViewController<ExistingDataPoint>()
     fileprivate var dateTextField = UITextField()
     fileprivate var valueTextField = UITextField()
     fileprivate var commentTextField = UITextField()
@@ -29,7 +29,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     fileprivate var valueStepper = UIStepper()
     fileprivate var valueDecimalRemnant : Double = 0.0
     fileprivate var goalImageScrollView = UIScrollView()
-    fileprivate var datapointsTableView = DatapointsTableView()
     fileprivate var pollTimer : Timer?
     fileprivate var countdownLabel = BSLabel()
     fileprivate var deltasLabel = BSLabel()
@@ -82,7 +81,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.centerY.centerX.equalTo(countdownView)
             make.width.equalTo(countdownView)
         }
-        self.refreshCountdown()
         
         self.scrollView.addSubview(self.goalImageScrollView)
         self.goalImageScrollView.showsHorizontalScrollIndicator = false
@@ -120,31 +118,29 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.top.equalTo(self.goalImageScrollView.snp.bottom)
             make.left.right.equalTo(0)
         }
-        self.deltasLabel.attributedText = self.goal!.attributedDeltaText
         self.deltasLabel.font = UIFont.beeminder.defaultBoldFont.withSize(Constants.defaultFontSize)
         self.deltasLabel.textAlignment = .center
-        
-        
-        self.datapointsTableView.dataSource = self
-        self.datapointsTableView.delegate = self
-        self.datapointsTableView.separatorStyle = .none
-        self.datapointsTableView.isScrollEnabled = false
-        self.datapointsTableView.register(DatapointTableViewCell.self, forCellReuseIdentifier: self.cellIdentifier)
-        self.scrollView.addSubview(self.datapointsTableView)
-        self.datapointsTableView.snp.makeConstraints { (make) -> Void in
+
+
+        self.addChild(self.datapointTableController)
+        self.view.addSubview(self.datapointTableController.view)
+        self.scrollView.addSubview(self.datapointTableController.view)
+        self.datapointTableController.view.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.deltasLabel.snp.bottom)
             make.left.equalTo(self.goalImageScrollView).offset(10)
             make.right.equalTo(self.goalImageScrollView).offset(-10)
         }
+
+        // TODO: Allow/not edits based on self.goal.hideDataEntry()
         
         let dataEntryView = UIView()
         dataEntryView.isHidden = self.goal.hideDataEntry()
 
         self.scrollView.addSubview(dataEntryView)
         dataEntryView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.datapointsTableView.snp.bottom).offset(10)
+            make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(10)
             make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(10)
-            make.right.equalTo(self.datapointsTableView)
+            make.right.equalTo(self.datapointTableController.view)
             make.bottom.equalTo(0)
             make.height.equalTo(120)
         }
@@ -182,9 +178,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.top.equalTo(0)
         }
-        
-        self.setValueTextField()
-        self.valueTextFieldValueChanged()
         
         let commentLeftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 1))
         
@@ -289,9 +282,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             let appleSyncView = UIView()
             self.scrollView.addSubview(appleSyncView)
             appleSyncView.snp.makeConstraints({ (make) in
-                make.top.equalTo(self.datapointsTableView.snp.bottom).offset(10)
+                make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(10)
                 make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(10)
-                make.right.equalTo(self.datapointsTableView)
+                make.right.equalTo(self.datapointTableController.view)
                 make.bottom.equalTo(0)
                 make.height.equalTo(120)
             })
@@ -321,6 +314,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         if (!self.goal.hideDataEntry()) {
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
+
+        updateInterfaceToMatchGoal()
         
     }
 
@@ -452,6 +447,21 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     @objc func goalImageTapped() {
         self.goalImageScrollView.setZoomScale(self.goalImageScrollView.zoomScale == 1.0 ? 2.0 : 1.0, animated: true)
     }
+
+    // TODO: Link this to the data table view
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.view.endEditing(true)
+
+
+        guard !self.goal.hideDataEntry() else { return }
+
+        guard let goal = self.goal, let data = goal.recent_data, indexPath.row < data.count else { return }
+
+        let datapoint = data[indexPath.row]
+
+        let editDatapointViewController = EditDatapointViewController(goalSlug: goal.slug, datapoint: datapoint)
+        self.navigationController?.pushViewController(editDatapointViewController, animated: true)
+    }
     
     @objc func dateStepperValueChanged() {
         let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
@@ -573,7 +583,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
 
     func updateInterfaceToMatchGoal() {
-        self.datapointsTableView.reloadData()
+        // TODO: Update value from goal
+        if let data = goal.recent_data {
+            self.datapointTableController.datapoints = data
+        } else {
+            self.datapointTableController.datapoints = []
+        }
+
         self.refreshCountdown()
         self.setValueTextField()
         self.valueTextFieldValueChanged()
@@ -586,67 +602,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.goalImageView
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 24
-    }
-    
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 24
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.view.endEditing(true)
-        
-        guard !self.goal.hideDataEntry() else { return }
-        
-        guard let goal = self.goal, let data = goal.recent_data, indexPath.row < data.count else { return }
-        
-        let datapoint = data[indexPath.row]
-        
-        let editDatapointViewController = EditDatapointViewController(goalSlug: goal.slug, datapoint: datapoint)
-        self.navigationController?.pushViewController(editDatapointViewController, animated: true)
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier) as! DatapointTableViewCell
-        
-        guard let goal = self.goal, let data = goal.recent_data, indexPath.row < data.count else {
-            return cell
-        }
 
-        cell.datapointText = displayText(datapoint: data[indexPath.row])
-        
-        return cell
-    }
-
-    func displayText(datapoint: DataPoint) -> String {
-        let daystamp = Int(datapoint.daystamp) ?? 0
-        let day = daystamp != 0 ? String(format: "%02d", daystamp % 100) : "??" // Day is two least significant digits of daystamp
-
-        var formattedValue: String
-        if goal.hhmmformat {
-            let value = datapoint.value.doubleValue
-            let hours = Int(value)
-            let minutes = Int(value.truncatingRemainder(dividingBy: 1) * 60)
-            formattedValue = String(hours) + ":" + String(format: "%02d", minutes)
-        } else {
-            formattedValue = datapoint.value.stringValue
-        }
-
-        let comment = datapoint.comment
-
-        return "\(day) \(formattedValue) \(comment)"
-    }
-    
     // MARK: - SFSafariViewControllerDelegate
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {

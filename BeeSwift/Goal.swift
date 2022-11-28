@@ -12,7 +12,6 @@ import HealthKit
 import OSLog
 import UserNotifications
 
-
 class Goal {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
 
