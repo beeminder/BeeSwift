@@ -81,6 +81,7 @@ class ChooseHKMetricViewController: UIViewController {
             let metric = self.sortedMetricsByCategory[section]![indexPath.row]
 
             do {
+                // TODO: We need to disable the button while in this state
                 try await HealthStoreManager.sharedManager.requestAuthorization(metric: metric)
             } catch {
                 logger.error("Error requesting permission for metric: \(error)")
