@@ -14,13 +14,23 @@ import OSLog
 class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDatapointViewController")
     
-    var datapointJSON : JSON?
-    var goalSlug : String?
+    var datapoint : ExistingDataPoint
+    var goalSlug : String
     fileprivate var datePicker = UIDatePicker()
     fileprivate var scrollView = UIScrollView()
     fileprivate var dateLabel = BSLabel()
     fileprivate var valueField = BSTextField()
     fileprivate var commentField = BSTextField()
+
+    init(goalSlug: String, datapoint: ExistingDataPoint) {
+        self.goalSlug = goalSlug
+        self.datapoint = datapoint
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        return nil
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,7 +79,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         self.valueField.placeholder = "Value"
         self.valueField.textAlignment = .center
         self.valueField.keyboardType = .decimalPad
-        self.valueField.text = "\(self.datapointJSON!["value"].number!)"
+        self.valueField.text = "\(self.datapoint.value)"
         self.valueField.addTarget(self, action: #selector(self.textFieldEditingDidBegin), for: .editingDidBegin)
         
         let accessory = DatapointValueAccessory()
@@ -83,7 +93,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         }
         self.commentField.placeholder = "Comment"
         self.commentField.textAlignment = .center
-        self.commentField.text = self.datapointJSON!["comment"].string
+        self.commentField.text = self.datapoint.comment
         self.commentField.addTarget(self, action: #selector(self.textFieldEditingDidBegin), for: .editingDidBegin)
         
         let updateButton = BSButton()
@@ -104,10 +114,10 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         deleteButton.setTitle("Delete", for: .normal)
         deleteButton.addTarget(self, action: #selector(self.deleteButtonPressed), for: .touchUpInside)
         
-        let daystamp = self.datapointJSON!["daystamp"].string
+        let daystamp = self.datapoint.daystamp
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
-        if daystamp != nil { self.datePicker.date = dateFormatter.date(from: daystamp!)! }
+        self.datePicker.date = dateFormatter.date(from: daystamp)!
         self.updateDateLabel()
     }
     
@@ -178,13 +188,13 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                     "access_token": CurrentUserManager.sharedManager.accessToken!,
                     "urtext": self.urtext()
                 ]
-                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params)
+                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
                 let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
                 hud?.hide(true, afterDelay: 2)
             } catch {
-                logger.error("Error updating datapoint for goal \(self.goalSlug ?? "<nil>"): \(error)")
+                logger.error("Error updating datapoint for goal \(self.goalSlug): \(error)")
                 let _ = MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
             }
         }
@@ -199,7 +209,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             hud?.mode = .indeterminate
 
             do {
-                let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug!)/datapoints/\(self.datapointJSON!["id"]["$oid"].string!).json", parameters: params)
+                let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
 
                 let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                 hud?.mode = .customView
@@ -209,7 +219,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                     self.navigationController?.popViewController(animated: true)
                 }
             } catch {
-                logger.error("Error deleting datapoint for goal \(self.goalSlug ?? "<nil>"): \(error)")
+                logger.error("Error deleting datapoint for goal \(self.goalSlug): \(error)")
 
             }
         }

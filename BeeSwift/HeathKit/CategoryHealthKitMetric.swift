@@ -59,7 +59,7 @@ class CategoryHealthKitMetric : HealthKitMetric {
         })
 
         let datapointValue = self.hkDatapointValueForSamples(samples: samples, units: nil)
-        return (daystamp: daystamp, value: datapointValue, comment: "Auto-entered via Apple Health")
+        return NewDataPoint(daystamp: daystamp, value: NSNumber(value: datapointValue), comment: "Auto-entered via Apple Health")
     }
 
     private func predicateForDayOffset(dayOffset : Int, deadline : Int) -> NSPredicate? {
