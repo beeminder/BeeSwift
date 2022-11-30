@@ -16,8 +16,7 @@ struct ExistingDataPoint : DataPoint {
     let comment: String
 
     init(json: JSON) {
-        // TODO: But ["id"]["$oid"] also exists! What is the shape here? What should we send the server. Questions abound.
-        id = json["id"].stringValue
+        id = json["id"]["$oid"].stringValue
         daystamp = json["daystamp"].stringValue
         value = json["value"].numberValue
         comment = json["comment"].stringValue
