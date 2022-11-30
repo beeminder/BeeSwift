@@ -12,7 +12,6 @@ import HealthKit
 import OSLog
 import UserNotifications
 
-typealias DataPoint = (daystamp: String, value: Double, comment: String)
 
 class Goal {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
@@ -47,7 +46,7 @@ class Goal {
     var queued: Bool?
     var todayta: Bool = false
     var hhmmformat: Bool = false
-    var recent_data: Array<Any>?
+    var recent_data: [ExistingDataPoint]?
 
     let updateToMatchSemaphore = DispatchSemaphore(value: 1)
     var waitForUpdatedGraphTask: Task<Void, Error>?
@@ -106,10 +105,8 @@ class Goal {
         self.healthKitMetric = json["healthkitmetric"].string
         self.todayta = json["todayta"].bool!
         self.hhmmformat = json["hhmmformat"].bool!
-        
-        var datapoints : Array<JSON> = json["recent_data"].arrayValue
-        datapoints.reverse()
-        self.recent_data = Array(datapoints)
+
+        self.recent_data = ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()
 
         updateToMatchSemaphore.signal()
     }
@@ -340,37 +337,33 @@ class Goal {
         }
     }
     
-    func fetchRecentDatapoints(success: @escaping ((_ datapoints : [JSON]) -> ()), errorCompletion: (() -> ())?) {
+    func fetchRecentDatapoints(success: @escaping ((_ datapoints : [ExistingDataPoint]) -> ()), errorCompletion: (() -> ())?) {
         Task { @MainActor in
             let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
             do {
                 let response = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
                 let responseJSON = JSON(response!)
-                success(responseJSON.array!)
+                success(ExistingDataPoint.fromJSONArray(array: responseJSON.arrayValue))
             } catch {
                 errorCompletion?()
             }
         }
     }
     
-    func datapointsMatchingDaystamp(datapoints : [JSON], daystamp : String) -> [JSON] {
+    func datapointsMatchingDaystamp(datapoints : [ExistingDataPoint], daystamp : String) -> [ExistingDataPoint] {
         datapoints.filter { (datapoint) -> Bool in
-            if let datapointStamp = datapoint["daystamp"].string {
-                return datapointStamp == daystamp
-            } else {
-                return false
-            }
+            return daystamp == datapoint.daystamp
         }
     }
     
-    func updateDatapoint(datapoint : JSON, datapointValue : Double, success: (() -> ())?, errorCompletion: (() -> ())?) {
+    func updateDatapoint(datapoint : ExistingDataPoint, datapointValue : NSNumber, success: (() -> ())?, errorCompletion: (() -> ())?) {
         Task { @MainActor in
-            let val = datapoint["value"].double
+            let val = datapoint.value
             if datapointValue == val {
                 success?()
                 return
             }
-            let daystamp = datapoint["daystamp"].string!
+            let daystamp = datapoint.daystamp
             let requestId = "\(daystamp)-\(self.minuteStamp())"
             let params = [
                 "access_token": CurrentUserManager.sharedManager.accessToken!,
@@ -378,9 +371,8 @@ class Goal {
                 "comment": "Auto-updated via Apple Health",
                 "requestid": requestId
             ]
-            let datapointID = datapoint["id"].string
             do {
-                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!).json", parameters: params)
+                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params)
                 success?()
             } catch {
                 errorCompletion?()
@@ -388,11 +380,10 @@ class Goal {
         }
     }
     
-    func deleteDatapoint(datapoint : JSON) {
+    func deleteDatapoint(datapoint : ExistingDataPoint) {
         Task { @MainActor in
-            let datapointID = datapoint["id"].string
             do {
-                let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapointID!)", parameters: nil)
+                let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id)", parameters: nil)
             } catch {
                 logger.error("Error deleting datapoint: \(error)")
             }
@@ -411,7 +402,7 @@ class Goal {
     }
 
     func updateToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
-        let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[JSON], Error>) in
+        let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[ExistingDataPoint], Error>) in
             self.fetchRecentDatapoints(success: { datapoints in
                 continuation.resume(returning: datapoints)
             }, errorCompletion: {
@@ -424,13 +415,11 @@ class Goal {
         }
     }
 
-    private func updateToMatchDataPoint(newDataPoint : DataPoint, recentDatapoints: [JSON]) async throws {
-        let (daystamp, datapointValue, comment) = newDataPoint
-
-        var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: daystamp)
+    private func updateToMatchDataPoint(newDataPoint : DataPoint, recentDatapoints: [ExistingDataPoint]) async throws {
+        var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: newDataPoint.daystamp)
         if matchingDatapoints.count == 0 {
-            let requestId = "\(daystamp)-\(minuteStamp())"
-            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(daystamp.suffix(2)) \(datapointValue) \"\(comment)\"", "requestid": requestId]
+            let requestId = "\(newDataPoint.daystamp)-\(minuteStamp())"
+            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(newDataPoint.daystamp.suffix(2)) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": requestId]
 
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 postDatapoint(params: params, success: { (responseObject) in
@@ -446,7 +435,7 @@ class Goal {
             }
 
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                updateDatapoint(datapoint: firstDatapoint, datapointValue: datapointValue, success: {
+                updateDatapoint(datapoint: firstDatapoint, datapointValue: newDataPoint.value, success: {
                     continuation.resume()
                 }, errorCompletion: {
                     continuation.resume(throwing: HealthKitError("Error updating data point"))

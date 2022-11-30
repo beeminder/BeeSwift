@@ -467,8 +467,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setValueTextField() {
-        if let lastDatapoint = self.goal!.recent_data?.last as? JSON {
-            self.valueTextField.text = "\(String(describing: lastDatapoint["value"]))"
+        if let lastDatapoint = self.goal!.recent_data?.last {
+            self.valueTextField.text = "\(String(describing: lastDatapoint.value))"
         }
     }
     
@@ -610,11 +610,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         guard let goal = self.goal, let data = goal.recent_data, indexPath.row < data.count else { return }
         
-        guard let datapointJSON = data[indexPath.row] as? JSON else { return }
+        let datapoint = data[indexPath.row]
         
-        let editDatapointViewController = EditDatapointViewController()
-        editDatapointViewController.datapointJSON = datapointJSON
-        editDatapointViewController.goalSlug = goal.slug
+        let editDatapointViewController = EditDatapointViewController(goalSlug: goal.slug, datapoint: datapoint)
         self.navigationController?.pushViewController(editDatapointViewController, animated: true)
     }
     
@@ -625,32 +623,28 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             return cell
         }
 
-        guard let datapoint = data[indexPath.row] as? JSON else {
-            return cell
-        }
-        cell.datapointText = displayText(datapoint: datapoint)
+        cell.datapointText = displayText(datapoint: data[indexPath.row])
         
         return cell
     }
 
-    func displayText(datapoint: JSON) -> String {
-        let daystamp = Int(datapoint["daystamp"].string ?? "") ?? 0
+    func displayText(datapoint: DataPoint) -> String {
+        let daystamp = Int(datapoint.daystamp) ?? 0
         let day = daystamp != 0 ? String(format: "%02d", daystamp % 100) : "??" // Day is two least significant digits of daystamp
 
         var formattedValue: String
         if goal.hhmmformat {
-            let value = datapoint["value"].doubleValue
+            let value = datapoint.value.doubleValue
             let hours = Int(value)
             let minutes = Int(value.truncatingRemainder(dividingBy: 1) * 60)
             formattedValue = String(hours) + ":" + String(format: "%02d", minutes)
         } else {
-            formattedValue = datapoint["value"].number.map { $0.stringValue } ?? "?"
+            formattedValue = datapoint.value.stringValue
         }
 
-        let comment = datapoint["comment"].string ?? ""
+        let comment = datapoint.comment
 
         return "\(day) \(formattedValue) \(comment)"
-
     }
     
     // MARK: - SFSafariViewControllerDelegate

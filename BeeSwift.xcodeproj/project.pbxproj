@@ -80,6 +80,9 @@
 		E42CB454291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
 		E43D9AFB2929C37D00FC1578 /* DatapointValueAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */; };
 		E457BE5D28C192B50012F5D0 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E457BE5C28C192B50012F5D0 /* IntentHandler.swift */; };
+		E4B0833D293810EB00A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
+		E4B0833E293810F600A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
+		E4B0833F293810F600A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
 		E4B0A32E28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A32F28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A33028C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
@@ -300,6 +303,7 @@
 		E42CB451291727B200A35AB9 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
 		E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointValueAccessory.swift; sourceTree = "<group>"; };
 		E457BE5C28C192B50012F5D0 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
+		E4B0833C293810EB00A71564 /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryHealthKitMetric.swift; sourceTree = "<group>"; };
@@ -524,6 +528,7 @@
 				A196CB231AE4142F00B90A3E /* Images.xcassets */,
 				A196CB171AE4142E00B90A3E /* Supporting Files */,
 				9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */,
+				E4B0833C293810EB00A71564 /* DataPoint.swift */,
 			);
 			path = BeeSwift;
 			sourceTree = "<group>";
@@ -1123,6 +1128,7 @@
 				A14249211FD07514007736B3 /* CurrentUserManager.swift in Sources */,
 				E4E6426C290E22EF004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
 				E4E642812910C3FB004F3EA9 /* QuantityHealthKitMetric.swift in Sources */,
+				E4B0833E293810F600A71564 /* DataPoint.swift in Sources */,
 				A13C9CFB2345C18D002912C4 /* Goal.swift in Sources */,
 				A142491F1FD073EC007736B3 /* RequestManager.swift in Sources */,
 				A1D8532B1EB0EA2D00FC75DE /* BSTextField.swift in Sources */,
@@ -1147,6 +1153,7 @@
 				A149147B1BE79FD50060600A /* EditNotificationsViewController.swift in Sources */,
 				A1BE73AC1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift in Sources */,
 				A1C11B481B06F5D100D22871 /* Constants.swift in Sources */,
+				E4B0833D293810EB00A71564 /* DataPoint.swift in Sources */,
 				E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */,
 				A11488BE1EE9B0CE003316E1 /* UIDevice.swift in Sources */,
 				E5C9EFE62612E02700DBBEAE /* AddDataIntents.intentdefinition in Sources */,
@@ -1234,6 +1241,7 @@
 				E5CF516A2612431600546184 /* Constants.swift in Sources */,
 				E4E6426D290E22F0004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
 				E4E642822910C3FB004F3EA9 /* QuantityHealthKitMetric.swift in Sources */,
+				E4B0833F293810F600A71564 /* DataPoint.swift in Sources */,
 				E5CF517C2612434300546184 /* BSButton.swift in Sources */,
 				E5CF51892612434E00546184 /* UIColorExtension.swift in Sources */,
 				E457BE5D28C192B50012F5D0 /* IntentHandler.swift in Sources */,
