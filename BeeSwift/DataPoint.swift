@@ -9,6 +9,7 @@ protocol DataPoint {
     var comment: String { get }
 }
 
+/// A data point received from the server. This will have had an ID allocated
 struct ExistingDataPoint : DataPoint {
     let id: String
     let daystamp: String
@@ -16,6 +17,8 @@ struct ExistingDataPoint : DataPoint {
     let comment: String
 
     init(json: JSON) {
+        // To maximize compatibility with server changes we only parse fields
+        // which are actually used, not all that exist
         id = json["id"]["$oid"].stringValue
         daystamp = json["daystamp"].stringValue
         value = json["value"].numberValue
@@ -27,6 +30,7 @@ struct ExistingDataPoint : DataPoint {
     }
 }
 
+/// A data point we have created locally (e.g. from user input, or HealthKit)
 struct NewDataPoint : DataPoint {
     let daystamp: String
     let value: NSNumber
