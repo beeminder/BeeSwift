@@ -24,6 +24,5 @@ jobs:
         else
           echo "::error ::dirty working directory - uncommitted changes"
           git status --color
-          git diff --color
           exit 1
         fi
