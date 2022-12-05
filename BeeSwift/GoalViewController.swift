@@ -15,13 +15,14 @@ import Intents
 import BeeKit
 import OSLog
 
-class GoalViewController: UIViewController,  UIScrollViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTableViewControllerDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
     
     var goal : Goal!
 
     fileprivate var goalImageView = UIImageView()
-    fileprivate var datapointTableController = DatapointTableViewController<ExistingDataPoint>()
+    fileprivate var datapointTableController = DatapointTableViewController()
     fileprivate var dateTextField = UITextField()
     fileprivate var valueTextField = UITextField()
     fileprivate var commentTextField = UITextField()
@@ -123,15 +124,13 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, UITextFieldDe
 
 
         self.addChild(self.datapointTableController)
-        self.view.addSubview(self.datapointTableController.view)
         self.scrollView.addSubview(self.datapointTableController.view)
+        self.datapointTableController.delegate = self
         self.datapointTableController.view.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.deltasLabel.snp.bottom)
             make.left.equalTo(self.goalImageScrollView).offset(10)
             make.right.equalTo(self.goalImageScrollView).offset(-10)
         }
-
-        // TODO: Allow/not edits based on self.goal.hideDataEntry()
         
         let dataEntryView = UIView()
         dataEntryView.isHidden = self.goal.hideDataEntry()
@@ -448,18 +447,11 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, UITextFieldDe
         self.goalImageScrollView.setZoomScale(self.goalImageScrollView.zoomScale == 1.0 ? 2.0 : 1.0, animated: true)
     }
 
-    // TODO: Link this to the data table view
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.view.endEditing(true)
-
-
+    func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: DataPoint) {
         guard !self.goal.hideDataEntry() else { return }
+        guard let existingDatapoint = datapoint as? ExistingDataPoint else { return }
 
-        guard let goal = self.goal, let data = goal.recent_data, indexPath.row < data.count else { return }
-
-        let datapoint = data[indexPath.row]
-
-        let editDatapointViewController = EditDatapointViewController(goalSlug: goal.slug, datapoint: datapoint)
+        let editDatapointViewController = EditDatapointViewController(goalSlug: goal.slug, datapoint: existingDatapoint)
         self.navigationController?.pushViewController(editDatapointViewController, animated: true)
     }
     
@@ -583,7 +575,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, UITextFieldDe
     }
 
     func updateInterfaceToMatchGoal() {
-        // TODO: Update value from goal
+        self.datapointTableController.hhmmformat = goal.hhmmformat
         if let data = goal.recent_data {
             self.datapointTableController.datapoints = data
         } else {

@@ -9,12 +9,18 @@
 import Foundation
 import UIKit
 
-class DatapointTableViewController<DP : DataPoint> : UIViewController, UITableViewDelegate, UITableViewDataSource {
-    fileprivate var cellIdentifier = "datapointCell"
+protocol DatapointTableViewControllerDelegate {
+    func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: DataPoint)
+}
 
+class DatapointTableViewController : UIViewController, UITableViewDelegate, UITableViewDataSource {
+    fileprivate var cellIdentifier = "datapointCell"
     fileprivate var datapointsTableView = DatapointsTableView()
 
-    public var datapoints : [DP] = [] {
+
+    public var delegate : DatapointTableViewControllerDelegate?
+
+    public var datapoints : [DataPoint] = [] {
         didSet {
             // Cause the table to re-render to pick up the change to rows
             self.datapointsTableView.reloadData()
@@ -24,7 +30,6 @@ class DatapointTableViewController<DP : DataPoint> : UIViewController, UITableVi
         }
     }
 
-    // TODO: Parent needs to hook this up
     public var hhmmformat : Bool = false {
         didSet {
             self.datapointsTableView.reloadData()
@@ -65,6 +70,15 @@ class DatapointTableViewController<DP : DataPoint> : UIViewController, UITableVi
         cell.datapointText = displayText(datapoint: datapoint)
 
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.view.endEditing(true)
+
+        guard indexPath.row < datapoints.count else { return }
+        let datapoint = datapoints[indexPath.row]
+
+        self.delegate?.datapointTableViewController(self, didSelectDatapoint: datapoint)
     }
 
     func displayText(datapoint: DataPoint) -> String {
