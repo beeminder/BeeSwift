@@ -23,7 +23,7 @@ jobs:
           echo "::debug::working dir is clean"
         else
           echo "::error ::dirty working directory - uncommitted changes"
-          git diff --color --stat
+          git status --color
           git diff --color
           exit 1
         fi
