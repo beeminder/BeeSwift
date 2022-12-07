@@ -47,19 +47,7 @@ class ChooseHKMetricViewController: UIViewController {
         }
         instructionsLabel.numberOfLines = 0
         instructionsLabel.textAlignment = .center
-        
-        
-        let selectButton = BSButton()
-        self.view.addSubview(selectButton)
-        selectButton.snp.makeConstraints { (make) in
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-20)
-            make.centerX.equalTo(self.view)
-            make.width.equalTo(self.view).multipliedBy(0.5)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-        }
-        selectButton.setTitle("Select", for: .normal)
-        selectButton.addTarget(self, action: #selector(self.selectButtonPressed), for: .touchUpInside)
-        
+
         self.view.addSubview(self.tableView)
         self.tableView.delegate = self
         self.tableView.dataSource = self
@@ -68,28 +56,10 @@ class ChooseHKMetricViewController: UIViewController {
             make.centerX.equalTo(self.view)
             make.left.equalTo(0)
             make.right.equalTo(0)
-            make.bottom.equalTo(selectButton.snp.top).offset(-20)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-20)
         }
         self.tableView.tableFooterView = UIView()
         self.tableView.register(HealthKitMetricTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-    }
-    
-    @objc func selectButtonPressed() {
-        Task { @MainActor in
-            guard let indexPath = self.tableView.indexPathForSelectedRow else { return }
-            let section = HealthKitCategory.allCases[indexPath.section]
-            let metric = self.sortedMetricsByCategory[section]![indexPath.row]
-
-            do {
-                // TODO: We need to disable the button while in this state
-                try await HealthStoreManager.sharedManager.requestAuthorization(metric: metric)
-            } catch {
-                logger.error("Error requesting permission for metric: \(error)")
-                return
-            }
-
-            self.navigationController?.pushViewController(ConfigureHKMetricViewController(goal: self.goal, metric: metric), animated: true)
-        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -140,8 +110,20 @@ extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        Task { @MainActor in
+            let section = HealthKitCategory.allCases[indexPath.section]
+            let metric = self.sortedMetricsByCategory[section]![indexPath.row]
 
-        tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+            do {
+                // TODO: We need to disable tapping while in this state
+                try await HealthStoreManager.sharedManager.requestAuthorization(metric: metric)
+            } catch {
+                logger.error("Error requesting permission for metric: \(error)")
+                return
+            }
+
+            self.navigationController?.pushViewController(ConfigureHKMetricViewController(goal: self.goal, metric: metric), animated: true)
+        }
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
