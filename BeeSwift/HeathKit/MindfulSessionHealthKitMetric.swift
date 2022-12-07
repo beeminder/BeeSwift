@@ -11,4 +11,8 @@ class MindfulSessionHealthKitMetric : CategoryHealthKitMetric {
     override func valueInAppropriateUnits(rawValue: Double) -> Double {
         return rawValue / minuteInSeconds
     }
+
+    override func units(healthStore : HKHealthStore) async throws -> HKUnit {
+        return HKUnit.minute()
+    }
 }

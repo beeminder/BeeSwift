@@ -63,6 +63,15 @@ class QuantityHealthKitMetric : HealthKitMetric {
         return try await datapointsForCollection(collection: statsCollection, days: days, deadline: deadline, healthStore: healthStore)
     }
 
+    func units(healthStore : HKHealthStore) async throws -> HKUnit {
+        let quantityType = HKObjectType.quantityType(forIdentifier: hkQuantityTypeIdentifier)!
+        let units = try await healthStore.preferredUnits(for: [quantityType])
+        guard let unit = units.first?.value else {
+            throw HealthKitError("No preferred units")
+        }
+        return unit
+    }
+
     private func predicateForLast(days : Int, deadline : Int) -> NSPredicate? {
         let startTime = goalAwareStartOfDay(days: days, deadline: deadline)
         return HKQuery.predicateForSamples(withStart: startTime, end: nil)

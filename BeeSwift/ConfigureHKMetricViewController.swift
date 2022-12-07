@@ -8,8 +8,12 @@ import OSLog
 class ConfigureHKMetricViewController : UIViewController {
     fileprivate let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ConfigureHKMetricViewController")
 
+    let componentMargin = 10
+
     private let goal: Goal
     private let metric: HealthKitMetric
+
+    fileprivate var datapointTableController = DatapointTableViewController()
 
     init(goal: Goal, metric : HealthKitMetric) {
         self.goal = goal
@@ -24,7 +28,44 @@ class ConfigureHKMetricViewController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.title = self.metric.humanText
         self.view.backgroundColor = UIColor.systemBackground
+
+
+        let previewDescriptionLabel = BSLabel()
+        self.view.addSubview(previewDescriptionLabel)
+        previewDescriptionLabel.attributedText = {
+            let text = NSMutableAttributedString()
+            text.append(NSMutableAttributedString(string: "Here is a preview of the data points which will be added to your ", attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]))
+            text.append(NSMutableAttributedString(string: self.goal.slug, attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultBoldFont]))
+            text.append(NSMutableAttributedString(string: " goal:", attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]))
+            return text
+        }()
+        previewDescriptionLabel.textAlignment = .left
+        previewDescriptionLabel.numberOfLines = 0
+        previewDescriptionLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(componentMargin)
+            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(componentMargin)
+            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
+        }
+
+        self.addChild(datapointTableController)
+        self.view.addSubview(datapointTableController.view)
+        self.datapointTableController.view.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(previewDescriptionLabel.snp.bottom).offset(componentMargin)
+            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(componentMargin)
+            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
+        }
+
+        let unitsLabel = BSLabel()
+        self.view.addSubview(unitsLabel)
+        unitsLabel.textAlignment = .left
+        unitsLabel.numberOfLines = 0
+        unitsLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(datapointTableController.view.snp.bottom).offset(componentMargin)
+            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(componentMargin)
+            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
+        }
 
         let saveButton = BSButton()
         self.view.addSubview(saveButton)
@@ -36,6 +77,21 @@ class ConfigureHKMetricViewController : UIViewController {
         }
         saveButton.setTitle("Save", for: .normal)
         saveButton.addTarget(self, action: #selector(self.saveButtonPressed), for: .touchUpInside)
+
+        self.datapointTableController.hhmmformat = self.goal.hhmmformat
+        Task { @MainActor in
+            let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline.intValue, healthStore: HealthStoreManager.sharedManager.healthStore)
+            self.datapointTableController.datapoints = datapoints
+
+            let units = try await self.metric.units(healthStore: HealthStoreManager.sharedManager.healthStore)
+
+            unitsLabel.attributedText = {
+                let text = NSMutableAttributedString()
+                text.append(NSMutableAttributedString(string: "This metric reports results as ", attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]))
+                text.append(NSMutableAttributedString(string: units.description, attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultBoldFont]))
+                return text
+            }()
+        }
     }
 
     @objc func saveButtonPressed() {

@@ -41,6 +41,10 @@ class CategoryHealthKitMetric : HealthKitMetric {
         return results
     }
 
+    func units(healthStore : HKHealthStore) async throws -> HKUnit {
+        return HKUnit.count()
+    }
+
     private func getDataPoint(dayOffset : Int, deadline : Int, healthStore : HKHealthStore) async throws -> DataPoint {
         let bounds = try dateBoundsForDayOffset(dayOffset: dayOffset, deadline: deadline)
         let daystamp = try self.dayStampFromDayOffset(dayOffset: dayOffset, deadline: deadline)
