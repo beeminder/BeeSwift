@@ -19,7 +19,7 @@ struct ExistingDataPoint : DataPoint {
     init(json: JSON) {
         // To maximize compatibility with server changes we only parse fields
         // which are actually used, not all that exist
-        id = json["id"]["$oid"].stringValue
+        id = json["id"]["$oid"].string ?? json["id"].stringValue
         daystamp = json["daystamp"].stringValue
         value = json["value"].numberValue
         comment = json["comment"].stringValue
