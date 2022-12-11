@@ -37,6 +37,7 @@ class Goal {
     var curval: NSNumber?
     var limsum: String?
     var safesum: String?
+    var initday: NSNumber?
     var deadline: NSNumber = 0
     var leadtime: NSNumber?
     var alertstart: NSNumber?
@@ -62,6 +63,7 @@ class Goal {
 
         self.title = json["title"].string!
         self.slug = json["slug"].string!
+        self.initday = json["initday"].number!
         self.deadline = json["deadline"].number!
         self.leadtime = json["leadtime"].number!
         self.alertstart = json["alertstart"].number!
@@ -309,6 +311,20 @@ class Goal {
         self.updateToMatch(json: JSON(responseObject!))
     }
 
+    /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
+    var initDaystamp: String {
+        let initDate = Date(timeIntervalSince1970: self.initday!.doubleValue)
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+
+        // initDate is constructed such that if we resolve it to a datetime in US Eastern Time, the date part
+        // of that is guaranteed to be the user's local date on the day the goal was created.
+        formatter.timeZone = TimeZone(identifier: "America/New_York")
+
+        return formatter.string(from: initDate)
+    }
+
     @MainActor
     func waitForUpdatedGraph() async throws {
         // Pay careful attention to the synchronicity of this function.
@@ -417,6 +433,13 @@ class Goal {
     private func updateToMatchDataPoint(newDataPoint : DataPoint, recentDatapoints: [ExistingDataPoint]) async throws {
         var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: newDataPoint.daystamp)
         if matchingDatapoints.count == 0 {
+            // If there are not already data points for this day, do not add points
+            // from before the creation of the goal. This avoids immediate derailment
+            //on do less goals, and excessive safety buffer on do-more goals.
+            if newDataPoint.daystamp < self.initDaystamp {
+                return
+            }
+
             let requestId = "\(newDataPoint.daystamp)-\(minuteStamp())"
             let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(newDataPoint.daystamp.suffix(2)) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": requestId]
 
