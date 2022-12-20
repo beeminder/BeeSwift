@@ -29,7 +29,7 @@ class SleepAnalysisHealthKitMetric : CategoryHealthKitMetric {
 
         // HealthKit will give us all SleepAnalysis samples (e.g. sleep and time in bed) so we
         // must post-filter to appropriate ones
-        if categorySample.value == HKCategoryValueSleepAnalysis.asleep.rawValue {
+        if categorySample.value == hkCategoryValueSleepAnalysis.rawValue {
             return categorySample.endDate.timeIntervalSince(categorySample.startDate) / hourInSeconds
         }
 
