@@ -14,11 +14,11 @@ class SleepAnalysisHealthKitMetric : CategoryHealthKitMetric {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "SleepAnalysisHealthKitMetric")
 
     let hourInSeconds = 3600.0
-    let hkCategoryValueSleepAnalysis : HKCategoryValueSleepAnalysis
+    let hkCategoryValuesSleepAnalysis : Set<HKCategoryValueSleepAnalysis>
 
-    init(humanText: String, databaseString: String, category: HealthKitCategory, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier, hkCategoryValueSleepAnalysis : HKCategoryValueSleepAnalysis) {
-        self.hkCategoryValueSleepAnalysis = hkCategoryValueSleepAnalysis
-        super.init(humanText: humanText, databaseString: databaseString, category: category, hkCategoryTypeIdentifier: hkCategoryTypeIdentifier)
+    init(humanText: String, databaseString: String, category: HealthKitCategory, hkCategoryValuesSleepAnalysis : Set<HKCategoryValueSleepAnalysis>) {
+        self.hkCategoryValuesSleepAnalysis = hkCategoryValuesSleepAnalysis
+        super.init(humanText: humanText, databaseString: databaseString, category: category, hkCategoryTypeIdentifier: .sleepAnalysis)
     }
 
     override func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
@@ -29,7 +29,7 @@ class SleepAnalysisHealthKitMetric : CategoryHealthKitMetric {
 
         // HealthKit will give us all SleepAnalysis samples (e.g. sleep and time in bed) so we
         // must post-filter to appropriate ones
-        if categorySample.value == hkCategoryValueSleepAnalysis.rawValue {
+        if hkCategoryValuesSleepAnalysis.map({$0.rawValue}).contains(categorySample.value) {
             return categorySample.endDate.timeIntervalSince(categorySample.startDate) / hourInSeconds
         }
 
