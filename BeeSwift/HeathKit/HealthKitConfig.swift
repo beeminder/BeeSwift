@@ -21,6 +21,7 @@ class HealthKitConfig : NSObject {
             QuantityHealthKitMetric.init(humanText: "Exercise time", databaseString: "exerciseTime", category: .Activity, hkQuantityTypeIdentifier: .appleExerciseTime),
             QuantityHealthKitMetric.init(humanText: "Nike Fuel", databaseString: "nikeFuel", category: .Activity, hkQuantityTypeIdentifier: .nikeFuel),
             QuantityHealthKitMetric.init(humanText: "Resting energy", databaseString: "basalEnergy", category: .Activity, hkQuantityTypeIdentifier: .basalEnergyBurned),
+            // TODO: This one is almost certainly not right!
             CategoryHealthKitMetric.init(humanText: "Stand hours", databaseString: "standHour", category: .Activity, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.appleStandHour),
             QuantityHealthKitMetric.init(humanText: "Steps", databaseString: "steps", category: .Activity, hkQuantityTypeIdentifier: .stepCount),
             QuantityHealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", category: .Activity, hkQuantityTypeIdentifier: .distanceSwimming),

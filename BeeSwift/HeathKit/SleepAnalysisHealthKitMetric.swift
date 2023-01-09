@@ -21,6 +21,14 @@ class SleepAnalysisHealthKitMetric : CategoryHealthKitMetric {
         super.init(humanText: humanText, databaseString: databaseString, category: category, hkCategoryTypeIdentifier: .sleepAnalysis)
     }
 
+    override func includeForMetric(sample: HKCategorySample) -> Bool {
+        return hkCategoryValuesSleepAnalysis.map({$0.rawValue}).contains(sample.value)
+    }
+
+    override func valueInAppropriateUnits(rawValue: Double) -> Double {
+        return rawValue / hourInSeconds
+    }
+
     override func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
         guard let categorySample = sample as? HKCategorySample else {
             logger.warning("Encountered a sleep sample which was not a HKCategorySample: \(sample)")
