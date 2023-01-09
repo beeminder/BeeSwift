@@ -113,7 +113,7 @@ class CategoryHealthKitMetric : HealthKitMetric {
         return 0
     }
 
-    private func hkDatapointValueForSamples(samples : [HKSample], units: HKUnit?) -> Double {
+    func hkDatapointValueForSamples(samples : [HKSample], units: HKUnit?) -> Double {
         let relevantSamples = samples
             .compactMap { $0 as? HKCategorySample }
             .sorted { $0.startDate < $1.startDate }

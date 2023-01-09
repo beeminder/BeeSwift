@@ -82,6 +82,11 @@
 		E457BE5D28C192B50012F5D0 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E457BE5C28C192B50012F5D0 /* IntentHandler.swift */; };
 		E48E2712296B7548008013C0 /* TotalSleepMinutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */; };
 		E48E2714296B75E4008013C0 /* TotalSleepMinutesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */; };
+		E48E2716296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */; };
+		E48E2717296BA0A0008013C0 /* TimeAsleepHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */; };
+		E48E2718296BA0A1008013C0 /* TimeAsleepHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */; };
+		E48E2719296BA0A6008013C0 /* TotalSleepMinutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */; };
+		E48E271A296BA0A7008013C0 /* TotalSleepMinutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */; };
 		E4B0833B2934620500A71564 /* DatapointTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833A2934620500A71564 /* DatapointTableViewController.swift */; };
 		E4B0833D293810EB00A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
 		E4B0833E293810F600A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
@@ -308,6 +313,7 @@
 		E457BE5C28C192B50012F5D0 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
 		E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutes.swift; sourceTree = "<group>"; };
 		E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutesTests.swift; sourceTree = "<group>"; };
+		E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAsleepHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
@@ -614,6 +620,7 @@
 				E4E6428F2910D327004F3EA9 /* SleepAnalysisHealthKitMetric.swift */,
 				E42CB451291727B200A35AB9 /* HealthKitError.swift */,
 				E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */,
+				E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */,
 			);
 			path = HeathKit;
 			sourceTree = "<group>";
@@ -1136,10 +1143,12 @@
 				A1D853261EB0332D00FC75DE /* Constants.swift in Sources */,
 				A14249211FD07514007736B3 /* CurrentUserManager.swift in Sources */,
 				E4E6426C290E22EF004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
+				E48E2717296BA0A0008013C0 /* TimeAsleepHealthKitMetric.swift in Sources */,
 				E4E642812910C3FB004F3EA9 /* QuantityHealthKitMetric.swift in Sources */,
 				E4B0833E293810F600A71564 /* DataPoint.swift in Sources */,
 				A13C9CFB2345C18D002912C4 /* Goal.swift in Sources */,
 				A142491F1FD073EC007736B3 /* RequestManager.swift in Sources */,
+				E48E2719296BA0A6008013C0 /* TotalSleepMinutes.swift in Sources */,
 				A1D8532B1EB0EA2D00FC75DE /* BSTextField.swift in Sources */,
 				A1D853281EB0DE0700FC75DE /* TodayTableViewCell.swift in Sources */,
 				E4E642852910C442004F3EA9 /* CategoryHealthKitMetric.swift in Sources */,
@@ -1167,6 +1176,7 @@
 				E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */,
 				A11488BE1EE9B0CE003316E1 /* UIDevice.swift in Sources */,
 				E5C9EFE62612E02700DBBEAE /* AddDataIntents.intentdefinition in Sources */,
+				E48E2716296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift in Sources */,
 				A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */,
 				E4E642802910C3FB004F3EA9 /* QuantityHealthKitMetric.swift in Sources */,
 				A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */,
@@ -1252,10 +1262,12 @@
 				E5CF519B2612435B00546184 /* UIDevice.swift in Sources */,
 				E5CF516A2612431600546184 /* Constants.swift in Sources */,
 				E4E6426D290E22F0004F3EA9 /* GoalHealthKitConnection.swift in Sources */,
+				E48E2718296BA0A1008013C0 /* TimeAsleepHealthKitMetric.swift in Sources */,
 				E4E642822910C3FB004F3EA9 /* QuantityHealthKitMetric.swift in Sources */,
 				E4B0833F293810F600A71564 /* DataPoint.swift in Sources */,
 				E5CF517C2612434300546184 /* BSButton.swift in Sources */,
 				E5CF51892612434E00546184 /* UIColorExtension.swift in Sources */,
+				E48E271A296BA0A7008013C0 /* TotalSleepMinutes.swift in Sources */,
 				E457BE5D28C192B50012F5D0 /* IntentHandler.swift in Sources */,
 				E5CF518F2612435000546184 /* UIFontExtension.swift in Sources */,
 				E4E642862910C442004F3EA9 /* CategoryHealthKitMetric.swift in Sources */,
