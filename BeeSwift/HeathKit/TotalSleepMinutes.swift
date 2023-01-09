@@ -17,8 +17,43 @@ func minute(_ date: Date) -> Minute {
     return Int(date.timeIntervalSince1970 - date.timeIntervalSince1970.truncatingRemainder(dividingBy: 60))
 }
 
+func isExactMinute(_ date: Date) -> Bool {
+    return date.timeIntervalSince1970.truncatingRemainder(dividingBy: 60) == 0.0
+}
+
 enum SleepResolution {
     case asleep, awake, ambiguous
+}
+
+func isRelevantToSleep(_ sample: HKCategorySample) -> Bool {
+    var relevantValues: [HKCategoryValueSleepAnalysis]
+    if #available(iOS 16.0, *) {
+        relevantValues = [
+            HKCategoryValueSleepAnalysis.awake,
+            HKCategoryValueSleepAnalysis.asleepUnspecified,
+            HKCategoryValueSleepAnalysis.asleepREM,
+            HKCategoryValueSleepAnalysis.asleepDeep,
+            HKCategoryValueSleepAnalysis.asleepCore,
+            HKCategoryValueSleepAnalysis.asleep
+        ]
+    } else {
+        // Fallback on earlier versions
+        relevantValues = [
+            HKCategoryValueSleepAnalysis.awake,
+            HKCategoryValueSleepAnalysis.asleep
+        ]
+    }
+
+    return relevantValues.contains(HKCategoryValueSleepAnalysis(rawValue: sample.value)!)
+}
+
+func isAsleep(_ sample: HKCategorySample) -> Bool {
+    if #available(iOS 16.0, *) {
+        return HKCategoryValueSleepAnalysis.allAsleepValues.contains(HKCategoryValueSleepAnalysis(rawValue: sample.value)!)
+    } else {
+        // Fallback on earlier versions
+        return sample.value == HKCategoryValueSleepAnalysis.asleep.rawValue
+    }
 }
 
 func sleepResolution<S: Sequence<HKCategorySample>>(minute: Minute, samples: S) -> SleepResolution {
@@ -60,27 +95,24 @@ func wouldFirstMinuteBeAsleep<S: Sequence<HKCategorySample>>(samples: S) -> Bool
     }
 }
 
-func isAsleep(_ sample: HKCategorySample) -> Bool {
-    if #available(iOS 16.0, *) {
-        return HKCategoryValueSleepAnalysis.allAsleepValues.contains(HKCategoryValueSleepAnalysis(rawValue: sample.value)!)
-    } else {
-        // Fallback on earlier versions
-        return sample.value == HKCategoryValueSleepAnalysis.asleep.rawValue
-    }
-}
-
 public func totalSleepMinutes(samples: [HKCategorySample]) -> Int {
     var sampleStarts: [Minute: [HKCategorySample]] = [:]
     var sampleEnds: [Minute: [HKCategorySample]] = [:]
     var minutesOfInterest: Set<Minute> = []
 
-    for sample in samples {
+    let sleepSamples = samples.filter(isRelevantToSleep)
+    for sample in sleepSamples {
         let startMinute = minute(sample.startDate)
         sampleStarts[startMinute, default: []].append(sample)
         minutesOfInterest.insert(startMinute)
 
-        // FIXME: Off by one adjustment
-        let endMinute = minute(sample.endDate)
+        var endMinute = minute(sample.endDate)
+        // Sleep intervals which end exactly on the minute to not count to the following
+        // minute. i.e. it is a half-open range. Handle this by treating them as ending
+        // right at the end of the previous minute
+        if isExactMinute(sample.endDate) {
+            endMinute -= 60
+        }
         sampleEnds[endMinute, default: []].append(sample)
         minutesOfInterest.insert(endMinute)
     }

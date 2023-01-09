@@ -42,6 +42,12 @@ final class TotalSleepMinutesTests: XCTestCase {
         ]), 3)
     }
 
+    func testEndTimeIsExclusive() throws {
+        XCTAssertEqual(totalSleepMinutes(samples: [
+            sample(value: .asleep, start: "6:00:00", end: "6:01:00")
+        ]), 1)
+    }
+
     func testSeparateDataPointsAreAdded() throws {
         XCTAssertEqual(totalSleepMinutes(samples: [
             sample(value: .asleep, start: "6:00:59", end: "6:01:01"),
