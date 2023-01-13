@@ -102,17 +102,6 @@ class CategoryHealthKitMetric : HealthKitMetric {
         return rawValue
     }
 
-    func hkDatapointValueForSample(sample: HKSample, units: HKUnit?) -> Double {
-        if let s = sample as? HKQuantitySample, let u = units {
-            return s.quantity.doubleValue(for: u)
-        } else if let s = sample as? HKCategorySample {
-            if self.hkCategoryTypeIdentifier == .appleStandHour {
-                return Double(s.value)
-            }
-        }
-        return 0
-    }
-
     func hkDatapointValueForSamples(samples : [HKSample], units: HKUnit?) -> Double {
         let relevantSamples = samples
             .compactMap { $0 as? HKCategorySample }
