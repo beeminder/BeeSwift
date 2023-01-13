@@ -54,9 +54,8 @@ class HealthKitConfig : NSObject {
         QuantityHealthKitMetric.init(humanText: "Water", databaseString: "water", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryWater),
 
         // Sleep
-        SleepAnalysisHealthKitMetric.init(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep, hkCategoryValuesSleepAnalysis: [.inBed]),
+        TimeInBedHealthKitMetric.init(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep),
         TimeAsleepHealthKitMetric.init(humanText: "Time asleep", databaseString: "timeAsleep", category: .Sleep)
-
 
         // Other
     ]
