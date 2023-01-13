@@ -87,6 +87,9 @@
 		E48E2718296BA0A1008013C0 /* TimeAsleepHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */; };
 		E48E2719296BA0A6008013C0 /* TotalSleepMinutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */; };
 		E48E271A296BA0A7008013C0 /* TotalSleepMinutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */; };
+		E48E271C2970EC85008013C0 /* StandHoursHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */; };
+		E48E271D2970ED47008013C0 /* StandHoursHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */; };
+		E48E271E2970ED48008013C0 /* StandHoursHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */; };
 		E4B0833B2934620500A71564 /* DatapointTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833A2934620500A71564 /* DatapointTableViewController.swift */; };
 		E4B0833D293810EB00A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
 		E4B0833E293810F600A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
@@ -314,6 +317,7 @@
 		E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutes.swift; sourceTree = "<group>"; };
 		E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutesTests.swift; sourceTree = "<group>"; };
 		E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAsleepHealthKitMetric.swift; sourceTree = "<group>"; };
+		E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandHoursHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
@@ -621,6 +625,7 @@
 				E42CB451291727B200A35AB9 /* HealthKitError.swift */,
 				E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */,
 				E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */,
+				E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */,
 			);
 			path = HeathKit;
 			sourceTree = "<group>";
@@ -1131,6 +1136,7 @@
 				E4B0A32F28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */,
 				A12E69511BD3EF0200AB94C2 /* TodayViewController.swift in Sources */,
 				E4E642892910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */,
+				E48E271D2970ED47008013C0 /* StandHoursHealthKitMetric.swift in Sources */,
 				A1D853291EB0EA2400FC75DE /* BSLabel.swift in Sources */,
 				E42CB453291727B200A35AB9 /* HealthKitError.swift in Sources */,
 				A1D8532A1EB0EA2B00FC75DE /* BSButton.swift in Sources */,
@@ -1200,6 +1206,7 @@
 				E4E642842910C442004F3EA9 /* CategoryHealthKitMetric.swift in Sources */,
 				A1BCE9851AFFFB3A007322CC /* RequestManager.swift in Sources */,
 				A149147F1BE7A5670060600A /* SettingsTableViewCell.swift in Sources */,
+				E48E271C2970EC85008013C0 /* StandHoursHealthKitMetric.swift in Sources */,
 				E43D9AFB2929C37D00FC1578 /* DatapointValueAccessory.swift in Sources */,
 				A1BD0D181AEB30A5001EDE8B /* GoalViewController.swift in Sources */,
 				A196CB1A1AE4142E00B90A3E /* AppDelegate.swift in Sources */,
@@ -1250,6 +1257,7 @@
 				E5CF51832612434A00546184 /* BSTextField.swift in Sources */,
 				E55FAB19261240F800A0CF88 /* CurrentUserManager.swift in Sources */,
 				E4E6428A2910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift in Sources */,
+				E48E271E2970ED48008013C0 /* StandHoursHealthKitMetric.swift in Sources */,
 				E5F7C55026113C330095684F /* AddDataIntents.intentdefinition in Sources */,
 				E42CB454291727B200A35AB9 /* HealthKitError.swift in Sources */,
 				E5CF51AD2612437400546184 /* Goal.swift in Sources */,

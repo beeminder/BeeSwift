@@ -1,10 +1,3 @@
-//
-//  TimeAsleepHealthKitMetric.swift
-//  BeeSwift
-//
-//  Created by Theo Spears on 1/8/23.
-//
-
 import Foundation
 import HealthKit
 import OSLog

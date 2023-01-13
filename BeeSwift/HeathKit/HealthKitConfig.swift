@@ -21,7 +21,7 @@ class HealthKitConfig : NSObject {
         QuantityHealthKitMetric.init(humanText: "Nike Fuel", databaseString: "nikeFuel", category: .Activity, hkQuantityTypeIdentifier: .nikeFuel),
         QuantityHealthKitMetric.init(humanText: "Resting energy", databaseString: "basalEnergy", category: .Activity, hkQuantityTypeIdentifier: .basalEnergyBurned),
         // TODO: This one is almost certainly not right!
-        CategoryHealthKitMetric.init(humanText: "Stand hours", databaseString: "standHour", category: .Activity, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier.appleStandHour),
+        StandHoursHealthKitMetric.init(humanText: "Stand hours", databaseString: "standHour", category: .Activity),
         QuantityHealthKitMetric.init(humanText: "Steps", databaseString: "steps", category: .Activity, hkQuantityTypeIdentifier: .stepCount),
         QuantityHealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", category: .Activity, hkQuantityTypeIdentifier: .distanceSwimming),
         QuantityHealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", category: .Activity, hkQuantityTypeIdentifier: .swimmingStrokeCount),
@@ -33,7 +33,7 @@ class HealthKitConfig : NSObject {
         // Heart
 
         // Mindfulness
-        MindfulSessionHealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", category: .Mindfulness, hkCategoryTypeIdentifier: .mindfulSession),
+        MindfulSessionHealthKitMetric.init(humanText: "Mindful minutes", databaseString: "mindfulMinutes", category: .Mindfulness),
 
         // Nutrition
         QuantityHealthKitMetric.init(humanText: "Dietary Caffeine", databaseString: "caffeine", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryCaffeine),

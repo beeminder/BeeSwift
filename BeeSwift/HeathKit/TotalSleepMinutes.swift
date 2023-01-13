@@ -1,11 +1,3 @@
-//
-//  TimeAsleep.swift
-//  BeeSwift
-//
-//  Created by Theo Spears on 1/8/23.
-//  Copyright © 2023 APB. All rights reserved.
-//
-
 import Foundation
 import HealthKit
 

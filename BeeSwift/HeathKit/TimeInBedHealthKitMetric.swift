@@ -1,11 +1,3 @@
-//
-//  SleepAnalysisHealthKitMetric.swift
-//  BeeSwift
-//
-//  Created by Theo Spears on 10/31/22.
-//  Copyright © 2022 APB. All rights reserved.
-//
-
 import Foundation
 import HealthKit
 import OSLog
