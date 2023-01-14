@@ -90,6 +90,7 @@
 		E48E271C2970EC85008013C0 /* StandHoursHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */; };
 		E48E271D2970ED47008013C0 /* StandHoursHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */; };
 		E48E271E2970ED48008013C0 /* StandHoursHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */; };
+		E48E27202973261F008013C0 /* BackgroundUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271F2973261F008013C0 /* BackgroundUpdates.swift */; };
 		E4B0833B2934620500A71564 /* DatapointTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833A2934620500A71564 /* DatapointTableViewController.swift */; };
 		E4B0833D293810EB00A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
 		E4B0833E293810F600A71564 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
@@ -318,6 +319,7 @@
 		E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutesTests.swift; sourceTree = "<group>"; };
 		E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAsleepHealthKitMetric.swift; sourceTree = "<group>"; };
 		E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandHoursHealthKitMetric.swift; sourceTree = "<group>"; };
+		E48E271F2973261F008013C0 /* BackgroundUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundUpdates.swift; sourceTree = "<group>"; };
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
@@ -522,6 +524,7 @@
 				A149147D1BE7A5140060600A /* Util */,
 				E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */,
 				A196CB191AE4142E00B90A3E /* AppDelegate.swift */,
+				E48E271F2973261F008013C0 /* BackgroundUpdates.swift */,
 				A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */,
 				A10D4E921B07948500A72D29 /* DatapointsTableView.swift */,
 				A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */,
@@ -1205,6 +1208,7 @@
 				A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */,
 				E4E642842910C442004F3EA9 /* CategoryHealthKitMetric.swift in Sources */,
 				A1BCE9851AFFFB3A007322CC /* RequestManager.swift in Sources */,
+				E48E27202973261F008013C0 /* BackgroundUpdates.swift in Sources */,
 				A149147F1BE7A5670060600A /* SettingsTableViewCell.swift in Sources */,
 				E48E271C2970EC85008013C0 /* StandHoursHealthKitMetric.swift in Sources */,
 				E43D9AFB2929C37D00FC1578 /* DatapointValueAccessory.swift in Sources */,

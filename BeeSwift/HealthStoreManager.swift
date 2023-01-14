@@ -91,6 +91,13 @@ class HealthStoreManager :NSObject {
         try await connection.updateWithRecentData(days: days)
     }
 
+    /// Immediately update all known goals based on HealthKit's data record
+    public func updateAllGoalsWithRecentData(days: Int) async throws {
+        for (_, connection) in self.connections {
+            try await connection.updateWithRecentData(days: days)
+        }
+    }
+
     /// Gets or creates an appropriate connection object for the supplied goal
     private func connectionFor(goal: Goal) -> GoalHealthKitConnection? {
         connectionsSemaphore.wait()
