@@ -16,8 +16,10 @@ import OSLog
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "AppDelegate")
+    let backgroundUpdates = BackgroundUpdates()
 
     var window: UIWindow?
+
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         logger.notice("application:didFinishLaunchingWithOptions")
@@ -45,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
 
-        application.setMinimumBackgroundFetchInterval(15 * 60)
+        backgroundUpdates.startUpdatingRegularlyInBackground()
         
         return true
     }
@@ -84,24 +86,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         logger.notice("applicationWillTerminate")
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-    /// https://developer.apple.com/documentation/uikit/app_and_environment/scenes/preparing_your_ui_to_run_in_the_background/updating_your_app_with_background_app_refresh
-    ///
-    /// and for iOS 13 and over: https://developer.apple.com/documentation/backgroundtasks/bgapprefreshtask
-    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        logger.notice("application:performFetchWithCompletionHandler")
-        Task { @MainActor in
-            do {
-                let _ = try await CurrentUserManager.sharedManager.fetchGoals()
-                completionHandler(.newData)
-            } catch {
-                logger.error("Failed to refresh goals for background update: \(error)")
-                completionHandler(.failed)
-            }
-        }
-    }
-    
-    
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
         logger.notice("application:open:options")
