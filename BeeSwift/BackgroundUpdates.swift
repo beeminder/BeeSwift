@@ -39,10 +39,7 @@ class BackgroundUpdates {
                 let goals = try await CurrentUserManager.sharedManager.fetchGoals()
                 HealthStoreManager.sharedManager.silentlyInstallObservers(goals: goals)
 
-                // It should not be necessary to sync health kit goals here, as that should
-                // be handled by our observers (in particular, updating when the phone
-                // is unlocked and thus data is available). If we find that to be unreliable
-                // we could also trigger a data refresh here.
+                try await HealthStoreManager.sharedManager.updateAllGoalsWithRecentData(days: 3)
             } catch {
                 logger.error("Error refreshing goals: \(error)")
             }
