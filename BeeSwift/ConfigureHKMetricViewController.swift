@@ -13,7 +13,9 @@ class ConfigureHKMetricViewController : UIViewController {
     private let goal: Goal
     private let metric: HealthKitMetric
 
+    let previewDescriptionLabel = BSLabel()
     fileprivate var datapointTableController = DatapointTableViewController()
+    fileprivate let noDataFoundLabel = BSLabel()
 
     init(goal: Goal, metric : HealthKitMetric) {
         self.goal = goal
@@ -32,7 +34,6 @@ class ConfigureHKMetricViewController : UIViewController {
         self.view.backgroundColor = UIColor.systemBackground
 
 
-        let previewDescriptionLabel = BSLabel()
         self.view.addSubview(previewDescriptionLabel)
         previewDescriptionLabel.attributedText = {
             let text = NSMutableAttributedString()
@@ -57,12 +58,29 @@ class ConfigureHKMetricViewController : UIViewController {
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
         }
 
+        self.view.addSubview(noDataFoundLabel)
+        noDataFoundLabel.attributedText = {
+            let text = NSMutableAttributedString()
+            text.append(NSMutableAttributedString(string: "No Data Found\n\n", attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultBoldFont]))
+            text.append(NSMutableAttributedString(string: "This may be because you have not granted the app access to this data, or because there is no recent data in Apple Health.\n\n", attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]))
+            text.append(NSMutableAttributedString(string: "You can still connect the goal, and future data will be synced if it becomes available.", attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]))
+            return text
+        }()
+        noDataFoundLabel.textAlignment = .left
+        noDataFoundLabel.numberOfLines = 0
+        noDataFoundLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(datapointTableController.view.snp.bottom)
+            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(componentMargin)
+            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
+        }
+        noDataFoundLabel.isHidden = true
+
         let unitsLabel = BSLabel()
         self.view.addSubview(unitsLabel)
         unitsLabel.textAlignment = .left
         unitsLabel.numberOfLines = 0
         unitsLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(datapointTableController.view.snp.bottom).offset(componentMargin)
+            make.top.equalTo(noDataFoundLabel.snp.bottom).offset(componentMargin)
             make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(componentMargin)
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
         }
@@ -83,8 +101,19 @@ class ConfigureHKMetricViewController : UIViewController {
             let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline.intValue, healthStore: HealthStoreManager.sharedManager.healthStore)
             self.datapointTableController.datapoints = datapoints
 
-            let units = try await self.metric.units(healthStore: HealthStoreManager.sharedManager.healthStore)
+            if datapoints.isEmpty {
+                noDataFoundLabel.isHidden = false
+                previewDescriptionLabel.isHidden = true
+                previewDescriptionLabel.snp.makeConstraints { (make) in
+                    make.height.equalTo(0)
+                }
+            } else {
+                noDataFoundLabel.snp.makeConstraints { (make) in
+                    make.height.equalTo(0)
+                }
+            }
 
+            let units = try await self.metric.units(healthStore: HealthStoreManager.sharedManager.healthStore)
             unitsLabel.attributedText = {
                 let text = NSMutableAttributedString()
                 text.append(NSMutableAttributedString(string: "This metric reports results as ", attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]))
