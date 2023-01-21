@@ -119,9 +119,12 @@ class ConfigureHKMetricViewController : UIViewController {
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
                 hud?.hide(true, afterDelay: 2)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    // TODO: Do something better here?
-                    self.navigationController?.popViewController(animated: true)
-                    self.navigationController?.popViewController(animated: true)
+                    guard let healthKitConfigController = self.navigationController?.viewControllers.first(where: { vc in vc is HealthKitConfigViewController }) else {
+                        self.logger.error("Could not find HealthKitConfigViewController in view stack")
+                        return
+                    }
+                    self.navigationController?.popToViewController(healthKitConfigController, animated: true)
+
                 }
             } catch {
                 // TODO: This needs to be done somehow? Or dismiss?
