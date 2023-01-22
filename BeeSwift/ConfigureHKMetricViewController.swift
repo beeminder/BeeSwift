@@ -16,6 +16,7 @@ class ConfigureHKMetricViewController : UIViewController {
     let previewDescriptionLabel = BSLabel()
     fileprivate var datapointTableController = DatapointTableViewController()
     fileprivate let noDataFoundLabel = BSLabel()
+    let saveButton = BSButton()
 
     init(goal: Goal, metric : HealthKitMetric) {
         self.goal = goal
@@ -85,7 +86,6 @@ class ConfigureHKMetricViewController : UIViewController {
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
         }
 
-        let saveButton = BSButton()
         self.view.addSubview(saveButton)
         saveButton.snp.makeConstraints { (make) in
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-20)
@@ -123,7 +123,15 @@ class ConfigureHKMetricViewController : UIViewController {
         }
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        // Re-allow use of the save button as we have been shown again
+        saveButton.isUserInteractionEnabled = true
+    }
+
     @objc func saveButtonPressed() {
+        // Disable interaction to avoid double-taps
+        saveButton.isUserInteractionEnabled = false
+
         Task { @MainActor in
             let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
             hud?.mode = .indeterminate
@@ -136,6 +144,10 @@ class ConfigureHKMetricViewController : UIViewController {
             } catch {
                 logger.error("Error setting up goal \(error)")
                 hud?.hide(true)
+
+                // Re-enable the save button as we did not dismiss the screen
+                saveButton.isUserInteractionEnabled = true
+                
                 return
             }
 
@@ -163,6 +175,9 @@ class ConfigureHKMetricViewController : UIViewController {
                 let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
+
+                // Re-enable the save button as we did not dismiss the screen
+                saveButton.isUserInteractionEnabled = true
             }
         }
     }

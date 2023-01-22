@@ -66,6 +66,11 @@ class ChooseHKMetricViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        // Re-enable the table on returning to the view
+        self.tableView.isUserInteractionEnabled = true
+    }
 }
 
 extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSource {
@@ -110,6 +115,9 @@ extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // Prevent double taps
+        self.tableView.isUserInteractionEnabled = false
+
         Task { @MainActor in
             let section = HealthKitCategory.allCases[indexPath.section]
             let metric = self.sortedMetricsByCategory[section]![indexPath.row]
@@ -119,6 +127,7 @@ extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSou
                 try await HealthStoreManager.sharedManager.requestAuthorization(metric: metric)
             } catch {
                 logger.error("Error requesting permission for metric: \(error)")
+                self.tableView.isUserInteractionEnabled = true
                 return
             }
 
