@@ -105,8 +105,10 @@ class QuantityHealthKitMetric : HealthKitMetric {
         var results : [DataPoint] = []
 
         for statistics in collection.statistics() {
-            // Ignore statistics which are entirely outside our window
-            if statistics.endDate < startDate || statistics.startDate > endDate {
+            let datapointDate = deadline >= 0 ? statistics.startDate : statistics.endDate
+
+            // Ignore statistics outside our window
+            if datapointDate < startDate || datapointDate > endDate {
                 continue
             }
 
@@ -135,12 +137,8 @@ class QuantityHealthKitMetric : HealthKitMetric {
                 continue
             }
 
-            let startDate = statistics.startDate
-            let endDate = statistics.endDate
-
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyyMMdd"
-            let datapointDate = deadline >= 0 ? startDate : endDate
             let daystamp = formatter.string(from: datapointDate)
 
             results.append(NewDataPoint(daystamp: daystamp, value: NSNumber(value: datapointValue), comment: "Auto-entered via Apple Health"))
