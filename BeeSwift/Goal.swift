@@ -416,14 +416,64 @@ class Goal {
         }
     }
 
-    func updateToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
-        let datapoints = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[ExistingDataPoint], Error>) in
-            self.fetchRecentDatapoints(success: { datapoints in
-                continuation.resume(returning: datapoints)
-            }, errorCompletion: {
-                continuation.resume(throwing: HealthKitError("Could not fetch recent datapoints"))
-            })
+    func fetchDatapoints(sort: String, per: Int, page: Int) async throws -> [ExistingDataPoint] {
+        let params = ["sort" : sort, "per" : per, "page": page] as [String : Any]
+        let response = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
+        let responseJSON = JSON(response!)
+        return ExistingDataPoint.fromJSONArray(array: responseJSON.arrayValue)
+    }
+
+    /// Retrieve all data points on or after the daystamp provided
+    /// Estimates how many data points are needed to fetch the correct data points, and then performs additional requests if needed
+    /// to guarantee all matching points have been fetched.
+    func datapointsSince(daystamp: String) async throws -> [ExistingDataPoint] {
+        // Estimate how many points we need, based on one point per day
+
+        guard let startingDate = DateUtils.date(daystamp: daystamp) else {
+            // TODO: Throw
+            return []
         }
+        guard let daysSince = Calendar.current.dateComponents([.day], from: startingDate, to: Date()).day else {
+            // TODO: Throw
+            return []
+        }
+
+        // We want an additional fudge factor because
+        // (a) daysSince counts 24h periods, so we want to account for it not being midnight
+        // (b) we need to receive a data point before the chosen day to make sure all possible data points for the
+        //     chosen day has been fetched
+        // (c) We'd rather not do multiple round trips if needed, so allow for some days having multiple data points
+        var pageSize = daysSince + 5
+
+        // While we don't have a point that preceeds the provided daystamp
+        var fetchedDatapoints = try await fetchDatapoints(sort: "daystamp", per: pageSize, page: 1)
+        if fetchedDatapoints.isEmpty {
+            return []
+        }
+
+        while fetchedDatapoints.map({ point in point.daystamp }).min()! >= daystamp {
+            let additionalDatapoints = try await fetchDatapoints(sort: "daystamp", per: pageSize, page: 2)
+
+            // If we recieve an empty page we have fetched all points
+            if additionalDatapoints.isEmpty {
+                break
+            }
+
+            fetchedDatapoints.append(contentsOf: additionalDatapoints)
+
+            // Double our page size to perform exponential fetch. This way even if our initial estimate is very wrong
+            // we will not perform too many requests
+            pageSize *= 2
+        }
+
+        // We will have fetched at least some points which are too old. Filter them out before returning
+        return fetchedDatapoints.filter { point in point.daystamp >= daystamp }
+    }
+
+    func updateToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
+        guard let firstDaystamp = healthKitDataPoints.map({ point in point.daystamp }).min() else { return }
+
+        let datapoints = try await datapointsSince(daystamp: firstDaystamp)
 
         for newDataPoint in healthKitDataPoints {
             try await self.updateToMatchDataPoint(newDataPoint: newDataPoint, recentDatapoints: datapoints)
