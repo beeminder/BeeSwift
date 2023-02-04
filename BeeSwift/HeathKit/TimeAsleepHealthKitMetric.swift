@@ -14,4 +14,8 @@ class TimeAsleepHealthKitMetric : CategoryHealthKitMetric {
         let totalMinutes = totalSleepMinutes(samples: categorySamples)
         return Double(totalMinutes) / hourInMinutes
     }
+
+    override func units(healthStore : HKHealthStore) async throws -> HKUnit {
+        return HKUnit.hour()
+    }
 }

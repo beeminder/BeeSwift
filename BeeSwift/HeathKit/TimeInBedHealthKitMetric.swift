@@ -16,4 +16,8 @@ class TimeInBedHealthKitMetric : CategoryHealthKitMetric {
     override func valueInAppropriateUnits(rawValue: Double) -> Double {
         return rawValue / hourInSeconds
     }
+
+    override func units(healthStore : HKHealthStore) async throws -> HKUnit {
+        return HKUnit.hour()
+    }
 }

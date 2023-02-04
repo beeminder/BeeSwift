@@ -19,4 +19,8 @@ class StandHoursHealthKitMetric : CategoryHealthKitMetric {
         let standingSamples = categorySamples.filter{sample in sample.value == HKCategoryValueAppleStandHour.stood.rawValue}
         return Double(standingSamples.count)
     }
+
+    override func units(healthStore : HKHealthStore) async throws -> HKUnit {
+        return HKUnit.count()
+    }
 }
