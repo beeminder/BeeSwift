@@ -132,7 +132,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     @objc func updateBadgeCount() {
-        UIApplication.shared.applicationIconBadgeNumber = CurrentUserManager.sharedManager.goals.filter({ (goal: Goal) -> Bool in
+        guard let goals = CurrentUserManager.sharedManager.staleGoals() else { return }
+        UIApplication.shared.applicationIconBadgeNumber = goals.filter({ (goal: Goal) -> Bool in
             return goal.relativeLane.intValue < -1
         }).count
     }
