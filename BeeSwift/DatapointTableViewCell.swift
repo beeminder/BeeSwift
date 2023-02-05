@@ -41,8 +41,8 @@ class DatapointTableViewCell : UITableViewCell {
         self.contentView.addSubview(self.datapointLabel)
         self.selectionStyle = .none
         self.datapointLabel.snp.makeConstraints({ (make) -> Void in
-            make.left.equalTo(5)
-            make.right.equalTo(-5)
+            make.left.equalTo(0)
+            make.right.equalTo(0)
             make.centerY.equalTo(self.contentView)
         })
     }

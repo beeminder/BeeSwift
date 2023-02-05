@@ -16,6 +16,9 @@ import BeeKit
 import OSLog
 
 class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTableViewControllerDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+    let elementSpacing = 10
+    let sideMargin = 10
+    let buttonHeight = 42
 
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
     
@@ -127,9 +130,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.scrollView.addSubview(self.datapointTableController.view)
         self.datapointTableController.delegate = self
         self.datapointTableController.view.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.deltasLabel.snp.bottom)
-            make.left.equalTo(self.goalImageScrollView).offset(10)
-            make.right.equalTo(self.goalImageScrollView).offset(-10)
+            make.top.equalTo(self.deltasLabel.snp.bottom).offset(elementSpacing)
+            make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
+            make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
         }
         
         let dataEntryView = UIView()
@@ -137,8 +140,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         self.scrollView.addSubview(dataEntryView)
         dataEntryView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(10)
-            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(10)
+            make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(elementSpacing)
+            make.left.equalTo(self.datapointTableController.view)
             make.right.equalTo(self.datapointTableController.view)
             make.bottom.equalTo(0)
             make.height.equalTo(120)
@@ -173,7 +176,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.valueTextField.inputAccessoryView = accessory
         self.valueTextField.addTarget(self, action: #selector(GoalViewController.valueTextFieldValueChanged), for: .editingChanged)
         self.valueTextField.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.dateTextField.snp.right).offset(10)
+            make.left.equalTo(self.dateTextField.snp.right).offset(elementSpacing)
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.top.equalTo(0)
         }
@@ -201,7 +204,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.submitButton.setTitle("Submit", for: UIControl.State())
         self.submitButton.addTarget(self, action: #selector(GoalViewController.submitDatapoint), for: .touchUpInside)
         self.submitButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.commentTextField.snp.bottom).offset(10)
+            make.top.equalTo(self.commentTextField.snp.bottom).offset(elementSpacing)
             make.left.equalTo(self.commentTextField)
             make.right.equalTo(self.commentTextField)
         }
@@ -235,7 +238,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         
         self.dateStepper.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.dateTextField.snp.bottom).offset(10)
+            make.top.equalTo(self.dateTextField.snp.bottom).offset(elementSpacing)
             make.left.equalTo(self.dateTextField)
             make.width.equalTo(self.dateStepper.frame.size.width)
             make.width.equalTo(self.dateTextField)
@@ -251,7 +254,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         dateLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.dateStepper)
             make.right.equalTo(self.dateStepper)
-            make.top.equalTo(self.dateStepper.snp.bottom).offset(10)
+            make.top.equalTo(self.dateStepper.snp.bottom).offset(elementSpacing)
         }
         
         self.valueStepper.tintColor = UIColor.beeminder.gray
@@ -259,7 +262,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.valueStepper.addTarget(self, action: #selector(GoalViewController.valueStepperValueChanged), for: .valueChanged)
         self.valueStepper.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.dateStepper)
-            make.left.equalTo(self.dateStepper.snp.right).offset(10)
+            make.left.equalTo(self.dateStepper.snp.right).offset(elementSpacing)
             make.width.equalTo(self.valueStepper.frame.size.width)
             make.width.equalTo(self.valueTextField)
             make.centerX.equalTo(self.valueTextField)
@@ -273,37 +276,28 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         valueLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.valueStepper)
             make.right.equalTo(self.valueStepper)
-            make.top.equalTo(self.valueStepper.snp.bottom).offset(10)
+            make.top.equalTo(self.valueStepper.snp.bottom).offset(elementSpacing)
             make.bottom.equalTo(self.submitButton)
         }
         
         if self.goal.autodata == "apple" {
-            let appleSyncView = UIView()
-            self.scrollView.addSubview(appleSyncView)
-            appleSyncView.snp.makeConstraints({ (make) in
-                make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(10)
-                make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(10)
-                make.right.equalTo(self.datapointTableController.view)
-                make.bottom.equalTo(0)
-                make.height.equalTo(120)
-            })
-            
             let syncTodayButton = BSButton()
-            appleSyncView.addSubview(syncTodayButton)
+            self.scrollView.addSubview(syncTodayButton)
             syncTodayButton.snp.makeConstraints({ (make) in
-                make.left.top.equalTo(10)
-                make.right.equalTo(-10)
-                make.height.equalTo(42)
+                make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(elementSpacing)
+                make.left.equalTo(sideMargin)
+                make.right.equalTo(-sideMargin)
+                make.height.equalTo(buttonHeight)
             })
             syncTodayButton.setTitle("Sync with Health app", for: .normal)
             syncTodayButton.addTarget(self, action: #selector(self.syncTodayButtonPressed), for: .touchUpInside)
 
             let syncWeekButton = BSButton()
-            appleSyncView.addSubview(syncWeekButton)
+            self.scrollView.addSubview(syncWeekButton)
             syncWeekButton.snp.makeConstraints({ (make) in
                 make.left.right.equalTo(syncTodayButton)
-                make.top.equalTo(syncTodayButton.snp.bottom).offset(10)
-                make.height.equalTo(42)
+                make.top.equalTo(syncTodayButton.snp.bottom).offset(elementSpacing)
+                make.height.equalTo(buttonHeight)
             })
             syncWeekButton.setTitle("Sync last 7 days", for: .normal)
             syncWeekButton.addTarget(self, action: #selector(self.syncWeekButtonPressed), for: .touchUpInside)
