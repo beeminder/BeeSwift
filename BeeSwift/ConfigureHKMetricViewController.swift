@@ -98,7 +98,7 @@ class ConfigureHKMetricViewController : UIViewController {
 
         self.datapointTableController.hhmmformat = self.goal.hhmmformat
         Task { @MainActor in
-            let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline.intValue, healthStore: HealthStoreManager.sharedManager.healthStore)
+            let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline.intValue, healthStore: ServiceLocator.healthStoreManager.healthStore)
             self.datapointTableController.datapoints = datapoints
 
             if datapoints.isEmpty {
@@ -113,7 +113,7 @@ class ConfigureHKMetricViewController : UIViewController {
                 }
             }
 
-            let units = try await self.metric.units(healthStore: HealthStoreManager.sharedManager.healthStore)
+            let units = try await self.metric.units(healthStore: ServiceLocator.healthStoreManager.healthStore)
             unitsLabel.attributedText = {
                 let text = NSMutableAttributedString()
                 text.append(NSMutableAttributedString(string: "This metric reports results as ", attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]))
@@ -140,7 +140,7 @@ class ConfigureHKMetricViewController : UIViewController {
             self.goal.autodata = "apple"
 
             do {
-                try await HealthStoreManager.sharedManager.ensureUpdatesRegularly(goal: self.goal)
+                try await ServiceLocator.healthStoreManager.ensureUpdatesRegularly(goal: self.goal)
             } catch {
                 logger.error("Error setting up goal \(error)")
                 hud?.hide(true)
@@ -155,7 +155,7 @@ class ConfigureHKMetricViewController : UIViewController {
             params = ["ii_params" : ["name" : "apple", "metric" : self.goal.healthKitMetric!]]
 
             do {
-                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal.slug).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal.slug).json", parameters: params)
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
                 hud?.hide(true, afterDelay: 2)

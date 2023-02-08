@@ -65,7 +65,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             let leadtime = userInfo["leadtime"]
             let params = [ "leadtime" : leadtime, "use_defaults" : false ]
             do {
-                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params as [String : Any])
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal!.slug).json", parameters: params as [String : Any])
                 self.goal!.leadtime = leadtime!
                 self.goal!.use_defaults = NSNumber(value: false as Bool)
                 self.useDefaultsSwitch.isOn = false
@@ -82,7 +82,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
                 do {
                     let params = ["alertstart" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
-                    let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
+                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
                     self.goal!.alertstart = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
                     self.useDefaultsSwitch.isOn = false
@@ -95,7 +95,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
                 do {
                     let params = ["deadline" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
-                    let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
+                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
                     self.goal?.deadline = self.midnightOffsetFromTimePickerView()
                     self.goal!.use_defaults = NSNumber(value: false as Bool)
                     self.useDefaultsSwitch.isOn = false
@@ -117,7 +117,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 Task { @MainActor in
                     do {
                         let params = ["use_defaults" : true]
-                        let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
+                        let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
                         self.goal?.use_defaults = NSNumber(value: true as Bool)
                     } catch {
                         self.logger.error("Error setting goal to use defaults: \(error)")
@@ -126,20 +126,20 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     }
 
                     do {
-                        try await CurrentUserManager.sharedManager.syncNotificationDefaults()
+                        try await ServiceLocator.currentUserManager.syncNotificationDefaults()
                     } catch {
                         self.logger.error("Error syncing notification defaults")
                         // TODO: Show UI failure
                         return
                     }
 
-                    self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
+                    self.leadTimeStepper.value = ServiceLocator.currentUserManager.defaultLeadTime().doubleValue
                     self.updateLeadTimeLabel()
-                    self.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-                    self.deadline   = CurrentUserManager.sharedManager.defaultDeadline()
-                    self.goal!.leadtime = CurrentUserManager.sharedManager.defaultLeadTime()
-                    self.goal!.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-                    self.goal!.deadline = CurrentUserManager.sharedManager.defaultDeadline()
+                    self.alertstart = ServiceLocator.currentUserManager.defaultAlertstart()
+                    self.deadline   = ServiceLocator.currentUserManager.defaultDeadline()
+                    self.goal!.leadtime = ServiceLocator.currentUserManager.defaultLeadTime()
+                    self.goal!.alertstart = ServiceLocator.currentUserManager.defaultAlertstart()
+                    self.goal!.deadline = ServiceLocator.currentUserManager.defaultDeadline()
                     self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
                 }
             }))
@@ -152,7 +152,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             Task { @MainActor in
                 do {
                     let params = ["use_defaults" : false]
-                    let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
+                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal!.slug).json", parameters: params)
                         self.goal?.use_defaults = NSNumber(value: false as Bool)
                 } catch {
                     logger.error("Error setting goal to NOT use defaults: \(error)")

@@ -14,9 +14,9 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     
     override init() {
         super.init()
-        self.leadTimeStepper.value = CurrentUserManager.sharedManager.defaultLeadTime().doubleValue
-        self.alertstart = CurrentUserManager.sharedManager.defaultAlertstart()
-        self.deadline = CurrentUserManager.sharedManager.defaultDeadline()
+        self.leadTimeStepper.value = ServiceLocator.currentUserManager.defaultLeadTime().doubleValue
+        self.alertstart = ServiceLocator.currentUserManager.defaultAlertstart()
+        self.deadline = ServiceLocator.currentUserManager.defaultDeadline()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -29,8 +29,8 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
             guard let leadtime = userInfo["leadtime"] else { return }
             let params = [ "default_leadtime" : leadtime ]
             do {
-                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
-                CurrentUserManager.sharedManager.setDefaultLeadTime(leadtime)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!).json", parameters: params)
+                ServiceLocator.currentUserManager.setDefaultLeadTime(leadtime)
             } catch {
                 logger.error("Error setting default leadtime: \(error)")
                 // show alert
@@ -49,8 +49,8 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                 self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
                 let params = ["default_alertstart" : self.midnightOffsetFromTimePickerView()]
                 do {
-                    let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
-                    CurrentUserManager.sharedManager.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
+                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!).json", parameters: params)
+                    ServiceLocator.currentUserManager.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
                 } catch {
                     logger.error("Error setting default alert start: \(error)")
                     //foo
@@ -60,8 +60,8 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                 self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
                 let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
                 do {
-                    let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: params)
-                    CurrentUserManager.sharedManager.setDefaultDeadline(self.midnightOffsetFromTimePickerView())
+                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!).json", parameters: params)
+                    ServiceLocator.currentUserManager.setDefaultDeadline(self.midnightOffsetFromTimePickerView())
                 } catch {
                     logger.error("Error setting default deadline: \(error)")
                     //foo

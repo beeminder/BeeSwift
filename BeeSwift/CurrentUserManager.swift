@@ -9,9 +9,7 @@
 import Foundation
 import SwiftyJSON
 
-class CurrentUserManager : NSObject {
-    
-    static let sharedManager = CurrentUserManager()
+class CurrentUserManager {
     static let signedInNotificationName     = "com.beeminder.signedInNotification"
     static let willSignOutNotificationName  = "com.beeminder.willSignOutNotification"
     static let failedSignInNotificationName = "com.beeminder.failedSignInNotification"
@@ -31,6 +29,8 @@ class CurrentUserManager : NSObject {
     fileprivate let defaultDeadlineKey = "default_deadline"
     fileprivate let beemTZKey = "timezone"
     fileprivate let cachedLastFetchedGoalsKey = "last_fetched_goals"
+
+    private let requestManager: RequestManager
     
     var allKeys: [String] {
         [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
@@ -38,8 +38,8 @@ class CurrentUserManager : NSObject {
     
     let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
     
-    override init() {
-        super.init()
+    init(requestManager: RequestManager) {
+        self.requestManager = requestManager
         migrateValues()
     }
     
@@ -151,7 +151,7 @@ class CurrentUserManager : NSObject {
     
     func signInWithEmail(_ email: String, password: String) async {
         do {
-           let response = try await RequestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>)
+           let response = try await requestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>)
             await self.handleSuccessfulSignin(JSON(response!))
         } catch {
             await self.handleFailedSignin(error, errorMessage: error.localizedDescription)
@@ -174,7 +174,7 @@ class CurrentUserManager : NSObject {
     }
     
     func syncNotificationDefaults() async throws {
-        let response = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!).json", parameters: [:])
+        let response = try await requestManager.get(url: "api/v1/users/\(username!).json", parameters: [:])
         let responseJSON = JSON(response!)
         self.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
         self.set(responseJSON["default_deadline"].number!, forKey: "default_deadline")
@@ -207,11 +207,11 @@ class CurrentUserManager : NSObject {
     
     func fetchGoals() async throws -> [Goal] {
         guard let username = self.username else {
-            await CurrentUserManager.sharedManager.signOut()
+            await signOut()
             return []
         }
 
-        let responseObject = try await RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)!
+        let responseObject = try await requestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)!
         let response = JSON(responseObject)
         guard let goals = self.updateGoalsFromJson(response) else { return [] }
 
@@ -269,7 +269,7 @@ class CurrentUserManager : NSObject {
         if let sharedDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier) {
             sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
             // Note this key is different to accessTokenKey
-            sharedDefaults.set(CurrentUserManager.sharedManager.accessToken, forKey: "accessToken")
+            sharedDefaults.set(accessToken, forKey: "accessToken")
         }
     }
     

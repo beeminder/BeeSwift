@@ -338,7 +338,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         hud?.mode = .indeterminate
 
         do {
-            try await HealthStoreManager.sharedManager.updateWithRecentData(goal: self.goal, days: numDays)
+            try await ServiceLocator.healthStoreManager.updateWithRecentData(goal: self.goal, days: numDays)
             try await ensureGoalAndGraphUpToDate()
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
@@ -358,7 +358,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if (!CurrentUserManager.sharedManager.signedIn()) { return }
+        if (!ServiceLocator.currentUserManager.signedIn()) { return }
         if keyPath == "graph_url" {
             self.setGraphImage()
         } else if keyPath == "delta_text" || keyPath == "safebump" || keyPath == "safesum" {
@@ -398,9 +398,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     @objc func actionButtonPressed() {
-        guard let username = CurrentUserManager.sharedManager.username,
-            let accessToken = CurrentUserManager.sharedManager.accessToken,
-            let viewGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(RequestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
+        guard let username = ServiceLocator.currentUserManager.username,
+            let accessToken = ServiceLocator.currentUserManager.accessToken,
+            let viewGoalUrl = URL(string: "\(ServiceLocator.requestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(ServiceLocator.requestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
         
         let safariVC = SFSafariViewController(url: viewGoalUrl)
         safariVC.delegate = self
@@ -430,7 +430,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     func setGraphImage() {
-        if CurrentUserManager.sharedManager.isDeadbeat() {
+        if ServiceLocator.currentUserManager.isDeadbeat() {
             self.goalImageView.image = UIImage(named: "GraphPlaceholder")
         } else {
             self.goalImageView.af.setImage(withURL: URL(string: self.goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
@@ -536,7 +536,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
 
             do {
-                let _ = try await RequestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug)
+                let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug)
                 self.commentTextField.text = ""
 
                 try await ensureGoalAndGraphUpToDate()
@@ -554,7 +554,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             }
 
             do {
-                let _ = try await CurrentUserManager.sharedManager.fetchGoals()
+                let _ = try await ServiceLocator.currentUserManager.fetchGoals()
             } catch {
                 logger.error("Failed up refresh goals after posting: \(error)")
             }

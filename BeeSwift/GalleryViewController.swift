@@ -85,7 +85,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !CurrentUserManager.sharedManager.isDeadbeat() {
+            if !ServiceLocator.currentUserManager.isDeadbeat() {
                 make.height.equalTo(0)
             }
         }
@@ -166,7 +166,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
 
         
-        if CurrentUserManager.sharedManager.signedIn() {
+        if ServiceLocator.currentUserManager.signedIn() {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
                 if success {
@@ -179,7 +179,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
         Task { @MainActor in
             do {
-                let updateState = try await VersionManager.sharedManager.updateState()
+                let updateState = try await ServiceLocator.versionManager.updateState()
 
                 switch updateState {
                 case .UpdateRequired:
@@ -212,20 +212,20 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !CurrentUserManager.sharedManager.signedIn() {
+        if !ServiceLocator.currentUserManager.signedIn() {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
         } else {
-            self.goals = CurrentUserManager.sharedManager.staleGoals() ?? []
+            self.goals = ServiceLocator.currentUserManager.staleGoals() ?? []
             self.collectionView!.reloadData()
         }
         self.fetchGoals()
     }
     
     @objc func handleGoalsFetchedNotification() {
-        self.goals = CurrentUserManager.sharedManager.staleGoals() ?? []
-        self.lastUpdated = CurrentUserManager.sharedManager.goalsFetchedAt
+        self.goals = ServiceLocator.currentUserManager.staleGoals() ?? []
+        self.lastUpdated = ServiceLocator.currentUserManager.goalsFetchedAt
         self.didFetchGoals()
     }
     
@@ -323,16 +323,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !CurrentUserManager.sharedManager.isDeadbeat() {
+            if !ServiceLocator.currentUserManager.isDeadbeat() {
                 make.height.equalTo(0)
             }
         }
     }
     
     @objc func handleCreateGoalButtonPressed() {
-        guard let username = CurrentUserManager.sharedManager.username,
-            let access_token = CurrentUserManager.sharedManager.accessToken,
-            let createGoalUrl = URL(string: "\(RequestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(access_token)&redirect_to_url=\(RequestManager.baseURLString)/new?ios=true") else { return }
+        guard let username = ServiceLocator.currentUserManager.username,
+            let access_token = ServiceLocator.currentUserManager.accessToken,
+            let createGoalUrl = URL(string: "\(ServiceLocator.requestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(access_token)&redirect_to_url=\(ServiceLocator.requestManager.baseURLString)/new?ios=true") else { return }
         
         let safariVC = SFSafariViewController(url: createGoalUrl)
         safariVC.delegate = self
@@ -392,7 +392,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func setupHealthKit() {
         Task { @MainActor in
             do {
-                try await HealthStoreManager.sharedManager.ensureUpdatesRegularly(goals: self.goals)
+                try await ServiceLocator.healthStoreManager.ensureUpdatesRegularly(goals: self.goals)
             } catch {
                 // We should display an error UI
             }
@@ -406,7 +406,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
 
             do {
-                let goals = try await CurrentUserManager.sharedManager.fetchGoals()
+                let goals = try await ServiceLocator.currentUserManager.fetchGoals()
                 self.goals = goals
                 self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
                 self.didFetchGoals()
@@ -447,7 +447,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return VersionManager.sharedManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count + 1
+        return ServiceLocator.versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count + 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {

@@ -27,11 +27,11 @@ struct ServerError: Error {
 }
 
 class RequestManager {
-    static let baseURLString = Config.init().baseURLString
-    private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
+    let baseURLString = Config.init().baseURLString
+    private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
     
-    class func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?) async throws -> Any? {
-        let response = await AF.request("\(RequestManager.baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: HTTPHeaders.default)
+    func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?) async throws -> Any? {
+        let response = await AF.request("\(baseURLString)/\(url)", method: method, parameters: parameters, encoding: URLEncoding.default, headers: HTTPHeaders.default)
             .validate()
             .serializingData(emptyRequestMethods: [HTTPMethod.post])
             .response
@@ -48,7 +48,7 @@ class RequestManager {
             if case .responseValidationFailed(let reason) = error {
                 if case .unacceptableStatusCode(let code) = reason {
                     if code == 401 {
-                        await CurrentUserManager.sharedManager.signOut()
+                        await ServiceLocator.currentUserManager.signOut()
                     }
                 }
             }
@@ -63,37 +63,37 @@ class RequestManager {
         }
     }
     
-    class func get(url: String, parameters: [String: Any]?) async throws -> Any? {
-        return try await RequestManager.rawRequest(url: url, method: .get, parameters: RequestManager.authedParams(parameters))
+    func get(url: String, parameters: [String: Any]?) async throws -> Any? {
+        return try await rawRequest(url: url, method: .get, parameters: authedParams(parameters))
     }
     
     
-    class func put(url: String, parameters: [String: Any]?) async throws -> Any? {
-        return try await RequestManager.rawRequest(url: url, method: .patch, parameters: RequestManager.authedParams(parameters))
+    func put(url: String, parameters: [String: Any]?) async throws -> Any? {
+        return try await rawRequest(url: url, method: .patch, parameters: authedParams(parameters))
     }
     
-    class func post(url: String, parameters: [String: Any]?) async throws -> Any? {
-        return try await RequestManager.rawRequest(url: url, method: .post, parameters: RequestManager.authedParams(parameters))
+    func post(url: String, parameters: [String: Any]?) async throws -> Any? {
+        return try await rawRequest(url: url, method: .post, parameters: authedParams(parameters))
     }
     
-    class func delete(url: String, parameters: [String: Any]?) async throws -> Any? {
-        return try await RequestManager.rawRequest(url: url, method: .delete, parameters: RequestManager.authedParams(parameters))
+    func delete(url: String, parameters: [String: Any]?) async throws -> Any? {
+        return try await rawRequest(url: url, method: .delete, parameters: authedParams(parameters))
     }
     
     
-    class func authedParams(_ params: [String: Any]?) -> Parameters? {
-        if params == nil { return ["access_token" : CurrentUserManager.sharedManager.accessToken ?? ""] }
-        if CurrentUserManager.sharedManager.accessToken != nil {
+    func authedParams(_ params: [String: Any]?) -> Parameters? {
+        if params == nil { return ["access_token" : ServiceLocator.currentUserManager.accessToken ?? ""] }
+        if ServiceLocator.currentUserManager.accessToken != nil {
             var localParams = params!
-            localParams["access_token"] = CurrentUserManager.sharedManager.accessToken!
+            localParams["access_token"] = ServiceLocator.currentUserManager.accessToken!
             return localParams
         }
         return params
     }
 
-    class func addDatapoint(urtext: String, slug: String) async throws -> Any? {
+    func addDatapoint(urtext: String, slug: String) async throws -> Any? {
         let params = ["urtext": urtext, "requestid": UUID().uuidString]
         
-        return try await RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(slug)/datapoints.json", parameters: params)
+        return try await post(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(slug)/datapoints.json", parameters: params)
     }
 }
