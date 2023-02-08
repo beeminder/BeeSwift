@@ -32,8 +32,6 @@ class QuantityHealthKitMetric : HealthKitMetric {
     }
 
     func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [DataPoint] {
-        logger.notice("Fetching \(days) recent data points for \(self.databaseString, privacy: .public)")
-
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {
             throw HealthKitError("Unable to look up a quantityType")
         }
