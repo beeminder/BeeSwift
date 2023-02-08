@@ -216,12 +216,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
+        } else {
+            self.goals = CurrentUserManager.sharedManager.staleGoals() ?? []
+            self.collectionView!.reloadData()
         }
         self.fetchGoals()
     }
     
     @objc func handleGoalsFetchedNotification() {
-        self.goals = CurrentUserManager.sharedManager.goals
+        self.goals = CurrentUserManager.sharedManager.staleGoals() ?? []
         self.lastUpdated = CurrentUserManager.sharedManager.goalsFetchedAt
         self.didFetchGoals()
     }

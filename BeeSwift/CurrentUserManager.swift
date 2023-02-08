@@ -76,9 +76,12 @@ class CurrentUserManager : NSObject {
         userDefaults.removeObject(forKey: key)
         UserDefaults.standard.removeObject(forKey: key)
     }
-    
-    var goals : [Goal] = []
-    var goalsFetchedAt : Date = Date()
+
+    /// The known set of goals
+    /// Has two slightly differenty empty states. If nil, it means we have not fetched goals. If an empty dictionary, means we have
+    /// fetched goals and found there to be none.
+    private var goals : [String: Goal]? = nil
+    var goalsFetchedAt : Date? = nil
     
     var accessToken :String? {
         return userDefaults.object(forKey: accessTokenKey) as! String?
@@ -187,7 +190,7 @@ class CurrentUserManager : NSObject {
     }
     
     func signOut() async {
-        self.goals = []
+        self.goals = [:]
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
 
         await Task { @MainActor in
@@ -208,35 +211,58 @@ class CurrentUserManager : NSObject {
             return []
         }
 
-        let responseObject = try await RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)
-        let response = JSON(responseObject!)
-        let jGoals = self.goalsFromJSON(response)!
+        let responseObject = try await RequestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)!
+        let response = JSON(responseObject)
+        guard let goals = self.updateGoalsFromJson(response) else { return [] }
+
         self.updateTodayWidget()
         self.goalsFetchedAt = Date()
+
         self.setCachedLastFetchedGoals(response)
 
         await Task { @MainActor in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
         }.value
 
-        return jGoals
+        return Array(goals.values)
     }
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
     func staleGoals() -> [Goal]? {
+        if let goals = self.goals {
+            return Array(goals.values)
+        }
+
         guard let goalJSON = self.cachedLastFetchedGoals() else { return nil }
-        return goalsFromJSON(goalJSON)
+        guard let goals = self.updateGoalsFromJson(goalJSON) else { return nil }
+
+        return Array(goals.values)
+
     }
 
-    private func goalsFromJSON(_ responseJSON: JSON) -> [Goal]? {
-        guard let responseGoals = responseJSON.array else { return nil }
-        var jGoals : [Goal] = []
-        responseGoals.forEach({ (goalJSON) in
-            let g = Goal(json: goalJSON)
-            jGoals.append(g)
-        })
-        self.goals = jGoals
-        return jGoals
+    /// Update the set of goals to match those in the provided json. Existing Goal objects will be re-used when they match an ID in the json
+    private func updateGoalsFromJson(_ responseJSON: JSON) -> [String: Goal]? {
+        var updatedGoals: [String: Goal] = [:]
+        guard let responseGoals = responseJSON.array else {
+            self.goals = nil
+            return nil
+        }
+
+        let existingGoals = self.goals ?? [:]
+
+        for goalJSON in responseGoals {
+            let goalId = goalJSON["id"].stringValue
+            if let existingGoal = existingGoals[goalId] {
+                existingGoal.updateToMatch(json: goalJSON)
+                updatedGoals[existingGoal.id] = existingGoal
+            } else {
+                let newGoal = Goal(json: goalJSON)
+                updatedGoals[newGoal.id] = newGoal
+            }
+        }
+
+        self.goals = updatedGoals
+        return updatedGoals
     }
 
     func updateTodayWidget() {
@@ -248,7 +274,9 @@ class CurrentUserManager : NSObject {
     }
     
     func todayGoalDictionaries() -> Array<Any> {
-        let todayGoals = self.goals.map { (goal) -> Any? in
+        guard let goals = self.goals else { return [] }
+
+        let todayGoals = goals.values.map { (goal) in
             let shortSlug = goal.slug.prefix(20)
             let limsum = goal.limsum ?? ""
             return ["deadline" : goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
