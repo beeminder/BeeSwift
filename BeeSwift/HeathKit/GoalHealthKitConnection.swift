@@ -82,7 +82,8 @@ class GoalHealthKitConnection {
     /// Explicitly sync goal data for the number of days specified
     public func updateWithRecentData(days : Int) async throws {
         let newDataPoints = try await metric.recentDataPoints(days: days, deadline: self.goal.deadline.intValue, healthStore: healthStore)
-        let nonZeroDataPoints =  newDataPoints.filter { dataPoint in dataPoint.value != 0 }
+        let nonZeroDataPoints = newDataPoints.filter { dataPoint in dataPoint.value != 0 }
+        logger.notice("Updating \(self.metric.databaseString, privacy: .public) goal with \(nonZeroDataPoints.count, privacy: .public) datapoints. Skipped \(newDataPoints.count - nonZeroDataPoints.count, privacy: .public) empty points.")
         try await goal.updateToMatchDataPoints(healthKitDataPoints: nonZeroDataPoints)
     }
 

@@ -338,6 +338,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         hud?.mode = .indeterminate
 
         do {
+            logger.notice("Sync button for goal \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
             try await ServiceLocator.healthStoreManager.updateWithRecentData(goal: self.goal, days: numDays)
             try await ensureGoalAndGraphUpToDate()
 
