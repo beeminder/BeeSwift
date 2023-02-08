@@ -51,7 +51,7 @@ class AddDataIntentHandler: NSObject, AddDataIntentHandling {
 
         Task {
             do {
-                let _ = try await RequestManager.addDatapoint(urtext: "^ \(value) \"\(comment)\"", slug: goalSlug)
+                let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: "^ \(value) \"\(comment)\"", slug: goalSlug)
                 completion(AddDataIntentResponse.success(goal: goalSlug))
             } catch {
                 completion(AddDataIntentResponse.failure(goal: goalSlug))

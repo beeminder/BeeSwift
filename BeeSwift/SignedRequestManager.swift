@@ -10,19 +10,24 @@ import Foundation
 import Alamofire
 import BeeKit
 
-class SignedRequestManager: RequestManager {
-    
-    class func signedGET(url: String, parameters: [String: Any]?) async throws -> Any? {
-        let params = SignedRequestManager.signedParameters(RequestManager.authedParams(parameters))
-        return try await RequestManager.rawRequest(url: url, method: .get, parameters: params)
+class SignedRequestManager {
+    private let requestManager: RequestManager
+
+    init(requestManager: RequestManager) {
+        self.requestManager = requestManager
+    }
+
+    func signedGET(url: String, parameters: [String: Any]?) async throws -> Any? {
+        let params = signedParameters(requestManager.authedParams(parameters))
+        return try await requestManager.rawRequest(url: url, method: .get, parameters: params)
     }
     
-    class func signedPOST(url: String, parameters: [String: Any]?) async throws -> Any? {
-        let params = SignedRequestManager.signedParameters(RequestManager.authedParams(parameters))
-        return try await RequestManager.rawRequest(url: url, method: .post, parameters: params)
+    func signedPOST(url: String, parameters: [String: Any]?) async throws -> Any? {
+        let params = signedParameters(requestManager.authedParams(parameters))
+        return try await requestManager.rawRequest(url: url, method: .post, parameters: params)
     }
     
-    fileprivate class func signedParameters(_ params: [String: Any]?) -> [String: Any]? {
+    fileprivate func signedParameters(_ params: [String: Any]?) -> [String: Any]? {
         if params == nil { return params }
         var signed = params
         var base = ""

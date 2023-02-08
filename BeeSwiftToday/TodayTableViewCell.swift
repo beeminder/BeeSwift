@@ -156,7 +156,7 @@ class TodayTableViewCell: UITableViewCell {
 
         Task { @MainActor in
             do {
-                let _ = try await RequestManager.post(url: "api/v1/users/me/goals/\(slug)/datapoints.json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.post(url: "api/v1/users/me/goals/\(slug)/datapoints.json", parameters: params)
             } catch {
                 self.addDataButton.setTitle("oops!", for: .normal)
                 return
@@ -179,7 +179,7 @@ class TodayTableViewCell: UITableViewCell {
 
             let parameters = ["access_token": token]
             do {
-                let responseObject = try await RequestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters)
+                let responseObject = try await ServiceLocator.requestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters)
                 let goalJSON = JSON(responseObject!)
                 if (!goalJSON["queued"].bool!) {
                     self.pollTimer?.invalidate()
@@ -205,7 +205,7 @@ class TodayTableViewCell: UITableViewCell {
     /// and replacing it with the downloaded, updated image
     /// provided via the urlStr
     func setGraphImage(urlStr: String?) {
-        guard !CurrentUserManager.sharedManager.isDeadbeat(),
+        guard !ServiceLocator.currentUserManager.isDeadbeat(),
         let thumbUrlStr = urlStr, let thumbUrl = URL(string: thumbUrlStr) else {
             self.graphImageView.image = self.thumbnailPlaceholder
             return

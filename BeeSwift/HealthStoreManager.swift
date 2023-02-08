@@ -11,7 +11,6 @@ import HealthKit
 import OSLog
 
 class HealthStoreManager :NSObject {
-    static let sharedManager = HealthStoreManager()
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
 
     // TODO: Public for now to use from config

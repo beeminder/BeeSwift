@@ -36,10 +36,10 @@ class BackgroundUpdates {
 
         Task { @MainActor in
             do {
-                let goals = try await CurrentUserManager.sharedManager.fetchGoals()
-                HealthStoreManager.sharedManager.silentlyInstallObservers(goals: goals)
+                let goals = try await ServiceLocator.currentUserManager.fetchGoals()
+                ServiceLocator.healthStoreManager.silentlyInstallObservers(goals: goals)
 
-                try await HealthStoreManager.sharedManager.updateAllGoalsWithRecentData(days: 3)
+                try await ServiceLocator.healthStoreManager.updateAllGoalsWithRecentData(days: 3)
             } catch {
                 logger.error("Error refreshing goals: \(error)")
             }

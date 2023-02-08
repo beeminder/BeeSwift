@@ -191,7 +191,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     }
     
     @objc func chooseSignInButtonPressed() {
-        CurrentUserManager.sharedManager.signingUp = false
+        ServiceLocator.currentUserManager.signingUp = false
         //self.divider.isHidden = false
         //self.backToSignUpButton.isHidden = false
         self.emailTextField.isHidden = false
@@ -242,7 +242,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
             }
 
             MBProgressHUD.showAdded(to: self.view, animated: true)
-            await CurrentUserManager.sharedManager.signInWithEmail(email, password: password)
+            await ServiceLocator.currentUserManager.signInWithEmail(email, password: password)
         }
     }
     

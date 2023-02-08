@@ -185,10 +185,10 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
 
             do {
                 let params = [
-                    "access_token": CurrentUserManager.sharedManager.accessToken!,
+                    "access_token": ServiceLocator.currentUserManager.accessToken!,
                     "urtext": self.urtext()
                 ]
-                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
                 let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
@@ -203,13 +203,13 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     func deleteDatapoint() {
         Task { @MainActor in
             let params = [
-                "access_token": CurrentUserManager.sharedManager.accessToken!
+                "access_token": ServiceLocator.currentUserManager.accessToken!
             ]
             let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
             hud?.mode = .indeterminate
 
             do {
-                let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
 
                 let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
                 hud?.mode = .customView

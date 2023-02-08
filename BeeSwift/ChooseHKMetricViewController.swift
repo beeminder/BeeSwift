@@ -123,7 +123,7 @@ extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSou
             let metric = self.sortedMetricsByCategory[section]![indexPath.row]
 
             do {
-                try await HealthStoreManager.sharedManager.requestAuthorization(metric: metric)
+                try await ServiceLocator.healthStoreManager.requestAuthorization(metric: metric)
             } catch {
                 logger.error("Error requesting permission for metric: \(error)")
                 self.tableView.isUserInteractionEnabled = true

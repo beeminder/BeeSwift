@@ -22,22 +22,25 @@ enum UpdateState {
 fileprivate let dayInSeconds = 24.0 * 60.0 * 60.0
 fileprivate let ageOfReleaseToWarn: TimeInterval = 10.0 * dayInSeconds
 
-class VersionManager : NSObject {
-    static let sharedManager = VersionManager()
-
+class VersionManager {
     private var minRequiredVersion : String = "1.0"
     private var updateState = UpdateState.UpToDate
+    private let requestManager: RequestManager
+
+    init(requestManager: RequestManager) {
+        self.requestManager = requestManager
+    }
 
     func lastChckedUpdateState() -> UpdateState {
         return updateState
     }
 
     func updateState() async throws -> UpdateState {
-        let currentVersion = VersionManager.sharedManager.currentVersion()
+        let currentVersion = currentVersion()
         let now = Date()
 
-        async let (version: appStoreVersion, releaseDate: appStoreReleaseDate) = VersionManager.sharedManager.appStoreVersion()
-        async let updateRequired = VersionManager.sharedManager.checkIfUpdateRequired()
+        async let (version: appStoreVersion, releaseDate: appStoreReleaseDate) = appStoreVersion()
+        async let updateRequired = checkIfUpdateRequired()
 
         if try await updateRequired {
             updateState = UpdateState.UpdateRequired
@@ -60,7 +63,7 @@ class VersionManager : NSObject {
     }
     
     private func checkIfUpdateRequired() async throws -> Bool {
-        let responseJSON = try await RequestManager.get(url: "api/private/app_versions.json", parameters: nil)
+        let responseJSON = try await requestManager.get(url: "api/private/app_versions.json", parameters: nil)
 
         guard let response = JSON(responseJSON!).dictionary else {
             throw VersionError.invalidServerResponse
@@ -68,9 +71,9 @@ class VersionManager : NSObject {
         guard let minVersion = response["min_ios"]?.number?.decimalValue else {
             throw VersionError.noMinimumVersion
         }
-        VersionManager.sharedManager.minRequiredVersion = "\(minVersion)"
+        minRequiredVersion = "\(minVersion)"
 
-        let currentVersion = VersionManager.sharedManager.currentVersion()
+        let currentVersion = currentVersion()
         return currentVersion.compare("\(minVersion)", options: .numeric) == .orderedAscending
     }
     

@@ -37,8 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // in order to successfully be delivered background updates. This means we cannot wait
             // for a round trip to the server to fetch latest goals, so use a potentially stale
             // list from last time we did a successful update.
-            if let goals = CurrentUserManager.sharedManager.staleGoals() {
-                HealthStoreManager.sharedManager.silentlyInstallObservers(goals: goals)
+            if let goals = ServiceLocator.currentUserManager.staleGoals() {
+                ServiceLocator.healthStoreManager.silentlyInstallObservers(goals: goals)
             }
         }
         
@@ -119,7 +119,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let token = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
 
             do {
-                let _ = try await SignedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: ["device_token" : token])
+                let _ = try await ServiceLocator.signedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: ["device_token" : token])
             } catch {
                 logger.error("Error sending device push token: \(error)")
             }
@@ -128,11 +128,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         logger.notice("application:didFailToRegisterForRemoteNotificationsWithError")
-//        RemoteNotificationsManager.sharedManager.didFailToRegisterForRemoteNotificationsWithError(error)
     }
     
     @objc func updateBadgeCount() {
-        guard let goals = CurrentUserManager.sharedManager.staleGoals() else { return }
+        guard let goals = ServiceLocator.currentUserManager.staleGoals() else { return }
         UIApplication.shared.applicationIconBadgeNumber = goals.filter({ (goal: Goal) -> Bool in
             return goal.relativeLane.intValue < -1
         }).count
@@ -141,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func refreshGoalsAndLogErrors() {
         Task { @MainActor in
             do {
-                let _ = try await CurrentUserManager.sharedManager.fetchGoals()
+                let _ = try await ServiceLocator.currentUserManager.fetchGoals()
             } catch {
                 logger.error("Error refreshing goals: \(error)")
             }

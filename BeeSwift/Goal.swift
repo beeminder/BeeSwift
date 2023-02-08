@@ -307,7 +307,7 @@ class Goal {
     }
 
     func refresh() async throws {
-        let responseObject = try await RequestManager.get(url: "/api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)?access_token=\(CurrentUserManager.sharedManager.accessToken!)&datapoints_count=5", parameters: nil)
+        let responseObject = try await ServiceLocator.requestManager.get(url: "/api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)?access_token=\(ServiceLocator.currentUserManager.accessToken!)&datapoints_count=5", parameters: nil)
         self.updateToMatch(json: JSON(responseObject!))
     }
 
@@ -356,7 +356,7 @@ class Goal {
         Task { @MainActor in
             let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
             do {
-                let response = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
+                let response = try await ServiceLocator.requestManager.get(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
                 let responseJSON = JSON(response!)
                 success(ExistingDataPoint.fromJSONArray(array: responseJSON.arrayValue))
             } catch {
@@ -381,13 +381,13 @@ class Goal {
             let daystamp = datapoint.daystamp
             let requestId = "\(daystamp)-\(self.minuteStamp())"
             let params = [
-                "access_token": CurrentUserManager.sharedManager.accessToken!,
+                "access_token": ServiceLocator.currentUserManager.accessToken!,
                 "value": "\(datapointValue)",
                 "comment": "Auto-updated via Apple Health",
                 "requestid": requestId
             ]
             do {
-                let _ = try await RequestManager.put(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params)
                 success?()
             } catch {
                 errorCompletion?()
@@ -398,7 +398,7 @@ class Goal {
     func deleteDatapoint(datapoint : ExistingDataPoint) {
         Task { @MainActor in
             do {
-                let _ = try await RequestManager.delete(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id)", parameters: nil)
+                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id)", parameters: nil)
             } catch {
                 logger.error("Error deleting datapoint: \(error)")
             }
@@ -408,7 +408,7 @@ class Goal {
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
         Task { @MainActor in
             do {
-                let response = try await RequestManager.post(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
+                let response = try await ServiceLocator.requestManager.post(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
                 success?(response)
             } catch {
                 failure?(error, error.localizedDescription)
@@ -418,7 +418,7 @@ class Goal {
 
     func fetchDatapoints(sort: String, per: Int, page: Int) async throws -> [ExistingDataPoint] {
         let params = ["sort" : sort, "per" : per, "page": page] as [String : Any]
-        let response = try await RequestManager.get(url: "api/v1/users/\(CurrentUserManager.sharedManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
+        let response = try await ServiceLocator.requestManager.get(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
         let responseJSON = JSON(response!)
         return ExistingDataPoint.fromJSONArray(array: responseJSON.arrayValue)
     }
@@ -491,7 +491,7 @@ class Goal {
             }
 
             let requestId = "\(newDataPoint.daystamp)-\(minuteStamp())"
-            let params = ["access_token": CurrentUserManager.sharedManager.accessToken!, "urtext": "\(newDataPoint.daystamp.suffix(2)) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": requestId]
+            let params = ["access_token": ServiceLocator.currentUserManager.accessToken!, "urtext": "\(newDataPoint.daystamp.suffix(2)) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": requestId]
 
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 postDatapoint(params: params, success: { (responseObject) in
