@@ -16,7 +16,6 @@ class CurrentUserManager {
     static let signedOutNotificationName    = "com.beeminder.signedOutNotification"
     static let resetNotificationName        = "com.beeminder.resetNotification"
     static let willResetNotificationName    = "com.beeminder.willResetNotification"
-    static let goalsFetchedNotificationName = "com.beeminder.goalsFetchedNotification"
     static let healthKitMetricRemovedNotificationName = "com.beeminder.healthKitMetricRemovedNotification"
     
     fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
@@ -28,7 +27,6 @@ class CurrentUserManager {
     fileprivate let defaultAlertstartKey = "default_alertstart"
     fileprivate let defaultDeadlineKey = "default_deadline"
     fileprivate let beemTZKey = "timezone"
-    fileprivate let cachedLastFetchedGoalsKey = "last_fetched_goals"
 
     private let requestManager: RequestManager
     
@@ -67,21 +65,16 @@ class CurrentUserManager {
     ///
     /// During migration to the appGroup shared store we still want to support users downgrading
     /// to prior versions, and thus write all values to both stores.
-    private func set(_ value: Any, forKey key: String) {
+    func set(_ value: Any, forKey key: String) {
         userDefaults.set(value, forKey: key)
         UserDefaults.standard.set(value, forKey: key)
     }
     
-    private func removeObject(forKey key: String) {
+    func removeObject(forKey key: String) {
         userDefaults.removeObject(forKey: key)
         UserDefaults.standard.removeObject(forKey: key)
     }
 
-    /// The known set of goals
-    /// Has two slightly differenty empty states. If nil, it means we have not fetched goals. If an empty dictionary, means we have
-    /// fetched goals and found there to be none.
-    private var goals : [String: Goal]? = nil
-    var goalsFetchedAt : Date? = nil
     
     var accessToken :String? {
         return userDefaults.object(forKey: accessTokenKey) as! String?
@@ -126,15 +119,6 @@ class CurrentUserManager {
     
     func timezone() -> String {
         return userDefaults.object(forKey: beemTZKey) as? String ?? "Unknown"
-    }
-
-    func setCachedLastFetchedGoals(_ goals : JSON) {
-        self.set(goals.rawString()!, forKey: self.cachedLastFetchedGoalsKey)
-    }
-
-    private func cachedLastFetchedGoals() -> JSON? {
-        guard let encodedValue = userDefaults.object(forKey: cachedLastFetchedGoalsKey) as? String else { return nil }
-        return JSON.parse(encodedValue)
     }
     
     func setDeadbeat(_ deadbeat: Bool) {
@@ -190,97 +174,18 @@ class CurrentUserManager {
     }
     
     func signOut() async {
-        self.goals = [:]
-        self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
 
         await Task { @MainActor in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
         }.value
+
         self.removeObject(forKey: accessTokenKey)
         self.removeObject(forKey: deadbeatKey)
         self.removeObject(forKey: usernameKey)
-        self.removeObject(forKey: cachedLastFetchedGoalsKey)
+
         await Task { @MainActor in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
         }.value
     }
     
-    func fetchGoals() async throws -> [Goal] {
-        guard let username = self.username else {
-            await signOut()
-            return []
-        }
-
-        let responseObject = try await requestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)!
-        let response = JSON(responseObject)
-        guard let goals = self.updateGoalsFromJson(response) else { return [] }
-
-        self.updateTodayWidget()
-        self.goalsFetchedAt = Date()
-
-        self.setCachedLastFetchedGoals(response)
-
-        await Task { @MainActor in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: self)
-        }.value
-
-        return Array(goals.values)
-    }
-
-    /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
-    func staleGoals() -> [Goal]? {
-        if let goals = self.goals {
-            return Array(goals.values)
-        }
-
-        guard let goalJSON = self.cachedLastFetchedGoals() else { return nil }
-        guard let goals = self.updateGoalsFromJson(goalJSON) else { return nil }
-
-        return Array(goals.values)
-
-    }
-
-    /// Update the set of goals to match those in the provided json. Existing Goal objects will be re-used when they match an ID in the json
-    private func updateGoalsFromJson(_ responseJSON: JSON) -> [String: Goal]? {
-        var updatedGoals: [String: Goal] = [:]
-        guard let responseGoals = responseJSON.array else {
-            self.goals = nil
-            return nil
-        }
-
-        let existingGoals = self.goals ?? [:]
-
-        for goalJSON in responseGoals {
-            let goalId = goalJSON["id"].stringValue
-            if let existingGoal = existingGoals[goalId] {
-                existingGoal.updateToMatch(json: goalJSON)
-                updatedGoals[existingGoal.id] = existingGoal
-            } else {
-                let newGoal = Goal(json: goalJSON)
-                updatedGoals[newGoal.id] = newGoal
-            }
-        }
-
-        self.goals = updatedGoals
-        return updatedGoals
-    }
-
-    func updateTodayWidget() {
-        if let sharedDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier) {
-            sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
-            // Note this key is different to accessTokenKey
-            sharedDefaults.set(accessToken, forKey: "accessToken")
-        }
-    }
-    
-    func todayGoalDictionaries() -> Array<Any> {
-        guard let goals = self.goals else { return [] }
-
-        let todayGoals = goals.values.map { (goal) in
-            let shortSlug = goal.slug.prefix(20)
-            let limsum = goal.limsum ?? ""
-            return ["deadline" : goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()]
-        }
-        return Array(todayGoals.prefix(3)) as Array<Any>
-    }
 }

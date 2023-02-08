@@ -36,7 +36,7 @@ class BackgroundUpdates {
 
         Task { @MainActor in
             do {
-                let goals = try await ServiceLocator.currentUserManager.fetchGoals()
+                let goals = try await ServiceLocator.goalManager.fetchGoals()
                 ServiceLocator.healthStoreManager.silentlyInstallObservers(goals: goals)
 
                 try await ServiceLocator.healthStoreManager.updateAllGoalsWithRecentData(days: 3)

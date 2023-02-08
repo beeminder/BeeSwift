@@ -88,7 +88,7 @@ class ConfigureNotificationsViewController: UIViewController {
     func fetchGoals() {
         Task { @MainActor in
             do {
-                let goals = try await ServiceLocator.currentUserManager.fetchGoals()
+                let goals = try await ServiceLocator.goalManager.fetchGoals()
                 self.goals = goals
                 self.sortGoals()
             } catch {

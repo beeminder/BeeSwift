@@ -12,6 +12,7 @@ class ServiceLocator {
     static let requestManager = RequestManager()
     static let signedRequestManager = SignedRequestManager(requestManager: requestManager)
     static let currentUserManager = CurrentUserManager(requestManager: requestManager)
+    static let goalManager = GoalManager(requestManager: requestManager, currentUserManager: currentUserManager)
     static let healthStoreManager = HealthStoreManager()
     static let versionManager = VersionManager(requestManager: requestManager)
 }

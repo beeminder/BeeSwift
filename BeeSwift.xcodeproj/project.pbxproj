@@ -90,6 +90,9 @@
 		E44CE77B2993330E00394E87 /* HealthStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */; };
 		E44CE77C2993349C00394E87 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12BA9531AFFF21800AFEF32 /* Crypto.swift */; };
 		E44CE77D2993349D00394E87 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12BA9531AFFF21800AFEF32 /* Crypto.swift */; };
+		E44CE783299338C500394E87 /* GoalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE782299338C500394E87 /* GoalManager.swift */; };
+		E44CE78429933A6100394E87 /* GoalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE782299338C500394E87 /* GoalManager.swift */; };
+		E44CE78529933A6100394E87 /* GoalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE782299338C500394E87 /* GoalManager.swift */; };
 		E457BE5D28C192B50012F5D0 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E457BE5C28C192B50012F5D0 /* IntentHandler.swift */; };
 		E46FF15B2984C522009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
 		E46FF15C2984C590009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
@@ -331,6 +334,7 @@
 		E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointValueAccessory.swift; sourceTree = "<group>"; };
 		E44CE7722993317B00394E87 /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
 		E44CE77E2993351100394E87 /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
+		E44CE782299338C500394E87 /* GoalManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalManager.swift; sourceTree = "<group>"; };
 		E457BE5C28C192B50012F5D0 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
 		E46FF15A2984C522009F8C7A /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutes.swift; sourceTree = "<group>"; };
@@ -461,6 +465,7 @@
 				A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */,
 				A142492C1FD079B4007736B3 /* SignedRequestManager.swift */,
 				E5C161932423CE9F0045C90D /* VersionManager.swift */,
+				E44CE782299338C500394E87 /* GoalManager.swift */,
 			);
 			name = Managers;
 			sourceTree = "<group>";
@@ -1169,6 +1174,7 @@
 				E42CB453291727B200A35AB9 /* HealthKitError.swift in Sources */,
 				A1D8532A1EB0EA2B00FC75DE /* BSButton.swift in Sources */,
 				E4E6426A290E22E6004F3EA9 /* HealthKitConfig.swift in Sources */,
+				E44CE78429933A6100394E87 /* GoalManager.swift in Sources */,
 				A1D8532D1EB0EA8100FC75DE /* UIColorExtension.swift in Sources */,
 				E4E6427D2910C3AB004F3EA9 /* HealthKitMetric.swift in Sources */,
 				E44CE776299332FA00394E87 /* VersionManager.swift in Sources */,
@@ -1215,6 +1221,7 @@
 				E44CE7732993317B00394E87 /* ServiceLocator.swift in Sources */,
 				E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */,
 				A11488BE1EE9B0CE003316E1 /* UIDevice.swift in Sources */,
+				E44CE783299338C500394E87 /* GoalManager.swift in Sources */,
 				E5C9EFE62612E02700DBBEAE /* AddDataIntents.intentdefinition in Sources */,
 				E48E2716296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift in Sources */,
 				A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */,
@@ -1300,6 +1307,7 @@
 				E42CB454291727B200A35AB9 /* HealthKitError.swift in Sources */,
 				E5CF51AD2612437400546184 /* Goal.swift in Sources */,
 				E4E6426B290E22E9004F3EA9 /* HealthKitConfig.swift in Sources */,
+				E44CE78529933A6100394E87 /* GoalManager.swift in Sources */,
 				E5CF51822612434700546184 /* BSLabel.swift in Sources */,
 				E4E6427E2910C3AB004F3EA9 /* HealthKitMetric.swift in Sources */,
 				E44CE777299332FB00394E87 /* VersionManager.swift in Sources */,

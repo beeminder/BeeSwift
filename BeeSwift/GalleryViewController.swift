@@ -43,7 +43,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleCreateGoalButtonPressed), name: NSNotification.Name(rawValue: "createGoalButtonPressed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsFetchedNotificationName), object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
@@ -217,15 +217,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
         } else {
-            self.goals = ServiceLocator.currentUserManager.staleGoals() ?? []
+            self.goals = ServiceLocator.goalManager.staleGoals() ?? []
             self.collectionView!.reloadData()
         }
         self.fetchGoals()
     }
     
     @objc func handleGoalsFetchedNotification() {
-        self.goals = ServiceLocator.currentUserManager.staleGoals() ?? []
-        self.lastUpdated = ServiceLocator.currentUserManager.goalsFetchedAt
+        self.goals = ServiceLocator.goalManager.staleGoals() ?? []
+        self.lastUpdated = ServiceLocator.goalManager.goalsFetchedAt
         self.didFetchGoals()
     }
     
@@ -406,7 +406,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
 
             do {
-                let goals = try await ServiceLocator.currentUserManager.fetchGoals()
+                let goals = try await ServiceLocator.goalManager.fetchGoals()
                 self.goals = goals
                 self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
                 self.didFetchGoals()

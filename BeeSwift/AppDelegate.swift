@@ -37,14 +37,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // in order to successfully be delivered background updates. This means we cannot wait
             // for a round trip to the server to fetch latest goals, so use a potentially stale
             // list from last time we did a successful update.
-            if let goals = ServiceLocator.currentUserManager.staleGoals() {
+            if let goals = ServiceLocator.goalManager.staleGoals() {
                 ServiceLocator.healthStoreManager.silentlyInstallObservers(goals: goals)
             }
         }
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.goalsFetchedNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: GoalManager.goalsFetchedNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
 
         backgroundUpdates.startUpdatingRegularlyInBackground()
@@ -131,7 +131,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     @objc func updateBadgeCount() {
-        guard let goals = ServiceLocator.currentUserManager.staleGoals() else { return }
+        guard let goals = ServiceLocator.goalManager.staleGoals() else { return }
         UIApplication.shared.applicationIconBadgeNumber = goals.filter({ (goal: Goal) -> Bool in
             return goal.relativeLane.intValue < -1
         }).count
@@ -140,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func refreshGoalsAndLogErrors() {
         Task { @MainActor in
             do {
-                let _ = try await ServiceLocator.currentUserManager.fetchGoals()
+                let _ = try await ServiceLocator.goalManager.fetchGoals()
             } catch {
                 logger.error("Error refreshing goals: \(error)")
             }
