@@ -18,11 +18,13 @@ class GoalHealthKitConnection {
     /// This does mean users who have very little buffer, and are not regularly unlocking their phone, may erroneously derail. There is nothing we
     /// can do about this.
     static let daysToUpdateOnChangeNotification = 7
+    static let minimumIntervalBetweenObserverUpdates : TimeInterval = 5 // Seconds
 
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
     private let healthStore: HKHealthStore
     private let goal : Goal
     private var observerQuery : HKObserverQuery? = nil
+    private var lastObserverUpdate : Date? = nil
 
     public let metric : HealthKitMetric
 
@@ -52,6 +54,15 @@ class GoalHealthKitConnection {
                 self.logger.error("ObserverQuery for \(self.goal.healthKitMetric ?? "nil", privacy: .public) was error: \(error, privacy: .public)")
                 return
             }
+
+            if let lastUpdate = self.lastObserverUpdate {
+                if Date().timeIntervalSince(lastUpdate) < GoalHealthKitConnection.minimumIntervalBetweenObserverUpdates {
+                    self.logger.notice("Ignoring update to \(self.goal.healthKitMetric ?? "nil", privacy: .public) due to recent previous update")
+                    completionHandler()
+                    return
+                }
+            }
+            self.lastObserverUpdate = Date()
 
             Task {
                 do {
