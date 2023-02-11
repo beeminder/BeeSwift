@@ -131,10 +131,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     @objc func updateBadgeCount() {
+        logger.notice("Updating badge count")
+
         guard let goals = ServiceLocator.goalManager.staleGoals() else { return }
-        UIApplication.shared.applicationIconBadgeNumber = goals.filter({ (goal: Goal) -> Bool in
+        let beemergencyCount = goals.filter({ (goal: Goal) -> Bool in
             return goal.relativeLane.intValue < -1
         }).count
+        logger.notice("Beemergency count is \(beemergencyCount, privacy: .public)")
+
+        UIApplication.shared.applicationIconBadgeNumber = beemergencyCount
     }
 
     private func refreshGoalsAndLogErrors() {
