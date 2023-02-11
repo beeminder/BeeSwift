@@ -493,6 +493,8 @@ class Goal {
             let requestId = "\(newDataPoint.daystamp)-\(minuteStamp())"
             let params = ["access_token": ServiceLocator.currentUserManager.accessToken!, "urtext": "\(newDataPoint.daystamp.suffix(2)) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": requestId]
 
+            logger.notice("Creating new datapoint for \(self.id, privacy: .public) on \(newDataPoint.daystamp, privacy: .public): \(newDataPoint.value, privacy: .private)")
+
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 postDatapoint(params: params, success: { (responseObject) in
                     continuation.resume()
@@ -505,6 +507,8 @@ class Goal {
             matchingDatapoints.forEach { datapoint in
                 deleteDatapoint(datapoint: datapoint)
             }
+
+            logger.notice("Updating datapoint for \(self.id) on \(firstDatapoint.daystamp, privacy: .public) from \(firstDatapoint.value) to \(newDataPoint.value)")
 
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 updateDatapoint(datapoint: firstDatapoint, datapointValue: newDataPoint.value, success: {
