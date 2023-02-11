@@ -15,6 +15,10 @@ import UserNotifications
 class Goal {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
 
+    // Ignore automatic datapoint updates where the difference is a smaller fraction than this. This
+    // prevents effectively no-op updates due to float rounding
+    private let datapointValueEpsilon = 0.00001
+
     var autodata: String = ""
     var delta_text: String = ""
     var graph_url: String?
@@ -508,16 +512,33 @@ class Goal {
                 deleteDatapoint(datapoint: datapoint)
             }
 
-            logger.notice("Updating datapoint for \(self.id) on \(firstDatapoint.daystamp, privacy: .public) from \(firstDatapoint.value) to \(newDataPoint.value)")
+            if !isApproximatelyEqual(firstDatapoint.value.doubleValue, newDataPoint.value.doubleValue) {
+                logger.notice("Updating datapoint for \(self.id) on \(firstDatapoint.daystamp, privacy: .public) from \(firstDatapoint.value) to \(newDataPoint.value)")
 
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                updateDatapoint(datapoint: firstDatapoint, datapointValue: newDataPoint.value, success: {
-                    continuation.resume()
-                }, errorCompletion: {
-                    continuation.resume(throwing: HealthKitError("Error updating data point"))
-                })
+                try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                    updateDatapoint(datapoint: firstDatapoint, datapointValue: newDataPoint.value, success: {
+                        continuation.resume()
+                    }, errorCompletion: {
+                        continuation.resume(throwing: HealthKitError("Error updating data point"))
+                    })
+                }
             }
         }
+    }
+
+    /// Compares two datapoint values for equality, allowing a certain epsilon
+    private func isApproximatelyEqual(_ first: Double, _ second: Double) -> Bool {
+        // Zero is never approximately equal to another number (as a relative different makes no sense)
+        if first == 0.0 && second == 0.0 {
+            return true
+        }
+        if first == 0.0 || second == 0.0 {
+            return false
+        }
+
+        let allowedDelta = ((first / 2) + (second / 2)) * datapointValueEpsilon
+
+        return fabs(first - second) < allowedDelta
     }
 }
 
