@@ -32,8 +32,6 @@ class CategoryHealthKitMetric : HealthKitMetric {
     }
 
     func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [DataPoint] {
-        logger.notice("Fetching \(days) recent data points for \(self.databaseString, privacy: .public)")
-
         var results : [DataPoint] = []
         for dayOffset in ((-1*days + 1)...0) {
             results.append(try await self.getDataPoint(dayOffset: dayOffset, deadline: deadline, healthStore: healthStore))
