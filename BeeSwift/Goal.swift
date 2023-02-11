@@ -17,7 +17,7 @@ class Goal {
 
     // Ignore automatic datapoint updates where the difference is a smaller fraction than this. This
     // prevents effectively no-op updates due to float rounding
-    private let datapointValueEpsilon = 0.00001
+    private let datapointValueEpsilon = 0.00000001
 
     var autodata: String = ""
     var delta_text: String = ""
