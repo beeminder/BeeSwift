@@ -95,8 +95,14 @@ class HealthStoreManager :NSObject {
     /// Immediately update all known goals based on HealthKit's data record
     public func updateAllGoalsWithRecentData(days: Int) async throws {
         logger.notice("Updating all goals with recent day for last \(days, privacy: .public) days")
-        for (_, connection) in self.connections {
-            try await connection.updateWithRecentData(days: days)
+
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for (_, connection) in self.connections {
+                group.addTask {
+                    try await connection.updateWithRecentData(days: days)
+                }
+            }
+            try await group.waitForAll()
         }
     }
 
