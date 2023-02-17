@@ -67,10 +67,13 @@ class GoalHealthKitConnection {
             Task {
                 do {
                     try await self.updateWithRecentData(days: GoalHealthKitConnection.daysToUpdateOnChangeNotification)
-                    completionHandler()
                 } catch {
                     self.logger.error("Error fetching data in response to observer query \(query) error: \(error)")
                 }
+
+                // Report completion even on failure. It would be nice to have the iOS retry mechanism call us again
+                // on failure, but in pratice iOS waits a long time, leading to higher background usage.
+                completionHandler()
             }
         })
         healthStore.execute(query)
