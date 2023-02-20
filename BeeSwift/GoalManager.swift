@@ -10,7 +10,8 @@ import Foundation
 import SwiftyJSON
 
 actor GoalManager {
-    static let goalsFetchedNotificationName = "com.beeminder.goalsFetchedNotification"
+    /// A notification that is triggered any time the data for one or more goals is updated
+    static let goalsUpdatedNotificationName = "com.beeminder.goalsUpdatedNotification"
 
     fileprivate let cachedLastFetchedGoalsKey = "last_fetched_goals"
 
@@ -58,9 +59,7 @@ actor GoalManager {
 
         self.setCachedLastFetchedGoals(response)
 
-        await Task { @MainActor in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: GoalManager.goalsFetchedNotificationName), object: self)
-        }.value
+        await notifyGoalsUpdated()
 
         return Array(goals.values)
     }
@@ -68,15 +67,20 @@ actor GoalManager {
     func refreshGoal(_ goal: Goal) async throws {
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?access_token=\(currentUserManager.accessToken!)&datapoints_count=5", parameters: nil)
         goal.updateToMatch(json: JSON(responseObject!))
+
+        await notifyGoalsUpdated()
     }
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
     nonisolated func staleGoals() -> [Goal]? {
-        if let goals = self.goalsBox.get() {
-            return Array(goals.values)
-        }
+        guard let goals = self.goalsBox.get() else { return nil }
+        return Array(goals.values)
+    }
 
-        return nil
+    private func notifyGoalsUpdated() async {
+        await Task { @MainActor in
+            NotificationCenter.default.post(name: Notification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: self)
+        }.value
     }
 
     private func setCachedLastFetchedGoals(_ goals : JSON) {

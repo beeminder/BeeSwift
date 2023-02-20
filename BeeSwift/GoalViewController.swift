@@ -308,10 +308,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
 
-        updateInterfaceToMatchGoal()
+        NotificationCenter.default.addObserver(self, selector: #selector(onGoalsUpdatedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
 
-        // TODO: We need to watch for goal updates and update the interface
-        
+        updateInterfaceToMatchGoal()
     }
 
     override func viewDidLayoutSubviews() {
@@ -321,6 +320,10 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.dateTextField.keyboardDistanceFromTextField = addDataPointAdditionalKeyboardDistance
         self.valueTextField.keyboardDistanceFromTextField = addDataPointAdditionalKeyboardDistance
         self.commentTextField.keyboardDistanceFromTextField = addDataPointAdditionalKeyboardDistance
+    }
+
+    @objc func onGoalsUpdatedNotification() {
+        updateInterfaceToMatchGoal()
     }
     
     @objc func syncTodayButtonPressed() {
