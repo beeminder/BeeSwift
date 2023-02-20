@@ -309,6 +309,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
 
         updateInterfaceToMatchGoal()
+
+        // TODO: We need to watch for goal updates and update the interface
         
     }
 
@@ -340,7 +342,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         do {
             logger.notice("Sync button for goal \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
             try await ServiceLocator.healthStoreManager.updateWithRecentData(goal: self.goal, days: numDays)
-            try await ensureGoalAndGraphUpToDate()
+            try await updateGoalAndInterface()
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 hud?.mode = .customView
@@ -371,7 +373,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         super.viewDidAppear(animated)
         Task { @MainActor in
             do {
-                try await self.ensureGoalAndGraphUpToDate()
+                try await self.updateGoalAndInterface()
             } catch {
                 logger.error("Error refreshing details for goal \(self.goal.slug): \(error)")
             }
@@ -414,7 +416,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
 
             do {
-                try await ensureGoalAndGraphUpToDate()
+                try await self.updateGoalAndInterface()
             } catch {
                 let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -540,7 +542,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
                 let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug)
                 self.commentTextField.text = ""
 
-                try await ensureGoalAndGraphUpToDate()
+                try await updateGoalAndInterface()
 
                 self.submitButton.isUserInteractionEnabled = true
                 MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
@@ -562,10 +564,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
     }
 
-    func ensureGoalAndGraphUpToDate() async throws {
-        try await self.goal.refresh()
-        updateInterfaceToMatchGoal()
-        try await self.goal.waitForUpdatedGraph()
+    func updateGoalAndInterface() async throws {
+        try await ServiceLocator.goalManager.refreshGoal(self.goal)
         updateInterfaceToMatchGoal()
     }
 

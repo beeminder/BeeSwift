@@ -65,6 +65,11 @@ actor GoalManager {
         return Array(goals.values)
     }
 
+    func refreshGoal(_ goal: Goal) async throws {
+        let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?access_token=\(currentUserManager.accessToken!)&datapoints_count=5", parameters: nil)
+        goal.updateToMatch(json: JSON(responseObject!))
+    }
+
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
     nonisolated func staleGoals() -> [Goal]? {
         if let goals = self.goalsBox.get() {

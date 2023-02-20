@@ -51,19 +51,15 @@ class Goal {
     var todayta: Bool = false
     var hhmmformat: Bool = false
     var recent_data: [ExistingDataPoint]?
-
-    let updateToMatchSemaphore = DispatchSemaphore(value: 1)
-    var waitForUpdatedGraphTask: Task<Void, Error>?
     
     init(json: JSON) {
         self.id = json["id"].string!
         self.updateToMatch(json: json)
     }
 
-    func updateToMatch(json: JSON) {
+    // Should only be called from GoalManager
+    internal func updateToMatch(json: JSON) {
         assert(self.id == json["id"].string!, "Cannot change goal id. Tried to change from \(id) to \(json["id"].string ?? "")")
-
-        updateToMatchSemaphore.wait()
 
         self.title = json["title"].string!
         self.slug = json["slug"].string!
@@ -112,8 +108,6 @@ class Goal {
         self.hhmmformat = json["hhmmformat"].bool!
 
         self.recent_data = ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()
-
-        updateToMatchSemaphore.signal()
     }
 
     var rateString :String {
@@ -310,11 +304,6 @@ class Goal {
         return formatter.string(from: Date())
     }
 
-    func refresh() async throws {
-        let responseObject = try await ServiceLocator.requestManager.get(url: "/api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)?access_token=\(ServiceLocator.currentUserManager.accessToken!)&datapoints_count=5", parameters: nil)
-        self.updateToMatch(json: JSON(responseObject!))
-    }
-
     /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
     var initDaystamp: String {
         let initDate = Date(timeIntervalSince1970: self.initday!.doubleValue)
@@ -329,33 +318,6 @@ class Goal {
         return formatter.string(from: initDate)
     }
 
-    @MainActor
-    func waitForUpdatedGraph() async throws {
-        // Pay careful attention to the synchronicity of this function.
-        // It is on the MainActor, so only one threaded copy can run at once, but multiple copies can
-        // interleve at async points. It is important the state of the self.waitForUpdatedGraphTask
-        // variable is safe across these points
-
-        if self.waitForUpdatedGraphTask == nil {
-            self.waitForUpdatedGraphTask = Task {
-                while self.queued! {
-                    try await Task.sleep(nanoseconds: 2_000_000_000)
-                    try await refresh()
-                }
-            }
-        }
-        let waitForUpdatedGraphTask = self.waitForUpdatedGraphTask
-
-        try await self.waitForUpdatedGraphTask!.value
-
-        // It is possible while we were suspended another invocation of this method cleared the
-        // member variable, and then a third invocation started waiting again. We should only clear
-        // if the task still matches the one we were waiting on.
-        if waitForUpdatedGraphTask == self.waitForUpdatedGraphTask {
-            self.waitForUpdatedGraphTask = nil
-        }
-    }
-    
     func fetchRecentDatapoints(success: @escaping ((_ datapoints : [ExistingDataPoint]) -> ()), errorCompletion: (() -> ())?) {
         Task { @MainActor in
             let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
