@@ -224,9 +224,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleGoalsFetchedNotification() {
-        self.goals = ServiceLocator.goalManager.staleGoals() ?? []
-        self.lastUpdated = ServiceLocator.goalManager.goalsFetchedAt
-        self.didFetchGoals()
+        Task {
+            self.goals = ServiceLocator.goalManager.staleGoals() ?? []
+            self.lastUpdated = await ServiceLocator.goalManager.goalsFetchedAt
+            self.didFetchGoals()
+        }
     }
     
     @objc func settingsButtonPressed() {
