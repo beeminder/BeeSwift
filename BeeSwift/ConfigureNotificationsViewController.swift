@@ -94,7 +94,7 @@ class ConfigureNotificationsViewController: UIViewController {
             } catch {
                 logger.error("Failure fetching goals: \(error)")
 
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
                 if UIApplication.shared.applicationState == .active {
                     let alert = UIAlertController(title: "Error fetching goals", message: error.localizedDescription, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))

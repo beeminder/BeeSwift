@@ -227,11 +227,11 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         let failureAC = UIAlertController(title: "Could not sign in", message: "Invalid credentials", preferredStyle: .alert)
         failureAC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         self.present(failureAC, animated: true, completion: nil)
-        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        MBProgressHUD.hide(for: self.view, animated: true)
     }
     
     @objc func handleSignedIn(_ notification : Notification) {
-        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        MBProgressHUD.hide(for: self.view, animated: true)
     }
     
     @objc func signInButtonPressed() {

@@ -101,7 +101,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     self.useDefaultsSwitch.isOn = false
                 } catch {
                     let errorString = error.localizedDescription
-                    MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                    MBProgressHUD.hide(for: self.view, animated: true)
                     let alert = UIAlertController(title: "Error saving to Beeminder", message: errorString, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alert, animated: true, completion: nil)

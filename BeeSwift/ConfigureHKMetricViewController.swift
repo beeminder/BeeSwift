@@ -134,7 +134,7 @@ class ConfigureHKMetricViewController : UIViewController {
 
         Task { @MainActor in
             let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-            hud?.mode = .indeterminate
+            hud.mode = .indeterminate
 
             self.goal.healthKitMetric = metric.databaseString
             self.goal.autodata = "apple"
@@ -143,7 +143,7 @@ class ConfigureHKMetricViewController : UIViewController {
                 try await ServiceLocator.healthStoreManager.ensureUpdatesRegularly(goal: self.goal)
             } catch {
                 logger.error("Error setting up goal \(error)")
-                hud?.hide(true)
+                hud.hide(animated: true)
 
                 // Re-enable the save button as we did not dismiss the screen
                 saveButton.isUserInteractionEnabled = true
@@ -156,9 +156,9 @@ class ConfigureHKMetricViewController : UIViewController {
 
             do {
                 let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal.slug).json", parameters: params)
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
+                hud.mode = .customView
+                hud.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud.hide(animated: true, afterDelay: 2)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     guard let healthKitConfigController = self.navigationController?.viewControllers.first(where: { vc in vc is HealthKitConfigViewController }) else {
                         self.logger.error("Could not find HealthKitConfigViewController in view stack")
@@ -171,7 +171,7 @@ class ConfigureHKMetricViewController : UIViewController {
                 // TODO: This needs to be done somehow? Or dismiss?
                 // self.tableView.reloadData()
                 let errorString = error.localizedDescription
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
                 let alert = UIAlertController(title: "Error saving metric to Beeminder", message: errorString, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
