@@ -3,12 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1B8454411999895F722BAE80 /* Pods_BeeSwiftToday.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A2D58FC1D496CC59C60A22C /* Pods_BeeSwiftToday.framework */; };
-		6E72E1F82DDC41E7CD79BEE4 /* Pods_BeeSwiftTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20121F7A17F740656ADD55D0 /* Pods_BeeSwiftTests.framework */; };
 		9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */; };
 		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
 		A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */; };
@@ -73,8 +71,6 @@
 		A1F8F07B232C05410060B83E /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* Goal.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
 		A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */; };
-		D25716F2B8CCFE41DCD5CD5C /* Pods_BeeSwiftIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45017ADDD1E7A7E50917F8D4 /* Pods_BeeSwiftIntents.framework */; };
-		D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */; };
 		E42CB452291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
 		E42CB453291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
 		E42CB454291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
@@ -97,6 +93,22 @@
 		E462BA2E29A31C3B00E80EF0 /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
 		E462BA2F29A31C5000E80EF0 /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
 		E462BA3029A31C5000E80EF0 /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
+		E462BA3329AC44A600E80EF0 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3229AC44A600E80EF0 /* OrderedCollections */; };
+		E462BA3629AC44EA00E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3529AC44EA00E80EF0 /* Alamofire */; };
+		E462BA3929AC450000E80EF0 /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3829AC450000E80EF0 /* AlamofireImage */; };
+		E462BA3C29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */; };
+		E462BA3F29AC456500E80EF0 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3E29AC456500E80EF0 /* SwiftyJSON */; };
+		E462BA4229AC458B00E80EF0 /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA4129AC458B00E80EF0 /* MBProgressHUD */; };
+		E462BA4829ADAA1C00E80EF0 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA4729ADAA1C00E80EF0 /* SnapKit */; };
+		E462BA4A29ADAAB800E80EF0 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA4929ADAAB800E80EF0 /* SnapKit */; };
+		E462BA4B29ADAAF500E80EF0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723F1B0989E800584782 /* UIKit.framework */; };
+		E462BA4D29ADAB3900E80EF0 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA4C29ADAB3900E80EF0 /* SwiftyJSON */; };
+		E462BA4F29ADAB4300E80EF0 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA4E29ADAB4300E80EF0 /* SwiftyJSON */; };
+		E462BA5129ADAB4F00E80EF0 /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5029ADAB4F00E80EF0 /* MBProgressHUD */; };
+		E462BA5329ADACAC00E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5229ADACAC00E80EF0 /* Alamofire */; };
+		E462BA5529ADACB600E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5429ADACB600E80EF0 /* Alamofire */; };
+		E462BA5729AEEF9D00E80EF0 /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5629AEEF9D00E80EF0 /* AlamofireImage */; };
+		E462BA5A29AEF02500E80EF0 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */; };
 		E46FF15B2984C522009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
 		E46FF15C2984C590009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
 		E46FF15D2984C591009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
@@ -260,13 +272,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		02D934CC6CDDCD50DB360CF0 /* Pods-BeeSwiftIntents.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftIntents.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftIntents/Pods-BeeSwiftIntents.release.xcconfig"; sourceTree = "<group>"; };
-		20121F7A17F740656ADD55D0 /* Pods_BeeSwiftTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeeSwiftTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		45017ADDD1E7A7E50917F8D4 /* Pods_BeeSwiftIntents.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeeSwiftIntents.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		48624C6AA40C5EB0AF7F67ED /* Pods-BeeSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwift/Pods-BeeSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		60463FA350C4B88CD9AB0AA4 /* Pods-BeeSwiftToday.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftToday.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftToday/Pods-BeeSwiftToday.release.xcconfig"; sourceTree = "<group>"; };
-		689E3517CFFCDE8407A728A7 /* Pods-BeeSwiftTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftTests/Pods-BeeSwiftTests.debug.xcconfig"; sourceTree = "<group>"; };
-		8A2D58FC1D496CC59C60A22C /* Pods_BeeSwiftToday.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeeSwiftToday.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
 		A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveHKMetricViewController.swift; sourceTree = "<group>"; };
@@ -328,11 +333,6 @@
 		A1F8F07A232C05410060B83E /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
 		A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGoalCollectionViewCell.swift; sourceTree = "<group>"; };
-		AF1B05535FB9C64FEC41EBE9 /* Pods-BeeSwiftTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftTests/Pods-BeeSwiftTests.release.xcconfig"; sourceTree = "<group>"; };
-		C38D69D9E768288A9437110C /* Pods-BeeSwiftIntents.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftIntents.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftIntents/Pods-BeeSwiftIntents.debug.xcconfig"; sourceTree = "<group>"; };
-		C622986C48BC5CA5BBB7E3C7 /* Pods-BeeSwiftToday.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwiftToday.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwiftToday/Pods-BeeSwiftToday.debug.xcconfig"; sourceTree = "<group>"; };
-		DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeeSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E029CC25A4BEE8E42BD37670 /* Pods-BeeSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeeSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeeSwift/Pods-BeeSwift.release.xcconfig"; sourceTree = "<group>"; };
 		E42CB451291727B200A35AB9 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
 		E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointValueAccessory.swift; sourceTree = "<group>"; };
 		E44CE7722993317B00394E87 /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
@@ -383,9 +383,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E462BA4A29ADAAB800E80EF0 /* SnapKit in Frameworks */,
 				A142492E1FD0A56A007736B3 /* HealthKit.framework in Frameworks */,
+				E462BA5129ADAB4F00E80EF0 /* MBProgressHUD in Frameworks */,
+				E462BA5529ADACB600E80EF0 /* Alamofire in Frameworks */,
+				E462BA4F29ADAB4300E80EF0 /* SwiftyJSON in Frameworks */,
 				A12E694E1BD3EF0200AB94C2 /* NotificationCenter.framework in Frameworks */,
-				1B8454411999895F722BAE80 /* Pods_BeeSwiftToday.framework in Frameworks */,
+				E462BA5729AEEF9D00E80EF0 /* AlamofireImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,14 +397,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E462BA3F29AC456500E80EF0 /* SwiftyJSON in Frameworks */,
+				E462BA4829ADAA1C00E80EF0 /* SnapKit in Frameworks */,
 				A1B672421B0989ED00584782 /* CoreGraphics.framework in Frameworks */,
 				E57BE6F52655EBE000BA540B /* BeeKit.framework in Frameworks */,
 				A1B672401B0989E800584782 /* UIKit.framework in Frameworks */,
+				E462BA5A29AEF02500E80EF0 /* IQKeyboardManagerSwift in Frameworks */,
+				E462BA3C29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator in Frameworks */,
 				A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */,
 				A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */,
+				E462BA3629AC44EA00E80EF0 /* Alamofire in Frameworks */,
+				E462BA3929AC450000E80EF0 /* AlamofireImage in Frameworks */,
+				E462BA3329AC44A600E80EF0 /* OrderedCollections in Frameworks */,
+				E462BA4229AC458B00E80EF0 /* MBProgressHUD in Frameworks */,
 				A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */,
 				A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */,
-				D2C3F7C8533EA7EC6CA52E77 /* Pods_BeeSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,7 +419,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6E72E1F82DDC41E7CD79BEE4 /* Pods_BeeSwiftTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,8 +441,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E462BA4D29ADAB3900E80EF0 /* SwiftyJSON in Frameworks */,
+				E462BA5329ADACAC00E80EF0 /* Alamofire in Frameworks */,
 				E5F7C492260FC5300095684F /* Intents.framework in Frameworks */,
-				D25716F2B8CCFE41DCD5CD5C /* Pods_BeeSwiftIntents.framework in Frameworks */,
+				E462BA4B29ADAAF500E80EF0 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -446,21 +458,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3A029811DF302A79CBF63611 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				48624C6AA40C5EB0AF7F67ED /* Pods-BeeSwift.debug.xcconfig */,
-				E029CC25A4BEE8E42BD37670 /* Pods-BeeSwift.release.xcconfig */,
-				689E3517CFFCDE8407A728A7 /* Pods-BeeSwiftTests.debug.xcconfig */,
-				AF1B05535FB9C64FEC41EBE9 /* Pods-BeeSwiftTests.release.xcconfig */,
-				C622986C48BC5CA5BBB7E3C7 /* Pods-BeeSwiftToday.debug.xcconfig */,
-				60463FA350C4B88CD9AB0AA4 /* Pods-BeeSwiftToday.release.xcconfig */,
-				C38D69D9E768288A9437110C /* Pods-BeeSwiftIntents.debug.xcconfig */,
-				02D934CC6CDDCD50DB360CF0 /* Pods-BeeSwiftIntents.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		A106AD8B1AF1F62800C434E8 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -524,7 +521,6 @@
 				E57BE6EE2655EBE000BA540B /* BeeKitTests */,
 				A196CB151AE4142E00B90A3E /* Products */,
 				C039E8389CFF5C0D8CF85D8D /* Frameworks */,
-				3A029811DF302A79CBF63611 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -638,12 +634,8 @@
 				A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */,
 				A12BA94B1AFF201B00AFEF32 /* AddressBook.framework */,
 				A1B53C301B2D04EA00AF266F /* NotificationCenter.framework */,
-				DB01694F5BE68BBDBB21E697 /* Pods_BeeSwift.framework */,
-				20121F7A17F740656ADD55D0 /* Pods_BeeSwiftTests.framework */,
-				8A2D58FC1D496CC59C60A22C /* Pods_BeeSwiftToday.framework */,
 				E5F7C491260FC5300095684F /* Intents.framework */,
 				E5F7C49C260FC5300095684F /* IntentsUI.framework */,
-				45017ADDD1E7A7E50917F8D4 /* Pods_BeeSwiftIntents.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -731,7 +723,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A12E695B1BD3EF0200AB94C2 /* Build configuration list for PBXNativeTarget "BeeSwiftToday" */;
 			buildPhases = (
-				02959FF29091EF23091492D9 /* [CP] Check Pods Manifest.lock */,
 				A12E69491BD3EF0200AB94C2 /* Sources */,
 				A12E694A1BD3EF0200AB94C2 /* Frameworks */,
 				A12E694B1BD3EF0200AB94C2 /* Resources */,
@@ -741,6 +732,13 @@
 			dependencies = (
 			);
 			name = BeeSwiftToday;
+			packageProductDependencies = (
+				E462BA4929ADAAB800E80EF0 /* SnapKit */,
+				E462BA4E29ADAB4300E80EF0 /* SwiftyJSON */,
+				E462BA5029ADAB4F00E80EF0 /* MBProgressHUD */,
+				E462BA5429ADACB600E80EF0 /* Alamofire */,
+				E462BA5629AEEF9D00E80EF0 /* AlamofireImage */,
+			);
 			productName = BeeSwiftToday;
 			productReference = A12E694D1BD3EF0200AB94C2 /* BeeSwiftToday.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -749,12 +747,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A196CB361AE4142F00B90A3E /* Build configuration list for PBXNativeTarget "BeeSwift" */;
 			buildPhases = (
-				E2D92A94933DBD2D5D5F3943 /* [CP] Check Pods Manifest.lock */,
 				A196CB101AE4142E00B90A3E /* Sources */,
 				A196CB111AE4142E00B90A3E /* Frameworks */,
 				A196CB121AE4142E00B90A3E /* Resources */,
 				A1B53C401B2D04EB00AF266F /* Embed Foundation Extensions */,
-				65ECC2B46631C152D41E5ED7 /* [CP] Embed Pods Frameworks */,
 				E57BE71C2655F03200BA540B /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -766,6 +762,16 @@
 				E57BE7132655F00200BA540B /* PBXTargetDependency */,
 			);
 			name = BeeSwift;
+			packageProductDependencies = (
+				E462BA3229AC44A600E80EF0 /* OrderedCollections */,
+				E462BA3529AC44EA00E80EF0 /* Alamofire */,
+				E462BA3829AC450000E80EF0 /* AlamofireImage */,
+				E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */,
+				E462BA3E29AC456500E80EF0 /* SwiftyJSON */,
+				E462BA4129AC458B00E80EF0 /* MBProgressHUD */,
+				E462BA4729ADAA1C00E80EF0 /* SnapKit */,
+				E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */,
+			);
 			productName = BeeSwift;
 			productReference = A196CB141AE4142E00B90A3E /* BeeSwift.app */;
 			productType = "com.apple.product-type.application";
@@ -774,11 +780,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A196CB391AE4142F00B90A3E /* Build configuration list for PBXNativeTarget "BeeSwiftTests" */;
 			buildPhases = (
-				FF1E5103A0CAE196E71C1F41 /* [CP] Check Pods Manifest.lock */,
 				A196CB281AE4142F00B90A3E /* Sources */,
 				A196CB291AE4142F00B90A3E /* Frameworks */,
 				A196CB2A1AE4142F00B90A3E /* Resources */,
-				1B9207D955CDFDDAD7B0C02E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -831,7 +835,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E5F7C4AE260FC5300095684F /* Build configuration list for PBXNativeTarget "BeeSwiftIntents" */;
 			buildPhases = (
-				3E5E5C67641B909F104C58A3 /* [CP] Check Pods Manifest.lock */,
 				E5F7C48C260FC5300095684F /* Sources */,
 				E5F7C48D260FC5300095684F /* Frameworks */,
 				E5F7C48E260FC5300095684F /* Resources */,
@@ -841,6 +844,10 @@
 			dependencies = (
 			);
 			name = BeeSwiftIntents;
+			packageProductDependencies = (
+				E462BA4C29ADAB3900E80EF0 /* SwiftyJSON */,
+				E462BA5229ADACAC00E80EF0 /* Alamofire */,
+			);
 			productName = BeeSwiftIntents;
 			productReference = E5F7C490260FC5300095684F /* BeeSwiftIntents.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -952,6 +959,16 @@
 				Base,
 			);
 			mainGroup = A196CB0B1AE4142E00B90A3E;
+			packageReferences = (
+				E462BA3129AC44A600E80EF0 /* XCRemoteSwiftPackageReference "swift-collections" */,
+				E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */,
+				E462BA3A29AC453D00E80EF0 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */,
+				E462BA3D29AC456500E80EF0 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
+				E462BA4029AC458B00E80EF0 /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
+				E462BA4629ADAA1C00E80EF0 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				E462BA5829AEF02500E80EF0 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
+			);
 			productRefGroup = A196CB151AE4142E00B90A3E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1028,141 +1045,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		02959FF29091EF23091492D9 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-BeeSwiftToday-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		1B9207D955CDFDDAD7B0C02E /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BeeSwiftTests/Pods-BeeSwiftTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
-				"${BUILT_PRODUCTS_DIR}/AlamofireImage/AlamofireImage.framework",
-				"${BUILT_PRODUCTS_DIR}/AlamofireNetworkActivityIndicator/AlamofireNetworkActivityIndicator.framework",
-				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AlamofireImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AlamofireNetworkActivityIndicator.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BeeSwiftTests/Pods-BeeSwiftTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3E5E5C67641B909F104C58A3 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-BeeSwiftIntents-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		65ECC2B46631C152D41E5ED7 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BeeSwift/Pods-BeeSwift-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
-				"${BUILT_PRODUCTS_DIR}/AlamofireImage/AlamofireImage.framework",
-				"${BUILT_PRODUCTS_DIR}/AlamofireNetworkActivityIndicator/AlamofireNetworkActivityIndicator.framework",
-				"${BUILT_PRODUCTS_DIR}/IQKeyboardManager/IQKeyboardManager.framework",
-				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
-				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AlamofireImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AlamofireNetworkActivityIndicator.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManager.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BeeSwift/Pods-BeeSwift-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E2D92A94933DBD2D5D5F3943 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-BeeSwift-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		FF1E5103A0CAE196E71C1F41 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-BeeSwiftTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A12E69491BD3EF0200AB94C2 /* Sources */ = {
@@ -1417,7 +1299,6 @@
 /* Begin XCBuildConfiguration section */
 		A12E69591BD3EF0200AB94C2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C622986C48BC5CA5BBB7E3C7 /* Pods-BeeSwiftToday.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = BeeSwiftToday/BeeSwiftToday.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -1430,7 +1311,11 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = BeeSwiftToday/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeminderToday;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -1443,7 +1328,6 @@
 		};
 		A12E695A1BD3EF0200AB94C2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 60463FA350C4B88CD9AB0AA4 /* Pods-BeeSwiftToday.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = BeeSwiftToday/BeeSwiftToday.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -1454,7 +1338,11 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = BeeSwiftToday/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeminderToday;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -1574,7 +1462,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1582,7 +1471,6 @@
 		};
 		A196CB371AE4142F00B90A3E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 48624C6AA40C5EB0AF7F67ED /* Pods-BeeSwift.debug.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1601,7 +1489,10 @@
 				INFOPLIST_FILE = BeeSwift/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = Swift;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder;
 				PRODUCT_NAME = BeeSwift;
 				PROVISIONING_PROFILE = "";
@@ -1616,7 +1507,6 @@
 		};
 		A196CB381AE4142F00B90A3E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E029CC25A4BEE8E42BD37670 /* Pods-BeeSwift.release.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1636,7 +1526,10 @@
 				INFOPLIST_FILE = BeeSwift/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = Swift;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder;
 				PRODUCT_NAME = BeeSwift;
@@ -1651,7 +1544,6 @@
 		};
 		A196CB3A1AE4142F00B90A3E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 689E3517CFFCDE8407A728A7 /* Pods-BeeSwiftTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1663,7 +1555,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = BeeSwiftTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.andrewpbrett.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = BeeSwiftTests;
 				SWIFT_VERSION = 5.0;
@@ -1674,7 +1570,6 @@
 		};
 		A196CB3B1AE4142F00B90A3E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AF1B05535FB9C64FEC41EBE9 /* Pods-BeeSwiftTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1682,7 +1577,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = BeeSwiftTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.andrewpbrett.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = BeeSwiftTests;
 				SWIFT_VERSION = 5.0;
@@ -1716,7 +1615,11 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				INTENTS_CODEGEN_LANGUAGE = Swift;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.BeeKit;
@@ -1755,7 +1658,11 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				INTENTS_CODEGEN_LANGUAGE = Swift;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.BeeKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1783,7 +1690,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BeeKitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.BeeKitTests;
@@ -1809,7 +1720,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BeeKitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.BeeKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1821,7 +1736,6 @@
 		};
 		E5F7C4AF260FC5300095684F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C38D69D9E768288A9437110C /* Pods-BeeSwiftIntents.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -1840,7 +1754,11 @@
 				INFOPLIST_FILE = BeeSwiftIntents/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = Swift;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeSwiftIntents;
@@ -1854,7 +1772,6 @@
 		};
 		E5F7C4B0260FC5300095684F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 02D934CC6CDDCD50DB360CF0 /* Pods-BeeSwiftIntents.release.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -1872,7 +1789,11 @@
 				INFOPLIST_FILE = BeeSwiftIntents/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = Swift;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeSwiftIntents;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1897,7 +1818,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BeeSwiftUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.BeeSwiftUITests;
@@ -1923,7 +1848,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BeeSwiftUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.BeeSwiftUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2009,6 +1938,151 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E462BA3129AC44A600E80EF0 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+		E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/AlamofireImage.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
+		E462BA3A29AC453D00E80EF0 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/AlamofireNetworkActivityIndicator";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+		E462BA3D29AC456500E80EF0 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+		E462BA4029AC458B00E80EF0 /* XCRemoteSwiftPackageReference "MBProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jdg/MBProgressHUD.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
+		E462BA4629ADAA1C00E80EF0 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+		E462BA5829AEF02500E80EF0 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E462BA3229AC44A600E80EF0 /* OrderedCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3129AC44A600E80EF0 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = OrderedCollections;
+		};
+		E462BA3529AC44EA00E80EF0 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		E462BA3829AC450000E80EF0 /* AlamofireImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */;
+			productName = AlamofireImage;
+		};
+		E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3A29AC453D00E80EF0 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */;
+			productName = AlamofireNetworkActivityIndicator;
+		};
+		E462BA3E29AC456500E80EF0 /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3D29AC456500E80EF0 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
+		};
+		E462BA4129AC458B00E80EF0 /* MBProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA4029AC458B00E80EF0 /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
+			productName = MBProgressHUD;
+		};
+		E462BA4729ADAA1C00E80EF0 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA4629ADAA1C00E80EF0 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		E462BA4929ADAAB800E80EF0 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA4629ADAA1C00E80EF0 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		E462BA4C29ADAB3900E80EF0 /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3D29AC456500E80EF0 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
+		};
+		E462BA4E29ADAB4300E80EF0 /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3D29AC456500E80EF0 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
+		};
+		E462BA5029ADAB4F00E80EF0 /* MBProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA4029AC458B00E80EF0 /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
+			productName = MBProgressHUD;
+		};
+		E462BA5229ADACAC00E80EF0 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		E462BA5429ADACB600E80EF0 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		E462BA5629AEEF9D00E80EF0 /* AlamofireImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */;
+			productName = AlamofireImage;
+		};
+		E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA5829AEF02500E80EF0 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
+			productName = IQKeyboardManagerSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A196CB0C1AE4142E00B90A3E /* Project object */;
 }
