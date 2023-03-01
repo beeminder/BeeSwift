@@ -61,7 +61,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         scrollView.addSubview(self.headerLabel)
         self.headerLabel.textAlignment = NSTextAlignment.center
         self.headerLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(beeImageView.snp_bottom)
+            make.top.equalTo(beeImageView.snp.bottom)
             make.centerX.equalToSuperview()
         }
         
@@ -69,7 +69,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         self.chooseSignInButton.setTitle("I have a Beeminder account", for: .normal)
         self.chooseSignInButton.snp.makeConstraints { (make) in
             make.centerX.equalToSuperview()
-            make.top.equalTo(self.headerLabel.snp_bottom).offset(40)
+            make.top.equalTo(self.headerLabel.snp.bottom).offset(40)
             make.width.equalToSuperview().multipliedBy(0.75)
             make.height.equalTo(Constants.defaultTextFieldHeight)
         }
