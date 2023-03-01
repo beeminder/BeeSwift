@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import IQKeyboardManager
+import IQKeyboardManagerSwift
 import HealthKit
 import AlamofireNetworkActivityIndicator
 import BeeKit
@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.font :
             UIFont.beeminder.defaultFontPlain.withSize(20)]
         UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedString.Key.font : UIFont.beeminder.defaultFontPlain.withSize(18)], for: UIControl.State())
-        IQKeyboardManager.shared().isEnableAutoToolbar = false
+        IQKeyboardManager.shared.enableAutoToolbar = false
 
         if HKHealthStore.isHealthDataAvailable() {
             // We must register queries for all our healthkit metrics before this method completes

@@ -176,7 +176,7 @@ actor GoalManager {
     /// This function is nonisolated but should only be called either from isolated contexts or the constructor
     private nonisolated func cachedLastFetchedGoals() -> JSON? {
         guard let encodedValue = currentUserManager.userDefaults.object(forKey: cachedLastFetchedGoalsKey) as? String else { return nil }
-        return JSON.parse(encodedValue)
+        return JSON(encodedValue)
     }
 
     // MARK: Sign out
