@@ -11,6 +11,7 @@ import SwiftyJSON
 import HealthKit
 import OSLog
 import UserNotifications
+import UIKit
 
 class Goal {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
