@@ -375,7 +375,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.sortGoals()
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
-        MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+        MBProgressHUD.hide(for: self.view, animated: true)
         self.collectionView!.reloadData()
         self.updateDeadbeatHeight()
         self.lastUpdated = Date()
@@ -419,7 +419,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     self.present(alert, animated: true, completion: nil)
                 }
                 self.collectionView?.refreshControl?.endRefreshing()
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
                 self.collectionView!.reloadData()
             }
         }

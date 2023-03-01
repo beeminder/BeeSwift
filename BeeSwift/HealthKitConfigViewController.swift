@@ -71,13 +71,13 @@ class HealthKitConfigViewController: UIViewController {
             MBProgressHUD.showAdded(to: self.view, animated: true)
             do {
                 let goals = try await ServiceLocator.goalManager.fetchGoals()
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
                 self.goals = goals
                 self.sortGoals()
             } catch {
                 logger.error("Error fetching goals: \(error)")
 
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
                 if UIApplication.shared.applicationState == .active {
                     let alert = UIAlertController(title: "Error fetching goals", message: error.localizedDescription, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))

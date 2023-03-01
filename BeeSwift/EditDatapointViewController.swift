@@ -181,7 +181,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         Task { @MainActor in
             self.view.endEditing(true)
             let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-            hud?.mode = .indeterminate
+            hud.mode = .indeterminate
 
             do {
                 let params = [
@@ -189,13 +189,13 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                     "urtext": self.urtext()
                 ]
                 let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
-                let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+                let hud = MBProgressHUD.forView(self.view)
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
+                hud?.hide(animated: true, afterDelay: 2)
             } catch {
                 logger.error("Error updating datapoint for goal \(self.goalSlug): \(error)")
-                let _ = MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                let _ = MBProgressHUD.hide(for: self.view, animated: true)
             }
         }
     }
@@ -206,15 +206,15 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 "access_token": ServiceLocator.currentUserManager.accessToken!
             ]
             let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-            hud?.mode = .indeterminate
+            hud.mode = .indeterminate
 
             do {
                 let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
 
-                let hud = MBProgressHUD.allHUDs(for: self.view).first as? MBProgressHUD
+                let hud = MBProgressHUD.forView(self.view)
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
+                hud?.hide(animated: true, afterDelay: 2)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.navigationController?.popViewController(animated: true)
                 }

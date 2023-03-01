@@ -340,7 +340,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     private func syncHealthDataButtonPressed(numDays: Int) async {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud?.mode = .indeterminate
+        hud.mode = .indeterminate
 
         do {
             logger.notice("Sync button for goal \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
@@ -348,15 +348,15 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             try await updateGoalAndInterface()
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud?.hide(true, afterDelay: 2)
+                hud.mode = .customView
+                hud.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud.hide(animated: true, afterDelay: 2)
             })
 
         } catch {
             logger.error("Error Syncing Health Data: \(error, privacy: .public)")
             DispatchQueue.main.async {
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
             }
             return
         }
@@ -416,7 +416,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     @objc func refreshButtonPressed() {
         Task { @MainActor in
             self.scrollView.refreshControl?.endRefreshing()
-            MBProgressHUD.showAdded(to: self.view, animated: true)?.mode = .indeterminate
+            MBProgressHUD.showAdded(to: self.view, animated: true).mode = .indeterminate
 
             do {
                 try await self.updateGoalAndInterface()
@@ -426,7 +426,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
                 self.present(alert, animated: true, completion: nil)
             }
             
-            MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+            MBProgressHUD.hide(for: self.view, animated: true)
         }
     }
     
@@ -537,7 +537,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         Task { @MainActor in
             self.view.endEditing(true)
             let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-            hud?.mode = .indeterminate
+            hud.mode = .indeterminate
             self.submitButton.isUserInteractionEnabled = false
             self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
 
@@ -548,10 +548,10 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
                 try await updateGoalAndInterface()
 
                 self.submitButton.isUserInteractionEnabled = true
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
             } catch {
                 self.submitButton.isUserInteractionEnabled = true
-                MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
+                MBProgressHUD.hide(for: self.view, animated: true)
                 let alertController = UIAlertController(title: "Error", message: "Failed to add datapoint", preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
                 self.present(alertController, animated: true)
