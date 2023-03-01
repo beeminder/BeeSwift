@@ -1,6 +1,0 @@
-framework module Pods_BeeSwift {
-  umbrella header "Pods-BeeSwift-umbrella.h"
-
-  export *
-  module * { export * }
-}
