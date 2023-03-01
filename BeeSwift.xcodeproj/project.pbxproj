@@ -93,7 +93,6 @@
 		E462BA2E29A31C3B00E80EF0 /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
 		E462BA2F29A31C5000E80EF0 /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
 		E462BA3029A31C5000E80EF0 /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
-		E462BA3329AC44A600E80EF0 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3229AC44A600E80EF0 /* OrderedCollections */; };
 		E462BA3629AC44EA00E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3529AC44EA00E80EF0 /* Alamofire */; };
 		E462BA3929AC450000E80EF0 /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3829AC450000E80EF0 /* AlamofireImage */; };
 		E462BA3C29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */; };
@@ -408,7 +407,6 @@
 				A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */,
 				E462BA3629AC44EA00E80EF0 /* Alamofire in Frameworks */,
 				E462BA3929AC450000E80EF0 /* AlamofireImage in Frameworks */,
-				E462BA3329AC44A600E80EF0 /* OrderedCollections in Frameworks */,
 				E462BA4229AC458B00E80EF0 /* MBProgressHUD in Frameworks */,
 				A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */,
 				A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */,
@@ -763,7 +761,6 @@
 			);
 			name = BeeSwift;
 			packageProductDependencies = (
-				E462BA3229AC44A600E80EF0 /* OrderedCollections */,
 				E462BA3529AC44EA00E80EF0 /* Alamofire */,
 				E462BA3829AC450000E80EF0 /* AlamofireImage */,
 				E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */,
@@ -960,7 +957,6 @@
 			);
 			mainGroup = A196CB0B1AE4142E00B90A3E;
 			packageReferences = (
-				E462BA3129AC44A600E80EF0 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */,
 				E462BA3A29AC453D00E80EF0 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */,
@@ -1940,14 +1936,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E462BA3129AC44A600E80EF0 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-collections.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -2007,11 +1995,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		E462BA3229AC44A600E80EF0 /* OrderedCollections */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E462BA3129AC44A600E80EF0 /* XCRemoteSwiftPackageReference "swift-collections" */;
-			productName = OrderedCollections;
-		};
 		E462BA3529AC44EA00E80EF0 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */;
