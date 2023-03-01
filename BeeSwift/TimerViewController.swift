@@ -179,7 +179,7 @@ class TimerViewController: UIViewController {
                     MBProgressHUD.hideAllHUDs(for: self.view, animated: true)
                 })
                 if let goalVC = self.presentingViewController?.children.last as? GoalViewController {
-                    try await goalVC.ensureGoalAndGraphUpToDate()
+                    try await goalVC.updateGoalAndInterface()
                 }
                 self.resetButtonPressed()
             } catch {
