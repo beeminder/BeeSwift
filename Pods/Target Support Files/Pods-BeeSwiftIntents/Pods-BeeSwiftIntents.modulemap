@@ -1,6 +1,0 @@
-framework module Pods_BeeSwiftIntents {
-  umbrella header "Pods-BeeSwiftIntents-umbrella.h"
-
-  export *
-  module * { export * }
-}

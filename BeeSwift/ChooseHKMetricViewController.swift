@@ -52,7 +52,7 @@ class ChooseHKMetricViewController: UIViewController {
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.snp.makeConstraints { (make) in
-            make.top.equalTo(instructionsLabel.snp_bottom).offset(20)
+            make.top.equalTo(instructionsLabel.snp.bottom).offset(20)
             make.centerX.equalTo(self.view)
             make.left.equalTo(0)
             make.right.equalTo(0)

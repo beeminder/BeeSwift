@@ -55,7 +55,7 @@ class RequestManager {
 
             // If we receive an error message from the server use it as our user-visible error
             if let data = response.data,
-               let errorMessage = JSON(data: data)["error_message"].string {
+               let errorMessage = try JSON(data: data)["error_message"].string {
                 throw ServerError(errorMessage, requestError: error)
             }
 
