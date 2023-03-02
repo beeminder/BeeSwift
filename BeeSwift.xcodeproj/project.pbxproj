@@ -111,6 +111,9 @@
 		E46FF15B2984C522009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
 		E46FF15C2984C590009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
 		E46FF15D2984C591009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
+		E486DE2629B0403700F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2529B0403700F338B2 /* OrderedCollections */; };
+		E486DE2829B040FB00F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2729B040FB00F338B2 /* OrderedCollections */; };
+		E486DE2A29B0410A00F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2929B0410A00F338B2 /* OrderedCollections */; };
 		E48E2712296B7548008013C0 /* TotalSleepMinutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */; };
 		E48E2714296B75E4008013C0 /* TotalSleepMinutesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */; };
 		E48E2716296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */; };
@@ -388,6 +391,7 @@
 				E462BA5529ADACB600E80EF0 /* Alamofire in Frameworks */,
 				E462BA4F29ADAB4300E80EF0 /* SwiftyJSON in Frameworks */,
 				A12E694E1BD3EF0200AB94C2 /* NotificationCenter.framework in Frameworks */,
+				E486DE2829B040FB00F338B2 /* OrderedCollections in Frameworks */,
 				E462BA5729AEEF9D00E80EF0 /* AlamofireImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -401,6 +405,7 @@
 				A1B672421B0989ED00584782 /* CoreGraphics.framework in Frameworks */,
 				E57BE6F52655EBE000BA540B /* BeeKit.framework in Frameworks */,
 				A1B672401B0989E800584782 /* UIKit.framework in Frameworks */,
+				E486DE2629B0403700F338B2 /* OrderedCollections in Frameworks */,
 				E462BA5A29AEF02500E80EF0 /* IQKeyboardManagerSwift in Frameworks */,
 				E462BA3C29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator in Frameworks */,
 				A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */,
@@ -439,6 +444,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E486DE2A29B0410A00F338B2 /* OrderedCollections in Frameworks */,
 				E462BA4D29ADAB3900E80EF0 /* SwiftyJSON in Frameworks */,
 				E462BA5329ADACAC00E80EF0 /* Alamofire in Frameworks */,
 				E5F7C492260FC5300095684F /* Intents.framework in Frameworks */,
@@ -736,6 +742,7 @@
 				E462BA5029ADAB4F00E80EF0 /* MBProgressHUD */,
 				E462BA5429ADACB600E80EF0 /* Alamofire */,
 				E462BA5629AEEF9D00E80EF0 /* AlamofireImage */,
+				E486DE2729B040FB00F338B2 /* OrderedCollections */,
 			);
 			productName = BeeSwiftToday;
 			productReference = A12E694D1BD3EF0200AB94C2 /* BeeSwiftToday.appex */;
@@ -768,6 +775,7 @@
 				E462BA4129AC458B00E80EF0 /* MBProgressHUD */,
 				E462BA4729ADAA1C00E80EF0 /* SnapKit */,
 				E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */,
+				E486DE2529B0403700F338B2 /* OrderedCollections */,
 			);
 			productName = BeeSwift;
 			productReference = A196CB141AE4142E00B90A3E /* BeeSwift.app */;
@@ -844,6 +852,7 @@
 			packageProductDependencies = (
 				E462BA4C29ADAB3900E80EF0 /* SwiftyJSON */,
 				E462BA5229ADACAC00E80EF0 /* Alamofire */,
+				E486DE2929B0410A00F338B2 /* OrderedCollections */,
 			);
 			productName = BeeSwiftIntents;
 			productReference = E5F7C490260FC5300095684F /* BeeSwiftIntents.appex */;
@@ -964,6 +973,7 @@
 				E462BA4029AC458B00E80EF0 /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 				E462BA4629ADAA1C00E80EF0 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E462BA5829AEF02500E80EF0 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
+				E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			productRefGroup = A196CB151AE4142E00B90A3E /* Products */;
 			projectDirPath = "";
@@ -1992,6 +2002,14 @@
 				minimumVersion = 6.5.0;
 			};
 		};
+		E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -2064,6 +2082,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E462BA5829AEF02500E80EF0 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
 			productName = IQKeyboardManagerSwift;
+		};
+		E486DE2529B0403700F338B2 /* OrderedCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = OrderedCollections;
+		};
+		E486DE2729B040FB00F338B2 /* OrderedCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = OrderedCollections;
+		};
+		E486DE2929B0410A00F338B2 /* OrderedCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = OrderedCollections;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
