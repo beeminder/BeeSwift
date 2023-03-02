@@ -52,6 +52,11 @@ class Goal {
     var todayta: Bool = false
     var hhmmformat: Bool = false
     var recent_data: [ExistingDataPoint]?
+
+    // These are obtained from mathishard
+    var derived_goaldate: NSNumber = 0
+    var derived_goalval: NSNumber = 0
+    var derived_rate: NSNumber = 0
     
     init(json: JSON) {
         self.id = json["id"].string!
@@ -109,6 +114,11 @@ class Goal {
         self.hhmmformat = json["hhmmformat"].bool!
 
         self.recent_data = ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()
+
+        let math_is_hard = json["mathishard"].arrayValue
+        self.derived_goaldate = math_is_hard[0].number!
+        self.derived_goalval = math_is_hard[1].number!
+        self.derived_rate = math_is_hard[2].number!
     }
 
     var rateString :String {
