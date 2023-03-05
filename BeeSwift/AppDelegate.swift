@@ -30,6 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.font :
             UIFont.beeminder.defaultFontPlain.withSize(20)]
         UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedString.Key.font : UIFont.beeminder.defaultFontPlain.withSize(18)], for: UIControl.State())
+
+        IQKeyboardManager.shared.enable = true
         IQKeyboardManager.shared.enableAutoToolbar = false
 
         if HKHealthStore.isHealthDataAvailable() {
