@@ -36,18 +36,40 @@ class SettingsViewController: UIViewController {
         self.tableView.tableFooterView = UIView()
         self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
 
+
+        let versionLabel = BSLabel()
+        self.view.addSubview(versionLabel)
+        versionLabel.snp.makeConstraints { (make) in
+            make.width.equalTo(self.view)
+        }
+        versionLabel.textAlignment = .center
         if let info = Bundle.main.infoDictionary {
             let appVersion = info["CFBundleShortVersionString"] as? String ?? "Unknown"
             let appBuild = info[kCFBundleVersionKey as String] as? String ?? "Unknown"
-
-            let versionLabel = BSLabel()
             versionLabel.text = "Version: \(appVersion) (\(appBuild))"
-            self.view.addSubview(versionLabel)
-            versionLabel.snp.makeConstraints { (make) in
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-10)
+        } else {
+            versionLabel.text = "Version: Unknown"
+        }
+
+        if #available(iOS 15.0, *) {
+            let logsLabel = UILabel()
+            self.view.addSubview(logsLabel)
+            logsLabel.textAlignment = .center
+            logsLabel.text = "Debug Logs »"
+            logsLabel.font = UIFont(name: "Avenir-Light", size: 16)!
+            logsLabel.textColor = .systemBlue
+            logsLabel.isUserInteractionEnabled = true
+            logsLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showLogsTapped)))
+
+            logsLabel.snp.makeConstraints { (make) in
+                make.top.equalTo(versionLabel.snp.bottom).offset(10)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
                 make.width.equalTo(self.view)
             }
-            versionLabel.textAlignment = .center
+        } else {
+            versionLabel.snp.makeConstraints { (make) in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-10)
+            }
         }
     }
 
@@ -62,7 +84,15 @@ class SettingsViewController: UIViewController {
             await ServiceLocator.currentUserManager.signOut()
             self.navigationController?.popViewController(animated: true)
         }
-    }    
+    }
+
+    @objc
+    func showLogsTapped() {
+        if #available(iOS 15.0, *) {
+            self.navigationController?.pushViewController(LogsViewController(), animated: true)
+        }
+    }
+
 }
 
 extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
