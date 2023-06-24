@@ -70,7 +70,6 @@
 		A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */; };
 		A1F8F07B232C05410060B83E /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* Goal.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
-		A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */; };
 		E42CB452291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
 		E42CB453291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
 		E42CB454291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
@@ -337,7 +336,6 @@
 		A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCell.swift; sourceTree = "<group>"; };
 		A1F8F07A232C05410060B83E /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
-		A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGoalCollectionViewCell.swift; sourceTree = "<group>"; };
 		E42CB451291727B200A35AB9 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
 		E43BEA832A036A9C00FC3A38 /* LogReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogReader.swift; sourceTree = "<group>"; };
 		E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogReaderTests.swift; sourceTree = "<group>"; };
@@ -625,7 +623,6 @@
 		A1E618E51E79E01900D8ED93 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				A1FF19131DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift */,
 				A15FF41F1AEB621000A9AD22 /* GoalCollectionViewCell.swift */,
 				A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */,
 				A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */,
@@ -1128,7 +1125,6 @@
 				E44CE783299338C500394E87 /* GoalManager.swift in Sources */,
 				E5C9EFE62612E02700DBBEAE /* AddDataIntents.intentdefinition in Sources */,
 				E48E2716296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift in Sources */,
-				A1FF19141DE8EEA900FD0527 /* NewGoalCollectionViewCell.swift in Sources */,
 				E4E642802910C3FB004F3EA9 /* QuantityHealthKitMetric.swift in Sources */,
 				A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */,
 				A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */,
