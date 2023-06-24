@@ -432,7 +432,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     
     @objc func refreshCountdown() {
         self.countdownLabel.textColor = self.goal.countdownColor
-        self.countdownLabel.text = self.goal.capitalSafesum() + " or pay $\(self.goal.pledge)"
+        self.countdownLabel.text = self.goal.capitalSafesum()
     }
     
     func setGraphImage() {
