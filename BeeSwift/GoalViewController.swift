@@ -10,12 +10,11 @@ import Foundation
 import SwiftyJSON
 import MBProgressHUD
 import AlamofireImage
-import SafariServices
 import Intents
 import BeeKit
 import OSLog
 
-class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTableViewControllerDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTableViewControllerDelegate, UITextFieldDelegate {
     let elementSpacing = 10
     let sideMargin = 10
     let buttonHeight = 42
@@ -302,8 +301,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             syncWeekButton.setTitle("Sync last 7 days", for: .normal)
             syncWeekButton.addTarget(self, action: #selector(self.syncWeekButtonPressed), for: .touchUpInside)
         }
-        
-        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
+
         if (!self.goal.hideDataEntry()) {
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
@@ -401,16 +399,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             //
         }
         self.present(controller, animated: true, completion: nil)
-    }
-    
-    @objc func actionButtonPressed() {
-        guard let username = ServiceLocator.currentUserManager.username,
-            let accessToken = ServiceLocator.currentUserManager.accessToken,
-            let viewGoalUrl = URL(string: "\(ServiceLocator.requestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(ServiceLocator.requestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
-        
-        let safariVC = SFSafariViewController(url: viewGoalUrl)
-        safariVC.delegate = self
-        self.showDetailViewController(safariVC, sender: self)
     }
     
     @objc func refreshButtonPressed() {
@@ -591,11 +579,5 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.goalImageView
-    }
-
-    // MARK: - SFSafariViewControllerDelegate
-    
-    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        controller.dismiss(animated: true, completion: nil)
     }
 }
