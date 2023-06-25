@@ -456,7 +456,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return ServiceLocator.versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count + 1
+        return ServiceLocator.versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
