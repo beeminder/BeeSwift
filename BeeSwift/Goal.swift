@@ -184,13 +184,13 @@ class Goal {
     var countdownColor :UIColor {
         guard let buf = self.safebuf?.intValue else { return UIColor.beeminder.gray }
         if buf < 1 {
-            return UIColor.red
+            return UIColor.systemRed
         }
         else if buf < 2 {
-            return UIColor.orange
+            return UIColor.systemOrange
         }
         else if buf < 3 {
-            return UIColor.blue
+            return UIColor.systemBlue
         }
         return UIColor.beeminder.green
     }
@@ -297,7 +297,7 @@ class Goal {
     }
     
     var deltaColorsWhenBelowIsGoodSide: [UIColor] {
-        return [UIColor.beeminder.green, UIColor.blue, UIColor.orange]
+        return [UIColor.beeminder.green, UIColor.systemBlue, UIColor.systemOrange]
     }
     
     var deltaColorsWhenAboveIsGoodSide: [UIColor] {
