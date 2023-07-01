@@ -407,6 +407,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             MBProgressHUD.showAdded(to: self.view, animated: true).mode = .indeterminate
 
             do {
+                try await ServiceLocator.goalManager.forceAutodataRefresh(self.goal)
                 try await self.updateGoalAndInterface()
             } catch {
                 let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
