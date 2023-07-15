@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KeychainSwift
 import SwiftyJSON
 
 class CurrentUserManager {
@@ -28,6 +29,7 @@ class CurrentUserManager {
     fileprivate let defaultDeadlineKey = "default_deadline"
     fileprivate let beemTZKey = "timezone"
 
+    private let keychain = KeychainSwift(keyPrefix: "CurrentUserManager_")
     private let requestManager: RequestManager
     
     var allKeys: [String] {
@@ -59,6 +61,16 @@ class CurrentUserManager {
                 // userDefaults.removeObject(forKey: key)
             }
         }
+
+        // Ensure that the user's access token is stored in the keychain, and only in the
+        // keychain. This will require the user to login again if they downgrade.
+        let maybeKeychainAccessToken = keychain.get(accessTokenKey)
+        let maybeUserDefaultsAccessToken = userDefaults.object(forKey: accessTokenKey) as? String
+        if let userDefaultsAccessToken = maybeUserDefaultsAccessToken, maybeKeychainAccessToken == nil {
+            setAccessToken(userDefaultsAccessToken)
+        }
+        userDefaults.removeObject(forKey: accessTokenKey)
+        UserDefaults.standard.removeObject(forKey: accessTokenKey)
     }
     
     /// Write a value to the UserDefaults store
@@ -77,7 +89,7 @@ class CurrentUserManager {
 
     
     var accessToken :String? {
-        return userDefaults.object(forKey: accessTokenKey) as! String?
+        return keychain.get(accessTokenKey)
     }
     
     var username :String? {
@@ -130,7 +142,7 @@ class CurrentUserManager {
     }
     
     func setAccessToken(_ accessToken: String) {
-        self.set(accessToken, forKey: accessTokenKey)
+        keychain.set(accessToken, forKey: accessTokenKey, withAccess: .accessibleAfterFirstUnlock)
     }
     
     func signInWithEmail(_ email: String, password: String) async {
@@ -146,7 +158,7 @@ class CurrentUserManager {
         if responseJSON["deadbeat"].boolValue {
             self.setDeadbeat(true)
         }
-        self.set(responseJSON[accessTokenKey].string!, forKey: accessTokenKey)
+        self.setAccessToken(responseJSON[accessTokenKey].string!)
         self.set(responseJSON[usernameKey].string!, forKey: usernameKey)
         self.set(responseJSON[defaultAlertstartKey].number!, forKey: defaultAlertstartKey)
         self.set(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
@@ -179,7 +191,7 @@ class CurrentUserManager {
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
         }.value
 
-        self.removeObject(forKey: accessTokenKey)
+        keychain.delete(accessTokenKey)
         self.removeObject(forKey: deadbeatKey)
         self.removeObject(forKey: usernameKey)
 
