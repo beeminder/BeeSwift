@@ -20,5 +20,9 @@
 	<array>
 		<string>group.beeminder.beeminder</string>
 	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)group.beeminder.beeminder</string>
+	</array>
 </dict>
 </plist>
