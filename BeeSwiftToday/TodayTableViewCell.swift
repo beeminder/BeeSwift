@@ -118,9 +118,6 @@ class TodayTableViewCell: UITableViewCell {
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
         hud.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
-
-        let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
-        guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
         
         // if the goal's deadline is after midnight, and it's after midnight,
         // but before the deadline,
@@ -151,7 +148,7 @@ class TodayTableViewCell: UITableViewCell {
         formatter.locale = Locale(identifier: "en_US")
         formatter.dateFormat = "d"
         
-        let params = ["access_token": token, "urtext": "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
+        let params = ["urtext": "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
         guard let slug = self.goalDictionary["slug"] as? String else { return }
 
         Task { @MainActor in
@@ -174,12 +171,9 @@ class TodayTableViewCell: UITableViewCell {
     @objc func refreshGoal() {
         Task { @MainActor in
             guard let slug = self.goalDictionary["slug"] as? String else { return }
-            let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
-            guard let token = defaults?.object(forKey: "accessToken") as? String else { return }
 
-            let parameters = ["access_token": token]
             do {
-                let responseObject = try await ServiceLocator.requestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: parameters)
+                let responseObject = try await ServiceLocator.requestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: [:])
                 let goalJSON = JSON(responseObject!)
                 if (!goalJSON["queued"].bool!) {
                     self.pollTimer?.invalidate()

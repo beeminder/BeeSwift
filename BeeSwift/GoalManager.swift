@@ -205,8 +205,10 @@ actor GoalManager {
     private func updateTodayWidget() {
         if let sharedDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier) {
             sharedDefaults.set(self.todayGoalDictionaries(), forKey: "todayGoalDictionaries")
-            // Note this key is different to accessTokenKey
-            sharedDefaults.set(currentUserManager.accessToken, forKey: "accessToken")
+
+            // We used to explicitly need to pass the access token to the today widget. This is no longer needed
+            // but make sure any previously saved value is cleaned up.
+            sharedDefaults.removeObject(forKey: "accessToken")
         }
     }
 
