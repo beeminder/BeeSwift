@@ -21,5 +21,8 @@ final class CurrentUserManagerTests: XCTestCase {
 
         let currentUserManager = CurrentUserManager(requestManager: ServiceLocator.requestManager)
         XCTAssertEqual(currentUserManager.accessToken, "migrated_access_token")
+
+        // The value should also have been removed from UserDefaults
+        XCTAssertNil(userDefaults.object(forKey: "access_token"))
     }
 }
