@@ -5,8 +5,8 @@ import KeychainSwift
 final class CurrentUserManagerTests: XCTestCase {
 
     override func setUpWithError() throws {
-        let keychain = KeychainSwift(keyPrefix: "CurrentUserManager_")
-        keychain.delete("access_token")
+        let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
+        keychain.delete(CurrentUserManager.accessTokenKey)
     }
 
     func testCanSetAndRetrieveAccessToken() throws {
@@ -17,12 +17,12 @@ final class CurrentUserManagerTests: XCTestCase {
 
     func testCanMigrateAccessToken() throws {
         let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
-        userDefaults.set("migrated_access_token", forKey: "access_token")
+        userDefaults.set("migrated_access_token", forKey: CurrentUserManager.accessTokenKey)
 
         let currentUserManager = CurrentUserManager(requestManager: ServiceLocator.requestManager)
         XCTAssertEqual(currentUserManager.accessToken, "migrated_access_token")
 
         // The value should also have been removed from UserDefaults
-        XCTAssertNil(userDefaults.object(forKey: "access_token"))
+        XCTAssertNil(userDefaults.object(forKey: CurrentUserManager.accessTokenKey))
     }
 }
