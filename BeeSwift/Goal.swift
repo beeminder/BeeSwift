@@ -358,7 +358,6 @@ class Goal {
             let daystamp = datapoint.daystamp
             let requestId = "\(daystamp)-\(self.minuteStamp())"
             let params = [
-                "access_token": ServiceLocator.currentUserManager.accessToken!,
                 "value": "\(datapointValue)",
                 "comment": "Auto-updated via Apple Health",
                 "requestid": requestId
@@ -468,7 +467,7 @@ class Goal {
             }
 
             let requestId = "\(newDataPoint.daystamp)-\(minuteStamp())"
-            let params = ["access_token": ServiceLocator.currentUserManager.accessToken!, "urtext": "\(newDataPoint.daystamp.suffix(2)) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": requestId]
+            let params = ["urtext": "\(newDataPoint.daystamp.suffix(2)) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": requestId]
 
             logger.notice("Creating new datapoint for \(self.id, privacy: .public) on \(newDataPoint.daystamp, privacy: .public): \(newDataPoint.value, privacy: .private)")
 

@@ -79,14 +79,14 @@ actor GoalManager {
     }
 
     func refreshGoal(_ goal: Goal) async throws {
-        let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?access_token=\(currentUserManager.accessToken!)&datapoints_count=5", parameters: nil)
+        let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
         goal.updateToMatch(json: JSON(responseObject!))
 
         await performPostGoalUpdateBookkeeping()
     }
 
     func forceAutodataRefresh(_ goal: Goal) async throws {
-        let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json?access_token=\(currentUserManager.accessToken!)&datapoints_count=5", parameters: nil)
+        let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
     }
 
     /// Update the set of goals to match those in the provided json. Existing Goal objects will be re-used when they match an ID in the json
