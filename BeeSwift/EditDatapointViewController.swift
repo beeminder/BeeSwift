@@ -185,7 +185,6 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
 
             do {
                 let params = [
-                    "access_token": ServiceLocator.currentUserManager.accessToken!,
                     "urtext": self.urtext()
                 ]
                 let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
@@ -202,14 +201,11 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     
     func deleteDatapoint() {
         Task { @MainActor in
-            let params = [
-                "access_token": ServiceLocator.currentUserManager.accessToken!
-            ]
             let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
             hud.mode = .indeterminate
 
             do {
-                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: nil)
 
                 let hud = MBProgressHUD.forView(self.view)
                 hud?.mode = .customView
