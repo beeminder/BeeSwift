@@ -21,6 +21,38 @@ Changes to be released in next version
 Others
  * 
 
+6.3 (2023-07-17)
+=================================================
+
+BeeSwift now only supports iOS 14.0+
+
+✨ Features
+ * Application logs can now be viewed and shared (e.g. to send to support) (#384)
+ * Confirmation screen with data preview when linking goals to HealthKit (#364)
+ * Add support for a number of additional HealthKit metrics
+
+🙌 Improvements
+ * Speed up and rate limit background health data updates (#372, #373, #374)
+ * HealthKit metrics are now shown grouped by category (#343)
+ * Correctly render values for hhmm goals in the list of recent data points (#337)
+ * Improve styling of additional keyboard buttons
+
+🐛 Bugfix
+ * Goals in the gallery are sorted according to the canonical beeminder sort (#382)
+ * Correctly calculate sleep time (#359)
+ * Correctly calculate time in bed, meditation minutes, and stand hours
+ * Do not sync health data from before a goal was created (#358)
+ * Do not prompt to upgrade immediately to allow most users to auto-update (#341)
+
+🧱 Build
+ * Migrate from CocoaPods to SwiftPM (#380)
+ * Upgrade several third party dependencies (#342)
+ * Update rubygem versions (#375, #385)
+
+⚖️  Compliance
+ * Remove all features which link from the app to the beeminder website (#388, #390, #391)
+ * Remove mention of pledge amounts (#389)
+
 
 6.2 (2022-10-14)
 =================================================
