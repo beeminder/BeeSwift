@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KeychainSwift
 import SwiftyJSON
 
 class CurrentUserManager {
@@ -20,17 +21,20 @@ class CurrentUserManager {
     
     fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
     
-    fileprivate let accessTokenKey = "access_token"
-    fileprivate let usernameKey = "username"
-    fileprivate let deadbeatKey = "deadbeat"
-    fileprivate let defaultLeadtimeKey = "default_leadtime"
-    fileprivate let defaultAlertstartKey = "default_alertstart"
-    fileprivate let defaultDeadlineKey = "default_deadline"
-    fileprivate let beemTZKey = "timezone"
+    internal static let accessTokenKey = "access_token"
+    internal static let usernameKey = "username"
+    internal static let deadbeatKey = "deadbeat"
+    internal static let defaultLeadtimeKey = "default_leadtime"
+    internal static let defaultAlertstartKey = "default_alertstart"
+    internal static let defaultDeadlineKey = "default_deadline"
+    internal static let beemTZKey = "timezone"
 
+    internal static let keychainPrefix = "CurrentUserManager_"
+
+    private let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
     private let requestManager: RequestManager
     
-    var allKeys: [String] {
+    fileprivate static var allKeys: [String] {
         [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
     }
     
@@ -48,7 +52,7 @@ class CurrentUserManager {
     /// group-scoped settings object. Values written by old versions of the app may be in the previous store
     /// so we migrate any such values on initialization.
     private func migrateValues() {
-        for key in allKeys {
+        for key in CurrentUserManager.allKeys {
             let standardValue = UserDefaults.standard.object(forKey: key)
             let groupValue = userDefaults.object(forKey: key)
             
@@ -59,6 +63,16 @@ class CurrentUserManager {
                 // userDefaults.removeObject(forKey: key)
             }
         }
+
+        // Ensure that the user's access token is stored in the keychain, and only in the
+        // keychain. This will require the user to login again if they downgrade.
+        let maybeKeychainAccessToken = keychain.get(CurrentUserManager.accessTokenKey)
+        let maybeUserDefaultsAccessToken = userDefaults.object(forKey: CurrentUserManager.accessTokenKey) as? String
+        if let userDefaultsAccessToken = maybeUserDefaultsAccessToken, maybeKeychainAccessToken == nil {
+            setAccessToken(userDefaultsAccessToken)
+        }
+        userDefaults.removeObject(forKey: CurrentUserManager.accessTokenKey)
+        UserDefaults.standard.removeObject(forKey: CurrentUserManager.accessTokenKey)
     }
     
     /// Write a value to the UserDefaults store
@@ -77,36 +91,36 @@ class CurrentUserManager {
 
     
     var accessToken :String? {
-        return userDefaults.object(forKey: accessTokenKey) as! String?
+        return keychain.get(CurrentUserManager.accessTokenKey)
     }
     
     var username :String? {
-        return userDefaults.object(forKey: usernameKey) as! String?
+        return userDefaults.object(forKey: CurrentUserManager.usernameKey) as! String?
     }
     
     var signingUp : Bool = false
     
     func defaultLeadTime() -> NSNumber {
-        return (userDefaults.object(forKey: self.defaultLeadtimeKey) ?? 0) as! NSNumber
+        return (userDefaults.object(forKey: CurrentUserManager.defaultLeadtimeKey) ?? 0) as! NSNumber
     }
     
     func setDefaultLeadTime(_ leadtime : NSNumber) {
-        self.set(leadtime, forKey: self.defaultLeadtimeKey)    }
+        self.set(leadtime, forKey: CurrentUserManager.defaultLeadtimeKey)    }
     
     func defaultAlertstart() -> NSNumber {
-        return (userDefaults.object(forKey: self.defaultAlertstartKey) ?? 0) as! NSNumber
+        return (userDefaults.object(forKey: CurrentUserManager.defaultAlertstartKey) ?? 0) as! NSNumber
     }
     
     func setDefaultAlertstart(_ alertstart : NSNumber) {
-        self.set(alertstart, forKey: self.defaultAlertstartKey)
+        self.set(alertstart, forKey: CurrentUserManager.defaultAlertstartKey)
     }
     
     func defaultDeadline() -> NSNumber {
-        return (userDefaults.object(forKey: self.defaultDeadlineKey) ?? 0) as! NSNumber
+        return (userDefaults.object(forKey: CurrentUserManager.defaultDeadlineKey) ?? 0) as! NSNumber
     }
     
     func setDefaultDeadline(_ deadline : NSNumber) {
-        self.set(deadline, forKey: self.defaultDeadlineKey)
+        self.set(deadline, forKey: CurrentUserManager.defaultDeadlineKey)
     }
     
     func signedIn() -> Bool {
@@ -114,23 +128,23 @@ class CurrentUserManager {
     }
     
     func isDeadbeat() -> Bool {
-        return userDefaults.object(forKey: deadbeatKey) != nil
+        return userDefaults.object(forKey: CurrentUserManager.deadbeatKey) != nil
     }
     
     func timezone() -> String {
-        return userDefaults.object(forKey: beemTZKey) as? String ?? "Unknown"
+        return userDefaults.object(forKey: CurrentUserManager.beemTZKey) as? String ?? "Unknown"
     }
     
     func setDeadbeat(_ deadbeat: Bool) {
         if deadbeat {
-            self.set(true, forKey: deadbeatKey)
+            self.set(true, forKey: CurrentUserManager.deadbeatKey)
         } else {
-            self.removeObject(forKey: deadbeatKey)
+            self.removeObject(forKey: CurrentUserManager.deadbeatKey)
         }
     }
     
     func setAccessToken(_ accessToken: String) {
-        self.set(accessToken, forKey: accessTokenKey)
+        keychain.set(accessToken, forKey: CurrentUserManager.accessTokenKey, withAccess: .accessibleAfterFirstUnlock)
     }
     
     func signInWithEmail(_ email: String, password: String) async {
@@ -146,12 +160,12 @@ class CurrentUserManager {
         if responseJSON["deadbeat"].boolValue {
             self.setDeadbeat(true)
         }
-        self.set(responseJSON[accessTokenKey].string!, forKey: accessTokenKey)
-        self.set(responseJSON[usernameKey].string!, forKey: usernameKey)
-        self.set(responseJSON[defaultAlertstartKey].number!, forKey: defaultAlertstartKey)
-        self.set(responseJSON[defaultDeadlineKey].number!, forKey: defaultDeadlineKey)
-        self.set(responseJSON[defaultLeadtimeKey].number!, forKey: defaultLeadtimeKey)
-        self.set(responseJSON[beemTZKey].string!, forKey: beemTZKey)
+        self.setAccessToken(responseJSON[CurrentUserManager.accessTokenKey].string!)
+        self.set(responseJSON[CurrentUserManager.usernameKey].string!, forKey: CurrentUserManager.usernameKey)
+        self.set(responseJSON[CurrentUserManager.defaultAlertstartKey].number!, forKey: CurrentUserManager.defaultAlertstartKey)
+        self.set(responseJSON[CurrentUserManager.defaultDeadlineKey].number!, forKey: CurrentUserManager.defaultDeadlineKey)
+        self.set(responseJSON[CurrentUserManager.defaultLeadtimeKey].number!, forKey: CurrentUserManager.defaultLeadtimeKey)
+        self.set(responseJSON[CurrentUserManager.beemTZKey].string!, forKey: CurrentUserManager.beemTZKey)
         await Task { @MainActor in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
         }.value
@@ -179,9 +193,9 @@ class CurrentUserManager {
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
         }.value
 
-        self.removeObject(forKey: accessTokenKey)
-        self.removeObject(forKey: deadbeatKey)
-        self.removeObject(forKey: usernameKey)
+        keychain.delete(CurrentUserManager.accessTokenKey)
+        self.removeObject(forKey: CurrentUserManager.deadbeatKey)
+        self.removeObject(forKey: CurrentUserManager.usernameKey)
 
         await Task { @MainActor in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)

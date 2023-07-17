@@ -70,6 +70,10 @@
 		A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */; };
 		A1F8F07B232C05410060B83E /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* Goal.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
+		E41286F12A62E6840093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F02A62E6840093D598 /* KeychainSwift */; };
+		E41286F32A62E97B0093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F22A62E97B0093D598 /* KeychainSwift */; };
+		E41286F52A62E9840093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F42A62E9840093D598 /* KeychainSwift */; };
+		E417572D2A6446FE0029CDDA /* CurrentUserManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */; };
 		E42CB452291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
 		E42CB453291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
 		E42CB454291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
@@ -336,6 +340,7 @@
 		A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCell.swift; sourceTree = "<group>"; };
 		A1F8F07A232C05410060B83E /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
+		E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserManagerTests.swift; sourceTree = "<group>"; };
 		E42CB451291727B200A35AB9 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
 		E43BEA832A036A9C00FC3A38 /* LogReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogReader.swift; sourceTree = "<group>"; };
 		E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogReaderTests.swift; sourceTree = "<group>"; };
@@ -389,6 +394,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E41286F52A62E9840093D598 /* KeychainSwift in Frameworks */,
 				E462BA4A29ADAAB800E80EF0 /* SnapKit in Frameworks */,
 				A142492E1FD0A56A007736B3 /* HealthKit.framework in Frameworks */,
 				E462BA5129ADAB4F00E80EF0 /* MBProgressHUD in Frameworks */,
@@ -410,6 +416,7 @@
 				E57BE6F52655EBE000BA540B /* BeeKit.framework in Frameworks */,
 				A1B672401B0989E800584782 /* UIKit.framework in Frameworks */,
 				E486DE2629B0403700F338B2 /* OrderedCollections in Frameworks */,
+				E41286F12A62E6840093D598 /* KeychainSwift in Frameworks */,
 				E462BA5A29AEF02500E80EF0 /* IQKeyboardManagerSwift in Frameworks */,
 				E462BA3C29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator in Frameworks */,
 				A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */,
@@ -448,6 +455,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E41286F32A62E97B0093D598 /* KeychainSwift in Frameworks */,
 				E486DE2A29B0410A00F338B2 /* OrderedCollections in Frameworks */,
 				E462BA4D29ADAB3900E80EF0 /* SwiftyJSON in Frameworks */,
 				E462BA5329ADACAC00E80EF0 /* Alamofire in Frameworks */,
@@ -608,6 +616,7 @@
 				A196CB301AE4142F00B90A3E /* Supporting Files */,
 				E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */,
 				E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */,
+				E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */,
 			);
 			path = BeeSwiftTests;
 			sourceTree = "<group>";
@@ -749,6 +758,7 @@
 				E462BA5429ADACB600E80EF0 /* Alamofire */,
 				E462BA5629AEEF9D00E80EF0 /* AlamofireImage */,
 				E486DE2729B040FB00F338B2 /* OrderedCollections */,
+				E41286F42A62E9840093D598 /* KeychainSwift */,
 			);
 			productName = BeeSwiftToday;
 			productReference = A12E694D1BD3EF0200AB94C2 /* BeeSwiftToday.appex */;
@@ -782,6 +792,7 @@
 				E462BA4729ADAA1C00E80EF0 /* SnapKit */,
 				E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */,
 				E486DE2529B0403700F338B2 /* OrderedCollections */,
+				E41286F02A62E6840093D598 /* KeychainSwift */,
 			);
 			productName = BeeSwift;
 			productReference = A196CB141AE4142E00B90A3E /* BeeSwift.app */;
@@ -859,6 +870,7 @@
 				E462BA4C29ADAB3900E80EF0 /* SwiftyJSON */,
 				E462BA5229ADACAC00E80EF0 /* Alamofire */,
 				E486DE2929B0410A00F338B2 /* OrderedCollections */,
+				E41286F22A62E97B0093D598 /* KeychainSwift */,
 			);
 			productName = BeeSwiftIntents;
 			productReference = E5F7C490260FC5300095684F /* BeeSwiftIntents.appex */;
@@ -981,6 +993,7 @@
 				E462BA4629ADAA1C00E80EF0 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E462BA5829AEF02500E80EF0 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */,
+				E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 			);
 			productRefGroup = A196CB151AE4142E00B90A3E /* Products */;
 			projectDirPath = "";
@@ -1171,6 +1184,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E417572D2A6446FE0029CDDA /* CurrentUserManagerTests.swift in Sources */,
 				E4B0A32E28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */,
 				E48E2714296B75E4008013C0 /* TotalSleepMinutesTests.swift in Sources */,
 				A196CB331AE4142F00B90A3E /* BeeSwiftTests.swift in Sources */,
@@ -1961,6 +1975,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 20.0.0;
+			};
+		};
 		E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -2028,6 +2050,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E41286F02A62E6840093D598 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+		E41286F22A62E97B0093D598 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+		E41286F42A62E9840093D598 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
 		E462BA3529AC44EA00E80EF0 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */;
