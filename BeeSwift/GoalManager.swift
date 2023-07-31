@@ -198,6 +198,10 @@ actor GoalManager {
         self.goalsBox.set(nil)
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
         currentUserManager.removeObject(forKey: cachedLastFetchedGoalsKey)
+
+        if let sharedDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier) {
+            sharedDefaults.removeObject(forKey: "todayGoalDictionaries")
+        }
     }
 
     // MARK: Today Widget
