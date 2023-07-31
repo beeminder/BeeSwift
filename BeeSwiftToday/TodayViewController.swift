@@ -45,7 +45,8 @@ class TodayViewController: UIViewController {
     
     @objc func updateDataSource() {
         let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
-        self.goalDictionaries = defaults?.object(forKey: "todayGoalDictionaries") as! Array<NSDictionary>
+        // Goal dictionaries will not be available if the user is logged out or has never fetched goals
+        self.goalDictionaries = defaults?.object(forKey: "todayGoalDictionaries") as? Array<NSDictionary> ?? Array()
     }
 }
 
