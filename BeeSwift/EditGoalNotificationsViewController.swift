@@ -60,8 +60,9 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
     }
     
     override func sendLeadTimeToServer(_ timer : Timer) {
+        // We must not use `timer` in the Task as it may change once this method returns
+        let userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
         Task { @MainActor in
-            let userInfo = timer.userInfo! as! Dictionary<String, NSNumber>
             let leadtime = userInfo["leadtime"]
             let params = [ "leadtime" : leadtime, "use_defaults" : false ]
             do {
