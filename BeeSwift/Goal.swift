@@ -115,10 +115,11 @@ class Goal {
 
         self.recent_data = ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()
 
-        let math_is_hard = json["mathishard"].arrayValue
-        self.derived_goaldate = math_is_hard[0].number!
-        self.derived_goalval = math_is_hard[1].number!
-        self.derived_rate = math_is_hard[2].number!
+        // In rare cases goals can be corrupted and not have a mathishard value. We don't particularly care about
+        // behavior in this rare case as long as the app does not crash, so default to a nonsense value
+        self.derived_goaldate = json["mathishard"][0].number ?? 0
+        self.derived_goalval = json["mathishard"][1].number ?? 0
+        self.derived_rate = json["mathishard"][2].number ?? 0
     }
 
     var rateString :String {
