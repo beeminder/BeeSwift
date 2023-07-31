@@ -140,6 +140,7 @@
 		E4B0A33028C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A33128C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
+		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
 		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
 		E4E6426A290E22E6004F3EA9 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
 		E4E6426B290E22E9004F3EA9 /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
@@ -359,6 +360,7 @@
 		E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureHKMetricViewController.swift; sourceTree = "<group>"; };
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
+		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
 		E4E43D8729F39CE800697116 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityHealthKitMetric.swift; sourceTree = "<group>"; };
@@ -617,6 +619,7 @@
 				E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */,
 				E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */,
 				E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */,
+				E4B6FEC52A776A2900690376 /* GoalTests.swift */,
 			);
 			path = BeeSwiftTests;
 			sourceTree = "<group>";
@@ -1188,6 +1191,7 @@
 				E4B0A32E28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */,
 				E48E2714296B75E4008013C0 /* TotalSleepMinutesTests.swift in Sources */,
 				A196CB331AE4142F00B90A3E /* BeeSwiftTests.swift in Sources */,
+				E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */,
 				E43BEA862A036D4300FC3A38 /* LogReaderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
