@@ -7,7 +7,7 @@ class StandHoursHealthKitMetric : CategoryHealthKitMetric {
     let hourInSeconds = 3600.0
 
     init(humanText: String, databaseString: String, category: HealthKitCategory) {
-        super.init(humanText: humanText, databaseString: databaseString, category: category, hkCategoryTypeIdentifier: .appleStandHour)
+        super.init(humanText: humanText, databaseString: databaseString, category: category, hkSampleType: HKObjectType.categoryType(forIdentifier: .appleStandHour)!)
     }
 
     override func hkDatapointValueForSamples(samples: [HKSample], startOfDate: Date) -> Double {

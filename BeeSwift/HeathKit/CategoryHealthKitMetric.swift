@@ -14,21 +14,21 @@ class CategoryHealthKitMetric : HealthKitMetric {
     let humanText : String
     let databaseString : String
     let category : HealthKitCategory
-    let hkCategoryTypeIdentifier : HKCategoryTypeIdentifier
+    let hkSampleType : HKSampleType
 
-    internal init(humanText: String, databaseString: String, category : HealthKitCategory, hkCategoryTypeIdentifier: HKCategoryTypeIdentifier) {
+    internal init(humanText: String, databaseString: String, category : HealthKitCategory, hkSampleType: HKSampleType) {
         self.humanText = humanText
         self.databaseString = databaseString
         self.category = category
-        self.hkCategoryTypeIdentifier = hkCategoryTypeIdentifier
+        self.hkSampleType = hkSampleType
     }
 
     func sampleType() -> HKSampleType {
-        return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier)!
+        return hkSampleType
     }
 
     func permissionType() -> HKObjectType {
-        return HKObjectType.categoryType(forIdentifier: self.hkCategoryTypeIdentifier)!
+        return hkSampleType
     }
 
     func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [DataPoint] {

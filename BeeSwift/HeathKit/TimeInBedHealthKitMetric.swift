@@ -6,7 +6,7 @@ class TimeInBedHealthKitMetric : CategoryHealthKitMetric {
     let hourInSeconds = 3600.0
 
     init(humanText: String, databaseString: String, category: HealthKitCategory) {
-        super.init(humanText: humanText, databaseString: databaseString, category: category, hkCategoryTypeIdentifier: .sleepAnalysis)
+        super.init(humanText: humanText, databaseString: databaseString, category: category, hkSampleType: HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!)
     }
 
     override func includeForMetric(sample: HKCategorySample) -> Bool {
