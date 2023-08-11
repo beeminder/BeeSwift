@@ -25,6 +25,7 @@ class HealthKitConfig : NSObject {
         QuantityHealthKitMetric.init(humanText: "Swimming distance", databaseString: "swimDistance", category: .Activity, hkQuantityTypeIdentifier: .distanceSwimming),
         QuantityHealthKitMetric.init(humanText: "Swimming strokes", databaseString: "swimStrokes", category: .Activity, hkQuantityTypeIdentifier: .swimmingStrokeCount),
         QuantityHealthKitMetric.init(humanText: "Walking/running distance", databaseString: "walkRunDistance", category: .Activity, hkQuantityTypeIdentifier: .distanceWalkingRunning),
+        WorkoutMinutesHealthKitMetric.init(humanText: "Workout minutes", databaseString: "workoutMinutes", category: .Activity),
 
         // Body Measurements
         QuantityHealthKitMetric.init(humanText: "Weight", databaseString: "weight", category: .BodyMeasurements, hkQuantityTypeIdentifier: .bodyMass),
