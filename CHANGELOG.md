@@ -21,6 +21,19 @@ Changes to be released in next version
 Others
  * 
 
+
+6.4 (2023-08-08)
+=================================================
+
+🙌 Improvements
+ * Move the beeminder access token to secure storage in the iOS Keychain (#394)
+
+🐛 Bugfix
+ * App no longer crashes when modifying notification settings (#400)
+ * Some users with bad data experienced a crash on app load (#399)
+ * Today widget should not crash if goals are not available (#398)
+
+
 6.3 (2023-07-17)
 =================================================
 
