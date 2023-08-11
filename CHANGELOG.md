@@ -32,6 +32,8 @@ Others
  * App no longer crashes when modifying notification settings (#400)
  * Some users with bad data experienced a crash on app load (#399)
  * Today widget should not crash if goals are not available (#398)
+ * Refreshing a goal once again causes autodata to update
+ * Bring back the timer control
 
 
 6.3 (2023-07-17)
