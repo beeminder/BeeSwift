@@ -367,9 +367,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     @objc func refreshButtonPressed() {
         Task { @MainActor in
-            self.scrollView.refreshControl?.endRefreshing()
-            MBProgressHUD.showAdded(to: self.view, animated: true).mode = .indeterminate
-
             do {
                 if self.goal.isLinkedToHealthKit() {
                     try await ServiceLocator.healthStoreManager.updateWithRecentData(goal: self.goal, days: 7)
@@ -384,7 +381,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
                 self.present(alert, animated: true, completion: nil)
             }
 
-            MBProgressHUD.hide(for: self.view, animated: true)
+            self.scrollView.refreshControl?.endRefreshing()
         }
     }
 
