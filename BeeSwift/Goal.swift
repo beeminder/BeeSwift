@@ -316,6 +316,10 @@ class Goal {
         return formatter.string(from: Date())
     }
 
+    func isLinkedToHealthKit() -> Bool {
+        return self.autodata == "apple"
+    }
+
     /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
     var initDaystamp: String {
         let initDate = Date(timeIntervalSince1970: self.initday!.doubleValue)
