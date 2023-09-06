@@ -280,11 +280,16 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.bottom.equalTo(self.submitButton)
         }
 
-        if self.goal.isLinkedToHealthKit() {
+        if self.goal.isDataProvidedAutomatically {
             let pullToRefreshView = PullToRefreshView()
             scrollView.addSubview(pullToRefreshView)
 
-            pullToRefreshView.message = "Pull down to synchronize with Apple Health"
+            if self.goal.isLinkedToHealthKit {
+                pullToRefreshView.message = "Pull down to synchronize with Apple Health"
+            } else {
+                pullToRefreshView.message = "Pull down to update"
+            }
+
             pullToRefreshView.snp.makeConstraints { (make) in
                 make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(elementSpacing)
                 make.left.equalTo(sideMargin)
@@ -368,7 +373,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     @objc func refreshButtonPressed() {
         Task { @MainActor in
             do {
-                if self.goal.isLinkedToHealthKit() {
+                if self.goal.isLinkedToHealthKit {
                     try await ServiceLocator.healthStoreManager.updateWithRecentData(goal: self.goal, days: 7)
                 } else {
                     try await ServiceLocator.goalManager.forceAutodataRefresh(self.goal)
