@@ -55,7 +55,12 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         }
         self.datePicker.datePickerMode = .date
         self.datePicker.preferredDatePickerStyle = .inline
-        
+
+        let daystamp = self.datapoint.daystamp
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd"
+        self.datePicker.date = dateFormatter.date(from: daystamp)!
+
         self.scrollView.addSubview(self.valueField)
         self.valueField.snp.makeConstraints { (make) in
             make.left.right.equalTo(self.datePicker)
@@ -95,11 +100,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(self.deleteButtonPressed))
         deleteButton.tintColor = .red
         self.navigationItem.rightBarButtonItem = deleteButton
-        
-        let daystamp = self.datapoint.daystamp
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMdd"
-        self.datePicker.date = dateFormatter.date(from: daystamp)!
+
     }
     
     func urtext() -> String {
