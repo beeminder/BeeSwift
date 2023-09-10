@@ -20,8 +20,8 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     var goalSlug : String
     fileprivate var datePicker = UIDatePicker()
     fileprivate var scrollView = UIScrollView()
-    fileprivate var valueField = BSTextField()
-    fileprivate var commentField = BSTextField()
+    fileprivate var valueField = UITextField()
+    fileprivate var commentField = UITextField()
 
     init(goalSlug: String, datapoint: ExistingDataPoint) {
         self.goalSlug = goalSlug
@@ -61,29 +61,67 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         dateFormatter.dateFormat = "yyyyMMdd"
         self.datePicker.date = dateFormatter.date(from: daystamp)!
 
-        self.scrollView.addSubview(self.valueField)
-        self.valueField.snp.makeConstraints { (make) in
+        let formView = UIView()
+        self.scrollView.addSubview(formView)
+        formView.snp.makeConstraints{ (make) in
             make.left.right.equalTo(self.datePicker)
             make.top.equalTo(self.datePicker.snp.bottom).offset(10)
         }
+        formView.layer.cornerRadius = 10
+        formView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
+
+        let valueLabel = UILabel()
+        formView.addSubview(valueLabel)
+        valueLabel.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(formView).offset(10)
+        }
+        valueLabel.text = "Value"
+        valueLabel.layer.opacity = 0.5
+        valueLabel.font = UIFont.systemFont(ofSize: 12)
+
+        formView.addSubview(self.valueField)
+        self.valueField.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(valueLabel.snp.bottom).offset(3)
+        }
         self.valueField.delegate = self
-        self.valueField.placeholder = "Value"
-        self.valueField.textAlignment = .center
         self.valueField.keyboardType = .decimalPad
+        self.valueField.returnKeyType = .done
         self.valueField.text = "\(self.datapoint.value)"
         
         let accessory = DatapointValueAccessory()
         accessory.valueField = self.valueField
         self.valueField.inputAccessoryView = accessory
-        
-        self.scrollView.addSubview(self.commentField)
-        self.commentField.snp.makeConstraints { (make) in
-            make.left.right.equalTo(self.datePicker)
+
+        // Add a horizontal line divider
+        let divider = UIView()
+        formView.addSubview(divider)
+        divider.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
             make.top.equalTo(self.valueField.snp.bottom).offset(10)
+            make.height.equalTo(1)
         }
-        self.commentField.placeholder = "Comment"
-        self.commentField.textAlignment = .center
+        divider.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
+
+        let commentLabel = UILabel()
+        formView.addSubview(commentLabel)
+        commentLabel.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(divider).offset(10)
+        }
+        commentLabel.text = "Comment"
+        commentLabel.layer.opacity = 0.5
+        commentLabel.font = UIFont.systemFont(ofSize: 12)
+
+        formView.addSubview(self.commentField)
+        self.commentField.snp.makeConstraints { (make) in
+            make.left.right.bottom.equalTo(formView).inset(10)
+            make.top.equalTo(commentLabel.snp.bottom).offset(3)
+        }
         self.commentField.text = self.datapoint.comment
+        self.commentField.delegate = self
+        self.commentField.returnKeyType = .done
         
         let updateButton = UIButton(type: .system)
         if #available(iOS 15.0, *) {
@@ -92,7 +130,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         self.scrollView.addSubview(updateButton)
         updateButton.snp.makeConstraints { (make) in
             make.left.right.equalTo(self.datePicker)
-            make.top.equalTo(self.commentField.snp.bottom).offset(10)
+            make.top.equalTo(formView.snp.bottom).offset(20)
         }
         updateButton.setTitle("Update", for: .normal)
         updateButton.addTarget(self, action: #selector(self.updateButtonPressed), for: .touchUpInside)
@@ -127,6 +165,12 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 return false
             }
         }
+        return true
+    }
+
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
         return true
     }
 
