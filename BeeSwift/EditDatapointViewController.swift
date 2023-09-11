@@ -19,7 +19,6 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     var datapoint : ExistingDataPoint
     var goalSlug : String
     fileprivate var datePicker = UIDatePicker()
-    fileprivate var scrollView = UIScrollView()
     fileprivate var valueField = UITextField()
     fileprivate var commentField = UITextField()
 
@@ -39,42 +38,58 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         self.title = "Edit Datapoint"
 
         self.view.backgroundColor = .systemBackground
-        
-        self.view.addSubview(self.scrollView)
-        self.scrollView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-            make.bottom.equalTo(0)
+
+        let formView = UIView()
+        self.view.addSubview(formView)
+        formView.snp.makeConstraints{ (make) in
+            make.top.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(10)
         }
-        
-        self.scrollView.addSubview(self.datePicker)
+        formView.layer.cornerRadius = 10
+        formView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
+
+
+        let dateLabel = UILabel()
+        formView.addSubview(dateLabel)
+        dateLabel.snp.makeConstraints { (make) in
+            make.top.left.right.equalTo(formView).inset(10)
+        }
+        dateLabel.text = "Date"
+        dateLabel.layer.opacity = 0.5
+        dateLabel.font = UIFont.systemFont(ofSize: 12)
+
+        formView.addSubview(self.datePicker)
         self.datePicker.snp.makeConstraints { (make) in
-            make.top.equalTo(self.scrollView).offset(margin)
-            make.centerX.equalTo(self.scrollView)
+            make.left.right.equalTo(formView)
+            make.top.equalTo(dateLabel.snp.bottom)
         }
         self.datePicker.datePickerMode = .date
-        self.datePicker.preferredDatePickerStyle = .inline
+        self.datePicker.preferredDatePickerStyle = .compact
+        self.datePicker.contentHorizontalAlignment = .left
+        self.datePicker.backgroundColor = nil
+        if let bgView = self.datePicker.subviews.first?.subviews.first?.subviews.first {
+            bgView.backgroundColor = nil
+        }
 
         let daystamp = self.datapoint.daystamp
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
         self.datePicker.date = dateFormatter.date(from: daystamp)!
 
-        let formView = UIView()
-        self.scrollView.addSubview(formView)
-        formView.snp.makeConstraints{ (make) in
-            make.left.right.equalTo(self.datePicker)
-            make.top.equalTo(self.datePicker.snp.bottom).offset(10)
+        // Add a horizontal line divider
+        let divider1 = UIView()
+        formView.addSubview(divider1)
+        divider1.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(self.datePicker.snp.bottom)
+            make.height.equalTo(1)
         }
-        formView.layer.cornerRadius = 10
-        formView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
+        divider1.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
 
         let valueLabel = UILabel()
         formView.addSubview(valueLabel)
         valueLabel.snp.makeConstraints { (make) in
             make.left.right.equalTo(formView).inset(10)
-            make.top.equalTo(formView).offset(10)
+            make.top.equalTo(divider1.snp.bottom).offset(10)
         }
         valueLabel.text = "Value"
         valueLabel.layer.opacity = 0.5
@@ -127,9 +142,9 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         if #available(iOS 15.0, *) {
             updateButton.configuration = .filled()
         }
-        self.scrollView.addSubview(updateButton)
+        self.view.addSubview(updateButton)
         updateButton.snp.makeConstraints { (make) in
-            make.left.right.equalTo(self.datePicker)
+            make.left.right.equalTo(formView)
             make.top.equalTo(formView.snp.bottom).offset(20)
         }
         updateButton.setTitle("Update", for: .normal)
@@ -138,7 +153,20 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(self.deleteButtonPressed))
         deleteButton.tintColor = .red
         self.navigationItem.rightBarButtonItem = deleteButton
+    }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let bgView = self.datePicker.subviews.first?.subviews.first?.subviews.first {
+            bgView.backgroundColor = nil
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let bgView = self.datePicker.subviews.first?.subviews.first?.subviews.first {
+            bgView.backgroundColor = nil
+        }
     }
     
     func urtext() -> String {
@@ -234,6 +262,12 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if let bgView = self.datePicker.subviews.first?.subviews.first?.subviews.first {
+            bgView.backgroundColor = nil
+        }
     }
 
 }

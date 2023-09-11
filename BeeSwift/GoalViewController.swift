@@ -412,7 +412,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         guard let existingDatapoint = datapoint as? ExistingDataPoint else { return }
 
         let editDatapointViewController = EditDatapointViewController(goalSlug: goal.slug, datapoint: existingDatapoint)
-        self.navigationController?.pushViewController(editDatapointViewController, animated: true)
+        let navigationController = UINavigationController(rootViewController: editDatapointViewController)
+        navigationController.modalPresentationStyle = .popover
+        self.present(navigationController, animated: true, completion: nil)
     }
 
     @objc func dateStepperValueChanged() {
