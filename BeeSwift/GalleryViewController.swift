@@ -90,7 +90,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         let deadbeatLabel = BSLabel()
         self.deadbeatView.addSubview(deadbeatLabel)
-        deadbeatLabel.textColor = UIColor.red
+        deadbeatLabel.textColor = .beeminder.red
         deadbeatLabel.numberOfLines = 0
         deadbeatLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(13)
         deadbeatLabel.text = "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
@@ -110,7 +110,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         
         self.outofdateView.addSubview(self.outofdateLabel)
-        self.outofdateLabel.textColor = .red
+        self.outofdateLabel.textColor = .beeminder.red
         self.outofdateLabel.numberOfLines = 0
         self.outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
         self.outofdateLabel.textAlignment = .center
@@ -333,7 +333,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         var color = UIColor.black
         if let lastUpdated = self.lastUpdated {
             if lastUpdated.timeIntervalSinceNow < -3600 {
-                color = UIColor.red
+                color = .beeminder.red
                 lastTextString = "Last updated: a long time ago..."
             }
             else if lastUpdated.timeIntervalSinceNow < -120 {
@@ -350,7 +350,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         else {
-            color = UIColor.red
+            color = .beeminder.red
             lastTextString = "Last updated: a long time ago..."
         }
         let lastText: NSMutableAttributedString = NSMutableAttributedString(string: lastTextString)
