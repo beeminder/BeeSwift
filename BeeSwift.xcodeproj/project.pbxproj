@@ -176,7 +176,7 @@
 		E57BE71B2655F03200BA540B /* BeeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E5A80E6826598A370016D9A0 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		E5C161942423CEA00045C90D /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C161932423CE9F0045C90D /* VersionManager.swift */; };
-		E5C9EFE62612E02700DBBEAE /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
+		E5C9EFE62612E02700DBBEAE /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
 		E5CF516A2612431600546184 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
 		E5CF51702612432400546184 /* RequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BCE9841AFFFB3A007322CC /* RequestManager.swift */; };
 		E5CF517C2612434300546184 /* BSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B3711AEF54D100F19A09 /* BSButton.swift */; };
@@ -193,7 +193,7 @@
 		E5DF493924DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
 		E5F7C492260FC5300095684F /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5F7C491260FC5300095684F /* Intents.framework */; };
 		E5F7C4AA260FC5300095684F /* BeeSwiftIntents.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E5F7C490260FC5300095684F /* BeeSwiftIntents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		E5F7C55026113C330095684F /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
+		E5F7C55026113C330095684F /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
 		E5FEFB3824E6FAC800A076BB /* BeeSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FEFB3724E6FAC800A076BB /* BeeSwiftUITests.swift */; };
 		E5FEFB4124E6FAFC00A076BB /* LaunchScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */; };
 /* End PBXBuildFile section */
