@@ -1,10 +1,9 @@
-//
 //  PullToRefreshHint.swift
 //  BeeSwift
 //
-//  Created by Theo Spears on 9/3/23.
-//  Copyright © 2023 APB. All rights reserved.
-//
+//  A static view that indicates to the user that it is possible
+//  to pull to refresh. Provides no behavior - the parent view should
+//  add pull to refresh support as normal.
 
 import Foundation
 
