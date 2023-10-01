@@ -41,27 +41,22 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
 
         let formView = UIView()
         self.view.addSubview(formView)
+        formView.layer.cornerRadius = 10
+        formView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
         formView.snp.makeConstraints{ (make) in
             make.top.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(10)
         }
-        formView.layer.cornerRadius = 10
-        formView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
-
 
         let dateLabel = UILabel()
         formView.addSubview(dateLabel)
-        dateLabel.snp.makeConstraints { (make) in
-            make.top.left.right.equalTo(formView).inset(10)
-        }
         dateLabel.text = "Date"
         dateLabel.layer.opacity = 0.5
         dateLabel.font = UIFont.systemFont(ofSize: 12)
+        dateLabel.snp.makeConstraints { (make) in
+            make.top.left.right.equalTo(formView).inset(10)
+        }
 
         formView.addSubview(self.datePicker)
-        self.datePicker.snp.makeConstraints { (make) in
-            make.left.right.equalTo(formView).inset(10)
-            make.top.equalTo(dateLabel.snp.bottom).offset(3)
-        }
         self.datePicker.datePickerMode = .date
         self.datePicker.contentHorizontalAlignment = .left
 
@@ -70,84 +65,93 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         dateFormatter.dateFormat = "yyyyMMdd"
         self.datePicker.date = dateFormatter.date(from: daystamp)!
 
-        // Add a horizontal line divider
-        let divider1 = UIView()
+        self.datePicker.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(dateLabel.snp.bottom).offset(3)
+        }
+
+        let divider1 = formDivider()
         formView.addSubview(divider1)
         divider1.snp.makeConstraints { (make) in
             make.left.right.equalTo(formView).inset(10)
             make.top.equalTo(self.datePicker.snp.bottom).offset(10)
-            make.height.equalTo(1)
         }
-        divider1.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
 
         let valueLabel = UILabel()
         formView.addSubview(valueLabel)
+        valueLabel.text = "Value"
+        valueLabel.layer.opacity = 0.5
+        valueLabel.font = UIFont.systemFont(ofSize: 12)
         valueLabel.snp.makeConstraints { (make) in
             make.left.right.equalTo(formView).inset(10)
             make.top.equalTo(divider1.snp.bottom).offset(10)
         }
-        valueLabel.text = "Value"
-        valueLabel.layer.opacity = 0.5
-        valueLabel.font = UIFont.systemFont(ofSize: 12)
 
         formView.addSubview(self.valueField)
-        self.valueField.snp.makeConstraints { (make) in
-            make.left.right.equalTo(formView).inset(10)
-            make.top.equalTo(valueLabel.snp.bottom).offset(3)
-        }
         self.valueField.delegate = self
         self.valueField.keyboardType = .decimalPad
         self.valueField.returnKeyType = .done
         self.valueField.text = "\(self.datapoint.value)"
-        
+
         let accessory = DatapointValueAccessory()
         accessory.valueField = self.valueField
         self.valueField.inputAccessoryView = accessory
 
-        // Add a horizontal line divider
-        let divider = UIView()
-        formView.addSubview(divider)
-        divider.snp.makeConstraints { (make) in
+        self.valueField.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(valueLabel.snp.bottom).offset(3)
+        }
+
+        let divider2 = formDivider()
+        formView.addSubview(divider2)
+        divider2.snp.makeConstraints { (make) in
             make.left.right.equalTo(formView).inset(10)
             make.top.equalTo(self.valueField.snp.bottom).offset(10)
-            make.height.equalTo(1)
         }
-        divider.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
 
         let commentLabel = UILabel()
         formView.addSubview(commentLabel)
-        commentLabel.snp.makeConstraints { (make) in
-            make.left.right.equalTo(formView).inset(10)
-            make.top.equalTo(divider).offset(10)
-        }
         commentLabel.text = "Comment"
         commentLabel.layer.opacity = 0.5
         commentLabel.font = UIFont.systemFont(ofSize: 12)
+        commentLabel.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(divider2).offset(10)
+        }
 
         formView.addSubview(self.commentField)
+        self.commentField.text = self.datapoint.comment
+        self.commentField.delegate = self
+        self.commentField.returnKeyType = .done
         self.commentField.snp.makeConstraints { (make) in
             make.left.right.bottom.equalTo(formView).inset(10)
             make.top.equalTo(commentLabel.snp.bottom).offset(3)
         }
-        self.commentField.text = self.datapoint.comment
-        self.commentField.delegate = self
-        self.commentField.returnKeyType = .done
         
         let updateButton = UIButton(type: .system)
+        self.view.addSubview(updateButton)
+        updateButton.setTitle("Update", for: .normal)
         if #available(iOS 15.0, *) {
             updateButton.configuration = .filled()
         }
-        self.view.addSubview(updateButton)
+        updateButton.addTarget(self, action: #selector(self.updateButtonPressed), for: .touchUpInside)
         updateButton.snp.makeConstraints { (make) in
             make.left.right.equalTo(formView)
             make.top.equalTo(formView.snp.bottom).offset(20)
         }
-        updateButton.setTitle("Update", for: .normal)
-        updateButton.addTarget(self, action: #selector(self.updateButtonPressed), for: .touchUpInside)
 
         let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(self.deleteButtonPressed))
         deleteButton.tintColor = .red
         self.navigationItem.rightBarButtonItem = deleteButton
+    }
+
+    func formDivider() -> UIView {
+        let divider = UIView()
+        divider.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
+        divider.snp.makeConstraints { (make) in
+            make.height.equalTo(1)
+        }
+        return divider
     }
 
     override func viewDidLayoutSubviews() {
