@@ -305,9 +305,16 @@ class Goal {
         return deltaColorsWhenBelowIsGoodSide.reversed()
     }
 
-    
     func hideDataEntry() -> Bool {
-        return self.autodata.count > 0 || self.won.boolValue
+        return self.isDataProvidedAutomatically || self.won.boolValue
+    }
+
+    var isDataProvidedAutomatically: Bool {
+        return !self.autodata.isEmpty
+    }
+
+    var isLinkedToHealthKit: Bool {
+        return self.autodata == "apple"
     }
     
     func minuteStamp() -> String {
@@ -538,11 +545,5 @@ private extension Goal {
         let cacheBustingUrlStr = "\(originUrlStr)\(queryCharacter)proctime=\(lastTouch)"
         
         return cacheBustingUrlStr
-    }
-}
-
-extension Goal {
-    var isDataProvidedAutomatically: Bool {
-        return !self.autodata.isEmpty
     }
 }

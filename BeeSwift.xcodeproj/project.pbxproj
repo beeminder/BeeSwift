@@ -116,6 +116,7 @@
 		E462BA5529ADACB600E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5429ADACB600E80EF0 /* Alamofire */; };
 		E462BA5729AEEF9D00E80EF0 /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5629AEEF9D00E80EF0 /* AlamofireImage */; };
 		E462BA5A29AEF02500E80EF0 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */; };
+		E46DC80F2AA58DF20059FDFE /* PullToRefreshHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */; };
 		E46FF15B2984C522009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
 		E46FF15C2984C590009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
 		E46FF15D2984C591009F8C7A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
@@ -355,6 +356,7 @@
 		E44CE782299338C500394E87 /* GoalManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalManager.swift; sourceTree = "<group>"; };
 		E457BE5C28C192B50012F5D0 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
 		E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedBox.swift; sourceTree = "<group>"; };
+		E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshHint.swift; sourceTree = "<group>"; };
 		E46FF15A2984C522009F8C7A /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutes.swift; sourceTree = "<group>"; };
 		E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutesTests.swift; sourceTree = "<group>"; };
@@ -514,6 +516,7 @@
 				A1453B341AED9184006F48DA /* UIColorExtension.swift */,
 				A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */,
 				E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */,
+				E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -1156,6 +1159,7 @@
 				E462BA2E29A31C3B00E80EF0 /* SynchronizedBox.swift in Sources */,
 				A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */,
 				E52094FE2741D72300CB766F /* GoalHealthKitConnection.swift in Sources */,
+				E46DC80F2AA58DF20059FDFE /* PullToRefreshHint.swift in Sources */,
 				E4E642902910D327004F3EA9 /* TimeInBedHealthKitMetric.swift in Sources */,
 				A1453B391AEDA71D006F48DA /* BSLabel.swift in Sources */,
 				A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */,

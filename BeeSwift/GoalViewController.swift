@@ -21,7 +21,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     let buttonHeight = 42
 
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
-    
+
     var goal : Goal!
 
     fileprivate var goalImageView = UIImageView()
@@ -44,14 +44,14 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.systemBackground
         self.title = self.goal.slug
-        
+
         // have to set these before the datapoints since setting the most recent datapoint updates the text field,
         // which in turn updates the stepper
         self.valueStepper.minimumValue = -10000000
         self.valueStepper.maximumValue = 1000000
         self.dateStepper.minimumValue = -365
         self.dateStepper.maximumValue = 365
-        
+
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
             make.top.equalToSuperview()
@@ -59,14 +59,14 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.right.equalTo(0)
             make.bottom.equalTo(0)
         }
-        
-        
+
+
         self.scrollView.refreshControl = {
             let refreshControl = UIRefreshControl()
             refreshControl.addTarget(self, action: #selector(refreshButtonPressed), for: .valueChanged)
             return refreshControl
         }()
-        
+
         let countdownView = UIView()
         self.scrollView.addSubview(countdownView)
         countdownView.snp.makeConstraints { (make) -> Void in
@@ -76,7 +76,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.height.equalTo(35)
             make.width.equalTo(self.scrollView)
         }
-        
+
         countdownView.addSubview(self.countdownLabel)
 
         self.countdownLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(Constants.defaultFontSize)
@@ -85,7 +85,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.centerY.centerX.equalTo(countdownView)
             make.width.equalTo(countdownView)
         }
-        
+
         self.scrollView.addSubview(self.goalImageScrollView)
         self.goalImageScrollView.showsHorizontalScrollIndicator = false
         self.goalImageScrollView.showsVerticalScrollIndicator = false
@@ -96,12 +96,12 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.centerX.equalTo(self.view)
             make.left.greaterThanOrEqualTo(self.scrollView.safeAreaLayoutGuide.snp.leftMargin)
             make.right.lessThanOrEqualTo(self.scrollView.safeAreaLayoutGuide.snp.rightMargin)
-            
+
             make.top.equalTo(countdownView.snp.bottom)
             make.width.equalTo(self.scrollView)
             make.height.equalTo(self.goalImageScrollView.snp.width).multipliedBy(Float(Constants.graphHeight)/Float(Constants.graphWidth))
         }
-        
+
         self.goalImageScrollView.addSubview(self.goalImageView)
         let tapGR = UITapGestureRecognizer(target: self, action: #selector(GoalViewController.goalImageTapped))
         tapGR.numberOfTapsRequired = 2
@@ -116,7 +116,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         self.goalImageView.image = UIImage(named: "GraphPlaceholder")
 
-        
+
         self.scrollView.addSubview(self.deltasLabel)
         self.deltasLabel.snp.makeConstraints { (make) in
             make.top.equalTo(self.goalImageScrollView.snp.bottom)
@@ -134,7 +134,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
             make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
         }
-        
+
         let dataEntryView = UIView()
         dataEntryView.isHidden = self.goal.hideDataEntry()
 
@@ -146,7 +146,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.bottom.equalTo(0)
             make.height.equalTo(120)
         }
-        
+
         dataEntryView.addSubview(self.dateTextField)
         self.dateTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
         self.dateTextField.tintColor = UIColor.beeminder.gray
@@ -161,7 +161,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.top.equalTo(0)
         }
-        
+
         dataEntryView.addSubview(self.valueTextField)
         self.valueTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
         self.valueTextField.tintColor = UIColor.beeminder.gray
@@ -170,7 +170,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.valueTextField.delegate = self
         self.valueTextField.textAlignment = .center
         self.valueTextField.keyboardType = .decimalPad
-        
+
         let accessory = DatapointValueAccessory()
         accessory.valueField = self.valueTextField
         self.valueTextField.inputAccessoryView = accessory
@@ -180,9 +180,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.height.equalTo(Constants.defaultTextFieldHeight)
             make.top.equalTo(0)
         }
-        
+
         let commentLeftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 1))
-        
+
         dataEntryView.addSubview(self.commentTextField)
         self.commentTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
         self.commentTextField.leftView = commentLeftPaddingView
@@ -199,7 +199,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-10).priority(.high)
             make.top.equalTo(0)
         }
-        
+
         dataEntryView.addSubview(self.submitButton)
         self.submitButton.setTitle("Submit", for: UIControl.State())
         self.submitButton.addTarget(self, action: #selector(GoalViewController.submitDatapoint), for: .touchUpInside)
@@ -208,12 +208,12 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.left.equalTo(self.commentTextField)
             make.right.equalTo(self.commentTextField)
         }
-        
+
         self.dateStepper.tintColor = UIColor.beeminder.gray
         dataEntryView.addSubview(self.dateStepper)
         self.dateStepper.addTarget(self, action: #selector(GoalViewController.dateStepperValueChanged), for: .valueChanged)
         self.dateStepper.value = 0
-        
+
         // if the goal's deadline is after midnight, and it's after midnight,
         // but before the deadline,
         // default to entering data for the "previous" day.
@@ -224,7 +224,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         if self.goal.deadline.intValue > 0 && currentHour! < 6 && currentHour! < self.goal.deadline.intValue/3600 {
             self.dateStepper.value = -1
         }
-        
+
         // if the goal's deadline is before midnight and has already passed for this calendar day, default to entering data for the "next" day
         if self.goal.deadline.intValue < 0 {
             let deadlineSecondsAfterMidnight = 24*3600 + self.goal.deadline.intValue
@@ -236,7 +236,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
                 self.dateStepper.value = 1
             }
         }
-        
+
         self.dateStepper.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.dateTextField.snp.bottom).offset(elementSpacing)
             make.left.equalTo(self.dateTextField)
@@ -245,7 +245,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.centerX.equalTo(self.dateTextField)
         }
         self.dateStepperValueChanged()
-        
+
         let dateLabel = BSLabel()
         dataEntryView.addSubview(dateLabel)
         dateLabel.text = "Date"
@@ -256,7 +256,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.right.equalTo(self.dateStepper)
             make.top.equalTo(self.dateStepper.snp.bottom).offset(elementSpacing)
         }
-        
+
         self.valueStepper.tintColor = UIColor.beeminder.gray
         dataEntryView.addSubview(self.valueStepper)
         self.valueStepper.addTarget(self, action: #selector(GoalViewController.valueStepperValueChanged), for: .valueChanged)
@@ -267,7 +267,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.width.equalTo(self.valueTextField)
             make.centerX.equalTo(self.valueTextField)
         }
-        
+
         let valueLabel = BSLabel()
         dataEntryView.addSubview(valueLabel)
         valueLabel.text = "Value"
@@ -279,30 +279,24 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.top.equalTo(self.valueStepper.snp.bottom).offset(elementSpacing)
             make.bottom.equalTo(self.submitButton)
         }
-        
-        if self.goal.autodata == "apple" {
-            let syncTodayButton = BSButton()
-            self.scrollView.addSubview(syncTodayButton)
-            syncTodayButton.snp.makeConstraints({ (make) in
+
+        if self.goal.isDataProvidedAutomatically {
+            let pullToRefreshView = PullToRefreshView()
+            scrollView.addSubview(pullToRefreshView)
+
+            if self.goal.isLinkedToHealthKit {
+                pullToRefreshView.message = "Pull down to synchronize with Apple Health"
+            } else {
+                pullToRefreshView.message = "Pull down to update"
+            }
+
+            pullToRefreshView.snp.makeConstraints { (make) in
                 make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(elementSpacing)
                 make.left.equalTo(sideMargin)
                 make.right.equalTo(-sideMargin)
-                make.height.equalTo(buttonHeight)
-            })
-            syncTodayButton.setTitle("Sync with Health app", for: .normal)
-            syncTodayButton.addTarget(self, action: #selector(self.syncTodayButtonPressed), for: .touchUpInside)
-
-            let syncWeekButton = BSButton()
-            self.scrollView.addSubview(syncWeekButton)
-            syncWeekButton.snp.makeConstraints({ (make) in
-                make.left.right.equalTo(syncTodayButton)
-                make.top.equalTo(syncTodayButton.snp.bottom).offset(elementSpacing)
-                make.height.equalTo(buttonHeight)
-            })
-            syncWeekButton.setTitle("Sync last 7 days", for: .normal)
-            syncWeekButton.addTarget(self, action: #selector(self.syncWeekButtonPressed), for: .touchUpInside)
+            }
         }
-        
+
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
         if (!self.goal.hideDataEntry()) {
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
@@ -325,44 +319,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     @objc func onGoalsUpdatedNotification() {
         updateInterfaceToMatchGoal()
     }
-    
-    @objc func syncTodayButtonPressed() {
-        Task { @MainActor in
-            await self.syncHealthDataButtonPressed(numDays: 1)
-        }
-    }
-    
-    @objc func syncWeekButtonPressed() {
-        Task { @MainActor in
-            await self.syncHealthDataButtonPressed(numDays: 7)
-        }
-    }
 
-    private func syncHealthDataButtonPressed(numDays: Int) async {
-        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hud.mode = .indeterminate
-
-        do {
-            logger.notice("Sync button for goal \(self.goal.healthKitMetric ?? "nil", privacy: .public)")
-            try await ServiceLocator.healthStoreManager.updateWithRecentData(goal: self.goal, days: numDays)
-            try await updateGoalAndInterface()
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                hud.mode = .customView
-                hud.customView = UIImageView(image: UIImage(named: "checkmark"))
-                hud.hide(animated: true, afterDelay: 2)
-            })
-
-        } catch {
-            logger.error("Error Syncing Health Data: \(error, privacy: .public)")
-            DispatchQueue.main.async {
-                MBProgressHUD.hide(for: self.view, animated: true)
-            }
-            return
-        }
-
-    }
-    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if (!ServiceLocator.currentUserManager.signedIn()) { return }
         if keyPath == "graph_url" {
@@ -371,7 +328,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.refreshCountdown()
         }
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         Task { @MainActor in
@@ -382,7 +339,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             }
         }
     }
-    
+
     @objc func timerButtonPressed() {
         let controller = TimerViewController()
         controller.slug = self.goal.slug
@@ -402,40 +359,42 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         self.present(controller, animated: true, completion: nil)
     }
-    
+
     @objc func actionButtonPressed() {
         guard let username = ServiceLocator.currentUserManager.username,
             let accessToken = ServiceLocator.currentUserManager.accessToken,
             let viewGoalUrl = URL(string: "\(ServiceLocator.requestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(ServiceLocator.requestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
-        
+
         let safariVC = SFSafariViewController(url: viewGoalUrl)
         safariVC.delegate = self
         self.showDetailViewController(safariVC, sender: self)
     }
-    
+
     @objc func refreshButtonPressed() {
         Task { @MainActor in
-            self.scrollView.refreshControl?.endRefreshing()
-            MBProgressHUD.showAdded(to: self.view, animated: true).mode = .indeterminate
-
             do {
-                try await ServiceLocator.goalManager.forceAutodataRefresh(self.goal)
+                if self.goal.isLinkedToHealthKit {
+                    try await ServiceLocator.healthStoreManager.updateWithRecentData(goal: self.goal, days: 7)
+                } else {
+                    try await ServiceLocator.goalManager.forceAutodataRefresh(self.goal)
+                }
                 try await self.updateGoalAndInterface()
             } catch {
+                logger.error("Error refreshing goal: \(error, privacy: .public)")
                 let alert = UIAlertController(title: "Error", message: "Could not refresh graph", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             }
-            
-            MBProgressHUD.hide(for: self.view, animated: true)
+
+            self.scrollView.refreshControl?.endRefreshing()
         }
     }
-    
+
     @objc func refreshCountdown() {
         self.countdownLabel.textColor = self.goal.countdownColor
         self.countdownLabel.text = self.goal.capitalSafesum()
     }
-    
+
     func setGraphImage() {
         if ServiceLocator.currentUserManager.isDeadbeat() {
             self.goalImageView.image = UIImage(named: "GraphPlaceholder")
@@ -443,7 +402,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.goalImageView.af.setImage(withURL: URL(string: self.goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
         }
     }
-    
+
     @objc func goalImageTapped() {
         self.goalImageScrollView.setZoomScale(self.goalImageScrollView.zoomScale == 1.0 ? 2.0 : 1.0, animated: true)
     }
@@ -455,33 +414,33 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         let editDatapointViewController = EditDatapointViewController(goalSlug: goal.slug, datapoint: existingDatapoint)
         self.navigationController?.pushViewController(editDatapointViewController, animated: true)
     }
-    
+
     @objc func dateStepperValueChanged() {
         let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
         var components = DateComponents()
         components.day = Int(self.dateStepper.value)
-        
+
         let newDate = (calendar as NSCalendar?)?.date(byAdding: components, to: Date(), options: [])
-        
+
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US")
         formatter.dateFormat = "d"
         self.dateTextField.text = formatter.string(from: newDate!)
     }
-    
+
     func setValueTextField() {
         if let lastDatapoint = self.goal!.recent_data?.last {
             self.valueTextField.text = "\(String(describing: lastDatapoint.value))"
         }
     }
-    
+
     @objc func valueStepperValueChanged() {
         var valueString = ""
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US")
         formatter.groupingSeparator = ""
         formatter.numberStyle = .decimal
-        
+
         if self.valueStepper.value < 0 {
             var value = self.valueStepper.value
             if self.valueDecimalRemnant > 0 { value += (1 - self.valueDecimalRemnant) }
@@ -492,18 +451,18 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         valueString = valueString.replacingOccurrences(of: ",", with: ".", options: NSString.CompareOptions(), range: nil)
         self.valueTextField.text = valueString
     }
-    
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField.isEqual(self.commentTextField) {
             self.submitDatapoint()
         }
         return true
     }
-    
+
     @objc func valueTextFieldValueChanged() {
         var intPart : Double = 0;
         let fractPart : Double = modf((self.valueTextField.text! as NSString).doubleValue, &intPart);
-        
+
         self.valueStepper.value = intPart
         self.valueDecimalRemnant = abs(fractPart)
         if intPart < 0 && self.valueDecimalRemnant > 0 { self.valueStepper.value = intPart - 1 }
@@ -529,11 +488,11 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         return true
     }
-    
+
     func urtextFromTextFields() -> String {
         return "\(self.dateTextField.text!) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
     }
-    
+
     @objc func submitDatapoint() {
         Task { @MainActor in
             self.view.endEditing(true)
@@ -589,13 +548,13 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.setGraphImage()
         }
     }
-    
+
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.goalImageView
     }
 
     // MARK: - SFSafariViewControllerDelegate
-    
+
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
     }
