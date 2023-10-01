@@ -18,7 +18,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     
     var datapoint : ExistingDataPoint
     var goalSlug : String
-    fileprivate var datePicker = UIDatePicker()
+    fileprivate var datePicker = InlineDatePicker()
     fileprivate var valueField = UITextField()
     fileprivate var commentField = UITextField()
 
@@ -59,16 +59,11 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
 
         formView.addSubview(self.datePicker)
         self.datePicker.snp.makeConstraints { (make) in
-            make.left.right.equalTo(formView)
-            make.top.equalTo(dateLabel.snp.bottom)
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(dateLabel.snp.bottom).offset(3)
         }
         self.datePicker.datePickerMode = .date
-        self.datePicker.preferredDatePickerStyle = .compact
         self.datePicker.contentHorizontalAlignment = .left
-        self.datePicker.backgroundColor = nil
-        if let bgView = self.datePicker.subviews.first?.subviews.first?.subviews.first {
-            bgView.backgroundColor = nil
-        }
 
         let daystamp = self.datapoint.daystamp
         let dateFormatter = DateFormatter()
@@ -80,7 +75,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         formView.addSubview(divider1)
         divider1.snp.makeConstraints { (make) in
             make.left.right.equalTo(formView).inset(10)
-            make.top.equalTo(self.datePicker.snp.bottom)
+            make.top.equalTo(self.datePicker.snp.bottom).offset(10)
             make.height.equalTo(1)
         }
         divider1.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
@@ -259,15 +254,4 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         
         self.present(alert, animated: true, completion: nil)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if let bgView = self.datePicker.subviews.first?.subviews.first?.subviews.first {
-            bgView.backgroundColor = nil
-        }
-    }
-
 }

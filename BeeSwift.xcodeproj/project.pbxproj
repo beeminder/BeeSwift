@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -80,6 +80,7 @@
 		E42CB452291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
 		E42CB453291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
 		E42CB454291727B200A35AB9 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
+		E43833942AC1473E0098A38F /* InlineDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43833932AC1473E0098A38F /* InlineDatePicker.swift */; };
 		E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BEA832A036A9C00FC3A38 /* LogReader.swift */; };
 		E43BEA862A036D4300FC3A38 /* LogReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */; };
 		E43D9AFB2929C37D00FC1578 /* DatapointValueAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */; };
@@ -348,6 +349,7 @@
 		E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMinutesHealthKitMetric.swift; sourceTree = "<group>"; };
 		E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserManagerTests.swift; sourceTree = "<group>"; };
 		E42CB451291727B200A35AB9 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
+		E43833932AC1473E0098A38F /* InlineDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineDatePicker.swift; sourceTree = "<group>"; };
 		E43BEA832A036A9C00FC3A38 /* LogReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogReader.swift; sourceTree = "<group>"; };
 		E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogReaderTests.swift; sourceTree = "<group>"; };
 		E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointValueAccessory.swift; sourceTree = "<group>"; };
@@ -517,6 +519,7 @@
 				A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */,
 				E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */,
 				E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */,
+				E43833932AC1473E0098A38F /* InlineDatePicker.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -1143,6 +1146,7 @@
 				A1BE73AA1E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift in Sources */,
 				A149147B1BE79FD50060600A /* EditNotificationsViewController.swift in Sources */,
 				A1BE73AC1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift in Sources */,
+				E43833942AC1473E0098A38F /* InlineDatePicker.swift in Sources */,
 				A1C11B481B06F5D100D22871 /* Constants.swift in Sources */,
 				E4B0833D293810EB00A71564 /* DataPoint.swift in Sources */,
 				E44CE7732993317B00394E87 /* ServiceLocator.swift in Sources */,

@@ -413,7 +413,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         let editDatapointViewController = EditDatapointViewController(goalSlug: goal.slug, datapoint: existingDatapoint)
         let navigationController = UINavigationController(rootViewController: editDatapointViewController)
-        navigationController.modalPresentationStyle = .popover
+        navigationController.modalPresentationStyle = .formSheet
         self.present(navigationController, animated: true, completion: nil)
     }
 
