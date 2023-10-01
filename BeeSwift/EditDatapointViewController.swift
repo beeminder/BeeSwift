@@ -13,14 +13,14 @@ import OSLog
 
 class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDatapointViewController")
+
+    private let margin = 10
     
     var datapoint : ExistingDataPoint
     var goalSlug : String
-    fileprivate var datePicker = UIDatePicker()
-    fileprivate var scrollView = UIScrollView()
-    fileprivate var dateLabel = BSLabel()
-    fileprivate var valueField = BSTextField()
-    fileprivate var commentField = BSTextField()
+    fileprivate var datePicker = InlineDatePicker()
+    fileprivate var valueField = UITextField()
+    fileprivate var commentField = UITextField()
 
     init(goalSlug: String, datapoint: ExistingDataPoint) {
         self.goalSlug = goalSlug
@@ -38,110 +38,140 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         self.title = "Edit Datapoint"
 
         self.view.backgroundColor = .systemBackground
-        
-        self.view.addSubview(self.scrollView)
-        self.scrollView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-            make.bottom.equalTo(0)
+
+        let formView = UIView()
+        self.view.addSubview(formView)
+        formView.layer.cornerRadius = 10
+        formView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
+        formView.snp.makeConstraints{ (make) in
+            make.top.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(10)
         }
-        
-        self.scrollView.addSubview(self.dateLabel)
-        self.dateLabel.snp.makeConstraints { (make) in
-            make.top.left.equalTo(self.scrollView).offset(10)
-            make.right.equalTo(self.scrollView).offset(-10)
-            make.width.equalTo(self.scrollView).offset(-20)
-            make.height.equalTo(42)
+
+        let dateLabel = UILabel()
+        formView.addSubview(dateLabel)
+        dateLabel.text = "Date"
+        dateLabel.layer.opacity = 0.5
+        dateLabel.font = UIFont.systemFont(ofSize: 12)
+        dateLabel.snp.makeConstraints { (make) in
+            make.top.left.right.equalTo(formView).inset(10)
         }
-        self.dateLabel.textAlignment = .center
-        self.dateLabel.isUserInteractionEnabled = true
-        let tapGR = UITapGestureRecognizer(target: self, action: #selector(self.dateLabelTapped))
-        self.dateLabel.addGestureRecognizer(tapGR)
-        
-        self.scrollView.addSubview(self.datePicker)
-        self.datePicker.snp.makeConstraints { (make) in
-            make.left.right.equalTo(self.scrollView)
-            make.width.equalTo(self.scrollView)
-            make.height.equalTo(0)
-            make.top.equalTo(self.dateLabel.snp.bottom)
-        }
+
+        formView.addSubview(self.datePicker)
         self.datePicker.datePickerMode = .date
-        self.datePicker.isHidden = true
-        self.datePicker.addTarget(self, action: #selector(self.datePickerValueChanged), for: .valueChanged)
-        
-        self.scrollView.addSubview(self.valueField)
-        self.valueField.snp.makeConstraints { (make) in
-            make.left.right.height.equalTo(self.dateLabel)
-            make.top.equalTo(self.datePicker.snp.bottom).offset(10)
-        }
-        self.valueField.delegate = self
-        self.valueField.placeholder = "Value"
-        self.valueField.textAlignment = .center
-        self.valueField.keyboardType = .decimalPad
-        self.valueField.text = "\(self.datapoint.value)"
-        self.valueField.addTarget(self, action: #selector(self.textFieldEditingDidBegin), for: .editingDidBegin)
-        
-        let accessory = DatapointValueAccessory()
-        accessory.valueField = self.valueField
-        self.valueField.inputAccessoryView = accessory
-        
-        self.scrollView.addSubview(self.commentField)
-        self.commentField.snp.makeConstraints { (make) in
-            make.left.right.height.equalTo(self.dateLabel)
-            make.top.equalTo(self.valueField.snp.bottom).offset(10)
-        }
-        self.commentField.placeholder = "Comment"
-        self.commentField.textAlignment = .center
-        self.commentField.text = self.datapoint.comment
-        self.commentField.addTarget(self, action: #selector(self.textFieldEditingDidBegin), for: .editingDidBegin)
-        
-        let updateButton = BSButton()
-        self.scrollView.addSubview(updateButton)
-        updateButton.snp.makeConstraints { (make) in
-            make.left.right.height.equalTo(self.dateLabel)
-            make.top.equalTo(self.commentField.snp.bottom).offset(10)
-        }
-        updateButton.setTitle("Update", for: .normal)
-        updateButton.addTarget(self, action: #selector(self.updateButtonPressed), for: .touchUpInside)
-        
-        let deleteButton = BSButton()
-        self.scrollView.addSubview(deleteButton)
-        deleteButton.snp.makeConstraints { (make) in
-            make.left.right.height.equalTo(self.dateLabel)
-            make.top.equalTo(updateButton.snp.bottom).offset(10)
-        }
-        deleteButton.setTitle("Delete", for: .normal)
-        deleteButton.addTarget(self, action: #selector(self.deleteButtonPressed), for: .touchUpInside)
-        
+        self.datePicker.contentHorizontalAlignment = .left
+
         let daystamp = self.datapoint.daystamp
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
         self.datePicker.date = dateFormatter.date(from: daystamp)!
-        self.updateDateLabel()
+
+        self.datePicker.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(dateLabel.snp.bottom).offset(3)
+        }
+
+        let divider1 = formDivider()
+        formView.addSubview(divider1)
+        divider1.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(self.datePicker.snp.bottom).offset(10)
+        }
+
+        let valueLabel = UILabel()
+        formView.addSubview(valueLabel)
+        valueLabel.text = "Value"
+        valueLabel.layer.opacity = 0.5
+        valueLabel.font = UIFont.systemFont(ofSize: 12)
+        valueLabel.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(divider1.snp.bottom).offset(10)
+        }
+
+        formView.addSubview(self.valueField)
+        self.valueField.delegate = self
+        self.valueField.keyboardType = .decimalPad
+        self.valueField.returnKeyType = .done
+        self.valueField.text = "\(self.datapoint.value)"
+
+        let accessory = DatapointValueAccessory()
+        accessory.valueField = self.valueField
+        self.valueField.inputAccessoryView = accessory
+
+        self.valueField.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(valueLabel.snp.bottom).offset(3)
+        }
+
+        let divider2 = formDivider()
+        formView.addSubview(divider2)
+        divider2.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(self.valueField.snp.bottom).offset(10)
+        }
+
+        let commentLabel = UILabel()
+        formView.addSubview(commentLabel)
+        commentLabel.text = "Comment"
+        commentLabel.layer.opacity = 0.5
+        commentLabel.font = UIFont.systemFont(ofSize: 12)
+        commentLabel.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView).inset(10)
+            make.top.equalTo(divider2).offset(10)
+        }
+
+        formView.addSubview(self.commentField)
+        self.commentField.text = self.datapoint.comment
+        self.commentField.delegate = self
+        self.commentField.returnKeyType = .done
+        self.commentField.snp.makeConstraints { (make) in
+            make.left.right.bottom.equalTo(formView).inset(10)
+            make.top.equalTo(commentLabel.snp.bottom).offset(3)
+        }
+        
+        let updateButton = UIButton(type: .system)
+        self.view.addSubview(updateButton)
+        updateButton.setTitle("Update", for: .normal)
+        if #available(iOS 15.0, *) {
+            updateButton.configuration = .filled()
+        }
+        updateButton.addTarget(self, action: #selector(self.updateButtonPressed), for: .touchUpInside)
+        updateButton.snp.makeConstraints { (make) in
+            make.left.right.equalTo(formView)
+            make.top.equalTo(formView.snp.bottom).offset(20)
+        }
+
+        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(self.deleteButtonPressed))
+        deleteButton.tintColor = .red
+        self.navigationItem.rightBarButtonItem = deleteButton
+    }
+
+    func formDivider() -> UIView {
+        let divider = UIView()
+        divider.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
+        divider.snp.makeConstraints { (make) in
+            make.height.equalTo(1)
+        }
+        return divider
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let bgView = self.datePicker.subviews.first?.subviews.first?.subviews.first {
+            bgView.backgroundColor = nil
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let bgView = self.datePicker.subviews.first?.subviews.first?.subviews.first {
+            bgView.backgroundColor = nil
+        }
     }
     
     func urtext() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy MM dd"
         return "\(dateFormatter.string(from: self.datePicker.date)) \(self.valueField.text!) \"\(self.commentField.text!)\""
-    }
-    
-    func updateDateLabel() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        self.dateLabel.text = dateFormatter.string(from: self.datePicker.date)
-    }
-    
-    @objc func datePickerValueChanged() {
-        self.updateDateLabel()
-    }
-    
-    @objc func textFieldEditingDidBegin() {
-        self.datePicker.snp.updateConstraints { (make) in
-            make.height.equalTo(0)
-        }
-        self.datePicker.isHidden = true
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -164,18 +194,13 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         }
         return true
     }
-    
-    @objc func dateLabelTapped() {
-        self.datePicker.snp.updateConstraints { (make) in
-            if self.datePicker.isHidden {
-                make.height.equalTo(200)
-            } else {
-                make.height.equalTo(0)
-            }
-        }
-        self.datePicker.isHidden = !self.datePicker.isHidden
-        self.view.endEditing(true)
+
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
+
     
     @objc func updateButtonPressed() {
         Task { @MainActor in
@@ -233,9 +258,4 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         
         self.present(alert, animated: true, completion: nil)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-
 }
