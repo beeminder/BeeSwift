@@ -135,11 +135,12 @@ class HealthStoreManager :NSObject {
                     connections[goal.id] = GoalHealthKitConnection(goal: goal, metric: metric, healthStore: healthStore)
                 }
             }
-
         }
+
+        let connection = connections[goal.id]
         connectionsSemaphore.signal()
 
-        return connections[goal.id]
+        return connection
     }
 
     private func requestAuthorization(read: Set<HKObjectType>) async throws {
