@@ -22,6 +22,20 @@ Others
  * 
 
 
+6.5 (2023-10-04)
+=================================================
+
+✨ Features
+ * Sync Workout Minutes with Apple Health (#401)
+
+🙌 Improvements
+ * Pull to refresh autodata is now more obvious and works with Apple Health (#410)
+ * Redesigned Edit Datapoint view (#413)
+
+🐛 Bugfix
+ * Fix occasional crash on initializing HealthKit connection (#414)
+
+
 6.4 (2023-08-08)
 =================================================
 
