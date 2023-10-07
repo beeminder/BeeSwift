@@ -148,7 +148,8 @@ class QuantityHealthKitMetric : HealthKitMetric {
             formatter.dateFormat = "yyyyMMdd"
             let daystamp = formatter.string(from: datapointDate)
 
-            results.append(NewDataPoint(daystamp: daystamp, value: NSNumber(value: datapointValue), comment: "Auto-entered via Apple Health"))
+            let id = "apple-health-" + daystamp
+            results.append(NewDataPoint(requestid: id, daystamp: daystamp, value: NSNumber(value: datapointValue), comment: "Auto-entered via Apple Health"))
         }
 
         return results

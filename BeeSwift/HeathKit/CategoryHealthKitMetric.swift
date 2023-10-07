@@ -65,8 +65,9 @@ class CategoryHealthKitMetric : HealthKitMetric {
             healthStore.execute(query)
         })
 
+        let id = "apple-heath-" + daystamp
         let datapointValue = self.hkDatapointValueForSamples(samples: samples, startOfDate: bounds.start)
-        return NewDataPoint(daystamp: daystamp, value: NSNumber(value: datapointValue), comment: "Auto-entered via Apple Health")
+        return NewDataPoint(requestid: id, daystamp: daystamp, value: NSNumber(value: datapointValue), comment: "Auto-entered via Apple Health")
     }
 
     internal func dayStampFromDayOffset(dayOffset : Int, deadline : Int) throws -> String {
