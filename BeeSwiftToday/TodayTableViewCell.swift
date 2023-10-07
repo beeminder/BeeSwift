@@ -180,7 +180,7 @@ class TodayTableViewCell: UITableViewCell {
                     self.pollTimer = nil
                     let hud = MBProgressHUD.forView(self)
                     hud?.mode = .customView
-                    hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                    hud?.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
                     hud?.hide(animated: true, afterDelay: 2)
                     self.valueStepper.value = 0
                     self.valueLabel.text = "0"

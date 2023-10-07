@@ -215,7 +215,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
                 let hud = MBProgressHUD.forView(self.view)
                 hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud?.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
                 hud?.hide(animated: true, afterDelay: 2)
             } catch {
                 logger.error("Error updating datapoint for goal \(self.goalSlug): \(error)")
@@ -234,7 +234,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
 
                 let hud = MBProgressHUD.forView(self.view)
                 hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud?.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
                 hud?.hide(animated: true, afterDelay: 2)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.navigationController?.popViewController(animated: true)
