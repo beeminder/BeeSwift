@@ -78,7 +78,7 @@ class RemoveHKMetricViewController: UIViewController {
                 self.goal = Goal(json: JSON(responseObject!))
 
                 hud.mode = .customView
-                hud.customView = UIImageView(image: UIImage(named: "checkmark"))
+                hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: self, userInfo: ["goal": self.goal as Any])
                 

@@ -34,7 +34,7 @@ class DatapointValueAccessory : UIInputView {
         switch UIDevice.current.userInterfaceIdiom {
         case .pad, .mac:
             return false
-        case .phone, .carPlay, .tv, .unspecified:
+        case .phone, .carPlay, .tv, .vision, .unspecified:
              return true
         @unknown default:
             return true
