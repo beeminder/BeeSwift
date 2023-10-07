@@ -51,26 +51,21 @@ class SettingsViewController: UIViewController {
             versionLabel.text = "Version: Unknown"
         }
 
-        if #available(iOS 15.0, *) {
-            let logsLabel = UILabel()
-            self.view.addSubview(logsLabel)
-            logsLabel.textAlignment = .center
-            logsLabel.text = "Debug Logs »"
-            logsLabel.font = UIFont(name: "Avenir-Light", size: 16)!
-            logsLabel.textColor = .systemBlue
-            logsLabel.isUserInteractionEnabled = true
-            logsLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showLogsTapped)))
+        let logsLabel = UILabel()
+        self.view.addSubview(logsLabel)
+        logsLabel.textAlignment = .center
+        logsLabel.text = "Debug Logs »"
+        logsLabel.font = UIFont(name: "Avenir-Light", size: 16)!
+        logsLabel.textColor = .systemBlue
+        logsLabel.isUserInteractionEnabled = true
+        logsLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showLogsTapped)))
 
-            logsLabel.snp.makeConstraints { (make) in
-                make.top.equalTo(versionLabel.snp.bottom).offset(10)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
-                make.width.equalTo(self.view)
-            }
-        } else {
-            versionLabel.snp.makeConstraints { (make) in
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-10)
-            }
+        logsLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(versionLabel.snp.bottom).offset(10)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
+            make.width.equalTo(self.view)
         }
+
     }
 
     @objc func userDefaultsDidChange() {
@@ -88,9 +83,7 @@ class SettingsViewController: UIViewController {
 
     @objc
     func showLogsTapped() {
-        if #available(iOS 15.0, *) {
-            self.navigationController?.pushViewController(LogsViewController(), animated: true)
-        }
+        self.navigationController?.pushViewController(LogsViewController(), animated: true)
     }
 
 }

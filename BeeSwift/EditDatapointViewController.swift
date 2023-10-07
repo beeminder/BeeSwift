@@ -131,9 +131,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         let updateButton = UIButton(type: .system)
         self.view.addSubview(updateButton)
         updateButton.setTitle("Update", for: .normal)
-        if #available(iOS 15.0, *) {
-            updateButton.configuration = .filled()
-        }
+        updateButton.configuration = .filled()
         updateButton.addTarget(self, action: #selector(self.updateButtonPressed), for: .touchUpInside)
         updateButton.snp.makeConstraints { (make) in
             make.left.right.equalTo(formView)
