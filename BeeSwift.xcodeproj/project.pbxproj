@@ -99,6 +99,10 @@
 		E44CE78429933A6100394E87 /* GoalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE782299338C500394E87 /* GoalManager.swift */; };
 		E44CE78529933A6100394E87 /* GoalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE782299338C500394E87 /* GoalManager.swift */; };
 		E457BE5D28C192B50012F5D0 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E457BE5C28C192B50012F5D0 /* IntentHandler.swift */; };
+		E458C7F72AD10D68000DCA5C /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
+		E458C7F82AD10D68000DCA5C /* BeeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E458C7FC2AD10D6E000DCA5C /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
+		E458C7FD2AD10D6E000DCA5C /* BeeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E462BA2E29A31C3B00E80EF0 /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
 		E462BA2F29A31C5000E80EF0 /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
 		E462BA3029A31C5000E80EF0 /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
@@ -215,6 +219,20 @@
 			remoteGlobalIDString = A196CB131AE4142E00B90A3E;
 			remoteInfo = BeeSwift;
 		};
+		E458C7F92AD10D68000DCA5C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E57BE6DF2655EBD900BA540B;
+			remoteInfo = BeeKit;
+		};
+		E458C7FE2AD10D6E000DCA5C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E57BE6DF2655EBD900BA540B;
+			remoteInfo = BeeKit;
+		};
 		E57BE6EA2655EBE000BA540B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
@@ -270,6 +288,28 @@
 				E5F7C4AA260FC5300095684F /* BeeSwiftIntents.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E458C7FB2AD10D68000DCA5C /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E458C7F82AD10D68000DCA5C /* BeeKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E458C8002AD10D6E000DCA5C /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E458C7FD2AD10D6E000DCA5C /* BeeKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E57BE71C2655F03200BA540B /* Embed Frameworks */ = {
@@ -410,6 +450,7 @@
 				E462BA5129ADAB4F00E80EF0 /* MBProgressHUD in Frameworks */,
 				E462BA5529ADACB600E80EF0 /* Alamofire in Frameworks */,
 				E462BA4F29ADAB4300E80EF0 /* SwiftyJSON in Frameworks */,
+				E458C7FC2AD10D6E000DCA5C /* BeeKit.framework in Frameworks */,
 				A12E694E1BD3EF0200AB94C2 /* NotificationCenter.framework in Frameworks */,
 				E486DE2829B040FB00F338B2 /* OrderedCollections in Frameworks */,
 				E462BA5729AEEF9D00E80EF0 /* AlamofireImage in Frameworks */,
@@ -467,6 +508,7 @@
 			files = (
 				E41286F32A62E97B0093D598 /* KeychainSwift in Frameworks */,
 				E486DE2A29B0410A00F338B2 /* OrderedCollections in Frameworks */,
+				E458C7F72AD10D68000DCA5C /* BeeKit.framework in Frameworks */,
 				E462BA4D29ADAB3900E80EF0 /* SwiftyJSON in Frameworks */,
 				E462BA5329ADACAC00E80EF0 /* Alamofire in Frameworks */,
 				E5F7C492260FC5300095684F /* Intents.framework in Frameworks */,
@@ -759,10 +801,12 @@
 				A12E69491BD3EF0200AB94C2 /* Sources */,
 				A12E694A1BD3EF0200AB94C2 /* Frameworks */,
 				A12E694B1BD3EF0200AB94C2 /* Resources */,
+				E458C8002AD10D6E000DCA5C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				E458C7FF2AD10D6E000DCA5C /* PBXTargetDependency */,
 			);
 			name = BeeSwiftToday;
 			packageProductDependencies = (
@@ -874,10 +918,12 @@
 				E5F7C48C260FC5300095684F /* Sources */,
 				E5F7C48D260FC5300095684F /* Frameworks */,
 				E5F7C48E260FC5300095684F /* Resources */,
+				E458C7FB2AD10D68000DCA5C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				E458C7FA2AD10D68000DCA5C /* PBXTargetDependency */,
 			);
 			name = BeeSwiftIntents;
 			packageProductDependencies = (
@@ -1293,6 +1339,16 @@
 			isa = PBXTargetDependency;
 			target = A196CB131AE4142E00B90A3E /* BeeSwift */;
 			targetProxy = A196CB2D1AE4142F00B90A3E /* PBXContainerItemProxy */;
+		};
+		E458C7FA2AD10D68000DCA5C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E57BE6DF2655EBD900BA540B /* BeeKit */;
+			targetProxy = E458C7F92AD10D68000DCA5C /* PBXContainerItemProxy */;
+		};
+		E458C7FF2AD10D6E000DCA5C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E57BE6DF2655EBD900BA540B /* BeeKit */;
+			targetProxy = E458C7FE2AD10D6E000DCA5C /* PBXContainerItemProxy */;
 		};
 		E57BE6EB2655EBE000BA540B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
