@@ -4,6 +4,7 @@ import Foundation
 import SwiftyJSON
 
 protocol DataPoint {
+    var requestid: String { get }
     var daystamp: String { get }
     var value: NSNumber { get }
     var comment: String { get }
@@ -12,6 +13,7 @@ protocol DataPoint {
 /// A data point received from the server. This will have had an ID allocated
 struct ExistingDataPoint : DataPoint {
     let id: String
+    let requestid: String
     let daystamp: String
     let value: NSNumber
     let comment: String
@@ -23,6 +25,7 @@ struct ExistingDataPoint : DataPoint {
         daystamp = json["daystamp"].stringValue
         value = json["value"].numberValue
         comment = json["comment"].stringValue
+        requestid = json["requestid"].stringValue
     }
 
     static func fromJSONArray(array: [JSON]) -> [ExistingDataPoint] {
@@ -32,6 +35,7 @@ struct ExistingDataPoint : DataPoint {
 
 /// A data point we have created locally (e.g. from user input, or HealthKit)
 struct NewDataPoint : DataPoint {
+    let requestid: String
     let daystamp: String
     let value: NSNumber
     let comment: String

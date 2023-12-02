@@ -316,12 +316,6 @@ class Goal {
     var isLinkedToHealthKit: Bool {
         return self.autodata == "apple"
     }
-    
-    func minuteStamp() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "YYYYMMddHHmm"
-        return formatter.string(from: Date())
-    }
 
     /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
     var initDaystamp: String {
@@ -364,11 +358,9 @@ class Goal {
                 return
             }
             let daystamp = datapoint.daystamp
-            let requestId = "\(daystamp)-\(self.minuteStamp())"
             let params = [
                 "value": "\(datapointValue)",
                 "comment": "Auto-updated via Apple Health",
-                "requestid": requestId
             ]
             do {
                 let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params)
@@ -474,8 +466,7 @@ class Goal {
                 return
             }
 
-            let requestId = "\(newDataPoint.daystamp)-\(minuteStamp())"
-            let params = ["urtext": "\(newDataPoint.daystamp.suffix(2)) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": requestId]
+            let params = ["urtext": "\(newDataPoint.daystamp.suffix(2)) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": newDataPoint.requestid]
 
             logger.notice("Creating new datapoint for \(self.id, privacy: .public) on \(newDataPoint.daystamp, privacy: .public): \(newDataPoint.value, privacy: .private)")
 
