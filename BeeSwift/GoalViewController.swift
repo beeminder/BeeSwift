@@ -401,7 +401,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         guard !self.goal.hideDataEntry() else { return }
         guard let existingDatapoint = datapoint as? ExistingDataPoint else { return }
 
-        let editDatapointViewController = EditDatapointViewController(goalSlug: goal.slug, datapoint: existingDatapoint)
+        let editDatapointViewController = EditDatapointViewController(goal: goal, datapoint: existingDatapoint)
         let navigationController = UINavigationController(rootViewController: editDatapointViewController)
         navigationController.modalPresentationStyle = .formSheet
         self.present(navigationController, animated: true, completion: nil)

@@ -19,13 +19,13 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     private let margin = 10
     
     var datapoint : ExistingDataPoint
-    var goalSlug : String
+    var goal : Goal!
     fileprivate var datePicker = InlineDatePicker()
     fileprivate var valueField = UITextField()
     fileprivate var commentField = UITextField()
 
-    init(goalSlug: String, datapoint: ExistingDataPoint) {
-        self.goalSlug = goalSlug
+    init(goal: Goal, datapoint: ExistingDataPoint) {
+        self.goal = goal
         self.datapoint = datapoint
         super.init(nibName: nil, bundle: nil)
     }
@@ -212,13 +212,13 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 let params = [
                     "urtext": self.urtext()
                 ]
-                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: params)
                 let hud = MBProgressHUD.forView(self.view)
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
                 hud?.hide(animated: true, afterDelay: 2)
             } catch {
-                logger.error("Error updating datapoint for goal \(self.goalSlug): \(error)")
+                logger.error("Error updating datapoint for goal \(self.goal.slug): \(error)")
                 let _ = MBProgressHUD.hide(for: self.view, animated: true)
             }
         }
@@ -230,7 +230,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             hud.mode = .indeterminate
 
             do {
-                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goalSlug)/datapoints/\(self.datapoint.id).json", parameters: nil)
+                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: nil)
 
                 let hud = MBProgressHUD.forView(self.view)
                 hud?.mode = .customView
@@ -240,7 +240,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                     self.navigationController?.popViewController(animated: true)
                 }
             } catch {
-                logger.error("Error deleting datapoint for goal \(self.goalSlug): \(error)")
+                logger.error("Error deleting datapoint for goal \(self.goal.slug): \(error)")
 
             }
         }
