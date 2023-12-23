@@ -238,9 +238,10 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 let hud = MBProgressHUD.forView(self.view)
                 hud?.mode = .customView
                 hud?.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
-                hud?.hide(animated: true, afterDelay: 2)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    self.navigationController?.popViewController(animated: true)
+                hud?.hide(animated: true, afterDelay: 0.5)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.logger.info("Dismissing popup")
+                    self.navigationController?.dismiss(animated: true)
                 }
             } catch {
                 logger.error("Error deleting datapoint for goal \(self.goal.slug): \(error)")
