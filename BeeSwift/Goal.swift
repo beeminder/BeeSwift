@@ -357,7 +357,6 @@ class Goal {
                 success?()
                 return
             }
-            let daystamp = datapoint.daystamp
             let params = [
                 "value": "\(datapointValue)",
                 "comment": "Auto-updated via Apple Health",
