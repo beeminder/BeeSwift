@@ -462,7 +462,7 @@
 				E5C161932423CE9F0045C90D /* VersionManager.swift */,
 				E44CE782299338C500394E87 /* GoalManager.swift */,
 			);
-			name = Managers;
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		A12E694F1BD3EF0200AB94C2 /* BeeSwiftToday */ = {
@@ -540,7 +540,6 @@
 				E4E6426E290E27CB004F3EA9 /* HeathKit */,
 				A1308D451DE24D76006D0626 /* BeeSwift.entitlements */,
 				A1E618E51E79E01900D8ED93 /* Cells */,
-				A106AD8B1AF1F62800C434E8 /* Managers */,
 				A149147C1BE7A4FC0060600A /* UI */,
 				E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */,
 				A196CB191AE4142E00B90A3E /* AppDelegate.swift */,
@@ -659,6 +658,7 @@
 		E57BE6E12655EBDA00BA540B /* BeeKit */ = {
 			isa = PBXGroup;
 			children = (
+				A106AD8B1AF1F62800C434E8 /* Managers */,
 				A149147D1BE7A5140060600A /* Util */,
 				E57BE6E22655EBDA00BA540B /* BeeKit.h */,
 				E55FEE6A23FF7552007C20B2 /* Config.swift */,
