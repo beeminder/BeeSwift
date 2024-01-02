@@ -9,7 +9,6 @@
 import Foundation
 import Alamofire
 import SwiftyJSON
-import BeeKit
 import OSLog
 
 struct ServerError: Error {
@@ -26,8 +25,8 @@ struct ServerError: Error {
     }
 }
 
-class RequestManager {
-    let baseURLString = Config.init().baseURLString
+public class RequestManager {
+    public let baseURLString = Config.init().baseURLString
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
     
     func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?) async throws -> Any? {
@@ -63,20 +62,20 @@ class RequestManager {
         }
     }
     
-    func get(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func get(url: String, parameters: [String: Any]?) async throws -> Any? {
         return try await rawRequest(url: url, method: .get, parameters: authedParams(parameters))
     }
     
     
-    func put(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func put(url: String, parameters: [String: Any]?) async throws -> Any? {
         return try await rawRequest(url: url, method: .patch, parameters: authedParams(parameters))
     }
     
-    func post(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func post(url: String, parameters: [String: Any]?) async throws -> Any? {
         return try await rawRequest(url: url, method: .post, parameters: authedParams(parameters))
     }
     
-    func delete(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func delete(url: String, parameters: [String: Any]?) async throws -> Any? {
         return try await rawRequest(url: url, method: .delete, parameters: authedParams(parameters))
     }
     
@@ -91,7 +90,7 @@ class RequestManager {
         return params
     }
 
-    func addDatapoint(urtext: String, slug: String) async throws -> Any? {
+    public func addDatapoint(urtext: String, slug: String) async throws -> Any? {
         let params = ["urtext": urtext, "requestid": UUID().uuidString]
         
         return try await post(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(slug)/datapoints.json", parameters: params)

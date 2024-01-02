@@ -8,7 +8,7 @@
 
 import XCTest
 import HealthKit
-@testable import BeeSwift
+@testable import BeeKit
 
 typealias Time = (hour: Int, minute: Int, second: Int)
 

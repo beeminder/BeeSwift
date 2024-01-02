@@ -10,6 +10,8 @@ import UIKit
 import SwiftyJSON
 import OSLog
 
+import BeeKit
+
 class RemoveHKMetricViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RemoveHKMetricViewController")
     

@@ -8,21 +8,20 @@
 
 import Foundation
 import Alamofire
-import BeeKit
 
-class SignedRequestManager {
+public class SignedRequestManager {
     private let requestManager: RequestManager
 
     init(requestManager: RequestManager) {
         self.requestManager = requestManager
     }
 
-    func signedGET(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func signedGET(url: String, parameters: [String: Any]?) async throws -> Any? {
         let params = signedParameters(requestManager.authedParams(parameters))
         return try await requestManager.rawRequest(url: url, method: .get, parameters: params)
     }
     
-    func signedPOST(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func signedPOST(url: String, parameters: [String: Any]?) async throws -> Any? {
         let params = signedParameters(requestManager.authedParams(parameters))
         return try await requestManager.rawRequest(url: url, method: .post, parameters: params)
     }

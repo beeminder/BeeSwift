@@ -10,10 +10,10 @@ import Foundation
 import HealthKit
 
 
-class HealthKitConfig : NSObject {
-    static let shared = HealthKitConfig()
-    
-    let metrics : [HealthKitMetric] = {
+public class HealthKitConfig : NSObject {
+    public static let shared = HealthKitConfig()
+
+    public let metrics : [HealthKitMetric] = {
         var allMetrics : [HealthKitMetric] = [
             // Activity
             QuantityHealthKitMetric.init(humanText: "Active energy", databaseString: "activeEnergy", category: .Activity, hkQuantityTypeIdentifier: .activeEnergyBurned),

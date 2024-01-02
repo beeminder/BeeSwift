@@ -10,6 +10,8 @@ import Foundation
 import MBProgressHUD
 import SafariServices
 
+import BeeKit
+
 class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariViewControllerDelegate {
     
     var headerLabel = BSLabel()

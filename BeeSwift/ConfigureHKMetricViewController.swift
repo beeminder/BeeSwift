@@ -5,6 +5,8 @@ import Foundation
 import UIKit
 import OSLog
 
+import BeeKit
+
 class ConfigureHKMetricViewController : UIViewController {
     fileprivate let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ConfigureHKMetricViewController")
 

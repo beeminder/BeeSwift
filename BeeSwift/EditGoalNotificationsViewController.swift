@@ -10,6 +10,8 @@ import Foundation
 import UIKit
 import OSLog
 
+import BeeKit
+
 class EditGoalNotificationsViewController : EditNotificationsViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditGoalNotificationsViewController")
 

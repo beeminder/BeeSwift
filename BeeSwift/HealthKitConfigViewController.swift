@@ -12,6 +12,8 @@ import UserNotifications
 import SwiftyJSON
 import OSLog
 
+import BeeKit
+
 class HealthKitConfigViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthKitConfigViewController")
     

@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 
+import BeeKit
+
 protocol DatapointTableViewControllerDelegate {
     func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: DataPoint)
 }

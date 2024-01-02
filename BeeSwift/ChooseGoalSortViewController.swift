@@ -9,6 +9,8 @@
 
 import UIKit
 
+import BeeKit
+
 class ChooseGoalSortViewController: UIViewController {
     fileprivate var cellReuseIdentifier = "chooseGoalSortTableCell"
     fileprivate var tableView = UITableView()

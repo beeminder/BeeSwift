@@ -8,6 +8,8 @@
 
 import Foundation
 
+import BeeKit
+
 class SettingsTableViewCell: UITableViewCell {
     var title : String? {
         didSet {

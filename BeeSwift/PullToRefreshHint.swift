@@ -7,6 +7,8 @@
 
 import Foundation
 
+import BeeKit
+
 class PullToRefreshView : UIView {
     private let extraMargin = 30
     private let label = BSLabel()

@@ -10,6 +10,8 @@ import Foundation
 import MBProgressHUD
 import HealthKit
 
+import BeeKit
+
 class SettingsViewController: UIViewController {
     
     fileprivate var tableView = UITableView()

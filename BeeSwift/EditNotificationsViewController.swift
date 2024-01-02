@@ -8,6 +8,8 @@
 
 import Foundation
 
+import BeeKit
+
 class EditNotificationsViewController: UIViewController {
     enum TimePickerEditingMode {
         case alertstart, deadline

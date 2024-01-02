@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class BSTextField : UITextField {
+public class BSTextField : UITextField {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)

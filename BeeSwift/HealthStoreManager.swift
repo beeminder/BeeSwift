@@ -10,11 +10,11 @@ import Foundation
 import HealthKit
 import OSLog
 
-class HealthStoreManager :NSObject {
+public class HealthStoreManager :NSObject {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
 
     // TODO: Public for now to use from config
-    let healthStore = HKHealthStore()
+    public let healthStore = HKHealthStore()
 
     /// The Connection objects responsible for updating goals based on their healthkit metrics
     /// Dictionary key is the goal id, as this is stable across goal renames

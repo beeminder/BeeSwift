@@ -6,7 +6,7 @@
 import Foundation
 import HealthKit
 
-enum HealthKitCategory : String, CaseIterable {
+public enum HealthKitCategory : String, CaseIterable {
     case Activity = "Activity"
     case BodyMeasurements = "Body Measurements"
     case Heart = "Heart"
@@ -16,7 +16,7 @@ enum HealthKitCategory : String, CaseIterable {
     case Other = "Other Data"
 }
 
-protocol HealthKitMetric {
+public protocol HealthKitMetric {
     var humanText : String { get }
     var databaseString : String { get }
     var category : HealthKitCategory { get }

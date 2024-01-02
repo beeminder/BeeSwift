@@ -1,6 +1,6 @@
 import XCTest
 import KeychainSwift
-@testable import BeeSwift
+@testable import BeeKit
 
 final class CurrentUserManagerTests: XCTestCase {
 

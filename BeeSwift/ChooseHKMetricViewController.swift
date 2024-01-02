@@ -10,6 +10,8 @@ import UIKit
 import HealthKit
 import OSLog
 
+import BeeKit
+
 class ChooseHKMetricViewController: UIViewController {
     fileprivate let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ChooseHKMetricViewController")
     fileprivate let cellReuseIdentifier = "hkMetricTableViewCell"

@@ -9,6 +9,8 @@
 import Foundation
 import OSLog
 
+import BeeKit
+
 class EditDefaultNotificationsViewController: EditNotificationsViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDefaultNotificationsViewController")
     

@@ -13,52 +13,52 @@ import OSLog
 import UserNotifications
 import UIKit
 
-class Goal {
+public class Goal {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
 
     // Ignore automatic datapoint updates where the difference is a smaller fraction than this. This
     // prevents effectively no-op updates due to float rounding
     private let datapointValueEpsilon = 0.00000001
 
-    var autodata: String = ""
-    var delta_text: String = ""
-    var graph_url: String?
-    var healthKitMetric: String?
-    var id: String = ""
-    var lane: NSNumber?
-    var losedate: NSNumber = 0
-    var pledge: NSNumber = 0
-    var rate: NSNumber?
-    var runits: String = ""
-    var yaxis: String = ""
-    var slug: String = ""
-    var thumb_url: String?
-    var title: String = ""
-    var won: NSNumber = 0
-    var yaw: NSNumber = 0
-    var dir: NSNumber = 0
-    var safebump: NSNumber?
-    var safebuf: NSNumber?
-    var curval: NSNumber?
-    var limsum: String?
-    var safesum: String?
-    var initday: NSNumber?
-    var deadline: NSNumber = 0
-    var leadtime: NSNumber?
-    var alertstart: NSNumber?
-    var lasttouch: NSNumber?
-    var use_defaults: NSNumber?
-    var queued: Bool?
-    var todayta: Bool = false
-    var hhmmformat: Bool = false
-    var recent_data: [ExistingDataPoint]?
+    public var autodata: String = ""
+    public var delta_text: String = ""
+    public var graph_url: String?
+    public var healthKitMetric: String?
+    public var id: String = ""
+    public var lane: NSNumber?
+    public var losedate: NSNumber = 0
+    public var pledge: NSNumber = 0
+    public var rate: NSNumber?
+    public var runits: String = ""
+    public var yaxis: String = ""
+    public var slug: String = ""
+    public var thumb_url: String?
+    public var title: String = ""
+    public var won: NSNumber = 0
+    public var yaw: NSNumber = 0
+    public var dir: NSNumber = 0
+    public var safebump: NSNumber?
+    public var safebuf: NSNumber?
+    public var curval: NSNumber?
+    public var limsum: String?
+    public var safesum: String?
+    public var initday: NSNumber?
+    public var deadline: NSNumber = 0
+    public var leadtime: NSNumber?
+    public var alertstart: NSNumber?
+    public var lasttouch: NSNumber?
+    public var use_defaults: NSNumber?
+    public var queued: Bool?
+    public var todayta: Bool = false
+    public var hhmmformat: Bool = false
+    public var recent_data: [ExistingDataPoint]?
 
     // These are obtained from mathishard
-    var derived_goaldate: NSNumber = 0
-    var derived_goalval: NSNumber = 0
-    var derived_rate: NSNumber = 0
+    public var derived_goaldate: NSNumber = 0
+    public var derived_goalval: NSNumber = 0
+    public var derived_rate: NSNumber = 0
     
-    init(json: JSON) {
+    public init(json: JSON) {
         self.id = json["id"].string!
         self.updateToMatch(json: json)
     }
@@ -182,7 +182,7 @@ class Goal {
         }
     }
     
-    var countdownColor :UIColor {
+    public var countdownColor :UIColor {
         guard let buf = self.safebuf?.intValue else { return UIColor.beeminder.gray }
         if buf < 1 {
             return UIColor.beeminder.red
@@ -196,11 +196,11 @@ class Goal {
         return UIColor.beeminder.green
     }
     
-    var relativeLane : NSNumber {
+    public var relativeLane : NSNumber {
         return self.lane != nil ? NSNumber(value: self.lane!.int32Value * self.yaw.int32Value as Int32) : 0
     }
     
-    var countdownHelperText :String {
+    public var countdownHelperText :String {
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if self.safebump != nil && self.curval != nil {
                 if (self.safebump!.doubleValue - self.curval!.doubleValue <= 0) {
@@ -214,7 +214,7 @@ class Goal {
         return "due in"
     }
     
-    var humanizedRunits :String {
+    public var humanizedRunits :String {
         if self.runits == "d" {
             return "day"
         }
@@ -231,12 +231,12 @@ class Goal {
         return "week"
     }
     
-    func capitalSafesum() -> String {
+    public func capitalSafesum() -> String {
         guard let safe = self.safesum else { return "" }
         return safe.prefix(1).uppercased() + safe.dropFirst(1)
     }
     
-    var humanizedAutodata: String? {
+    public var humanizedAutodata: String? {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
         if self.autodata == "apple" {
@@ -249,7 +249,7 @@ class Goal {
         return nil
     }
     
-    var attributedDeltaText :NSAttributedString {
+    public var attributedDeltaText :NSAttributedString {
         if self.delta_text.count == 0 { return NSAttributedString.init(string: "") }
         let modelName = UIDevice.current.modelName
         if modelName.contains("iPhone 5") || modelName.contains("iPad Mini") || modelName.contains("iPad 4") {
@@ -291,29 +291,29 @@ class Goal {
         return attString
     }
     
-    var deltaColors: [UIColor] {
+    public var deltaColors: [UIColor] {
         // yaw (number): Good side of the road (+1/-1 = above/below)
     
         return self.yaw == 1 ? deltaColorsWhenAboveIsGoodSide : deltaColorsWhenBelowIsGoodSide
     }
     
-    var deltaColorsWhenBelowIsGoodSide: [UIColor] {
+    public var deltaColorsWhenBelowIsGoodSide: [UIColor] {
         return [UIColor.beeminder.green, UIColor.beeminder.blue, UIColor.beeminder.orange]
     }
     
-    var deltaColorsWhenAboveIsGoodSide: [UIColor] {
+    public var deltaColorsWhenAboveIsGoodSide: [UIColor] {
         return deltaColorsWhenBelowIsGoodSide.reversed()
     }
 
-    func hideDataEntry() -> Bool {
+    public func hideDataEntry() -> Bool {
         return self.isDataProvidedAutomatically || self.won.boolValue
     }
 
-    var isDataProvidedAutomatically: Bool {
+    public var isDataProvidedAutomatically: Bool {
         return !self.autodata.isEmpty
     }
 
-    var isLinkedToHealthKit: Bool {
+    public var isLinkedToHealthKit: Bool {
         return self.autodata == "apple"
     }
 
@@ -512,7 +512,7 @@ class Goal {
     }
 }
 
-extension Goal {
+public extension Goal {
     var cacheBustingThumbUrl: String {
         let thumbUrlStr = self.thumb_url!
         return cacheBuster(thumbUrlStr)

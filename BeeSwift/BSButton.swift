@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class BSButton : UIButton {
+public class BSButton : UIButton {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)

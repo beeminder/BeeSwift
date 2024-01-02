@@ -10,6 +10,8 @@ import UIKit
 import SwiftyJSON
 import OSLog
 
+import BeeKit
+
 class ConfigureNotificationsViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ConfigureNotificationsViewController")
     

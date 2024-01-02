@@ -12,11 +12,11 @@ import OSLog
 import OrderedCollections
 
 
-actor GoalManager {
+public actor GoalManager {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalManager")
 
     /// A notification that is triggered any time the data for one or more goals is updated
-    static let goalsUpdatedNotificationName = "com.beeminder.goalsUpdatedNotification"
+    public static let goalsUpdatedNotificationName = "com.beeminder.goalsUpdatedNotification"
 
     fileprivate let cachedLastFetchedGoalsKey = "last_fetched_goals"
 
@@ -29,7 +29,7 @@ actor GoalManager {
     /// Can be read in non-isolated context, so protected with a synchronized wrapper.
     private let goalsBox = SynchronizedBox<OrderedDictionary<String, Goal>?>(nil)
 
-    var goalsFetchedAt : Date? = nil
+    public var goalsFetchedAt : Date? = nil
 
     private var queuedGoalsBackgroundTaskRunning : Bool = false
 
@@ -52,13 +52,13 @@ actor GoalManager {
 
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
-    nonisolated func staleGoals() -> [Goal]? {
+    public nonisolated func staleGoals() -> [Goal]? {
         guard let goals = self.goalsBox.get() else { return nil }
         return Array(goals.values)
     }
 
     /// Fetch and return the latest set of goals from the server
-    func fetchGoals() async throws -> [Goal] {
+    public func fetchGoals() async throws -> [Goal] {
         guard let username = currentUserManager.username else {
             await currentUserManager.signOut()
             return []
@@ -78,14 +78,14 @@ actor GoalManager {
         return Array(goals.values)
     }
 
-    func refreshGoal(_ goal: Goal) async throws {
+    public func refreshGoal(_ goal: Goal) async throws {
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
         goal.updateToMatch(json: JSON(responseObject!))
 
         await performPostGoalUpdateBookkeeping()
     }
 
-    func forceAutodataRefresh(_ goal: Goal) async throws {
+    public func forceAutodataRefresh(_ goal: Goal) async throws {
         let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
     }
 

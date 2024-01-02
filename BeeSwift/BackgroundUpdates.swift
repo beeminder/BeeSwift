@@ -2,6 +2,8 @@ import Foundation
 import BackgroundTasks
 import OSLog
 
+import BeeKit
+
 class BackgroundUpdates {
     fileprivate let logger = Logger(subsystem: "com.beeminder.beeminder", category: "BackgroundUpdates")
     let backgroundTaskIdentifier = "com.beeminder.beeminder.goals.refresh"

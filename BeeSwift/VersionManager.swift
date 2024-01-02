@@ -9,11 +9,11 @@
 import Foundation
 import SwiftyJSON
 
-enum VersionError: Error {
+public enum VersionError: Error {
     case invalidAppStoreResponse, invalidBundleInfo, invalidServerResponse, noMinimumVersion
 }
 
-enum UpdateState {
+public enum UpdateState {
     case UpToDate, UpdateSuggested, UpdateRequired
 }
 
@@ -22,7 +22,7 @@ enum UpdateState {
 fileprivate let dayInSeconds = 24.0 * 60.0 * 60.0
 fileprivate let ageOfReleaseToWarn: TimeInterval = 10.0 * dayInSeconds
 
-class VersionManager {
+public class VersionManager {
     private var minRequiredVersion : String = "1.0"
     private var updateState = UpdateState.UpToDate
     private let requestManager: RequestManager
@@ -31,11 +31,11 @@ class VersionManager {
         self.requestManager = requestManager
     }
 
-    func lastChckedUpdateState() -> UpdateState {
+    public func lastChckedUpdateState() -> UpdateState {
         return updateState
     }
 
-    func updateState() async throws -> UpdateState {
+    public func updateState() async throws -> UpdateState {
         let currentVersion = currentVersion()
         let now = Date()
 

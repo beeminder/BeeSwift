@@ -8,6 +8,8 @@
 
 import UIKit
 
+import BeeKit
+
 class HealthKitMetricTableViewCell: UITableViewCell {
 
     var metric : String? {

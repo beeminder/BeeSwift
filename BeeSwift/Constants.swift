@@ -9,22 +9,22 @@
 import Foundation
 import UIKit
 
-struct Constants {
-    static let thumbnailWidth = 106
-    static let thumbnailHeight = 70
-    static let graphWidth = 696
-    static let graphHeight = 453
-    static let defaultFontSize = UIDevice.current.userInterfaceIdiom == .pad ? CGFloat(18) : CGFloat(14)
-    static let defaultTextFieldHeight = 44
-    static let savedMetricNotificationName = "hkMetricSaved"
-    static let removedMetricNotificationName = "hkMetricRemoved"
-    static let selectedGoalSortKey = "selectedGoalSort"
-    static let recentDataGoalSortString = "Recent Data"
-    static let nameGoalSortString = "Name"
-    static let pledgeGoalSortString = "Pledge"
-    static let deadlineGoalSortString = "Deadline"
-    static let healthKitUpdateDictionaryKey = "healthKitUpdateDictionary"
-    static let goalSortOptions = [Constants.nameGoalSortString, Constants.deadlineGoalSortString, Constants.pledgeGoalSortString, Constants.recentDataGoalSortString]
-    static let appGroupIdentifier = "group.beeminder.beeminder"
+public struct Constants {
+    public static let thumbnailWidth = 106
+    public static let thumbnailHeight = 70
+    public static let graphWidth = 696
+    public static let graphHeight = 453
+    public static let defaultFontSize = UIDevice.current.userInterfaceIdiom == .pad ? CGFloat(18) : CGFloat(14)
+    public static let defaultTextFieldHeight = 44
+    public static let savedMetricNotificationName = "hkMetricSaved"
+    public static let removedMetricNotificationName = "hkMetricRemoved"
+    public static let selectedGoalSortKey = "selectedGoalSort"
+    public static let recentDataGoalSortString = "Recent Data"
+    public static let nameGoalSortString = "Name"
+    public static let pledgeGoalSortString = "Pledge"
+    public static let deadlineGoalSortString = "Deadline"
+    public static let healthKitUpdateDictionaryKey = "healthKitUpdateDictionary"
+    public static let goalSortOptions = [Constants.nameGoalSortString, Constants.deadlineGoalSortString, Constants.pledgeGoalSortString, Constants.recentDataGoalSortString]
+    public static let appGroupIdentifier = "group.beeminder.beeminder"
 }
 

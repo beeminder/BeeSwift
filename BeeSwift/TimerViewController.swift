@@ -10,6 +10,8 @@ import UIKit
 import SnapKit
 import MBProgressHUD
 
+import BeeKit
+
 class TimerViewController: UIViewController {
     
     let timerLabel = BSLabel()
