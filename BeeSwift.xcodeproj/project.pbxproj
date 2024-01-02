@@ -485,11 +485,8 @@
 				A1781AB21DE50F59000B96C5 /* BSTextField.swift */,
 				A1453B341AED9184006F48DA /* UIColorExtension.swift */,
 				A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */,
-				E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */,
-				E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */,
-				E43833932AC1473E0098A38F /* InlineDatePicker.swift */,
 			);
-			name = UI;
+			path = UI;
 			sourceTree = "<group>";
 		};
 		A149147D1BE7A5140060600A /* Util */ = {
@@ -540,8 +537,10 @@
 				E4E6426E290E27CB004F3EA9 /* HeathKit */,
 				A1308D451DE24D76006D0626 /* BeeSwift.entitlements */,
 				A1E618E51E79E01900D8ED93 /* Cells */,
-				A149147C1BE7A4FC0060600A /* UI */,
 				E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */,
+				E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */,
+				E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */,
+				E43833932AC1473E0098A38F /* InlineDatePicker.swift */,
 				A196CB191AE4142E00B90A3E /* AppDelegate.swift */,
 				E48E271F2973261F008013C0 /* BackgroundUpdates.swift */,
 				A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */,
@@ -659,6 +658,7 @@
 			isa = PBXGroup;
 			children = (
 				A106AD8B1AF1F62800C434E8 /* Managers */,
+				A149147C1BE7A4FC0060600A /* UI */,
 				A149147D1BE7A5140060600A /* Util */,
 				E57BE6E22655EBDA00BA540B /* BeeKit.h */,
 				E55FEE6A23FF7552007C20B2 /* Config.swift */,
