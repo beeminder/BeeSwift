@@ -501,7 +501,7 @@
 				E5DF493624DC69A200260560 /* Config.swift.sample */,
 				E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */,
 			);
-			name = Util;
+			path = Util;
 			sourceTree = "<group>";
 		};
 		A196CB0B1AE4142E00B90A3E = {
@@ -542,7 +542,6 @@
 				A1E618E51E79E01900D8ED93 /* Cells */,
 				A106AD8B1AF1F62800C434E8 /* Managers */,
 				A149147C1BE7A4FC0060600A /* UI */,
-				A149147D1BE7A5140060600A /* Util */,
 				E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */,
 				A196CB191AE4142E00B90A3E /* AppDelegate.swift */,
 				E48E271F2973261F008013C0 /* BackgroundUpdates.swift */,
@@ -660,6 +659,7 @@
 		E57BE6E12655EBDA00BA540B /* BeeKit */ = {
 			isa = PBXGroup;
 			children = (
+				A149147D1BE7A5140060600A /* Util */,
 				E57BE6E22655EBDA00BA540B /* BeeKit.h */,
 				E55FEE6A23FF7552007C20B2 /* Config.swift */,
 				E4B0833C293810EB00A71564 /* DataPoint.swift */,
