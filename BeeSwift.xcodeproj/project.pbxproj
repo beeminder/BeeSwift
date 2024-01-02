@@ -557,7 +557,6 @@
 				A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */,
 				A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */,
 				A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */,
-				A1F8F07A232C05410060B83E /* Goal.swift */,
 				E43BEA832A036A9C00FC3A38 /* LogReader.swift */,
 				E4E43D8729F39CE800697116 /* LogsViewController.swift */,
 				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
@@ -571,7 +570,6 @@
 				A196CB231AE4142F00B90A3E /* Images.xcassets */,
 				A196CB171AE4142E00B90A3E /* Supporting Files */,
 				9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */,
-				E4B0833C293810EB00A71564 /* DataPoint.swift */,
 				E4B0833A2934620500A71564 /* DatapointTableViewController.swift */,
 				E46FF15A2984C522009F8C7A /* DateUtils.swift */,
 				E44CE7722993317B00394E87 /* ServiceLocator.swift */,
@@ -662,8 +660,10 @@
 		E57BE6E12655EBDA00BA540B /* BeeKit */ = {
 			isa = PBXGroup;
 			children = (
-				E55FEE6A23FF7552007C20B2 /* Config.swift */,
 				E57BE6E22655EBDA00BA540B /* BeeKit.h */,
+				E55FEE6A23FF7552007C20B2 /* Config.swift */,
+				E4B0833C293810EB00A71564 /* DataPoint.swift */,
+				A1F8F07A232C05410060B83E /* Goal.swift */,
 				E57BE6E32655EBDA00BA540B /* Info.plist */,
 			);
 			path = BeeKit;
