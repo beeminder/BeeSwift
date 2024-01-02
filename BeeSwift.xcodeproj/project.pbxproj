@@ -495,7 +495,6 @@
 				A1C11B471B06F5D100D22871 /* Constants.swift */,
 				A12BA9531AFFF21800AFEF32 /* Crypto.swift */,
 				A11488BD1EE9B0CE003316E1 /* UIDevice.swift */,
-				E5DF493624DC69A200260560 /* Config.swift.sample */,
 				E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */,
 			);
 			path = Util;
@@ -692,6 +691,7 @@
 				A149147D1BE7A5140060600A /* Util */,
 				E57BE6E22655EBDA00BA540B /* BeeKit.h */,
 				E55FEE6A23FF7552007C20B2 /* Config.swift */,
+				E5DF493624DC69A200260560 /* Config.swift.sample */,
 				E4B0833C293810EB00A71564 /* DataPoint.swift */,
 				E46FF15A2984C522009F8C7A /* DateUtils.swift */,
 				A1F8F07A232C05410060B83E /* Goal.swift */,
