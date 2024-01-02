@@ -534,39 +534,22 @@
 		A196CB161AE4142E00B90A3E /* BeeSwift */ = {
 			isa = PBXGroup;
 			children = (
-				A1308D451DE24D76006D0626 /* BeeSwift.entitlements */,
 				A1E618E51E79E01900D8ED93 /* Cells */,
+				E46071002B43DA7100305DB4 /* Gallery */,
+				E46070FF2B43DA3D00305DB4 /* GoalView */,
+				E46070FD2B43D98600305DB4 /* Components */,
+				E46070FE2B43D9D900305DB4 /* Settings */,
+				A196CB171AE4142E00B90A3E /* Supporting Files */,
 				E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */,
-				E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */,
-				E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */,
-				E43833932AC1473E0098A38F /* InlineDatePicker.swift */,
+				E55760F426549D310076B95A /* AddDataIntentHandler.swift */,
 				A196CB191AE4142E00B90A3E /* AppDelegate.swift */,
 				E48E271F2973261F008013C0 /* BackgroundUpdates.swift */,
-				A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */,
-				E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */,
-				A10D4E921B07948500A72D29 /* DatapointsTableView.swift */,
-				A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */,
-				A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */,
-				A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */,
-				A149147A1BE79FD40060600A /* EditNotificationsViewController.swift */,
-				A1BD0D1B1AEB34E0001EDE8B /* GalleryNavigationController.swift */,
-				A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */,
-				A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */,
-				A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */,
-				E43BEA832A036A9C00FC3A38 /* LogReader.swift */,
-				E4E43D8729F39CE800697116 /* LogsViewController.swift */,
-				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
-				A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */,
-				A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */,
-				A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */,
-				A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */,
-				A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */,
-				E55760F426549D310076B95A /* AddDataIntentHandler.swift */,
-				A196CB201AE4142F00B90A3E /* Main.storyboard */,
+				A1308D451DE24D76006D0626 /* BeeSwift.entitlements */,
 				A196CB231AE4142F00B90A3E /* Images.xcassets */,
-				A196CB171AE4142E00B90A3E /* Supporting Files */,
 				9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */,
-				E4B0833A2934620500A71564 /* DatapointTableViewController.swift */,
+				E43BEA832A036A9C00FC3A38 /* LogReader.swift */,
+				A196CB201AE4142F00B90A3E /* Main.storyboard */,
+				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
 			);
 			path = BeeSwift;
 			sourceTree = "<group>";
@@ -584,8 +567,8 @@
 		A196CB2F1AE4142F00B90A3E /* BeeSwiftTests */ = {
 			isa = PBXGroup;
 			children = (
-				A196CB321AE4142F00B90A3E /* BeeSwiftTests.swift */,
 				A196CB301AE4142F00B90A3E /* Supporting Files */,
+				A196CB321AE4142F00B90A3E /* BeeSwiftTests.swift */,
 				E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */,
 				E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */,
 				E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */,
@@ -605,11 +588,11 @@
 		A1E618E51E79E01900D8ED93 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				A15FF41F1AEB621000A9AD22 /* GoalCollectionViewCell.swift */,
 				A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */,
-				A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */,
+				A15FF41F1AEB621000A9AD22 /* GoalCollectionViewCell.swift */,
 				A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */,
 				A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */,
+				A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -630,6 +613,55 @@
 				E5F7C49C260FC5300095684F /* IntentsUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E46070FD2B43D98600305DB4 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				A10D4E921B07948500A72D29 /* DatapointsTableView.swift */,
+				E4B0833A2934620500A71564 /* DatapointTableViewController.swift */,
+				E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */,
+				E43833932AC1473E0098A38F /* InlineDatePicker.swift */,
+				E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		E46070FE2B43D9D900305DB4 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */,
+				E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */,
+				A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */,
+				A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */,
+				A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */,
+				A149147A1BE79FD40060600A /* EditNotificationsViewController.swift */,
+				A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */,
+				E4E43D8729F39CE800697116 /* LogsViewController.swift */,
+				A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */,
+				A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		E46070FF2B43DA3D00305DB4 /* GoalView */ = {
+			isa = PBXGroup;
+			children = (
+				A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */,
+				A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */,
+				A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */,
+			);
+			name = GoalView;
+			sourceTree = "<group>";
+		};
+		E46071002B43DA7100305DB4 /* Gallery */ = {
+			isa = PBXGroup;
+			children = (
+				A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */,
+				A1BD0D1B1AEB34E0001EDE8B /* GalleryNavigationController.swift */,
+				A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */,
+			);
+			path = Gallery;
 			sourceTree = "<group>";
 		};
 		E4E6426E290E27CB004F3EA9 /* HeathKit */ = {
