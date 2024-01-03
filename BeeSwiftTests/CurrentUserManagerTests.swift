@@ -10,7 +10,7 @@ final class CurrentUserManagerTests: XCTestCase {
     }
 
     func testCanSetAndRetrieveAccessToken() throws {
-        let currentUserManager = CurrentUserManager(requestManager: ServiceLocator.requestManager)
+        let currentUserManager = CurrentUserManager(requestManager: ServiceLocator.requestManager, container: ServiceLocator.persistentContainer)
         currentUserManager.setAccessToken("test_access_token")
         XCTAssertEqual(currentUserManager.accessToken, "test_access_token")
     }
@@ -19,7 +19,7 @@ final class CurrentUserManagerTests: XCTestCase {
         let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
         userDefaults.set("migrated_access_token", forKey: CurrentUserManager.accessTokenKey)
 
-        let currentUserManager = CurrentUserManager(requestManager: ServiceLocator.requestManager)
+        let currentUserManager = CurrentUserManager(requestManager: ServiceLocator.requestManager, container: ServiceLocator.persistentContainer)
         XCTAssertEqual(currentUserManager.accessToken, "migrated_access_token")
 
         // The value should also have been removed from UserDefaults

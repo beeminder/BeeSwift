@@ -94,6 +94,9 @@
 		E458C8292AD12057000DCA5C /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8282AD12057000DCA5C /* OrderedCollections */; };
 		E458C8352AD1266B000DCA5C /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8342AD1266B000DCA5C /* SwiftyJSON */; };
 		E458C8372AD12671000DCA5C /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8362AD12671000DCA5C /* KeychainSwift */; };
+		E46071012B451FA400305DB4 /* BeeminderModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E41286EC2A62DF330093D598 /* BeeminderModel.xcdatamodeld */; };
+		E46071022B451FAC00305DB4 /* BeeminderPersistantContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46070F72B3FEFD400305DB4 /* BeeminderPersistantContainer.swift */; };
+		E46071032B451FB100305DB4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46070EE2B36A4D900305DB4 /* User.swift */; };
 		E462BA3629AC44EA00E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3529AC44EA00E80EF0 /* Alamofire */; };
 		E462BA3929AC450000E80EF0 /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3829AC450000E80EF0 /* AlamofireImage */; };
 		E462BA3C29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */; };
@@ -307,6 +310,7 @@
 		A1F8F07A232C05410060B83E /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
 		E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMinutesHealthKitMetric.swift; sourceTree = "<group>"; };
+		E41286ED2A62DF330093D598 /* BeeminderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel.xcdatamodel; sourceTree = "<group>"; };
 		E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserManagerTests.swift; sourceTree = "<group>"; };
 		E42CB451291727B200A35AB9 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
 		E43833932AC1473E0098A38F /* InlineDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineDatePicker.swift; sourceTree = "<group>"; };
@@ -317,6 +321,8 @@
 		E44CE77E2993351100394E87 /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
 		E44CE782299338C500394E87 /* GoalManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalManager.swift; sourceTree = "<group>"; };
 		E457BE5C28C192B50012F5D0 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
+		E46070EE2B36A4D900305DB4 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		E46070F72B3FEFD400305DB4 /* BeeminderPersistantContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderPersistantContainer.swift; sourceTree = "<group>"; };
 		E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedBox.swift; sourceTree = "<group>"; };
 		E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshHint.swift; sourceTree = "<group>"; };
 		E46FF15A2984C522009F8C7A /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
@@ -614,6 +620,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E46070F62B3FEFB300305DB4 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				E41286EC2A62DF330093D598 /* BeeminderModel.xcdatamodeld */,
+				E46070F72B3FEFD400305DB4 /* BeeminderPersistantContainer.swift */,
+				E46070EE2B36A4D900305DB4 /* User.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		E46070FD2B43D98600305DB4 /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -687,6 +703,7 @@
 			children = (
 				E4E6426E290E27CB004F3EA9 /* HeathKit */,
 				A106AD8B1AF1F62800C434E8 /* Managers */,
+				E46070F62B3FEFB300305DB4 /* Model */,
 				A149147C1BE7A4FC0060600A /* UI */,
 				A149147D1BE7A5140060600A /* Util */,
 				E57BE6E22655EBDA00BA540B /* BeeKit.h */,
@@ -1188,14 +1205,17 @@
 				E458C81A2AD11CB5000DCA5C /* WorkoutMinutesHealthKitMetric.swift in Sources */,
 				E458C8112AD11C8B000DCA5C /* MindfulSessionHealthKitMetric.swift in Sources */,
 				E458C80A2AD11C1C000DCA5C /* Constants.swift in Sources */,
+				E46071032B451FB100305DB4 /* User.swift in Sources */,
 				E5A80E6826598A370016D9A0 /* (null) in Sources */,
 				E57BE7042655EE1F00BA540B /* Config.swift in Sources */,
 				E458C80E2AD11C77000DCA5C /* HealthStoreManager.swift in Sources */,
 				E458C8062AD11BCD000DCA5C /* GoalManager.swift in Sources */,
 				E458C8272AD11F81000DCA5C /* BSLabel.swift in Sources */,
+				E46071022B451FAC00305DB4 /* BeeminderPersistantContainer.swift in Sources */,
 				E458C8252AD11E01000DCA5C /* BSButton.swift in Sources */,
 				E458C81D2AD11CEC000DCA5C /* UIDevice.swift in Sources */,
 				E458C8172AD11CA7000DCA5C /* TotalSleepMinutes.swift in Sources */,
+				E46071012B451FA400305DB4 /* BeeminderModel.xcdatamodeld in Sources */,
 				E458C8072AD11BDB000DCA5C /* Goal.swift in Sources */,
 				E458C80D2AD11C64000DCA5C /* Crypto.swift in Sources */,
 				E458C8012AD11BB3000DCA5C /* RequestManager.swift in Sources */,
@@ -2168,6 +2188,19 @@
 			productName = OrderedCollections;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		E41286EC2A62DF330093D598 /* BeeminderModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				E41286ED2A62DF330093D598 /* BeeminderModel.xcdatamodel */,
+			);
+			currentVersion = E41286ED2A62DF330093D598 /* BeeminderModel.xcdatamodel */;
+			path = BeeminderModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = A196CB0C1AE4142E00B90A3E /* Project object */;
 }
