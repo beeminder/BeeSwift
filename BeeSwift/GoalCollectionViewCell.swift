@@ -8,6 +8,8 @@
 
 import Foundation
 
+import BeeKit
+
 class GoalCollectionViewCell: UICollectionViewCell {
     let slugLabel :BSLabel = BSLabel()
     let titleLabel :BSLabel = BSLabel()

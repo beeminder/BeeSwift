@@ -11,6 +11,8 @@ import SwiftyJSON
 import MBProgressHUD
 import OSLog
 
+import BeeKit
+
 class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDatapointViewController")
 

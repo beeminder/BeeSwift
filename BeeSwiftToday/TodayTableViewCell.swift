@@ -13,6 +13,8 @@ import AlamofireImage
 import MBProgressHUD
 import SwiftyJSON
 
+import BeeKit
+
 class TodayTableViewCell: UITableViewCell {
     var goalDictionary:NSDictionary = [:] {
         didSet {

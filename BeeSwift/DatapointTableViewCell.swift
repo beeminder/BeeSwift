@@ -8,6 +8,8 @@
 
 import Foundation
 
+import BeeKit
+
 class DatapointTableViewCell : UITableViewCell {
     
     let datapointLabel = BSLabel()

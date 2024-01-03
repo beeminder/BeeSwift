@@ -8,6 +8,8 @@
 
 import UIKit
 
+import BeeKit
+
 class HealthKitConfigTableViewCell: UITableViewCell {
 
     var goal : Goal? {

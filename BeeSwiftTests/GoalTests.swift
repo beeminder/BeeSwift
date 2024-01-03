@@ -8,7 +8,7 @@
 
 import XCTest
 import SwiftyJSON
-@testable import BeeSwift
+@testable import BeeKit
 
 final class GoalTests: XCTestCase {
 

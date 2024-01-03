@@ -11,6 +11,8 @@ import UIKit
 import SnapKit
 import NotificationCenter
 
+import BeeKit
+
 class TodayViewController: UIViewController {
     var goalDictionaries: [NSDictionary] = [] {
         didSet {
