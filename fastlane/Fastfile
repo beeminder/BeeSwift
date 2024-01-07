@@ -22,6 +22,7 @@ platform :ios do
         reset_simulator: true,
         include_simulator_logs: true,
         buildlog_path: "fastlane/test_output",
+        xcodebuild_formatter: "xcpretty",
     )
   end
   lane :build do
