@@ -91,8 +91,10 @@ public class CurrentUserManager {
             return
         }
 
+        let context = container.newBackgroundContext()
+
         // Create a new user
-        let _ = User(context: container.viewContext,
+        let _ = User(context: context,
             username: userDefaults.object(forKey: CurrentUserManager.usernameKey) as! String,
             deadbeat: userDefaults.object(forKey: CurrentUserManager.deadbeatKey) != nil,
             timezone: userDefaults.object(forKey: CurrentUserManager.beemTZKey) as? String ?? "Unknown",
@@ -100,7 +102,7 @@ public class CurrentUserManager {
             defaultDeadline: (userDefaults.object(forKey: CurrentUserManager.defaultDeadlineKey) ?? 0) as! Int32,
             defaultLeadTime: (userDefaults.object(forKey: CurrentUserManager.defaultLeadtimeKey) ?? 0) as! Int32
        )
-        try! container.viewContext.save()
+        try! context.save()
     }
 
 
@@ -113,11 +115,13 @@ public class CurrentUserManager {
     }
 
     private func deleteUser() throws {
+        let context = container.newBackgroundContext()
+
         // Delete any existing users. We expect at most one, but delete all to be safe.
         while let user = self.user() {
-            container.viewContext.delete(user)
+            context.delete(user)
         }
-        try container.viewContext.save()
+        try context.save()
     }
 
     /// Write a value to the UserDefaults store
@@ -209,14 +213,16 @@ public class CurrentUserManager {
     func handleSuccessfulSignin(_ responseJSON: JSON) async throws {
         try deleteUser()
 
-        let _ = User(context: container.viewContext,
+        let context = container.newBackgroundContext()
+
+        let _ = User(context: context,
              username: responseJSON[CurrentUserManager.usernameKey].string!,
              deadbeat: responseJSON["deadbeat"].boolValue,
              timezone: responseJSON[CurrentUserManager.beemTZKey].string!,
              defaultAlertStart: responseJSON[CurrentUserManager.defaultAlertstartKey].int32!,
              defaultDeadline: responseJSON[CurrentUserManager.defaultDeadlineKey].int32!,
              defaultLeadTime: responseJSON[CurrentUserManager.defaultLeadtimeKey].int32!)
-        try container.viewContext.save()
+        try context.save()
 
         if responseJSON["deadbeat"].boolValue {
             self.setDeadbeat(true)
