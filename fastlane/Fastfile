@@ -21,6 +21,7 @@ platform :ios do
         scheme: "BeeSwift",
         reset_simulator: true,
         include_simulator_logs: true,
+        buildlog_path: "fastlane/test_output",
     )
   end
   lane :build do
