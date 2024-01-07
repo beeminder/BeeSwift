@@ -17,7 +17,12 @@ default_platform(:ios)
 
 platform :ios do
   lane :test do
-    run_tests(scheme: "BeeSwift")
+    run_tests(
+        scheme: "BeeSwift",
+        reset_simulator: true,
+        output_style: "raw"
+
+    )
   end
   lane :build do
     build_app(scheme: "BeeSwift")
