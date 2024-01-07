@@ -21,8 +21,6 @@ platform :ios do
         scheme: "BeeSwift",
         reset_simulator: true,
         include_simulator_logs: true,
-        output_style: "raw"
-
     )
   end
   lane :build do
