@@ -20,6 +20,7 @@ platform :ios do
     run_tests(
         scheme: "BeeSwift",
         reset_simulator: true,
+        include_simulator_logs: true,
         output_style: "raw"
 
     )
