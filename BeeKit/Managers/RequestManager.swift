@@ -47,7 +47,7 @@ public class RequestManager {
             if case .responseValidationFailed(let reason) = error {
                 if case .unacceptableStatusCode(let code) = reason {
                     if code == 401 {
-                        await ServiceLocator.currentUserManager.signOut()
+                        try? await ServiceLocator.currentUserManager.signOut()
                     }
                 }
             }

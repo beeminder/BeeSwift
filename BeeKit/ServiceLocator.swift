@@ -9,9 +9,19 @@
 import Foundation
 
 public class ServiceLocator {
+    static let persistentContainer: BeeminderPersistentContainer = {
+        let container = BeeminderPersistentContainer(name: "BeeminderModel")
+        container.loadPersistentStores { description, error in
+            if let error = error {
+                fatalError("Unable to load persistent stores: \(error)")
+            }
+        }
+        return container
+    }()
+
     public static let requestManager = RequestManager()
     public static let signedRequestManager = SignedRequestManager(requestManager: requestManager)
-    public static let currentUserManager = CurrentUserManager(requestManager: requestManager)
+    public static let currentUserManager = CurrentUserManager(requestManager: requestManager, container: persistentContainer)
     public static let goalManager = GoalManager(requestManager: requestManager, currentUserManager: currentUserManager)
     public static let healthStoreManager = HealthStoreManager()
     public static let versionManager = VersionManager(requestManager: requestManager)

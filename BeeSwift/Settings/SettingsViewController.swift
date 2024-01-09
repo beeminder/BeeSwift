@@ -78,7 +78,7 @@ class SettingsViewController: UIViewController {
     
     func signOutButtonPressed() {
         Task { @MainActor in
-            await ServiceLocator.currentUserManager.signOut()
+            try! await ServiceLocator.currentUserManager.signOut()
             self.navigationController?.popViewController(animated: true)
         }
     }

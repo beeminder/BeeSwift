@@ -60,7 +60,7 @@ public actor GoalManager {
     /// Fetch and return the latest set of goals from the server
     public func fetchGoals() async throws -> [Goal] {
         guard let username = currentUserManager.username else {
-            await currentUserManager.signOut()
+            try await currentUserManager.signOut()
             return []
         }
 
