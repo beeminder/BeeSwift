@@ -58,6 +58,20 @@ final class DaystampTests: XCTestCase {
         XCTAssertEqual(daystamp.day, 2)
     }
 
+    func testConvertsFromDateAtStartOfNegativeDaystamp() throws {
+        // Ensure there is not an off-by one error when importing values right on the datestamp boundary
+        let date = date(year: 1970, month: 1, day: 1, hour: 23, minute: 0)
+        let daystamp = Daystamp(fromDate: date, deadline: -OneHourInSeconds)
+        XCTAssertEqual(daystamp, Daystamp(year: 1970, month: 1, day: 2))
+    }
+
+    func testConvertsFromDateAtStartOfPositiveDaystamp() throws {
+        // Ensure there is not an off-by one error when importing values right on the datestamp boundary
+        let date = date(year: 1970, month: 1, day: 1, hour: 1, minute: 0)
+        let daystamp = Daystamp(fromDate: date, deadline: OneHourInSeconds)
+        XCTAssertEqual(daystamp, Daystamp(year: 1970, month: 1, day: 1))
+    }
+
     func testComparesCorrectly() throws {
         XCTAssertLessThan(Daystamp(year: 2023, month: 7, day: 11), Daystamp(year: 2023, month: 7, day: 12))
         XCTAssertLessThan(Daystamp(year: 2023, month: 7, day: 11), Daystamp(year: 2023, month: 8, day: 10))

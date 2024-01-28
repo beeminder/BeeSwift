@@ -49,7 +49,7 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
 
         let dayOffsetFromDeadline = if deadline < 0 {
             // This is an early deadline. If the time is after the deadline we need to instead consider it the next day
-            if secondsAfterMidnight > Daystamp.secondsInDay + deadline {
+            if secondsAfterMidnight >= Daystamp.secondsInDay + deadline {
                 1
             } else {
                 0
