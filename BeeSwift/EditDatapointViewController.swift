@@ -65,7 +65,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         let daystamp = self.datapoint.daystamp
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
-        self.datePicker.date = dateFormatter.date(from: daystamp)!
+        self.datePicker.date = dateFormatter.date(from: daystamp.description)!
 
         self.datePicker.snp.makeConstraints { (make) in
             make.left.right.equalTo(formView).inset(10)
