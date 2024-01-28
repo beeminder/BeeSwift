@@ -4,7 +4,7 @@ import XCTest
 final class DaystampTests: XCTestCase {
     var previousTimezone: TimeZone!
 
-    let OneHourInMinutes = 60
+    let OneHourInSeconds = 60 * 60
 
     func testFormatsAsString() throws {
         let daystamp = Daystamp(year: 2023, month: 7, day: 11)
@@ -28,7 +28,7 @@ final class DaystampTests: XCTestCase {
 
     func testConvertsFromDateWithPositiveDeadlineLaterInDay() throws {
         let date = date(year: 1970, month: 1, day: 1, hour: 0, minute: 0)
-        let daystamp = Daystamp(fromDate: date, deadline: OneHourInMinutes)
+        let daystamp = Daystamp(fromDate: date, deadline: OneHourInSeconds)
         XCTAssertEqual(daystamp.year, 1969)
         XCTAssertEqual(daystamp.month, 12)
         XCTAssertEqual(daystamp.day, 31)
@@ -36,7 +36,7 @@ final class DaystampTests: XCTestCase {
 
     func testConvertsFromDateWithPositiveDeadlineEarlierInDay() throws {
         let date = date(year: 1970, month: 1, day: 1, hour: 2, minute: 0)
-        let daystamp = Daystamp(fromDate: date, deadline: OneHourInMinutes)
+        let daystamp = Daystamp(fromDate: date, deadline: OneHourInSeconds)
         XCTAssertEqual(daystamp.year, 1970)
         XCTAssertEqual(daystamp.month, 1)
         XCTAssertEqual(daystamp.day, 1)
@@ -44,7 +44,7 @@ final class DaystampTests: XCTestCase {
 
     func testConvertsFromDateWithNegativeDeadlineLaterInDay() throws {
         let date = date(year: 1970, month: 1, day: 1, hour: 0, minute: 0)
-        let daystamp = Daystamp(fromDate: date, deadline: -OneHourInMinutes)
+        let daystamp = Daystamp(fromDate: date, deadline: -OneHourInSeconds)
         XCTAssertEqual(daystamp.year, 1970)
         XCTAssertEqual(daystamp.month, 1)
         XCTAssertEqual(daystamp.day, 1)
@@ -52,7 +52,7 @@ final class DaystampTests: XCTestCase {
 
     func testConvertsFromDateWithNegativeDeadlineEarlierInDay() throws {
         let date = date(year: 1970, month: 1, day: 1, hour: 23, minute: 0)
-        let daystamp = Daystamp(fromDate: date, deadline: -2 * OneHourInMinutes)
+        let daystamp = Daystamp(fromDate: date, deadline: -2 * OneHourInSeconds)
         XCTAssertEqual(daystamp.year, 1970)
         XCTAssertEqual(daystamp.month, 1)
         XCTAssertEqual(daystamp.day, 2)
@@ -89,13 +89,13 @@ final class DaystampTests: XCTestCase {
     }
 
     func testCanCalculateBoundsForNegativeDeadline() throws {
-        XCTAssertEqual(Daystamp(year: 1970, month: 1, day: 1).start(deadline: -OneHourInMinutes), date(year: 1969, month: 12, day: 31, hour: 23, minute: 0))
-        XCTAssertEqual(Daystamp(year: 1970, month: 1, day: 1).end(deadline: -OneHourInMinutes), date(year: 1970, month: 1, day: 1, hour: 23, minute: 0))
+        XCTAssertEqual(Daystamp(year: 1970, month: 1, day: 1).start(deadline: -OneHourInSeconds), date(year: 1969, month: 12, day: 31, hour: 23, minute: 0))
+        XCTAssertEqual(Daystamp(year: 1970, month: 1, day: 1).end(deadline: -OneHourInSeconds), date(year: 1970, month: 1, day: 1, hour: 23, minute: 0))
     }
 
     func testCanCalculateBoundsForPositiveDeadline() throws {
-        XCTAssertEqual(Daystamp(year: 1970, month: 1, day: 1).start(deadline: OneHourInMinutes), date(year: 1970, month: 1, day: 1, hour: 1, minute: 0))
-        XCTAssertEqual(Daystamp(year: 1970, month: 1, day: 1).end(deadline: OneHourInMinutes), date(year: 1970, month: 1, day: 2, hour: 1, minute: 0))
+        XCTAssertEqual(Daystamp(year: 1970, month: 1, day: 1).start(deadline: OneHourInSeconds), date(year: 1970, month: 1, day: 1, hour: 1, minute: 0))
+        XCTAssertEqual(Daystamp(year: 1970, month: 1, day: 1).end(deadline: OneHourInSeconds), date(year: 1970, month: 1, day: 2, hour: 1, minute: 0))
     }
 
     func date(year: Int, month: Int, day: Int, hour: Int, minute: Int) -> Date {
