@@ -32,9 +32,12 @@ class CategoryHealthKitMetric : HealthKitMetric {
     }
 
     func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [DataPoint] {
+        let today = Daystamp.now(deadline: deadline)
+        let startDate = today - days
+
         var results : [DataPoint] = []
-        for dayOffset in ((-1*days + 1)...0) {
-            results.append(try await self.getDataPoint(dayOffset: dayOffset, deadline: deadline, healthStore: healthStore))
+        for date in (startDate...today) {
+            results.append(try await self.getDataPoint(date: date, deadline: deadline, healthStore: healthStore))
         }
         return results
     }
@@ -43,14 +46,12 @@ class CategoryHealthKitMetric : HealthKitMetric {
         return HKUnit.count()
     }
 
-    private func getDataPoint(dayOffset : Int, deadline : Int, healthStore : HKHealthStore) async throws -> DataPoint {
-        let bounds = try dateBoundsForDayOffset(dayOffset: dayOffset, deadline: deadline)
-        let daystamp = try self.dayStampFromDayOffset(dayOffset: dayOffset, deadline: deadline)
+    private func getDataPoint(date : Daystamp, deadline : Int, healthStore : HKHealthStore) async throws -> DataPoint {
 
         let samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
             let query = HKSampleQuery.init(
                 sampleType: sampleType(),
-                predicate: HKQuery.predicateForSamples(withStart: bounds.start, end: bounds.end),
+                predicate: HKQuery.predicateForSamples(withStart: date.start(deadline: deadline), end: date.end(deadline: deadline)),
                 limit: 0,
                 sortDescriptors: nil,
                 resultsHandler: { (query, samples, error) in
@@ -65,34 +66,9 @@ class CategoryHealthKitMetric : HealthKitMetric {
             healthStore.execute(query)
         })
 
-        let id = "apple-heath-" + daystamp
-        let datapointValue = self.hkDatapointValueForSamples(samples: samples, startOfDate: bounds.start)
-        return NewDataPoint(requestid: id, daystamp: try Daystamp(fromString: daystamp), value: NSNumber(value: datapointValue), comment: "Auto-entered via Apple Health")
-    }
-
-    internal func dayStampFromDayOffset(dayOffset : Int, deadline : Int) throws -> String {
-        let bounds = try self.dateBoundsForDayOffset(dayOffset: dayOffset, deadline: deadline)
-        let datapointDate = deadline >= 0 ? bounds.start : bounds.end
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
-        return formatter.string(from: datapointDate)
-    }
-
-    func dateBoundsForDayOffset(dayOffset : Int, deadline : Int) throws -> (start: Date, end: Date) {
-        let calendar = Calendar.current
-
-        let components = calendar.dateComponents(in: TimeZone.current, from: Date())
-        let localMidnightThisMorning = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(from: components)!)
-        let localMidnightTonight = calendar.date(byAdding: .day, value: 1, to: localMidnightThisMorning!)
-
-        let endOfToday = calendar.date(byAdding: .second, value: deadline, to: localMidnightTonight!)
-        let startOfToday = calendar.date(byAdding: .second, value: deadline, to: localMidnightThisMorning!)
-
-        guard let startDate = calendar.date(byAdding: .day, value: dayOffset, to: startOfToday!) else { throw HealthKitError("Could not calculate start date") }
-        guard let endDate = calendar.date(byAdding: .day, value: dayOffset, to: endOfToday!) else { throw HealthKitError("Could not calculate end date") }
-
-        return (start: startDate, end: endDate)
+        let id = "apple-heath-" + date.description
+        let datapointValue = self.hkDatapointValueForSamples(samples: samples, startOfDate: date.start(deadline: deadline))
+        return NewDataPoint(requestid: id, daystamp: date, value: NSNumber(value: datapointValue), comment: "Auto-entered via Apple Health")
     }
 
     /// Predict to filter samples to those relevant to this metric, for cases where with cannot be encoded in the healthkit query
