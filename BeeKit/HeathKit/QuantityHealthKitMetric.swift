@@ -79,7 +79,11 @@ class QuantityHealthKitMetric : HealthKitMetric {
         var results : [DataPoint] = []
 
         for statistics in collection.statistics() {
-            let daystamp = Daystamp(fromDate: statistics.startDate, deadline: deadline)
+            // Use the midpoint of the interval to determine the daystamp. Theoretically using the startDate
+            // should always be correct, but as it falls right on the boundary, using the midpoint seems more
+            // robust.
+            let intervalMidpoint = statistics.startDate.addingTimeInterval(statistics.endDate.timeIntervalSince(statistics.startDate) / 2)
+            let daystamp = Daystamp(fromDate: intervalMidpoint, deadline: deadline)
 
             // Ignore statistics outside our window
             if daystamp < startDate || daystamp > endDate {
