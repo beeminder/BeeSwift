@@ -69,7 +69,7 @@ class RemoveHKMetricViewController: UIViewController {
     @objc func removeButtonPressed() {
         guard self.goal != nil else { return }
         self.goal?.autodata = ""
-        let params: [String: [String: String]] = ["ii_params": ["name": "", "metric": ""]]
+        let params: [String: [String: String?]] = ["ii_params": ["name": nil, "metric": ""]]
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud.mode = .indeterminate
 
