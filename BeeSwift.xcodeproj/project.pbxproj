@@ -54,6 +54,8 @@
 		E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BEA832A036A9C00FC3A38 /* LogReader.swift */; };
 		E43BEA862A036D4300FC3A38 /* LogReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */; };
 		E43D9AFB2929C37D00FC1578 /* DatapointValueAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */; };
+		E45470282B60E24500EE648B /* Daystamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45470272B60E24500EE648B /* Daystamp.swift */; };
+		E454702A2B60E25C00EE648B /* DaystampTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45470292B60E25C00EE648B /* DaystampTests.swift */; };
 		E457BE5D28C192B50012F5D0 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E457BE5C28C192B50012F5D0 /* IntentHandler.swift */; };
 		E458C7F72AD10D68000DCA5C /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
 		E458C7FC2AD10D6E000DCA5C /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
@@ -320,6 +322,8 @@
 		E44CE7722993317B00394E87 /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
 		E44CE77E2993351100394E87 /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
 		E44CE782299338C500394E87 /* GoalManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalManager.swift; sourceTree = "<group>"; };
+		E45470272B60E24500EE648B /* Daystamp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Daystamp.swift; sourceTree = "<group>"; };
+		E45470292B60E25C00EE648B /* DaystampTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DaystampTests.swift; sourceTree = "<group>"; };
 		E457BE5C28C192B50012F5D0 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
 		E46070EE2B36A4D900305DB4 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		E46070F72B3FEFD400305DB4 /* BeeminderPersistantContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderPersistantContainer.swift; sourceTree = "<group>"; };
@@ -711,6 +715,7 @@
 				E5DF493624DC69A200260560 /* Config.swift.sample */,
 				E4B0833C293810EB00A71564 /* DataPoint.swift */,
 				E46FF15A2984C522009F8C7A /* DateUtils.swift */,
+				E45470272B60E24500EE648B /* Daystamp.swift */,
 				A1F8F07A232C05410060B83E /* Goal.swift */,
 				E57BE6E32655EBDA00BA540B /* Info.plist */,
 				E44CE7722993317B00394E87 /* ServiceLocator.swift */,
@@ -722,6 +727,7 @@
 			isa = PBXGroup;
 			children = (
 				E57BE6EF2655EBE000BA540B /* BeeKitTests.swift */,
+				E45470292B60E25C00EE648B /* DaystampTests.swift */,
 				E57BE6F12655EBE000BA540B /* Info.plist */,
 			);
 			path = BeeKitTests;
@@ -1188,6 +1194,7 @@
 				E458C8092AD11C13000DCA5C /* SynchronizedBox.swift in Sources */,
 				E458C8102AD11C87000DCA5C /* CategoryHealthKitMetric.swift in Sources */,
 				E458C8192AD11CB0000DCA5C /* StandHoursHealthKitMetric.swift in Sources */,
+				E45470282B60E24500EE648B /* Daystamp.swift in Sources */,
 				E458C8042AD11BC3000DCA5C /* SignedRequestManager.swift in Sources */,
 				E458C8162AD11CA2000DCA5C /* HealthKitError.swift in Sources */,
 				E458C8122AD11C90000DCA5C /* GoalHealthKitConnection.swift in Sources */,
@@ -1226,6 +1233,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E454702A2B60E25C00EE648B /* DaystampTests.swift in Sources */,
 				E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */,
 				E57BE6F02655EBE000BA540B /* BeeKitTests.swift in Sources */,
 			);
