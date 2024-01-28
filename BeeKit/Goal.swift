@@ -113,7 +113,7 @@ public class Goal {
         self.todayta = json["todayta"].bool!
         self.hhmmformat = json["hhmmformat"].bool!
 
-        self.recent_data = ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()
+        self.recent_data = (try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()) ?? []
 
         // In rare cases goals can be corrupted and not have a mathishard value. We don't particularly care about
         // behavior in this rare case as long as the app does not crash, so default to a nonsense value
@@ -318,7 +318,7 @@ public class Goal {
     }
 
     /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
-    var initDaystamp: String {
+    var initDaystamp: Daystamp {
         let initDate = Date(timeIntervalSince1970: self.initday!.doubleValue)
 
         let formatter = DateFormatter()
@@ -327,8 +327,9 @@ public class Goal {
         // initDate is constructed such that if we resolve it to a datetime in US Eastern Time, the date part
         // of that is guaranteed to be the user's local date on the day the goal was created.
         formatter.timeZone = TimeZone(identifier: "America/New_York")
+        let dateString = formatter.string(from: initDate)
 
-        return formatter.string(from: initDate)
+        return try! Daystamp(fromString: dateString)
     }
 
     func fetchRecentDatapoints(success: @escaping ((_ datapoints : [ExistingDataPoint]) -> ()), errorCompletion: (() -> ())?) {
@@ -337,14 +338,14 @@ public class Goal {
             do {
                 let response = try await ServiceLocator.requestManager.get(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
                 let responseJSON = JSON(response!)
-                success(ExistingDataPoint.fromJSONArray(array: responseJSON.arrayValue))
+                success(try ExistingDataPoint.fromJSONArray(array: responseJSON.arrayValue))
             } catch {
                 errorCompletion?()
             }
         }
     }
     
-    func datapointsMatchingDaystamp(datapoints : [ExistingDataPoint], daystamp : String) -> [ExistingDataPoint] {
+    func datapointsMatchingDaystamp(datapoints : [ExistingDataPoint], daystamp : Daystamp) -> [ExistingDataPoint] {
         datapoints.filter { (datapoint) -> Bool in
             return daystamp == datapoint.daystamp
         }
@@ -395,28 +396,19 @@ public class Goal {
         let params = ["sort" : sort, "per" : per, "page": page] as [String : Any]
         let response = try await ServiceLocator.requestManager.get(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
         let responseJSON = JSON(response!)
-        return ExistingDataPoint.fromJSONArray(array: responseJSON.arrayValue)
+        return try ExistingDataPoint.fromJSONArray(array: responseJSON.arrayValue)
     }
 
     /// Retrieve all data points on or after the daystamp provided
     /// Estimates how many data points are needed to fetch the correct data points, and then performs additional requests if needed
     /// to guarantee all matching points have been fetched.
-    func datapointsSince(daystamp: String) async throws -> [ExistingDataPoint] {
+    func datapointsSince(daystamp: Daystamp) async throws -> [ExistingDataPoint] {
         // Estimate how many points we need, based on one point per day
-
-        guard let startingDate = DateUtils.date(daystamp: daystamp) else {
-            // TODO: Throw
-            return []
-        }
-        guard let daysSince = Calendar.current.dateComponents([.day], from: startingDate, to: Date()).day else {
-            // TODO: Throw
-            return []
-        }
+        let daysSince = Daystamp.now(deadline: self.deadline.intValue) - daystamp
 
         // We want an additional fudge factor because
-        // (a) daysSince counts 24h periods, so we want to account for it not being midnight
-        // (b) we need to receive a data point before the chosen day to make sure all possible data points for the
-        //     chosen day has been fetched
+        // (a) We want to include the starting day itself
+        // (b) we need to receive a data point before the chosen day to make sure all possible data points for the chosen day has been fetched
         // (c) We'd rather not do multiple round trips if needed, so allow for some days having multiple data points
         var pageSize = daysSince + 5
 
@@ -448,7 +440,7 @@ public class Goal {
     func updateToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
         guard let firstDaystamp = healthKitDataPoints.map({ point in point.daystamp }).min() else { return }
 
-        let datapoints = try await datapointsSince(daystamp: firstDaystamp)
+        let datapoints = try await datapointsSince(daystamp: try! Daystamp(fromString: firstDaystamp.description))
 
         for newDataPoint in healthKitDataPoints {
             try await self.updateToMatchDataPoint(newDataPoint: newDataPoint, recentDatapoints: datapoints)
@@ -465,7 +457,7 @@ public class Goal {
                 return
             }
 
-            let params = ["urtext": "\(newDataPoint.daystamp.suffix(2)) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": newDataPoint.requestid]
+            let params = ["urtext": "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": newDataPoint.requestid]
 
             logger.notice("Creating new datapoint for \(self.id, privacy: .public) on \(newDataPoint.daystamp, privacy: .public): \(newDataPoint.value, privacy: .private)")
 

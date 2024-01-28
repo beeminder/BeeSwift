@@ -84,8 +84,7 @@ class DatapointTableViewController : UIViewController, UITableViewDelegate, UITa
     }
 
     func displayText(datapoint: DataPoint) -> String {
-        let daystamp = Int(datapoint.daystamp) ?? 0
-        let day = daystamp != 0 ? String(format: "%02d", daystamp % 100) : "??" // Day is two least significant digits of daystamp
+        let day = datapoint.daystamp.day
 
         var formattedValue: String
         if hhmmformat {
