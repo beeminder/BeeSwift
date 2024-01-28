@@ -1,11 +1,3 @@
-//
-//  DaystampTests.swift
-//  BeeKitTests
-//
-//  Created by Theo Spears on 7/11/23.
-//  Copyright © 2023 APB. All rights reserved.
-//
-
 import XCTest
 @testable import BeeKit
 

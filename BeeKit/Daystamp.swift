@@ -1,5 +1,10 @@
 import Foundation
 
+/// Representation of the beeminder Daystamp concept
+///
+/// Roughly corresponds to a "Calendar Day". Somewhat compelx to handle as goals can have
+/// a custom "deadlaine" representing when their day starts/ends, which can include either the previous
+/// or following day. This class understands how to handle that concept when converting to and from real times.
 public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatable, Hashable {
     public typealias Stride = Int
 
@@ -103,7 +108,6 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
     // Trait: Strideable
 
     public func distance(to other: Daystamp) -> Int {
-
         let selfDate = Daystamp.calendar.date(from: DateComponents(calendar: Daystamp.calendar, year: year, month: month, day: day))!
         let otherDate = Daystamp.calendar.date(from: DateComponents(calendar: Daystamp.calendar, year: other.year, month: other.month, day: other.day))!
 
