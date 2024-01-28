@@ -9,7 +9,7 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
     public typealias Stride = Int
 
     private static let daystampPattern = try! NSRegularExpression(pattern: "^(?<year>\\d{4})(?<month>\\d{2})(?<day>\\d{2})$")
-    private static let minutesInDay = 24 * 60
+    private static let secondsInDay = 24 * 60 * 60
 
     private static let calendar = {
         var calendar = Calendar(identifier: .iso8601)
@@ -42,18 +42,21 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
     }
 
     init(fromDate date: Date, deadline: Int) {
-        let minutesAfterMidnight = Daystamp.calendar.component(.hour, from: date) * 60 + Daystamp.calendar.component(.minute, from: date)
+        let secondsAfterMidnight =
+            Daystamp.calendar.component(.hour, from: date) * 60 * 60
+            + Daystamp.calendar.component(.minute, from: date) * 60
+            + Daystamp.calendar.component(.second, from: date)
 
         let dayOffsetFromDeadline = if deadline < 0 {
             // This is an early deadline. If the time is after the deadline we need to instead consider it the next day
-            if minutesAfterMidnight > Daystamp.minutesInDay + deadline {
+            if secondsAfterMidnight > Daystamp.secondsInDay + deadline {
                 1
             } else {
                 0
             }
         } else {
             // This is a late deadline. If the time is before the deadline, we should consider it the previous day
-            if minutesAfterMidnight < deadline {
+            if secondsAfterMidnight < deadline {
                 -1
             } else {
                 0
@@ -78,7 +81,7 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
     /// The Date corresponding to the start of this Daystamp (inclusive)
     /// Note this uses the system timezone to determine when days start and end, which may not match the user's timezone
     func start(deadline: Int) -> Date {
-        return Daystamp.calendar.date(from: DateComponents(calendar: Daystamp.calendar, year: year, month: month, day: day, minute: deadline))!
+        return Daystamp.calendar.date(from: DateComponents(calendar: Daystamp.calendar, year: year, month: month, day: day, second: deadline))!
     }
 
     /// The Date corresponding to the end of this Daystamp (exclusive)
