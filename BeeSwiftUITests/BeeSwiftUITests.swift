@@ -34,7 +34,7 @@ class BeeSwiftUITests: XCTestCase {
 
     func testLaunchPerformance() {
         // This measures how long it takes to launch your application.
-        measure(metrics: [XCTOSSignpostMetric.applicationLaunch]) {
+        measure(metrics: [XCTApplicationLaunchMetric()]) {
             XCUIApplication().launch()
         }
     }
