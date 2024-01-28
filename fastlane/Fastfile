@@ -20,9 +20,20 @@ platform :ios do
     run_tests(
         scheme: "BeeSwift",
         reset_simulator: true,
+        xcodebuild_formatter: "xcpretty",
+    )
+  end
+  lane :ci do
+    sh("xcrun simctl delete all")
+    sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-15 com.apple.CoreSimulator.SimRuntime.iOS-17-2")
+    run_tests(
+        scheme: "BeeSwift",
+        reset_simulator: true,
         include_simulator_logs: true,
         buildlog_path: "fastlane/test_output",
         xcodebuild_formatter: "xcpretty",
+        devices: ["Test-iPhone"],
+        ensure_devices_found: true,
     )
   end
   lane :build do
