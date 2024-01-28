@@ -20,7 +20,7 @@ jobs:
         ruby-version: '2.7.2'
         bundler-cache: true
     - name: Run tests
-      run: bundle exec fastlane test
+      run: bundle exec fastlane ci
     - name: Upload report
       uses: actions/upload-artifact@v4
       if: always() # always run even if the previous step fails
