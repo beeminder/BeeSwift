@@ -61,7 +61,6 @@ class QuantityHealthKitMetric : HealthKitMetric {
             healthStore.execute(query)
         }
 
-        // TODO: It would be possible for Apple to give us more data than requested in the statsCollection, we should consider passing through the number of days to filter here
         return try await datapointsForCollection(collection: statsCollection, startDate: startDate, endDate: today, deadline: deadline, healthStore: healthStore)
     }
 
