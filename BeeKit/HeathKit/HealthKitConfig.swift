@@ -29,7 +29,7 @@ public class HealthKitConfig : NSObject {
             WorkoutMinutesHealthKitMetric.init(humanText: "Workout minutes", databaseString: "workoutMinutes", category: .Activity),
 
             // Body Measurements
-            QuantityHealthKitMetric.init(humanText: "Weight", databaseString: "weight", category: .BodyMeasurements, hkQuantityTypeIdentifier: .bodyMass),
+            QuantityHealthKitMetric.init(humanText: "Weight", databaseString: "weight", category: .BodyMeasurements, hkQuantityTypeIdentifier: .bodyMass, precision: [HKUnit.pound(): 1, HKUnit.gramUnit(with: .kilo): 1]),
 
             // Heart
 
