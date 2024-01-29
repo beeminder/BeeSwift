@@ -15,12 +15,14 @@ class QuantityHealthKitMetric : HealthKitMetric {
     let databaseString : String
     let category : HealthKitCategory
     let hkQuantityTypeIdentifier : HKQuantityTypeIdentifier
+    let precision: [HKUnit: Int]
 
-    internal init(humanText: String, databaseString: String, category : HealthKitCategory, hkQuantityTypeIdentifier: HKQuantityTypeIdentifier) {
+    internal init(humanText: String, databaseString: String, category : HealthKitCategory, hkQuantityTypeIdentifier: HKQuantityTypeIdentifier, precision: [HKUnit: Int] = [:]) {
         self.humanText = humanText
         self.databaseString = databaseString
         self.category = category
         self.hkQuantityTypeIdentifier = hkQuantityTypeIdentifier
+        self.precision = precision
     }
 
     func sampleType() -> HKSampleType {
@@ -109,9 +111,14 @@ class QuantityHealthKitMetric : HealthKitMetric {
                 }
             }()
 
-            guard let datapointValue = value else {
+            guard var datapointValue = value else {
                 logger.error("updateBeeminderWithStatsCollection(\(self.databaseString, privacy: .public)): No datapoint value")
                 continue
+            }
+
+            if let unitPrecision = precision[unit] {
+                let roundingFactor = pow(10.0, Double(unitPrecision))
+                datapointValue = round(datapointValue * roundingFactor) / roundingFactor
             }
 
             let id = "apple-health-" + daystamp.description
