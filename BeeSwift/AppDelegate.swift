@@ -146,6 +146,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func refreshGoalsAndLogErrors() {
         Task { @MainActor in
             do {
+                let _ = try await ServiceLocator.healthStoreManager.updateAllGoalsWithRecentData(days: 7)
+            } catch {
+                logger.error("Error updating from healthkit: \(error)")
+            }
+            do {
                 let _ = try await ServiceLocator.goalManager.fetchGoals()
             } catch {
                 logger.error("Error refreshing goals: \(error)")
