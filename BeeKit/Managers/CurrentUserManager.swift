@@ -106,11 +106,11 @@ public class CurrentUserManager {
     }
 
 
-    private func user() -> User? {
+    private func user(context: NSManagedObjectContext? = nil) -> User? {
         // Fetch a user from the persistent store
         let request = NSFetchRequest<User>(entityName: "User")
         // TODO: Handle (or at least log) an error here
-        let users = try? container.viewContext.fetch(request)
+        let users = try? (context ?? container.viewContext).fetch(request)
         return users?.first
     }
 
@@ -118,7 +118,7 @@ public class CurrentUserManager {
         let context = container.newBackgroundContext()
 
         // Delete any existing users. We expect at most one, but delete all to be safe.
-        while let user = self.user() {
+        while let user = self.user(context: context) {
             context.delete(user)
         }
         try context.save()
