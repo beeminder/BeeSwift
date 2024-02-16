@@ -154,8 +154,6 @@ public class CurrentUserManager {
         return user()?.username
     }
     
-    public var signingUp : Bool = false
-    
     public func defaultLeadTime() -> NSNumber {
         return (user()?.defaultLeadTime ?? 0) as NSNumber
     }
@@ -282,5 +280,4 @@ public class CurrentUserManager {
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
         }.value
     }
-    
 }

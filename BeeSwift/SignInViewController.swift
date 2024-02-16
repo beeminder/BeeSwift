@@ -174,7 +174,6 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
     }
     
     @objc func chooseSignInButtonPressed() {
-        ServiceLocator.currentUserManager.signingUp = false
         //self.divider.isHidden = false
         //self.backToSignUpButton.isHidden = false
         self.emailTextField.isHidden = false
