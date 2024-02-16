@@ -304,6 +304,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         NotificationCenter.default.addObserver(self, selector: #selector(onGoalsUpdatedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
 
+        setValueTextField()
         updateInterfaceToMatchGoal()
     }
 
@@ -431,9 +432,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func setValueTextField() {
-        if let suggestedNextValue = goal.suggestedNextValue {
-            self.valueTextField.text = "\(String(describing: suggestedNextValue))"
-        }
+        let suggestedNextValue = goal.suggestedNextValue ?? 1
+        valueTextField.text = "\(String(describing: suggestedNextValue))"
+        valueTextFieldValueChanged()
     }
 
     @objc func valueStepperValueChanged() {
@@ -543,8 +544,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
 
         self.refreshCountdown()
-        self.setValueTextField()
-        self.valueTextFieldValueChanged()
         self.deltasLabel.attributedText = self.goal!.attributedDeltaText
         if (!self.goal.queued!) {
             self.setGraphImage()
