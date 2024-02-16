@@ -431,8 +431,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func setValueTextField() {
-        if let lastDatapoint = self.goal!.recent_data?.last {
-            self.valueTextField.text = "\(String(describing: lastDatapoint.value))"
+        if let suggestedNextValue = goal.suggestedNextValue {
+            self.valueTextField.text = "\(String(describing: suggestedNextValue))"
         }
     }
 
