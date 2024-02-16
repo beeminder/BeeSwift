@@ -106,19 +106,26 @@ public class CurrentUserManager {
     }
 
 
-    private func user() -> User? {
+    private func user(context: NSManagedObjectContext? = nil) -> User? {
         // Fetch a user from the persistent store
         let request = NSFetchRequest<User>(entityName: "User")
         // TODO: Handle (or at least log) an error here
-        let users = try? container.viewContext.fetch(request)
+        let users = try? (context ?? container.viewContext).fetch(request)
         return users?.first
+    }
+
+    private func modifyUser(_ callback: (User)->()) throws {
+        let context = container.newBackgroundContext()
+        guard let user = self.user(context: context) else { return }
+        callback(user)
+        try context.save()
     }
 
     private func deleteUser() throws {
         let context = container.newBackgroundContext()
 
         // Delete any existing users. We expect at most one, but delete all to be safe.
-        while let user = self.user() {
+        while let user = self.user(context: context) {
             context.delete(user)
         }
         try context.save()
@@ -147,14 +154,12 @@ public class CurrentUserManager {
         return user()?.username
     }
     
-    public var signingUp : Bool = false
-    
     public func defaultLeadTime() -> NSNumber {
         return (user()?.defaultLeadTime ?? 0) as NSNumber
     }
     
     public func setDefaultLeadTime(_ leadtime : NSNumber) {
-        user()?.defaultDeadline = leadtime as! Int32
+        try! modifyUser { $0.defaultLeadTime = leadtime as! Int32 }
         self.set(leadtime, forKey: CurrentUserManager.defaultLeadtimeKey)
     }
 
@@ -163,7 +168,7 @@ public class CurrentUserManager {
     }
     
     public func setDefaultAlertstart(_ alertstart : NSNumber) {
-        user()?.defaultAlertStart = alertstart as! Int32
+        try! modifyUser { $0.defaultAlertStart = alertstart as! Int32 }
         self.set(alertstart, forKey: CurrentUserManager.defaultAlertstartKey)
     }
     
@@ -172,7 +177,7 @@ public class CurrentUserManager {
     }
     
     public func setDefaultDeadline(_ deadline : NSNumber) {
-        user()?.defaultDeadline = deadline as! Int32
+        try! modifyUser { $0.defaultDeadline = deadline as! Int32 }
         self.set(deadline, forKey: CurrentUserManager.defaultDeadlineKey)
     }
     
@@ -189,7 +194,7 @@ public class CurrentUserManager {
     }
     
     public func setDeadbeat(_ deadbeat: Bool) {
-        user()?.deadbeat = deadbeat
+        try! modifyUser { $0.deadbeat = deadbeat }
         if deadbeat {
             self.set(true, forKey: CurrentUserManager.deadbeatKey)
         } else {
@@ -242,10 +247,11 @@ public class CurrentUserManager {
         let response = try await requestManager.get(url: "api/v1/users/\(username!).json", parameters: [:])
         let responseJSON = JSON(response!)
 
-        let user = user()!
-        user.defaultAlertStart = responseJSON["default_alertstart"].int32!
-        user.defaultDeadline = responseJSON["default_deadline"].int32!
-        user.defaultLeadTime = responseJSON["default_leadtime"].int32!
+        try! modifyUser { user in
+            user.defaultAlertStart = responseJSON["default_alertstart"].int32!
+            user.defaultDeadline = responseJSON["default_deadline"].int32!
+            user.defaultLeadTime = responseJSON["default_leadtime"].int32!
+        }
 
         self.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
         self.set(responseJSON["default_deadline"].number!, forKey: "default_deadline")
@@ -274,5 +280,4 @@ public class CurrentUserManager {
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
         }.value
     }
-    
 }
