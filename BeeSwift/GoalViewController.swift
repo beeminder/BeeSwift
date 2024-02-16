@@ -24,7 +24,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     var goal : Goal!
 
-    fileprivate var goalImageView = UIImageView()
+    fileprivate var goalImageView = GoalImageView(isThumbnail: false)
     fileprivate var datapointTableController = DatapointTableViewController()
     fileprivate var dateTextField = UITextField()
     fileprivate var valueTextField = UITextField()
@@ -114,8 +114,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.left.equalTo(self.goalImageScrollView)
             make.right.equalTo(self.goalImageScrollView)
         }
-        self.goalImageView.image = UIImage(named: "GraphPlaceholder")
-
+        self.goalImageView.goal = self.goal
 
         self.scrollView.addSubview(self.deltasLabel)
         self.deltasLabel.snp.makeConstraints { (make) in
@@ -323,9 +322,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if (!ServiceLocator.currentUserManager.signedIn()) { return }
-        if keyPath == "graph_url" {
-            self.setGraphImage()
-        } else if keyPath == "delta_text" || keyPath == "safebump" || keyPath == "safesum" {
+        if keyPath == "delta_text" || keyPath == "safebump" || keyPath == "safesum" {
             self.refreshCountdown()
         }
     }
@@ -394,14 +391,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     @objc func refreshCountdown() {
         self.countdownLabel.textColor = self.goal.countdownColor
         self.countdownLabel.text = self.goal.capitalSafesum()
-    }
-
-    func setGraphImage() {
-        if ServiceLocator.currentUserManager.isDeadbeat() {
-            self.goalImageView.image = UIImage(named: "GraphPlaceholder")
-        } else {
-            self.goalImageView.af.setImage(withURL: URL(string: self.goal.cacheBustingGraphUrl)!, placeholderImage: UIImage(named: "GraphPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
-        }
     }
 
     @objc func goalImageTapped() {
@@ -545,9 +534,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         self.refreshCountdown()
         self.deltasLabel.attributedText = self.goal!.attributedDeltaText
-        if (!self.goal.queued!) {
-            self.setGraphImage()
-        }
     }
 
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
