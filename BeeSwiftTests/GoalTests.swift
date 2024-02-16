@@ -177,4 +177,65 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.derived_rate, 0)
     }
 
+    func testSuggestedNextValueBasedOnLastValue() throws {
+        var testJSON = requiredGoalJson()
+        testJSON["recent_data"] = [
+            ["value": 1, "daystamp": "20221130"],
+            ["value": 2, "daystamp": "20221126"],
+            ["value": 3.5, "daystamp": "20221125"],
+        ]
+        let goal = Goal(json: testJSON)
+
+        XCTAssertEqual(goal.suggestedNextValue, 1)
+    }
+
+    func testSuggestedNextValueEmptyIfNoData() throws {
+        var testJSON = requiredGoalJson()
+        testJSON["recent_data"] = []
+        let goal = Goal(json: testJSON)
+
+        XCTAssertEqual(goal.suggestedNextValue, nil)
+    }
+
+    func testSuggestedNextValueIgnoresDerailsAndSelfDestructs() throws {
+        var testJSON = requiredGoalJson()
+        testJSON["recent_data"] = [
+            ["value": 0, "daystamp": "20221131", "comment": "Goal #RESTART Point"],
+            ["value": 0, "daystamp": "20221131", "comment": "This will #SELFDESTRUCT"],
+            ["value": 0, "daystamp": "20221130", "comment": "#DERAIL ON THE 1st"],
+            ["value": 2, "daystamp": "20221126"],
+            ["value": 3.5, "daystamp": "20221125"],
+        ]
+        let goal = Goal(json: testJSON)
+
+        XCTAssertEqual(goal.suggestedNextValue, 2)
+    }
+
+    /// Return the minimum set of required attributes for creating a goal
+    func requiredGoalJson() -> JSON {
+        return JSON(parseJSON: """
+        {
+            "id": "737aaa34f0118a330852e4bd",
+            "title": "Goal for Testing Purposes",
+            "slug": "test-goal",
+            "initday": 1668963600,
+            "deadline": 0,
+            "leadtime": 0,
+            "alertstart": 34200,
+            "queued": false,
+            "losedate": 2000271599,
+            "runits": "d",
+            "yaxis": "cumulative total test-goal",
+            "won": false,
+            "yaw": 1,
+            "lane": 3582,
+            "dir": 1,
+            "use_defaults": true,
+            "pledge": 0,
+            "hhmmformat": false,
+            "todayta": false
+        }
+        """)
+
+    }
 }

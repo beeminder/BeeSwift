@@ -317,6 +317,20 @@ public class Goal {
         return self.autodata == "apple"
     }
 
+    /// A hint for the value the user is likely to enter, based on past data points
+    public var suggestedNextValue: NSNumber? {
+        guard let recentData = self.recent_data else { return nil }
+        for dataPoint in recentData.reversed() {
+            let comment = dataPoint.comment
+            // Ignore data points with comments suggesting they aren't a real value
+            if comment.contains("#DERAIL") || comment.contains("#SELFDESTRUCT") || comment.contains("#RESTART") || comment.contains("#TARE") {
+                continue
+            }
+            return dataPoint.value
+        }
+        return nil
+    }
+
     /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
     var initDaystamp: Daystamp {
         let initDate = Date(timeIntervalSince1970: self.initday!.doubleValue)
