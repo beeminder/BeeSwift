@@ -349,7 +349,6 @@
 		E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AddDataIntents.intentdefinition; sourceTree = "<group>"; };
 		E55760F426549D310076B95A /* AddDataIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataIntentHandler.swift; sourceTree = "<group>"; };
 		E55FEE6A23FF7552007C20B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
-		E55FEE6D23FF78E8007C20B2 /* Sentry.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Sentry.sh; sourceTree = "<group>"; };
 		E57BE6E02655EBD900BA540B /* BeeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E57BE6E22655EBDA00BA540B /* BeeKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeeKit.h; sourceTree = "<group>"; };
 		E57BE6E32655EBDA00BA540B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -568,7 +567,6 @@
 			children = (
 				A1BD3E021AE41AE400B1390A /* BeeSwift-Bridging-Header.h */,
 				A196CB181AE4142E00B90A3E /* Info.plist */,
-				E55FEE6D23FF78E8007C20B2 /* Sentry.sh */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
