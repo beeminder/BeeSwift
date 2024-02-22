@@ -215,13 +215,15 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: params)
                 try await ServiceLocator.goalManager.refreshGoal(self.goal)
 
-                let hud = MBProgressHUD.forView(self.view)
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
-                hud?.hide(animated: true, afterDelay: 2)
+                hud.mode = .customView
+                hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
+                hud.hide(animated: true, afterDelay: 0.5)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.navigationController?.dismiss(animated: true)
+                }
             } catch {
                 logger.error("Error updating datapoint for goal \(self.goal.slug): \(error)")
-                let _ = MBProgressHUD.hide(for: self.view, animated: true)
+                hud.hide(animated: false)
             }
         }
     }
@@ -235,17 +237,15 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: nil)
                 try await ServiceLocator.goalManager.refreshGoal(self.goal)
 
-                let hud = MBProgressHUD.forView(self.view)
-                hud?.mode = .customView
-                hud?.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
-                hud?.hide(animated: true, afterDelay: 0.5)
+                hud.mode = .customView
+                hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
+                hud.hide(animated: true, afterDelay: 0.5)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.logger.info("Dismissing popup")
                     self.navigationController?.dismiss(animated: true)
                 }
             } catch {
                 logger.error("Error deleting datapoint for goal \(self.goal.slug): \(error)")
-
+                hud.hide(animated: false)
             }
         }
     }
