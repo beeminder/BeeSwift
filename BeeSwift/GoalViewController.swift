@@ -373,7 +373,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             do {
                 if self.goal.isLinkedToHealthKit {
                     try await ServiceLocator.healthStoreManager.updateWithRecentData(goal: self.goal, days: 7)
-                } else {
+                } else if goal.isDataProvidedAutomatically {
+                    // Don't force a refresh for manual goals. While doing so is harmless, it queues the goal which means we show a
+                    // lemniscate for a few seconds, making the refresh slower.
                     try await ServiceLocator.goalManager.forceAutodataRefresh(self.goal)
                 }
                 try await self.updateGoalAndInterface()
