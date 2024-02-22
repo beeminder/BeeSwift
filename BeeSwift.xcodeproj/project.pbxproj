@@ -49,6 +49,8 @@
 		E41286F12A62E6840093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F02A62E6840093D598 /* KeychainSwift */; };
 		E41286F32A62E97B0093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F22A62E97B0093D598 /* KeychainSwift */; };
 		E41286F52A62E9840093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F42A62E9840093D598 /* KeychainSwift */; };
+		E412DADF2B869E1E0099E483 /* BeeLemniscateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E412DADE2B869E1E0099E483 /* BeeLemniscateView.swift */; };
+		E412DAE12B86A8F70099E483 /* GoalImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E412DAE02B86A8F70099E483 /* GoalImageView.swift */; };
 		E417572D2A6446FE0029CDDA /* CurrentUserManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */; };
 		E43833942AC1473E0098A38F /* InlineDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43833932AC1473E0098A38F /* InlineDatePicker.swift */; };
 		E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BEA832A036A9C00FC3A38 /* LogReader.swift */; };
@@ -313,6 +315,8 @@
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
 		E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMinutesHealthKitMetric.swift; sourceTree = "<group>"; };
 		E41286ED2A62DF330093D598 /* BeeminderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel.xcdatamodel; sourceTree = "<group>"; };
+		E412DADE2B869E1E0099E483 /* BeeLemniscateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeLemniscateView.swift; sourceTree = "<group>"; };
+		E412DAE02B86A8F70099E483 /* GoalImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalImageView.swift; sourceTree = "<group>"; };
 		E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserManagerTests.swift; sourceTree = "<group>"; };
 		E42CB451291727B200A35AB9 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
 		E43833932AC1473E0098A38F /* InlineDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineDatePicker.swift; sourceTree = "<group>"; };
@@ -640,6 +644,8 @@
 				E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */,
 				E43833932AC1473E0098A38F /* InlineDatePicker.swift */,
 				E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */,
+				E412DADE2B869E1E0099E483 /* BeeLemniscateView.swift */,
+				E412DAE02B86A8F70099E483 /* GoalImageView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1147,11 +1153,13 @@
 				E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */,
 				E5C9EFE62612E02700DBBEAE /* AddDataIntents.intentdefinition in Sources */,
 				A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */,
+				E412DAE12B86A8F70099E483 /* GoalImageView.swift in Sources */,
 				A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */,
 				A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */,
 				E46DC80F2AA58DF20059FDFE /* PullToRefreshHint.swift in Sources */,
 				A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */,
 				E4B0833B2934620500A71564 /* DatapointTableViewController.swift in Sources */,
+				E412DADF2B869E1E0099E483 /* BeeLemniscateView.swift in Sources */,
 				A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */,
 				A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */,
 				A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */,

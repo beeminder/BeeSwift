@@ -14,14 +14,13 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let slugLabel :BSLabel = BSLabel()
     let titleLabel :BSLabel = BSLabel()
     let todaytaLabel :BSLabel = BSLabel()
-    let thumbnailImageView :UIImageView = UIImageView()
+    let thumbnailImageView = GoalImageView(isThumbnail: true)
     let safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
     var goal: Goal? {
         didSet {
-            self.thumbnailImageView.image = nil
-            self.setThumbnailImage()
+            self.thumbnailImageView.goal = goal
             self.titleLabel.text = goal?.title
             self.slugLabel.text = goal?.slug
             self.titleLabel.isHidden = goal?.title == goal?.slug
@@ -86,28 +85,5 @@ class GoalCollectionViewCell: UICollectionViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        
-        self.slugLabel.text = nil
-        self.titleLabel.text = nil
-        self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
-        self.safesumLabel.text = nil
-        self.goal = nil
-    }
-        
-    func deadbeatChanged() {
-        self.setThumbnailImage()
-    }
-    
-    func setThumbnailImage() {
-        guard let _ = self.goal else { return }
-        if ServiceLocator.currentUserManager.isDeadbeat() {
-            self.thumbnailImageView.image = UIImage(named: "ThumbnailPlaceholder")
-        } else {
-            self.thumbnailImageView.af.setImage(withURL: URL(string: self.goal!.cacheBustingThumbUrl)!, placeholderImage: UIImage(named: "ThumbnailPlaceholder"), filter: nil, progress: nil, progressQueue: DispatchQueue.global(), imageTransition: .noTransition, runImageTransitionIfCached: false, completion: nil)
-        }
     }
 }
