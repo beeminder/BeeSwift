@@ -17,13 +17,23 @@ public class SignedRequestManager {
     }
 
     public func signedGET(url: String, parameters: [String: Any]?) async throws -> Any? {
-        let params = signedParameters(requestManager.authedParams(parameters))
-        return try await requestManager.rawRequest(url: url, method: .get, parameters: params)
+        let params = signedParameters(parameters)
+        return try await requestManager.rawRequest(
+            url: url,
+            method: .get,
+            parameters: params,
+            headers: requestManager.authenticationHeaders()
+        )
     }
     
     public func signedPOST(url: String, parameters: [String: Any]?) async throws -> Any? {
-        let params = signedParameters(requestManager.authedParams(parameters))
-        return try await requestManager.rawRequest(url: url, method: .post, parameters: params)
+        let params = signedParameters(parameters)
+        return try await requestManager.rawRequest(
+            url: url,
+            method: .post,
+            parameters: params,
+            headers: requestManager.authenticationHeaders()
+        )
     }
     
     fileprivate func signedParameters(_ params: [String: Any]?) -> [String: Any]? {
