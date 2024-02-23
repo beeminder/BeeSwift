@@ -7,19 +7,50 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- *
+ * 
 
 🐛 Bugfix
  * 
 
-⚠️ API Changes
- *
+⚠️  API Changes
+ * 
 
 🧱 Build
  * 
 
 Others
  * 
+
+6.6 (Release date TBD)
+=================================================
+
+✨ Features
+ * New Apple Heath Metrics: Time in Daylight (#421)
+
+🙌 Improvements
+ * For some Apple Health Metrics, show only a reasonable number of digits (#438)
+ * Show the bee lemniscate when goals are queued for server-side processing (#444)
+ * Ignore derailment and pessimistic datapoints when suggesting datapoint value (#441)
+
+🐛 Bugfix
+ * Disconnecting goals from Apple Health allows deadline to be set (#437)
+ * Apple Health data is now correctly set for the current day for non-midnight deadlines (#433)
+ * The edit datapoints view now dismisses after editing or deleting a goal (#445)
+ * Refreshing goals should not trigger an autodata update for manual goals (#446)
+ * No longer reset changes to datapoint value on switching between apps (#442)
+
+⚠️  API Changes
+ * Write requestIds for HealthKit data points (#419)
+ * Use HTTP Header to authenticate against the beeminder API (#447)
+ * First experimental introduction of Core Data to store user information (#423)
+
+🧱 Build
+ * Only run each test once as part of CI (#415)
+ * Updating a PR now cancels previous runs (#432)
+ * File hierarchy is changed so most files are now only compiled once (#425)
+
+Others
+ * Minimum iOS version is now iOS15 (#416)
 
 
 6.5 (2023-10-04)
