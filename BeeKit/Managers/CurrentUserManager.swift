@@ -110,7 +110,7 @@ public class CurrentUserManager {
         // Fetch a user from the persistent store
         let request = NSFetchRequest<User>(entityName: "User")
         // TODO: Handle (or at least log) an error here
-        let users = try? (context ?? container.viewContext).fetch(request)
+        let users = try? (context ?? container.newBackgroundContext()).fetch(request)
         return users?.first
     }
 
@@ -153,7 +153,7 @@ public class CurrentUserManager {
     public var username :String? {
         return user()?.username
     }
-    
+
     public func defaultLeadTime() -> NSNumber {
         return (user()?.defaultLeadTime ?? 0) as NSNumber
     }
@@ -280,4 +280,8 @@ public class CurrentUserManager {
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
         }.value
     }
+}
+
+public enum CurrentUserManagerError : Error {
+    case loggedOut
 }

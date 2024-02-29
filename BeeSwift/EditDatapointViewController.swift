@@ -212,7 +212,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 let params = [
                     "urtext": self.urtext()
                 ]
-                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: params)
                 try await ServiceLocator.goalManager.refreshGoal(self.goal)
 
                 hud.mode = .customView
@@ -234,7 +234,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             hud.mode = .indeterminate
 
             do {
-                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: nil)
+                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: nil)
                 try await ServiceLocator.goalManager.refreshGoal(self.goal)
 
                 hud.mode = .customView

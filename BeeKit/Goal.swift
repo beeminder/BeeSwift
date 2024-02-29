@@ -350,7 +350,7 @@ public class Goal {
         Task { @MainActor in
             let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
             do {
-                let response = try await ServiceLocator.requestManager.get(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
+                let response = try await ServiceLocator.requestManager.get(url: "api/v1/users/{username}/goals/\(self.slug)/datapoints.json", parameters: params)
                 let responseJSON = JSON(response!)
                 success(try ExistingDataPoint.fromJSONArray(array: responseJSON.arrayValue))
             } catch {
@@ -377,7 +377,7 @@ public class Goal {
                 "comment": "Auto-updated via Apple Health",
             ]
             do {
-                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.slug)/datapoints/\(datapoint.id).json", parameters: params)
                 success?()
             } catch {
                 errorCompletion?()
@@ -388,7 +388,7 @@ public class Goal {
     func deleteDatapoint(datapoint : ExistingDataPoint) {
         Task { @MainActor in
             do {
-                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints/\(datapoint.id)", parameters: nil)
+                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/{username}/goals/\(self.slug)/datapoints/\(datapoint.id)", parameters: nil)
             } catch {
                 logger.error("Error deleting datapoint: \(error)")
             }
@@ -398,7 +398,7 @@ public class Goal {
     func postDatapoint(params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
         Task { @MainActor in
             do {
-                let response = try await ServiceLocator.requestManager.post(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
+                let response = try await ServiceLocator.requestManager.post(url: "api/v1/users/{username}/goals/\(self.slug)/datapoints.json", parameters: params)
                 success?(response)
             } catch {
                 failure?(error, error.localizedDescription)
@@ -408,7 +408,7 @@ public class Goal {
 
     func fetchDatapoints(sort: String, per: Int, page: Int) async throws -> [ExistingDataPoint] {
         let params = ["sort" : sort, "per" : per, "page": page] as [String : Any]
-        let response = try await ServiceLocator.requestManager.get(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.slug)/datapoints.json", parameters: params)
+        let response = try await ServiceLocator.requestManager.get(url: "api/v1/users/{username}/goals/\(self.slug)/datapoints.json", parameters: params)
         let responseJSON = JSON(response!)
         return try ExistingDataPoint.fromJSONArray(array: responseJSON.arrayValue)
     }
