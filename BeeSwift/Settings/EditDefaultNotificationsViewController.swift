@@ -32,7 +32,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
             guard let leadtime = userInfo["leadtime"] else { return }
             let params = [ "default_leadtime" : leadtime ]
             do {
-                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
                 ServiceLocator.currentUserManager.setDefaultLeadTime(leadtime)
             } catch {
                 logger.error("Error setting default leadtime: \(error)")
@@ -52,7 +52,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                 self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
                 let params = ["default_alertstart" : self.midnightOffsetFromTimePickerView()]
                 do {
-                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!).json", parameters: params)
+                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
                     ServiceLocator.currentUserManager.setDefaultAlertstart(self.midnightOffsetFromTimePickerView())
                 } catch {
                     logger.error("Error setting default alert start: \(error)")
@@ -63,7 +63,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                 self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
                 let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
                 do {
-                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!).json", parameters: params)
+                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
                     ServiceLocator.currentUserManager.setDefaultDeadline(self.midnightOffsetFromTimePickerView())
                 } catch {
                     logger.error("Error setting default deadline: \(error)")

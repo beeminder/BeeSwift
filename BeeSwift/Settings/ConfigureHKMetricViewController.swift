@@ -157,7 +157,7 @@ class ConfigureHKMetricViewController : UIViewController {
             params = ["ii_params" : ["name" : "apple", "metric" : self.goal.healthKitMetric!]]
 
             do {
-                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(self.goal.slug).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
                 hud.mode = .customView
                 hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
                 hud.hide(animated: true, afterDelay: 2)

@@ -13,9 +13,9 @@ import OSLog
 
 struct ServerError: Error {
     let message: String
-    let requestError: Error
+    let requestError: Error?
 
-    init(_ message: String, requestError: Error) {
+    init(_ message: String, requestError: Error?) {
         self.message = message
         self.requestError = requestError
     }
@@ -30,9 +30,18 @@ public class RequestManager {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
     
     func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?, headers: HTTPHeaders) async throws -> Any? {
-        let encoding: ParameterEncoding = if method == .get { URLEncoding.default } else { JSONEncoding.default }
+
+        var urlWithSubstitutions = url
+        if url.contains("{username}") {
+            guard let username = ServiceLocator.currentUserManager.username else {
+                throw ServerError("Attempted to make request to username-based URL \(url) while logged out", requestError: nil)
+            }
+            urlWithSubstitutions = urlWithSubstitutions.replacingOccurrences(of: "{username}", with: username)
+        }
+
+        let encoding: ParameterEncoding = if method == .get { URLEncoding.default } else { JSONEncoding.default }// TODO
         let response = await AF.request(
-            "\(baseURLString)/\(url)",
+            "\(baseURLString)/\(urlWithSubstitutions)",
             method: method,
             parameters: parameters,
             encoding: encoding,
@@ -99,7 +108,7 @@ public class RequestManager {
     public func addDatapoint(urtext: String, slug: String) async throws -> Any? {
         let params = ["urtext": urtext, "requestid": UUID().uuidString]
         
-        return try await post(url: "api/v1/users/\(ServiceLocator.currentUserManager.username!)/goals/\(slug)/datapoints.json", parameters: params)
+        return try await post(url: "api/v1/users/{username}/goals/\(slug)/datapoints.json", parameters: params)
     }
 }
 
