@@ -21,7 +21,7 @@ Changes to be released in next version
 Others
  * 
 
-6.6 (Release date TBD)
+6.6 (2024-03-07)
 =================================================
 
 ✨ Features
