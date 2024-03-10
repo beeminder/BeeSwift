@@ -7,6 +7,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>webcredentials:beeminder.com</string>
+		<string>webcredentials:www.beeminder.com</string>
 	</array>
 	<key>com.apple.developer.healthkit</key>
 	<true/>
