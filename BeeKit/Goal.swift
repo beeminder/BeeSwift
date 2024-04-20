@@ -51,6 +51,7 @@ public class Goal {
     public var queued: Bool?
     public var todayta: Bool = false
     public var hhmmformat: Bool = false
+    public var urgencykey: String = ""
     public var recent_data: [ExistingDataPoint]?
 
     // These are obtained from mathishard
@@ -112,6 +113,7 @@ public class Goal {
         self.healthKitMetric = json["healthkitmetric"].string
         self.todayta = json["todayta"].bool!
         self.hhmmformat = json["hhmmformat"].bool!
+        self.urgencykey = json["urgencykey"].string!
 
         self.recent_data = (try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()) ?? []
 

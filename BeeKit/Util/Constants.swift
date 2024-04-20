@@ -22,9 +22,9 @@ public struct Constants {
     public static let recentDataGoalSortString = "Recent Data"
     public static let nameGoalSortString = "Name"
     public static let pledgeGoalSortString = "Pledge"
-    public static let deadlineGoalSortString = "Deadline"
+    public static let urgencyGoalSortString = "Urgency"
     public static let healthKitUpdateDictionaryKey = "healthKitUpdateDictionary"
-    public static let goalSortOptions = [Constants.nameGoalSortString, Constants.deadlineGoalSortString, Constants.pledgeGoalSortString, Constants.recentDataGoalSortString]
+    public static let goalSortOptions = [Constants.urgencyGoalSortString, Constants.nameGoalSortString, Constants.pledgeGoalSortString, Constants.recentDataGoalSortString]
     public static let appGroupIdentifier = "group.beeminder.beeminder"
 }
 
