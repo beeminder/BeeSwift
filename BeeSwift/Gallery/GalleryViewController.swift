@@ -428,26 +428,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 }
             }
 
-            // Default sort ordering
-
-            // Primary Criteria: Sooner deadline/goal end first
-            let goal1Date = min(goal1.losedate.intValue, goal1.derived_goaldate.intValue)
-            let goal2Date = min(goal2.losedate.intValue, goal2.derived_goaldate.intValue)
-            if goal1Date < goal2Date {
-                return true
-            } else if goal2Date < goal1Date {
-                return false
-            }
-
-            // Secondary Criteria: Larger pledge amount first
-            if goal2.pledge.intValue < goal1.pledge.intValue {
-                return true
-            } else if goal1.pledge.intValue < goal2.pledge.intValue {
-                return false
-            }
-
-            // Tertiary Criteria: Lexographically earlier slug first
-            return goal1.slug < goal2.slug
+            // urgencykey is guaranteed to result in goals sorting into the canonical order
+            return goal1.urgencykey < goal2.urgencykey
         })
         self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
     }

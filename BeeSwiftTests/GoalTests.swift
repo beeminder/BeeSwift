@@ -40,6 +40,7 @@ final class GoalTests: XCTestCase {
           "lasttouch": "2022-12-07T03:21:40.000Z",
           "safebuf": 3583,
           "todayta": false,
+          "urgencykey": "FROx;PPRx;DL4102469999;P1000000000;test-goal",
           "hhmmformat": false,
           "yaxis": "cumulative total test-goal",
           "initday": 1668963600,
@@ -121,6 +122,7 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.lasttouch, 1670383300)
         XCTAssertEqual(goal.safebuf, 3583)
         XCTAssertEqual(goal.todayta, false)
+        XCTAssertEqual(goal.urgencykey, "FROx;PPRx;DL4102469999;P1000000000;test-goal")
         XCTAssertEqual(goal.hhmmformat, false)
         XCTAssertEqual(goal.yaxis, "cumulative total test-goal")
         XCTAssertEqual(goal.initday, 1668963600)
@@ -160,6 +162,7 @@ final class GoalTests: XCTestCase {
           "lasttouch": "2022-12-07T03:21:40.000Z",
           "safebuf": 3583,
           "todayta": false,
+          "urgencykey": "FROx;PPRx;DL4102469999;P1000000000;test-goal",
           "hhmmformat": false,
           "yaxis": "cumulative total test-goal",
           "initday": 1668963600,
@@ -233,7 +236,8 @@ final class GoalTests: XCTestCase {
             "use_defaults": true,
             "pledge": 0,
             "hhmmformat": false,
-            "todayta": false
+            "todayta": false,
+            "urgencykey": "FROx;PPRx;DL4102469999;P1000000000;test-goal"
         }
         """)
 
