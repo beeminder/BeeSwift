@@ -3,6 +3,7 @@ import CoreData
 
 import SwiftyJSON
 
+@objc(Goal)
 public class Goal: NSManagedObject {
     @NSManaged public var owner: User
     @NSManaged public var id: String
@@ -22,7 +23,7 @@ public class Goal: NSManagedObject {
         super.init(entity: entity, insertInto: context)
         self.owner = owner
         self.id = json["id"].stringValue
-        
+
         self.updateToMatch(json: json)
     }
 

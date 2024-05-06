@@ -1,6 +1,7 @@
 import Foundation
 import CoreData
 
+@objc(User)
 public class User: NSManagedObject {
     @NSManaged public var username: String
     @NSManaged public var deadbeat: Bool
