@@ -67,7 +67,7 @@
 		E458C8052AD11BC8000DCA5C /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C161932423CE9F0045C90D /* VersionManager.swift */; };
 		E458C8062AD11BCD000DCA5C /* GoalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE782299338C500394E87 /* GoalManager.swift */; };
 		E458C8072AD11BDB000DCA5C /* BeeGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* BeeGoal.swift */; };
-		E458C8082AD11BFB000DCA5C /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
+		E458C8082AD11BFB000DCA5C /* BeeDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* BeeDataPoint.swift */; };
 		E458C8092AD11C13000DCA5C /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
 		E458C80A2AD11C1C000DCA5C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
 		E458C80B2AD11C2B000DCA5C /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE7722993317B00394E87 /* ServiceLocator.swift */; };
@@ -341,7 +341,7 @@
 		E48E271F2973261F008013C0 /* BackgroundUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundUpdates.swift; sourceTree = "<group>"; };
 		E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureHKMetricViewController.swift; sourceTree = "<group>"; };
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
-		E4B0833C293810EB00A71564 /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
+		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
 		E4E43D8729F39CE800697116 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
@@ -717,7 +717,7 @@
 				E57BE6E22655EBDA00BA540B /* BeeKit.h */,
 				E55FEE6A23FF7552007C20B2 /* Config.swift */,
 				E5DF493624DC69A200260560 /* Config.swift.sample */,
-				E4B0833C293810EB00A71564 /* DataPoint.swift */,
+				E4B0833C293810EB00A71564 /* BeeDataPoint.swift */,
 				E46FF15A2984C522009F8C7A /* DateUtils.swift */,
 				E45470272B60E24500EE648B /* Daystamp.swift */,
 				A1F8F07A232C05410060B83E /* BeeGoal.swift */,
@@ -1213,7 +1213,7 @@
 				E458C8182AD11CAC000DCA5C /* TimeAsleepHealthKitMetric.swift in Sources */,
 				E458C80B2AD11C2B000DCA5C /* ServiceLocator.swift in Sources */,
 				E458C81B2AD11CD8000DCA5C /* UIColorExtension.swift in Sources */,
-				E458C8082AD11BFB000DCA5C /* DataPoint.swift in Sources */,
+				E458C8082AD11BFB000DCA5C /* BeeDataPoint.swift in Sources */,
 				E458C81C2AD11CDE000DCA5C /* UIFontExtension.swift in Sources */,
 				E458C81A2AD11CB5000DCA5C /* WorkoutMinutesHealthKitMetric.swift in Sources */,
 				E458C8112AD11C8B000DCA5C /* MindfulSessionHealthKitMetric.swift in Sources */,

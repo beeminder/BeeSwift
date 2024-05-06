@@ -382,7 +382,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.goalImageScrollView.setZoomScale(self.goalImageScrollView.zoomScale == 1.0 ? 2.0 : 1.0, animated: true)
     }
 
-    func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: DataPoint) {
+    func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: BeeDataPoint) {
         guard !self.goal.hideDataEntry() else { return }
         guard let existingDatapoint = datapoint as? ExistingDataPoint else { return }
 

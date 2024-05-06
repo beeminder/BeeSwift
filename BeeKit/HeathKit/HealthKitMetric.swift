@@ -35,7 +35,7 @@ public protocol HealthKitMetric {
     ///   - healthStore: A HKHealthStore instance to use for querying data
     ///
     /// - Returns: A list of DataPoint objects containing values for the provided date range. May or may not include 0 values if there is no data. Values are not guaranteed to be in order.
-    func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [DataPoint]
+    func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [BeeDataPoint]
 
     /// The units this metric returns its datapoint values in
     func units(healthStore : HKHealthStore) async throws -> HKUnit

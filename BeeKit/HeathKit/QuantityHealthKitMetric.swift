@@ -33,7 +33,7 @@ class QuantityHealthKitMetric : HealthKitMetric {
         return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)!
     }
 
-    func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [DataPoint] {
+    func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [BeeDataPoint] {
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {
             throw HealthKitError("Unable to look up a quantityType")
         }
@@ -75,9 +75,9 @@ class QuantityHealthKitMetric : HealthKitMetric {
         return unit
     }
     
-    private func datapointsForCollection(collection : HKStatisticsCollection, startDate: Daystamp, endDate: Daystamp, deadline : Int, healthStore: HKHealthStore) async throws -> [DataPoint] {
+    private func datapointsForCollection(collection : HKStatisticsCollection, startDate: Daystamp, endDate: Daystamp, deadline : Int, healthStore: HKHealthStore) async throws -> [BeeDataPoint] {
 
-        var results : [DataPoint] = []
+        var results : [BeeDataPoint] = []
 
         for statistics in collection.statistics() {
             // Use the midpoint of the interval to determine the daystamp. Theoretically using the startDate

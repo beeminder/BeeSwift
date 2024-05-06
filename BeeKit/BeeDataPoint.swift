@@ -3,7 +3,7 @@
 import Foundation
 import SwiftyJSON
 
-public protocol DataPoint {
+public protocol BeeDataPoint {
     var requestid: String { get }
     var daystamp: Daystamp { get }
     var value: NSNumber { get }
@@ -11,7 +11,7 @@ public protocol DataPoint {
 }
 
 /// A data point received from the server. This will have had an ID allocated
-public struct ExistingDataPoint : DataPoint {
+public struct ExistingDataPoint : BeeDataPoint {
     public let id: String
     public let requestid: String
     public let daystamp: Daystamp
@@ -34,7 +34,7 @@ public struct ExistingDataPoint : DataPoint {
 }
 
 /// A data point we have created locally (e.g. from user input, or HealthKit)
-public struct NewDataPoint : DataPoint {
+public struct NewDataPoint : BeeDataPoint {
     public let requestid: String
     public let daystamp: Daystamp
     public let value: NSNumber

@@ -273,7 +273,7 @@ public class BeeGoal {
         return fetchedDatapoints.filter { point in point.daystamp >= daystamp }
     }
 
-    func updateToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
+    func updateToMatchDataPoints(healthKitDataPoints : [BeeDataPoint]) async throws {
         guard let firstDaystamp = healthKitDataPoints.map({ point in point.daystamp }).min() else { return }
 
         let datapoints = try await datapointsSince(daystamp: try! Daystamp(fromString: firstDaystamp.description))
@@ -283,7 +283,7 @@ public class BeeGoal {
         }
     }
 
-    private func updateToMatchDataPoint(newDataPoint : DataPoint, recentDatapoints: [ExistingDataPoint]) async throws {
+    private func updateToMatchDataPoint(newDataPoint : BeeDataPoint, recentDatapoints: [ExistingDataPoint]) async throws {
         var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: newDataPoint.daystamp)
         if matchingDatapoints.count == 0 {
             // If there are not already data points for this day, do not add points
