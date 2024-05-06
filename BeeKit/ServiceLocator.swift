@@ -13,7 +13,13 @@ public class ServiceLocator {
         let container = BeeminderPersistentContainer(name: "BeeminderModel")
         container.loadPersistentStores { description, error in
             if let error = error {
-                fatalError("Unable to load persistent stores: \(error)")
+                // TODO: We probably can't ship with this. Will need to be careful with migrations
+                try! FileManager.default.removeItem(at: BeeminderPersistentContainer.defaultDirectoryURL())
+                container.loadPersistentStores { description, error in
+                    if let error = error {
+                        fatalError("Unable to load persistent stores: \(error)")
+                    }
+                }
             }
         }
         return container
