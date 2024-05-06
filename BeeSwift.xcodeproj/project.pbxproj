@@ -131,6 +131,7 @@
 		E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
 		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
+		E4E8DD3B2BE87F890059C64F /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8DD3A2BE87F890059C64F /* Goal.swift */; };
 		E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E557610026549DD10076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E57BE6E92655EBE000BA540B /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
@@ -349,6 +350,7 @@
 		E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MindfulSessionHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E6428F2910D327004F3EA9 /* TimeInBedHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInBedHealthKitMetric.swift; sourceTree = "<group>"; };
+		E4E8DD3A2BE87F890059C64F /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalHealthKitConnection.swift; sourceTree = "<group>"; };
 		E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AddDataIntents.intentdefinition; sourceTree = "<group>"; };
 		E55760F426549D310076B95A /* AddDataIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataIntentHandler.swift; sourceTree = "<group>"; };
@@ -632,6 +634,7 @@
 				E41286EC2A62DF330093D598 /* BeeminderModel.xcdatamodeld */,
 				E46070F72B3FEFD400305DB4 /* BeeminderPersistantContainer.swift */,
 				E46070EE2B36A4D900305DB4 /* User.swift */,
+				E4E8DD3A2BE87F890059C64F /* Goal.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1228,6 +1231,7 @@
 				E458C8252AD11E01000DCA5C /* BSButton.swift in Sources */,
 				E458C81D2AD11CEC000DCA5C /* UIDevice.swift in Sources */,
 				E458C8172AD11CA7000DCA5C /* TotalSleepMinutes.swift in Sources */,
+				E4E8DD3B2BE87F890059C64F /* Goal.swift in Sources */,
 				E46071012B451FA400305DB4 /* BeeminderModel.xcdatamodeld in Sources */,
 				E458C8072AD11BDB000DCA5C /* BeeGoal.swift in Sources */,
 				E458C80D2AD11C64000DCA5C /* Crypto.swift in Sources */,

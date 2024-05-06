@@ -40,6 +40,4 @@ public class User: NSManagedObject {
     public override init(entity: NSEntityDescription, insertInto: NSManagedObjectContext?) {
         super.init(entity: entity, insertInto: insertInto)
     }
-
-
 }
