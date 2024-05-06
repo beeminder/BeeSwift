@@ -168,4 +168,16 @@ public class Goal: NSManagedObject {
     public var hideDataEntry: Bool {
         return isDataProvidedAutomatically || won
     }
+
+    public var isDataProvidedAutomatically: Bool {
+        guard let autodata = self.autodata else {
+            return false
+        }
+        return !autodata.isEmpty
+    }
+
+    public var hideDataEntry: Bool {
+        // TODO: Implement this
+        return isDataProvidedAutomatically || won
+    }
 }
