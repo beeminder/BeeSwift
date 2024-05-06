@@ -50,6 +50,12 @@ public class Goal: NSManagedObject {
     // Question: Should this type know about JSON, or should there be an adapter / extension?
     public func updateToMatch(json: JSON) {
         self.slug = json["slug"].stringValue
+
+        self.autodata = json["autodata"].string
+        self.deadline = json["deadline"].intValue
+        self.limSum = json["limsum"].stringValue
+        self.thumbUrl = json["thumb_url"].stringValue
+        self.won = json["won"].boolValue
     }
 
     public var isDataProvidedAutomatically: Bool {
