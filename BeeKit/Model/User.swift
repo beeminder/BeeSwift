@@ -9,6 +9,12 @@ public class User: NSManagedObject {
     @NSManaged public var defaultDeadline: Int32
     @NSManaged public var defaultLeadTime: Int32
 
+    @NSManaged public var goals: Set<Goal>
+    @NSManaged func addGoalsObject(value: Goal)
+    @NSManaged func removeGoalsObject(value: Goal)
+    @NSManaged func addGoals(value: Set<Goal>)
+    @NSManaged func removeGoals(value: Set<Goal>)
+
     public init(context: NSManagedObjectContext,
                 username: String,
                 deadbeat: Bool,
