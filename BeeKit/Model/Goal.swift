@@ -2,12 +2,14 @@ import Foundation
 import CoreData
 
 public class Goal: NSManagedObject {
+    @NSManaged public var owner: User
     @NSManaged public var id: String
     @NSManaged public var slug: String
 
-    public init(context: NSManagedObjectContext, id: String, slug: String) {
+    public init(context: NSManagedObjectContext, owner: User, id: String, slug: String) {
         let entity = NSEntityDescription.entity(forEntityName: "Goal", in: context)!
         super.init(entity: entity, insertInto: context)
+        self.owner = owner
         self.id = id
         self.slug = slug
     }
