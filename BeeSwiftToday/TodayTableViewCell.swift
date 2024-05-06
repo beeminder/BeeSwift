@@ -60,7 +60,7 @@ class TodayTableViewCell: UITableViewCell {
 
         self.addSubview(self.limitLabel)
         self.limitLabel.numberOfLines = 0
-        self.limitLabel.text = goal.limSum
+        self.limitLabel.text = "\(goal.slug.prefix(20)): \(goal.limSum)"
         self.limitLabel.font = UIFont.systemFont(ofSize: 14)
         
         self.limitLabel.snp.makeConstraints({ (make) -> Void in
