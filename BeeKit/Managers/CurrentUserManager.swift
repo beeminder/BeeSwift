@@ -75,7 +75,7 @@ public class CurrentUserManager {
     }
 
 
-    private func user(context: NSManagedObjectContext? = nil) -> User? {
+    func user(context: NSManagedObjectContext? = nil) -> User? {
         // Fetch a user from the persistent store
         let request = NSFetchRequest<User>(entityName: "User")
         // TODO: Handle (or at least log) an error here
