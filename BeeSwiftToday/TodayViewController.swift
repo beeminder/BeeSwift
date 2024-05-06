@@ -46,7 +46,7 @@ class TodayViewController: UIViewController {
     }
     
     @objc func updateDataSource() {
-        self.goals = Array(ServiceLocator.currentUserManager.user()?.goals ?? [])
+        self.goals = Array(ServiceLocator.currentUserManager.user(context: ServiceLocator.persistentContainer.viewContext)?.goals ?? [])
     }
 }
 

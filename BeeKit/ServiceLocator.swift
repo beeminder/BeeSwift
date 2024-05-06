@@ -12,7 +12,7 @@ import OSLog
 public class ServiceLocator {
     private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ServiceLocationm")
 
-    static let persistentContainer: BeeminderPersistentContainer = {
+    public static let persistentContainer: BeeminderPersistentContainer = {
         let container = BeeminderPersistentContainer(name: "BeeminderModel")
         container.loadPersistentStores { description, error in
             if let error = error {
