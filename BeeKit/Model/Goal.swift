@@ -40,7 +40,8 @@ public class Goal: NSManagedObject {
     public override init(entity: NSEntityDescription, insertInto: NSManagedObjectContext?) {
         super.init(entity: entity, insertInto: insertInto)
     }
-
+    
+    // Question: Should this type know about JSON, or should there be an adapter / extension?
     public func updateToMatch(json: JSON) {
         self.slug = json["slug"].stringValue
     }
