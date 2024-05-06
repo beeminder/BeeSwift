@@ -45,38 +45,7 @@ public class CurrentUserManager {
     init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
         self.requestManager = requestManager
         self.container = container
-        migrateValuesToGroupStore()
         migrateValuesToCoreData()
-    }
-    
-    /// Migrate settings values from the standard store to a group store
-    ///
-    /// Originally BeeSwift stored all configuration values in the standard UserDefaults store. However
-    /// these values are not available within extensions. To address this now values are stored in a
-    /// group-scoped settings object. Values written by old versions of the app may be in the previous store
-    /// so we migrate any such values on initialization.
-    private func migrateValuesToGroupStore() {
-        for key in CurrentUserManager.allKeys {
-            let standardValue = UserDefaults.standard.object(forKey: key)
-            let groupValue = userDefaults.object(forKey: key)
-            
-            if groupValue == nil && standardValue != nil {
-                userDefaults.set(standardValue, forKey: key)
-                // It would be neater to clean up, but for now we want to support
-                // downgrading to prior versions, so leave old keys in place.
-                // userDefaults.removeObject(forKey: key)
-            }
-        }
-
-        // Ensure that the user's access token is stored in the keychain, and only in the
-        // keychain. This will require the user to login again if they downgrade.
-        let maybeKeychainAccessToken = keychain.get(CurrentUserManager.accessTokenKey)
-        let maybeUserDefaultsAccessToken = userDefaults.object(forKey: CurrentUserManager.accessTokenKey) as? String
-        if let userDefaultsAccessToken = maybeUserDefaultsAccessToken, maybeKeychainAccessToken == nil {
-            setAccessToken(userDefaultsAccessToken)
-        }
-        userDefaults.removeObject(forKey: CurrentUserManager.accessTokenKey)
-        UserDefaults.standard.removeObject(forKey: CurrentUserManager.accessTokenKey)
     }
 
     // If there is an existing session based on UserDefaults, create a new User object
@@ -137,12 +106,10 @@ public class CurrentUserManager {
     /// to prior versions, and thus write all values to both stores.
     func set(_ value: Any, forKey key: String) {
         userDefaults.set(value, forKey: key)
-        UserDefaults.standard.set(value, forKey: key)
     }
     
     func removeObject(forKey key: String) {
         userDefaults.removeObject(forKey: key)
-        UserDefaults.standard.removeObject(forKey: key)
     }
 
     
