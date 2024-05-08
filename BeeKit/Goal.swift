@@ -32,7 +32,6 @@ public class Goal {
     public var title: String = ""
     public var won: NSNumber = 0
     public var yaw: NSNumber = 0
-    public var dir: NSNumber = 0
     public var safebump: NSNumber?
     public var safebuf: NSNumber?
     public var curval: NSNumber?
@@ -84,7 +83,6 @@ public class Goal {
         self.delta_text = json["delta_text"].string ?? ""
         self.won = json["won"].number!
         self.yaw = json["yaw"].number!
-        self.dir = json["dir"].number!
         self.limsum = json["limsum"].string
         self.safesum = json["safesum"].string
         self.safebuf = json["safebuf"].number

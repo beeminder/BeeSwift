@@ -41,7 +41,6 @@ final class GoalTests: XCTestCase {
           "yaxis": "cumulative total test-goal",
           "initday": 1668963600,
           "curval": 4000,
-          "dir": 1,
           "pledge": 0,
           "recent_data": [
             {
@@ -114,7 +113,6 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.yaxis, "cumulative total test-goal")
         XCTAssertEqual(goal.initday, 1668963600)
         XCTAssertEqual(goal.curval, 4000)
-        XCTAssertEqual(goal.dir, 1)
         XCTAssertEqual(goal.pledge, 0)
         XCTAssertEqual(goal.derived_rate, 1)
         XCTAssertEqual(goal.recent_data!.count, 5)
@@ -170,7 +168,6 @@ final class GoalTests: XCTestCase {
             "yaxis": "cumulative total test-goal",
             "won": false,
             "yaw": 1,
-            "dir": 1,
             "use_defaults": true,
             "pledge": 0,
             "hhmmformat": false,
