@@ -52,11 +52,6 @@ public class Goal {
     public var hhmmformat: Bool = false
     public var urgencykey: String = ""
     public var recent_data: [ExistingDataPoint]?
-
-    // These are obtained from mathishard
-    public var derived_goaldate: NSNumber = 0
-    public var derived_goalval: NSNumber = 0
-    public var derived_rate: NSNumber = 0
     
     public init(json: JSON) {
         self.id = json["id"].string!
@@ -114,12 +109,6 @@ public class Goal {
         self.urgencykey = json["urgencykey"].string!
 
         self.recent_data = (try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()) ?? []
-
-        // In rare cases goals can be corrupted and not have a mathishard value. We don't particularly care about
-        // behavior in this rare case as long as the app does not crash, so default to a nonsense value
-        self.derived_goaldate = json["mathishard"][0].number ?? 0
-        self.derived_goalval = json["mathishard"][1].number ?? 0
-        self.derived_rate = json["mathishard"][2].number ?? 0
     }
 
     var rateString :String {

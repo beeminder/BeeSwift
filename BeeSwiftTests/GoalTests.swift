@@ -46,11 +46,6 @@ final class GoalTests: XCTestCase {
           "curval": 4000,
           "dir": 1,
           "pledge": 0,
-          "mathishard": [
-            2000217600,
-            3828,
-            1
-          ],
           "recent_data": [
             {
               "id": {
@@ -127,54 +122,9 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.curval, 4000)
         XCTAssertEqual(goal.dir, 1)
         XCTAssertEqual(goal.pledge, 0)
-        XCTAssertEqual(goal.derived_goaldate, 2000217600)
-        XCTAssertEqual(goal.derived_goalval, 3828)
         XCTAssertEqual(goal.derived_rate, 1)
         XCTAssertEqual(goal.recent_data!.count, 5)
 
-    }
-
-    func testCanCreateGoalWithoutMathIsHard() throws {
-        let testJSON = JSON(parseJSON: """
-        {
-          "slug": "test-goal",
-          "title": "Goal for Testing Purposes",
-          "rate": 1,
-          "graph_url": "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.png",
-          "thumb_url": "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc-thumb.png",
-          "deadline": 0,
-          "leadtime": 0,
-          "alertstart": 34200,
-          "use_defaults": true,
-          "id": "737aaa34f0118a330852e4bd",
-          "queued": false,
-          "yaw": 1,
-          "lane": 3582,
-          "runits": "d",
-          "limsum": "100 in 200 days",
-          "won": false,
-          "delta_text": "✔ ✔ ✔",
-          "safebump": 3828,
-          "safesum": "safe for 200 days",
-          "lasttouch": "2022-12-07T03:21:40.000Z",
-          "safebuf": 3583,
-          "todayta": false,
-          "urgencykey": "FROx;PPRx;DL4102469999;P1000000000;test-goal",
-          "hhmmformat": false,
-          "yaxis": "cumulative total test-goal",
-          "initday": 1668963600,
-          "curval": 4000,
-          "dir": 1,
-          "pledge": 0,
-          "recent_data": []
-        }
-        """)
-
-        let goal = Goal(json: testJSON)
-
-        XCTAssertEqual(goal.derived_goaldate, 0)
-        XCTAssertEqual(goal.derived_goalval, 0)
-        XCTAssertEqual(goal.derived_rate, 0)
     }
 
     func testSuggestedNextValueBasedOnLastValue() throws {
