@@ -119,20 +119,6 @@ public class Goal {
         return UIColor.beeminder.green
     }
     
-    public var countdownHelperText :String {
-        if self.delta_text.components(separatedBy: "✔").count == 4 {
-            if self.safebump != nil && self.curval != nil {
-                if (self.safebump!.doubleValue - self.curval!.doubleValue <= 0) {
-                    return "Ending in"
-                }
-            }
-        }
-        if self.yaw.intValue < 0 && self.dir.intValue > 0 {
-            return "safe for"
-        }
-        return "due in"
-    }
-    
     public func capitalSafesum() -> String {
         guard let safe = self.safesum else { return "" }
         return safe.prefix(1).uppercased() + safe.dropFirst(1)
