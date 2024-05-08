@@ -137,10 +137,6 @@ public class Goal {
     
     public var attributedDeltaText :NSAttributedString {
         if self.delta_text.count == 0 { return NSAttributedString.init(string: "") }
-        let modelName = UIDevice.current.modelName
-        if modelName.contains("iPhone 5") || modelName.contains("iPad Mini") || modelName.contains("iPad 4") {
-            return NSAttributedString(string: self.delta_text)
-        }
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
