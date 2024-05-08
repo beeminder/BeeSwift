@@ -26,7 +26,6 @@ public class Goal {
     public var healthKitMetric: String?
     public var id: String = ""
     public var lane: NSNumber?
-    public var losedate: NSNumber = 0
     public var pledge: NSNumber = 0
     public var rate: NSNumber?
     public var runits: String = ""
@@ -89,7 +88,6 @@ public class Goal {
         }
 
         self.queued = json["queued"].bool!
-        self.losedate = json["losedate"].number!
         self.runits = json["runits"].string!
         self.yaxis = json["yaxis"].string!
         self.rate = json["rate"].number
@@ -132,58 +130,7 @@ public class Goal {
         formatter.maximumFractionDigits = 2
         return "\(formatter.string(from: r)!)/\(self.humanizedRunits)"
     }
-    
-    var briefLosedate :String {
-        var losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
-        if losedateDate.timeIntervalSinceNow < 0 {
-            return self.won.boolValue ? "Success!" : "Lost!"
-        }
-        else if losedateDate.timeIntervalSinceNow < 24*60*60 {
-            // add 1 second since a 3 am goal technically derails at 2:59:59
-            losedateDate = losedateDate.addingTimeInterval(1)
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale(identifier: "en_US")
-            dateFormatter.dateFormat = "h a!"
-            return dateFormatter.string(from: losedateDate)
-        }
-        else if losedateDate.timeIntervalSinceNow < 7*24*60*60 {
-            let dateFormatter = DateFormatter()
-            var calendar = Calendar.current
-            calendar.locale = Locale(identifier: "en_US")
-            dateFormatter.locale = Locale(identifier: "en_US")
-            let hour = (calendar as NSCalendar).component(.hour, from: losedateDate)
-            if hour < 6 {
-                losedateDate = losedateDate.addingTimeInterval(Double(-(hour + 1)*3600))
-            }
-            dateFormatter.dateFormat = "EEE"
-            return dateFormatter.string(from: losedateDate)
-        }
-        else if losedateDate.timeIntervalSinceNow > 99*24*60*60 {
-            return "∞"
-        }
-        return "\(Int(losedateDate.timeIntervalSinceNow/(24*60*60))) days"
-    }
-    
-    var countdownText :NSString {
-        
-        let losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
-        let seconds = losedateDate.timeIntervalSinceNow
-        if seconds < 0 {
-            return self.won.boolValue ? "Success!" : "Lost!"
-        }
-        let hours = Int((seconds.truncatingRemainder(dividingBy: (3600*24)))/3600)
-        let minutes = Int((seconds.truncatingRemainder(dividingBy: 3600))/60)
-        let leftoverSeconds = Int(seconds.truncatingRemainder(dividingBy: 60))
-        let days = Int(seconds/(3600*24))
-        
-        if (days > 0) {
-            return NSString(format: "%id, %i:%02i:%02i", days, hours, minutes,leftoverSeconds)
-        }
-        else { // days == 0
-            return NSString(format: "%i:%02i:%02i", hours, minutes,leftoverSeconds)
-        }
-    }
-    
+
     public var countdownColor :UIColor {
         guard let buf = self.safebuf?.intValue else { return UIColor.beeminder.gray }
         if buf < 1 {

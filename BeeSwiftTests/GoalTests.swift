@@ -22,7 +22,6 @@ final class GoalTests: XCTestCase {
           "rate": 1,
           "graph_url": "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.png",
           "thumb_url": "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc-thumb.png",
-          "losedate": 2000271599,
           "deadline": 0,
           "leadtime": 0,
           "alertstart": 34200,
@@ -104,7 +103,6 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.rate, 1)
         XCTAssertEqual(goal.graph_url, "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.png")
         XCTAssertEqual(goal.thumb_url, "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc-thumb.png")
-        XCTAssertEqual(goal.losedate, 2000271599)
         XCTAssertEqual(goal.deadline, 0)
         XCTAssertEqual(goal.leadtime, 0)
         XCTAssertEqual(goal.alertstart, 34200)
@@ -144,7 +142,6 @@ final class GoalTests: XCTestCase {
           "rate": 1,
           "graph_url": "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.png",
           "thumb_url": "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc-thumb.png",
-          "losedate": 2000271599,
           "deadline": 0,
           "leadtime": 0,
           "alertstart": 34200,
@@ -226,7 +223,6 @@ final class GoalTests: XCTestCase {
             "leadtime": 0,
             "alertstart": 34200,
             "queued": false,
-            "losedate": 2000271599,
             "runits": "d",
             "yaxis": "cumulative total test-goal",
             "won": false,
