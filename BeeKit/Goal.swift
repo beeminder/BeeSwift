@@ -27,7 +27,6 @@ public class Goal {
     public var id: String = ""
     public var lane: NSNumber?
     public var pledge: NSNumber = 0
-    public var rate: NSNumber?
     public var runits: String = ""
     public var yaxis: String = ""
     public var slug: String = ""
@@ -85,7 +84,6 @@ public class Goal {
         self.queued = json["queued"].bool!
         self.runits = json["runits"].string!
         self.yaxis = json["yaxis"].string!
-        self.rate = json["rate"].number
         self.delta_text = json["delta_text"].string ?? ""
         self.won = json["won"].number!
         self.lane = json["lane"].number
@@ -109,15 +107,6 @@ public class Goal {
         self.urgencykey = json["urgencykey"].string!
 
         self.recent_data = (try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()) ?? []
-    }
-
-    var rateString :String {
-        guard let r = self.rate else { return "" }
-        let formatter = NumberFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.numberStyle = NumberFormatter.Style.decimal
-        formatter.maximumFractionDigits = 2
-        return "\(formatter.string(from: r)!)/\(self.humanizedRunits)"
     }
 
     public var countdownColor :UIColor {
