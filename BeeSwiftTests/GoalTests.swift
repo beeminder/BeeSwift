@@ -29,7 +29,6 @@ final class GoalTests: XCTestCase {
           "queued": false,
           "yaw": 1,
           "lane": 3582,
-          "runits": "d",
           "limsum": "100 in 200 days",
           "won": false,
           "delta_text": "✔ ✔ ✔",
@@ -104,7 +103,6 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.queued, false)
         XCTAssertEqual(goal.yaw, 1)
         XCTAssertEqual(goal.lane, 3582)
-        XCTAssertEqual(goal.runits, "d")
         XCTAssertEqual(goal.limsum, "100 in 200 days")
         XCTAssertEqual(goal.won, false)
         XCTAssertEqual(goal.delta_text, "✔ ✔ ✔")
@@ -171,7 +169,6 @@ final class GoalTests: XCTestCase {
             "leadtime": 0,
             "alertstart": 34200,
             "queued": false,
-            "runits": "d",
             "yaxis": "cumulative total test-goal",
             "won": false,
             "yaw": 1,

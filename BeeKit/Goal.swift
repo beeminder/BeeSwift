@@ -27,7 +27,6 @@ public class Goal {
     public var id: String = ""
     public var lane: NSNumber?
     public var pledge: NSNumber = 0
-    public var runits: String = ""
     public var yaxis: String = ""
     public var slug: String = ""
     public var thumb_url: String?
@@ -82,7 +81,6 @@ public class Goal {
         }
 
         self.queued = json["queued"].bool!
-        self.runits = json["runits"].string!
         self.yaxis = json["yaxis"].string!
         self.delta_text = json["delta_text"].string ?? ""
         self.won = json["won"].number!
@@ -139,23 +137,6 @@ public class Goal {
             return "safe for"
         }
         return "due in"
-    }
-    
-    public var humanizedRunits :String {
-        if self.runits == "d" {
-            return "day"
-        }
-        if self.runits == "m" {
-            return "month"
-        }
-        if self.runits == "h" {
-            return "hour"
-        }
-        if self.runits == "y" {
-            return "year"
-        }
-        
-        return "week"
     }
     
     public func capitalSafesum() -> String {
