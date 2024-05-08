@@ -25,7 +25,6 @@ public class Goal {
     public var graph_url: String?
     public var healthKitMetric: String?
     public var id: String = ""
-    public var lane: NSNumber?
     public var pledge: NSNumber = 0
     public var yaxis: String = ""
     public var slug: String = ""
@@ -84,7 +83,6 @@ public class Goal {
         self.yaxis = json["yaxis"].string!
         self.delta_text = json["delta_text"].string ?? ""
         self.won = json["won"].number!
-        self.lane = json["lane"].number
         self.yaw = json["yaw"].number!
         self.dir = json["dir"].number!
         self.limsum = json["limsum"].string
@@ -119,10 +117,6 @@ public class Goal {
             return UIColor.beeminder.blue
         }
         return UIColor.beeminder.green
-    }
-    
-    public var relativeLane : NSNumber {
-        return self.lane != nil ? NSNumber(value: self.lane!.int32Value * self.yaw.int32Value as Int32) : 0
     }
     
     public var countdownHelperText :String {
