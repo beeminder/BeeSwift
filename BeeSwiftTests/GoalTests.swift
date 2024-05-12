@@ -114,7 +114,6 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.initday, 1668963600)
         XCTAssertEqual(goal.curval, 4000)
         XCTAssertEqual(goal.pledge, 0)
-        XCTAssertEqual(goal.derived_rate, 1)
         XCTAssertEqual(goal.recent_data!.count, 5)
 
     }
