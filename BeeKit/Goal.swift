@@ -33,7 +33,7 @@ public class Goal {
     public var won: NSNumber = 0
     public var yaw: NSNumber = 0
     public var safebump: NSNumber?
-    public var safebuf: NSNumber?
+    public var safebuf: NSNumber = 0
     public var curval: NSNumber?
     public var limsum: String?
     public var safesum: String?
@@ -85,7 +85,7 @@ public class Goal {
         self.yaw = json["yaw"].number!
         self.limsum = json["limsum"].string
         self.safesum = json["safesum"].string
-        self.safebuf = json["safebuf"].number
+        self.safebuf = json["safebuf"].number!
         self.use_defaults = json["use_defaults"].bool! as NSNumber
         self.safebump = json["safebump"].number
         self.curval = json["curval"].number
@@ -104,7 +104,7 @@ public class Goal {
     }
 
     public var countdownColor :UIColor {
-        guard let buf = self.safebuf?.intValue else { return UIColor.beeminder.gray }
+        let buf = self.safebuf.intValue
         if buf < 1 {
             return UIColor.beeminder.red
         }
