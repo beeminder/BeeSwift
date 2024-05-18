@@ -166,6 +166,7 @@ final class GoalTests: XCTestCase {
             "queued": false,
             "yaxis": "cumulative total test-goal",
             "won": false,
+            "safebuf": 1,
             "yaw": 1,
             "use_defaults": true,
             "pledge": 0,
