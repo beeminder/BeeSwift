@@ -21,7 +21,6 @@ public class Goal {
     private let datapointValueEpsilon = 0.00000001
 
     public var autodata: String = ""
-    public var delta_text: String = ""
     public var graph_url: String?
     public var healthKitMetric: String?
     public var id: String = ""
@@ -31,10 +30,7 @@ public class Goal {
     public var thumb_url: String?
     public var title: String = ""
     public var won: NSNumber = 0
-    public var yaw: NSNumber = 0
-    public var safebump: NSNumber?
     public var safebuf: NSNumber = 0
-    public var curval: NSNumber?
     public var limsum: String?
     public var safesum: String?
     public var initday: NSNumber?
@@ -80,15 +76,11 @@ public class Goal {
 
         self.queued = json["queued"].bool!
         self.yaxis = json["yaxis"].string!
-        self.delta_text = json["delta_text"].string ?? ""
         self.won = json["won"].number!
-        self.yaw = json["yaw"].number!
         self.limsum = json["limsum"].string
         self.safesum = json["safesum"].string
         self.safebuf = json["safebuf"].number!
         self.use_defaults = json["use_defaults"].bool! as NSNumber
-        self.safebump = json["safebump"].number
-        self.curval = json["curval"].number
         self.pledge = json["pledge"].number!
         self.autodata = json["autodata"].string ?? ""
         
@@ -133,58 +125,6 @@ public class Goal {
         }
         if self.autodata.count > 0 { return self.autodata.capitalized }
         return nil
-    }
-    
-    public var attributedDeltaText :NSAttributedString {
-        if self.delta_text.count == 0 { return NSAttributedString.init(string: "") }
-        if self.delta_text.components(separatedBy: "✔").count == 4 {
-            if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
-                let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
-                attString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.beeminder.green, range: NSRange(location: 0, length: attString.string.count))
-                return attString
-            }
-            return NSMutableAttributedString(string: "")
-        }
-        var spaceIndices :Array<Int> = [0]
-        
-        for i in 0...self.delta_text.count - 1 {
-            if self.delta_text[delta_text.index(delta_text.startIndex, offsetBy: i)] == " " {
-                spaceIndices.append(i)
-            }
-        }
-        
-        spaceIndices.append(self.delta_text.count)
-        
-        let attString :NSMutableAttributedString = NSMutableAttributedString(string: self.delta_text)
-        
-        for i in 0..<spaceIndices.count {
-            if i + 1 >= spaceIndices.count {
-                continue
-            }
-            var color = self.deltaColors.first
-            if i < self.deltaColors.count {
-                color = self.deltaColors[i]
-            }
-            attString.addAttribute(NSAttributedString.Key.foregroundColor, value: color as Any, range: NSRange(location: spaceIndices[i], length: spaceIndices[i + 1] - spaceIndices[i]))
-        }
-        
-        attString.mutableString.replaceOccurrences(of: "✔", with: "", options: NSString.CompareOptions.literal, range: NSRange(location: 0, length: attString.string.count))
-        
-        return attString
-    }
-    
-    public var deltaColors: [UIColor] {
-        // yaw (number): Good side of the road (+1/-1 = above/below)
-    
-        return self.yaw == 1 ? deltaColorsWhenAboveIsGoodSide : deltaColorsWhenBelowIsGoodSide
-    }
-    
-    public var deltaColorsWhenBelowIsGoodSide: [UIColor] {
-        return [UIColor.beeminder.green, UIColor.beeminder.blue, UIColor.beeminder.orange]
-    }
-    
-    public var deltaColorsWhenAboveIsGoodSide: [UIColor] {
-        return deltaColorsWhenBelowIsGoodSide.reversed()
     }
 
     public func hideDataEntry() -> Bool {

@@ -27,11 +27,8 @@ final class GoalTests: XCTestCase {
           "use_defaults": true,
           "id": "737aaa34f0118a330852e4bd",
           "queued": false,
-          "yaw": 1,
           "limsum": "100 in 200 days",
           "won": false,
-          "delta_text": "✔ ✔ ✔",
-          "safebump": 3828,
           "safesum": "safe for 200 days",
           "lasttouch": "2022-12-07T03:21:40.000Z",
           "safebuf": 3583,
@@ -40,7 +37,6 @@ final class GoalTests: XCTestCase {
           "hhmmformat": false,
           "yaxis": "cumulative total test-goal",
           "initday": 1668963600,
-          "curval": 4000,
           "pledge": 0,
           "recent_data": [
             {
@@ -99,11 +95,8 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.use_defaults, true)
         XCTAssertEqual(goal.id, "737aaa34f0118a330852e4bd")
         XCTAssertEqual(goal.queued, false)
-        XCTAssertEqual(goal.yaw, 1)
         XCTAssertEqual(goal.limsum, "100 in 200 days")
         XCTAssertEqual(goal.won, false)
-        XCTAssertEqual(goal.delta_text, "✔ ✔ ✔")
-        XCTAssertEqual(goal.safebump, 3828)
         XCTAssertEqual(goal.safesum, "safe for 200 days")
         XCTAssertEqual(goal.lasttouch, 1670383300)
         XCTAssertEqual(goal.safebuf, 3583)
@@ -112,7 +105,6 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.hhmmformat, false)
         XCTAssertEqual(goal.yaxis, "cumulative total test-goal")
         XCTAssertEqual(goal.initday, 1668963600)
-        XCTAssertEqual(goal.curval, 4000)
         XCTAssertEqual(goal.pledge, 0)
         XCTAssertEqual(goal.recent_data!.count, 5)
 
@@ -167,7 +159,6 @@ final class GoalTests: XCTestCase {
             "yaxis": "cumulative total test-goal",
             "won": false,
             "safebuf": 1,
-            "yaw": 1,
             "use_defaults": true,
             "pledge": 0,
             "hhmmformat": false,

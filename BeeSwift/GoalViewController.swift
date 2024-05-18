@@ -35,7 +35,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var goalImageScrollView = UIScrollView()
     fileprivate var pollTimer : Timer?
     fileprivate var countdownLabel = BSLabel()
-    fileprivate var deltasLabel = BSLabel()
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
@@ -116,20 +115,11 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         self.goalImageView.goal = self.goal
 
-        self.scrollView.addSubview(self.deltasLabel)
-        self.deltasLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(self.goalImageScrollView.snp.bottom)
-            make.left.right.equalTo(0)
-        }
-        self.deltasLabel.font = UIFont.beeminder.defaultBoldFont.withSize(Constants.defaultFontSize)
-        self.deltasLabel.textAlignment = .center
-
-
         self.addChild(self.datapointTableController)
         self.scrollView.addSubview(self.datapointTableController.view)
         self.datapointTableController.delegate = self
         self.datapointTableController.view.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.deltasLabel.snp.bottom).offset(elementSpacing)
+            make.top.equalTo(self.goalImageScrollView.snp.bottom).offset(elementSpacing)
             make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
             make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
         }
@@ -318,13 +308,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     @objc func onGoalsUpdatedNotification() {
         updateInterfaceToMatchGoal()
-    }
-
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if (!ServiceLocator.currentUserManager.signedIn()) { return }
-        if keyPath == "delta_text" || keyPath == "safebump" || keyPath == "safesum" {
-            self.refreshCountdown()
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -535,7 +518,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
 
         self.refreshCountdown()
-        self.deltasLabel.attributedText = self.goal!.attributedDeltaText
     }
 
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
