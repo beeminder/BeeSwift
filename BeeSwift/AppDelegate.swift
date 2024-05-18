@@ -136,7 +136,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         guard let goals = ServiceLocator.goalManager.staleGoals() else { return }
         let beemergencyCount = goals.filter({ (goal: Goal) -> Bool in
-            return goal.relativeLane.intValue < -1
+            return goal.safebuf.intValue < 1
         }).count
         logger.notice("Beemergency count is \(beemergencyCount, privacy: .public)")
 

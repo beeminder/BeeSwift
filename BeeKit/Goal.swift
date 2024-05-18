@@ -25,20 +25,15 @@ public class Goal {
     public var graph_url: String?
     public var healthKitMetric: String?
     public var id: String = ""
-    public var lane: NSNumber?
-    public var losedate: NSNumber = 0
     public var pledge: NSNumber = 0
-    public var rate: NSNumber?
-    public var runits: String = ""
     public var yaxis: String = ""
     public var slug: String = ""
     public var thumb_url: String?
     public var title: String = ""
     public var won: NSNumber = 0
     public var yaw: NSNumber = 0
-    public var dir: NSNumber = 0
     public var safebump: NSNumber?
-    public var safebuf: NSNumber?
+    public var safebuf: NSNumber = 0
     public var curval: NSNumber?
     public var limsum: String?
     public var safesum: String?
@@ -53,11 +48,6 @@ public class Goal {
     public var hhmmformat: Bool = false
     public var urgencykey: String = ""
     public var recent_data: [ExistingDataPoint]?
-
-    // These are obtained from mathishard
-    public var derived_goaldate: NSNumber = 0
-    public var derived_goalval: NSNumber = 0
-    public var derived_rate: NSNumber = 0
     
     public init(json: JSON) {
         self.id = json["id"].string!
@@ -89,18 +79,13 @@ public class Goal {
         }
 
         self.queued = json["queued"].bool!
-        self.losedate = json["losedate"].number!
-        self.runits = json["runits"].string!
         self.yaxis = json["yaxis"].string!
-        self.rate = json["rate"].number
         self.delta_text = json["delta_text"].string ?? ""
         self.won = json["won"].number!
-        self.lane = json["lane"].number
         self.yaw = json["yaw"].number!
-        self.dir = json["dir"].number!
         self.limsum = json["limsum"].string
         self.safesum = json["safesum"].string
-        self.safebuf = json["safebuf"].number
+        self.safebuf = json["safebuf"].number!
         self.use_defaults = json["use_defaults"].bool! as NSNumber
         self.safebump = json["safebump"].number
         self.curval = json["curval"].number
@@ -116,76 +101,10 @@ public class Goal {
         self.urgencykey = json["urgencykey"].string!
 
         self.recent_data = (try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()) ?? []
-
-        // In rare cases goals can be corrupted and not have a mathishard value. We don't particularly care about
-        // behavior in this rare case as long as the app does not crash, so default to a nonsense value
-        self.derived_goaldate = json["mathishard"][0].number ?? 0
-        self.derived_goalval = json["mathishard"][1].number ?? 0
-        self.derived_rate = json["mathishard"][2].number ?? 0
     }
 
-    var rateString :String {
-        guard let r = self.rate else { return "" }
-        let formatter = NumberFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.numberStyle = NumberFormatter.Style.decimal
-        formatter.maximumFractionDigits = 2
-        return "\(formatter.string(from: r)!)/\(self.humanizedRunits)"
-    }
-    
-    var briefLosedate :String {
-        var losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
-        if losedateDate.timeIntervalSinceNow < 0 {
-            return self.won.boolValue ? "Success!" : "Lost!"
-        }
-        else if losedateDate.timeIntervalSinceNow < 24*60*60 {
-            // add 1 second since a 3 am goal technically derails at 2:59:59
-            losedateDate = losedateDate.addingTimeInterval(1)
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale(identifier: "en_US")
-            dateFormatter.dateFormat = "h a!"
-            return dateFormatter.string(from: losedateDate)
-        }
-        else if losedateDate.timeIntervalSinceNow < 7*24*60*60 {
-            let dateFormatter = DateFormatter()
-            var calendar = Calendar.current
-            calendar.locale = Locale(identifier: "en_US")
-            dateFormatter.locale = Locale(identifier: "en_US")
-            let hour = (calendar as NSCalendar).component(.hour, from: losedateDate)
-            if hour < 6 {
-                losedateDate = losedateDate.addingTimeInterval(Double(-(hour + 1)*3600))
-            }
-            dateFormatter.dateFormat = "EEE"
-            return dateFormatter.string(from: losedateDate)
-        }
-        else if losedateDate.timeIntervalSinceNow > 99*24*60*60 {
-            return "∞"
-        }
-        return "\(Int(losedateDate.timeIntervalSinceNow/(24*60*60))) days"
-    }
-    
-    var countdownText :NSString {
-        
-        let losedateDate = Date(timeIntervalSince1970: self.losedate.doubleValue)
-        let seconds = losedateDate.timeIntervalSinceNow
-        if seconds < 0 {
-            return self.won.boolValue ? "Success!" : "Lost!"
-        }
-        let hours = Int((seconds.truncatingRemainder(dividingBy: (3600*24)))/3600)
-        let minutes = Int((seconds.truncatingRemainder(dividingBy: 3600))/60)
-        let leftoverSeconds = Int(seconds.truncatingRemainder(dividingBy: 60))
-        let days = Int(seconds/(3600*24))
-        
-        if (days > 0) {
-            return NSString(format: "%id, %i:%02i:%02i", days, hours, minutes,leftoverSeconds)
-        }
-        else { // days == 0
-            return NSString(format: "%i:%02i:%02i", hours, minutes,leftoverSeconds)
-        }
-    }
-    
     public var countdownColor :UIColor {
-        guard let buf = self.safebuf?.intValue else { return UIColor.beeminder.gray }
+        let buf = self.safebuf.intValue
         if buf < 1 {
             return UIColor.beeminder.red
         }
@@ -196,41 +115,6 @@ public class Goal {
             return UIColor.beeminder.blue
         }
         return UIColor.beeminder.green
-    }
-    
-    public var relativeLane : NSNumber {
-        return self.lane != nil ? NSNumber(value: self.lane!.int32Value * self.yaw.int32Value as Int32) : 0
-    }
-    
-    public var countdownHelperText :String {
-        if self.delta_text.components(separatedBy: "✔").count == 4 {
-            if self.safebump != nil && self.curval != nil {
-                if (self.safebump!.doubleValue - self.curval!.doubleValue <= 0) {
-                    return "Ending in"
-                }
-            }
-        }
-        if self.yaw.intValue < 0 && self.dir.intValue > 0 {
-            return "safe for"
-        }
-        return "due in"
-    }
-    
-    public var humanizedRunits :String {
-        if self.runits == "d" {
-            return "day"
-        }
-        if self.runits == "m" {
-            return "month"
-        }
-        if self.runits == "h" {
-            return "hour"
-        }
-        if self.runits == "y" {
-            return "year"
-        }
-        
-        return "week"
     }
     
     public func capitalSafesum() -> String {
@@ -253,10 +137,6 @@ public class Goal {
     
     public var attributedDeltaText :NSAttributedString {
         if self.delta_text.count == 0 { return NSAttributedString.init(string: "") }
-        let modelName = UIDevice.current.modelName
-        if modelName.contains("iPhone 5") || modelName.contains("iPad Mini") || modelName.contains("iPad 4") {
-            return NSAttributedString(string: self.delta_text)
-        }
         if self.delta_text.components(separatedBy: "✔").count == 4 {
             if (self.safebump!.doubleValue - self.curval!.doubleValue > 0) {
                 let attString :NSMutableAttributedString = NSMutableAttributedString(string: String(format: "+ %.2f", self.safebump!.doubleValue - self.curval!.doubleValue))
