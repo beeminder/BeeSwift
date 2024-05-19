@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22757" systemVersion="23E224" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23E224" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="DataPoint" representedClassName="DataPoint" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>
     </entity>
     <entity name="Goal" representedClassName="Goal" syncable="YES">
+        <attribute name="alertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="autodata" optional="YES" attributeType="String"/>
-        <attribute name="deadline" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="deadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="graphUrl" attributeType="String"/>
+        <attribute name="healthKitMetric" optional="YES" attributeType="String"/>
+        <attribute name="hhmmFormat" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
+        <attribute name="initDay" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastTouch" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="leadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="limSum" attributeType="String"/>
+        <attribute name="pledge" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="queued" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="safeBuf" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="safeSum" attributeType="String"/>
         <attribute name="slug" attributeType="String"/>
         <attribute name="thumbUrl" attributeType="String"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="todayta" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="urgencyKey" attributeType="String"/>
+        <attribute name="useDefaults" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="won" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="yAxis" attributeType="String"/>
         <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="goals" inverseEntity="User"/>
     </entity>
     <entity name="User" representedClassName=".User" syncable="YES">
