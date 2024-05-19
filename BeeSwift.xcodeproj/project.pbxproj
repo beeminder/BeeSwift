@@ -66,7 +66,7 @@
 		E458C8042AD11BC3000DCA5C /* SignedRequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A142492C1FD079B4007736B3 /* SignedRequestManager.swift */; };
 		E458C8052AD11BC8000DCA5C /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C161932423CE9F0045C90D /* VersionManager.swift */; };
 		E458C8062AD11BCD000DCA5C /* GoalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE782299338C500394E87 /* GoalManager.swift */; };
-		E458C8072AD11BDB000DCA5C /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* Goal.swift */; };
+		E458C8072AD11BDB000DCA5C /* BeeGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F8F07A232C05410060B83E /* BeeGoal.swift */; };
 		E458C8082AD11BFB000DCA5C /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* DataPoint.swift */; };
 		E458C8092AD11C13000DCA5C /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
 		E458C80A2AD11C1C000DCA5C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
@@ -311,7 +311,7 @@
 		A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfigTableViewCell.swift; sourceTree = "<group>"; };
 		A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfig.swift; sourceTree = "<group>"; };
 		A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCell.swift; sourceTree = "<group>"; };
-		A1F8F07A232C05410060B83E /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
+		A1F8F07A232C05410060B83E /* BeeGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeGoal.swift; sourceTree = "<group>"; };
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
 		E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMinutesHealthKitMetric.swift; sourceTree = "<group>"; };
 		E41286ED2A62DF330093D598 /* BeeminderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel.xcdatamodel; sourceTree = "<group>"; };
@@ -720,7 +720,7 @@
 				E4B0833C293810EB00A71564 /* DataPoint.swift */,
 				E46FF15A2984C522009F8C7A /* DateUtils.swift */,
 				E45470272B60E24500EE648B /* Daystamp.swift */,
-				A1F8F07A232C05410060B83E /* Goal.swift */,
+				A1F8F07A232C05410060B83E /* BeeGoal.swift */,
 				E57BE6E32655EBDA00BA540B /* Info.plist */,
 				E44CE7722993317B00394E87 /* ServiceLocator.swift */,
 			);
@@ -1229,7 +1229,7 @@
 				E458C81D2AD11CEC000DCA5C /* UIDevice.swift in Sources */,
 				E458C8172AD11CA7000DCA5C /* TotalSleepMinutes.swift in Sources */,
 				E46071012B451FA400305DB4 /* BeeminderModel.xcdatamodeld in Sources */,
-				E458C8072AD11BDB000DCA5C /* Goal.swift in Sources */,
+				E458C8072AD11BDB000DCA5C /* BeeGoal.swift in Sources */,
 				E458C80D2AD11C64000DCA5C /* Crypto.swift in Sources */,
 				E458C8012AD11BB3000DCA5C /* RequestManager.swift in Sources */,
 			);

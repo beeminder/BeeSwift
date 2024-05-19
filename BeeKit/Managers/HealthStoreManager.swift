@@ -35,7 +35,7 @@ public class HealthStoreManager :NSObject {
     }
 
     /// Start listening for background updates to the supplied goal if we are not already doing so
-    public func ensureUpdatesRegularly(goal: Goal) async throws {
+    public func ensureUpdatesRegularly(goal: BeeGoal) async throws {
         try await self.ensureUpdatesRegularly(goals: [goal])
     }
 
@@ -44,7 +44,7 @@ public class HealthStoreManager :NSObject {
     ///
     /// It is safe to pass the same goal or set of goals to this function multiple times, this function
     /// will ensure duplicate observers are not installed.
-    public func ensureUpdatesRegularly(goals: [Goal]) async throws {
+    public func ensureUpdatesRegularly(goals: [BeeGoal]) async throws {
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
 
         var permissions = Set<HKObjectType>()
@@ -69,7 +69,7 @@ public class HealthStoreManager :NSObject {
     ///
     /// This function will never show a permissions dialog - instead it will not update for
     /// metrics where we do not have permission.
-    public func silentlyInstallObservers(goals: [Goal]) {
+    public func silentlyInstallObservers(goals: [BeeGoal]) {
         logger.notice("Silently installing observer queries")
 
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
@@ -84,7 +84,7 @@ public class HealthStoreManager :NSObject {
     /// - Parameters:
     ///   - goal: The healthkit-connected goal to be updated
     ///   - days: How many days of history to update. Supplying 1 will update the current day.
-    public func updateWithRecentData(goal: Goal, days: Int) async throws {
+    public func updateWithRecentData(goal: BeeGoal, days: Int) async throws {
         logger.notice("Updating \(goal.healthKitMetric ?? "nil", privacy: .public) goal with recent day for last \(days, privacy: .public) days")
         guard let connection = self.connectionFor(goal: goal) else {
             throw HealthKitError("Failed to find connection for goal")
@@ -107,7 +107,7 @@ public class HealthStoreManager :NSObject {
     }
 
     /// Gets or creates an appropriate connection object for the supplied goal
-    private func connectionFor(goal: Goal) -> GoalHealthKitConnection? {
+    private func connectionFor(goal: BeeGoal) -> GoalHealthKitConnection? {
         connectionsSemaphore.wait()
 
         if (goal.healthKitMetric ?? "") == "" {

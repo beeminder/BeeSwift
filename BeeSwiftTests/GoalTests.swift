@@ -83,7 +83,7 @@ final class GoalTests: XCTestCase {
         }
         """)
 
-        let goal = Goal(json: testJSON)
+        let goal = BeeGoal(json: testJSON)
 
         XCTAssertEqual(goal.slug, "test-goal")
         XCTAssertEqual(goal.title, "Goal for Testing Purposes")
@@ -117,7 +117,7 @@ final class GoalTests: XCTestCase {
             ["value": 2, "daystamp": "20221126"],
             ["value": 3.5, "daystamp": "20221125"],
         ]
-        let goal = Goal(json: testJSON)
+        let goal = BeeGoal(json: testJSON)
 
         XCTAssertEqual(goal.suggestedNextValue, 1)
     }
@@ -125,7 +125,7 @@ final class GoalTests: XCTestCase {
     func testSuggestedNextValueEmptyIfNoData() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = []
-        let goal = Goal(json: testJSON)
+        let goal = BeeGoal(json: testJSON)
 
         XCTAssertEqual(goal.suggestedNextValue, nil)
     }
@@ -140,7 +140,7 @@ final class GoalTests: XCTestCase {
             ["value": 2, "daystamp": "20221126"],
             ["value": 3.5, "daystamp": "20221125"],
         ]
-        let goal = Goal(json: testJSON)
+        let goal = BeeGoal(json: testJSON)
 
         XCTAssertEqual(goal.suggestedNextValue, 2)
     }

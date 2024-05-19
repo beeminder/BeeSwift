@@ -27,7 +27,7 @@ public actor GoalManager {
     /// Has two slightly differenty empty states. If nil, it means we have not fetched goals. If an empty dictionary, means we have
     /// fetched goals and found there to be none.
     /// Can be read in non-isolated context, so protected with a synchronized wrapper.
-    private let goalsBox = SynchronizedBox<OrderedDictionary<String, Goal>?>(nil)
+    private let goalsBox = SynchronizedBox<OrderedDictionary<String, BeeGoal>?>(nil)
 
     public var goalsFetchedAt : Date? = nil
 
@@ -52,13 +52,13 @@ public actor GoalManager {
 
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
-    public nonisolated func staleGoals() -> [Goal]? {
+    public nonisolated func staleGoals() -> [BeeGoal]? {
         guard let goals = self.goalsBox.get() else { return nil }
         return Array(goals.values)
     }
 
     /// Fetch and return the latest set of goals from the server
-    public func fetchGoals() async throws -> [Goal] {
+    public func fetchGoals() async throws -> [BeeGoal] {
         guard let username = currentUserManager.username else {
             try await currentUserManager.signOut()
             return []
@@ -78,22 +78,22 @@ public actor GoalManager {
         return Array(goals.values)
     }
 
-    public func refreshGoal(_ goal: Goal) async throws {
+    public func refreshGoal(_ goal: BeeGoal) async throws {
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
         goal.updateToMatch(json: JSON(responseObject!))
 
         await performPostGoalUpdateBookkeeping()
     }
 
-    public func forceAutodataRefresh(_ goal: Goal) async throws {
+    public func forceAutodataRefresh(_ goal: BeeGoal) async throws {
         let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
     }
 
     /// Update the set of goals to match those in the provided json. Existing Goal objects will be re-used when they match an ID in the json
     /// This function is nonisolated but should only be called either from isolated contexts or the constructor
     @discardableResult
-    private nonisolated func updateGoalsFromJson(_ responseJSON: JSON) -> OrderedDictionary<String, Goal>? {
-        var updatedGoals = OrderedDictionary<String, Goal>()
+    private nonisolated func updateGoalsFromJson(_ responseJSON: JSON) -> OrderedDictionary<String, BeeGoal>? {
+        var updatedGoals = OrderedDictionary<String, BeeGoal>()
         guard let responseGoals = responseJSON.array else {
             self.goalsBox.set(nil)
             return nil
@@ -107,7 +107,7 @@ public actor GoalManager {
                 existingGoal.updateToMatch(json: goalJSON)
                 updatedGoals[existingGoal.id] = existingGoal
             } else {
-                let newGoal = Goal(json: goalJSON)
+                let newGoal = BeeGoal(json: goalJSON)
                 updatedGoals[newGoal.id] = newGoal
             }
         }

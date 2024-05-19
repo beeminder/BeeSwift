@@ -13,7 +13,7 @@ import OSLog
 import UserNotifications
 import UIKit
 
-public class Goal {
+public class BeeGoal {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
 
     // Ignore automatic datapoint updates where the difference is a smaller fraction than this. This
@@ -340,7 +340,7 @@ public class Goal {
     }
 }
 
-public extension Goal {
+public extension BeeGoal {
     var cacheBustingThumbUrl: String {
         let thumbUrlStr = self.thumb_url!
         return cacheBuster(thumbUrlStr)
@@ -352,7 +352,7 @@ public extension Goal {
     }
 }
 
-private extension Goal {
+private extension BeeGoal {
     func cacheBuster(_ originUrlStr: String) -> String {
         guard let lastTouch = self.lasttouch else {
             return originUrlStr

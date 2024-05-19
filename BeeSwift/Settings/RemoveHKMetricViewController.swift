@@ -15,7 +15,7 @@ import BeeKit
 class RemoveHKMetricViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RemoveHKMetricViewController")
     
-    var goal : Goal!
+    var goal : BeeGoal!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,7 +77,7 @@ class RemoveHKMetricViewController: UIViewController {
             do {
                 let responseObject = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal!.slug).json", parameters: params)
 
-                self.goal = Goal(json: JSON(responseObject!))
+                self.goal = BeeGoal(json: JSON(responseObject!))
 
                 hud.mode = .customView
                 hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))

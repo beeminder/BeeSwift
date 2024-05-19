@@ -19,12 +19,12 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     private let margin = 10
     
     var datapoint : ExistingDataPoint
-    var goal : Goal!
+    var goal : BeeGoal!
     fileprivate var datePicker = InlineDatePicker()
     fileprivate var valueField = UITextField()
     fileprivate var commentField = UITextField()
 
-    init(goal: Goal, datapoint: ExistingDataPoint) {
+    init(goal: BeeGoal, datapoint: ExistingDataPoint) {
         self.goal = goal
         self.datapoint = datapoint
         super.init(nibName: nil, bundle: nil)
