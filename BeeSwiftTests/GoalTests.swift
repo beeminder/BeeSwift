@@ -135,6 +135,7 @@ final class GoalTests: XCTestCase {
         testJSON["recent_data"] = [
             ["value": 0, "daystamp": "20221131", "comment": "Goal #RESTART Point"],
             ["value": 0, "daystamp": "20221131", "comment": "This will #SELFDESTRUCT"],
+            ["value": 0, "daystamp": "20221131", "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT"],
             ["value": 0, "daystamp": "20221130", "comment": "#DERAIL ON THE 1st"],
             ["value": 2, "daystamp": "20221126"],
             ["value": 3.5, "daystamp": "20221125"],
