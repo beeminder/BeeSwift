@@ -145,7 +145,7 @@ public class Goal {
         for dataPoint in recentData.reversed() {
             let comment = dataPoint.comment
             // Ignore data points with comments suggesting they aren't a real value
-            if comment.contains("#DERAIL") || comment.contains("#SELFDESTRUCT") || comment.contains("#RESTART") || comment.contains("#TARE") {
+            if comment.contains("#DERAIL") || comment.contains("#SELFDESTRUCT") || comment.contains("#THISWILLSELFDESTRUCT") || comment.contains("#RESTART") || comment.contains("#TARE") {
                 continue
             }
             return dataPoint.value
