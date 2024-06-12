@@ -13,7 +13,7 @@ import OSLog
 import UserNotifications
 import UIKit
 
-public class Goal {
+public class BeeGoal {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
 
     // Ignore automatic datapoint updates where the difference is a smaller fraction than this. This
@@ -273,7 +273,7 @@ public class Goal {
         return fetchedDatapoints.filter { point in point.daystamp >= daystamp }
     }
 
-    func updateToMatchDataPoints(healthKitDataPoints : [DataPoint]) async throws {
+    func updateToMatchDataPoints(healthKitDataPoints : [BeeDataPoint]) async throws {
         guard let firstDaystamp = healthKitDataPoints.map({ point in point.daystamp }).min() else { return }
 
         let datapoints = try await datapointsSince(daystamp: try! Daystamp(fromString: firstDaystamp.description))
@@ -283,7 +283,7 @@ public class Goal {
         }
     }
 
-    private func updateToMatchDataPoint(newDataPoint : DataPoint, recentDatapoints: [ExistingDataPoint]) async throws {
+    private func updateToMatchDataPoint(newDataPoint : BeeDataPoint, recentDatapoints: [ExistingDataPoint]) async throws {
         var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: newDataPoint.daystamp)
         if matchingDatapoints.count == 0 {
             // If there are not already data points for this day, do not add points
@@ -340,7 +340,7 @@ public class Goal {
     }
 }
 
-public extension Goal {
+public extension BeeGoal {
     var cacheBustingThumbUrl: String {
         let thumbUrlStr = self.thumb_url!
         return cacheBuster(thumbUrlStr)
@@ -352,7 +352,7 @@ public extension Goal {
     }
 }
 
-private extension Goal {
+private extension BeeGoal {
     func cacheBuster(_ originUrlStr: String) -> String {
         guard let lastTouch = self.lasttouch else {
             return originUrlStr

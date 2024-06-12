@@ -31,11 +31,11 @@ class CategoryHealthKitMetric : HealthKitMetric {
         return hkSampleType
     }
 
-    func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [DataPoint] {
+    func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [BeeDataPoint] {
         let today = Daystamp.now(deadline: deadline)
         let startDate = today - days
 
-        var results : [DataPoint] = []
+        var results : [BeeDataPoint] = []
         for date in (startDate...today) {
             results.append(try await self.getDataPoint(date: date, deadline: deadline, healthStore: healthStore))
         }
@@ -46,7 +46,7 @@ class CategoryHealthKitMetric : HealthKitMetric {
         return HKUnit.count()
     }
 
-    private func getDataPoint(date : Daystamp, deadline : Int, healthStore : HKHealthStore) async throws -> DataPoint {
+    private func getDataPoint(date : Daystamp, deadline : Int, healthStore : HKHealthStore) async throws -> BeeDataPoint {
 
         let samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
             let query = HKSampleQuery.init(

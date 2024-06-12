@@ -22,13 +22,13 @@ class GoalHealthKitConnection {
 
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
     private let healthStore: HKHealthStore
-    private let goal : Goal
+    private let goal : BeeGoal
     private var observerQuery : HKObserverQuery? = nil
     private var lastObserverUpdate : Date? = nil
 
     public let metric : HealthKitMetric
 
-    init(goal: Goal, metric : HealthKitMetric, healthStore: HKHealthStore) {
+    init(goal: BeeGoal, metric : HealthKitMetric, healthStore: HKHealthStore) {
         self.goal = goal
         self.metric = metric
         self.healthStore = healthStore

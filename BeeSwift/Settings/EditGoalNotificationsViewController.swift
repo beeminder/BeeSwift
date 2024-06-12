@@ -15,14 +15,14 @@ import BeeKit
 class EditGoalNotificationsViewController : EditNotificationsViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditGoalNotificationsViewController")
 
-    var goal : Goal? {
+    var goal : BeeGoal? {
         didSet {
 
         }
     }
     fileprivate var useDefaultsSwitch = UISwitch()
     
-    init(goal : Goal) {
+    init(goal : BeeGoal) {
         super.init()
         self.goal = goal
         self.leadTimeStepper.value = goal.leadtime!.doubleValue

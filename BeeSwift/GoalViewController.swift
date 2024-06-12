@@ -22,7 +22,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
 
-    var goal : Goal!
+    var goal : BeeGoal!
 
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
     fileprivate var datapointTableController = DatapointTableViewController()
@@ -382,7 +382,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.goalImageScrollView.setZoomScale(self.goalImageScrollView.zoomScale == 1.0 ? 2.0 : 1.0, animated: true)
     }
 
-    func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: DataPoint) {
+    func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: BeeDataPoint) {
         guard !self.goal.hideDataEntry() else { return }
         guard let existingDatapoint = datapoint as? ExistingDataPoint else { return }
 

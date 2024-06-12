@@ -12,7 +12,7 @@ import UIKit
 import BeeKit
 
 protocol DatapointTableViewControllerDelegate {
-    func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: DataPoint)
+    func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: BeeDataPoint)
 }
 
 class DatapointTableViewController : UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -22,7 +22,7 @@ class DatapointTableViewController : UIViewController, UITableViewDelegate, UITa
 
     public var delegate : DatapointTableViewControllerDelegate?
 
-    public var datapoints : [DataPoint] = [] {
+    public var datapoints : [BeeDataPoint] = [] {
         didSet {
             // Cause the table to re-render to pick up the change to rows
             self.datapointsTableView.reloadData()
@@ -83,7 +83,7 @@ class DatapointTableViewController : UIViewController, UITableViewDelegate, UITa
         self.delegate?.datapointTableViewController(self, didSelectDatapoint: datapoint)
     }
 
-    func displayText(datapoint: DataPoint) -> String {
+    func displayText(datapoint: BeeDataPoint) -> String {
         let day = datapoint.daystamp.day
 
         var formattedValue: String
