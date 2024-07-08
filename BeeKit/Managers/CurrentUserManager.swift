@@ -9,6 +9,7 @@
 import CoreData
 import Foundation
 import KeychainSwift
+import OSLog
 import SwiftyJSON
 
 public class CurrentUserManager {
@@ -82,7 +83,7 @@ public class CurrentUserManager {
             let request = NSFetchRequest<User>(entityName: "User")
             let requestContext = context ?? container.newBackgroundContext()
             let users = try requestContext.fetch(request)
-            return users?.first
+            return users.first
         } catch {
             logger.error("Unable to fetch users \(error)")
             return nil
