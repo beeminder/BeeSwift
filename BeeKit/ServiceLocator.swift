@@ -7,17 +7,21 @@
 //
 
 import Foundation
+import OSLog
 
 public class ServiceLocator {
+    private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ServiceLocationm")
+
     static let persistentContainer: BeeminderPersistentContainer = {
         let container = BeeminderPersistentContainer(name: "BeeminderModel")
         container.loadPersistentStores { description, error in
             if let error = error {
-                // TODO: We probably can't ship with this. Will need to be careful with migrations
+                logger.error("Unable to load persistent stores: \(error, privacy: .public)")
+                // TODO: Reconsider this approach after we use this data for real
                 try! FileManager.default.removeItem(at: BeeminderPersistentContainer.defaultDirectoryURL())
                 container.loadPersistentStores { description, error in
                     if let error = error {
-                        fatalError("Unable to load persistent stores: \(error)")
+                        fatalError("Unable to load persistent stores on retry: \(error)")
                     }
                 }
             }

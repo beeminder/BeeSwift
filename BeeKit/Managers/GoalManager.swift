@@ -120,31 +120,32 @@ public actor GoalManager {
 
         //  Update CoreData representation
         let context = container.newBackgroundContext()
-        // TODO: Better error handling of null here?
-        let user = self.currentUserManager.user(context: context)!
+        // The user may have logged out while waiting for the data, so ignore if so
+        if let user = self.currentUserManager.user(context: context) {
 
-        // Create and update existing goals
-        for goalJSON in responseGoals {
-            let goalId = goalJSON["id"].stringValue
-            let request = NSFetchRequest<Goal>(entityName: "Goal")
-            request.predicate = NSPredicate(format: "id == %@", goalId)
-            // TODO: Better error handling of failure here?
-            if let existingGoal = try! context.fetch(request).first {
-                existingGoal.updateToMatch(json: goalJSON)
-            } else {
-                let _ = Goal(context: context, owner: user, json: goalJSON)
+            // Create and update existing goals
+            for goalJSON in responseGoals {
+                let goalId = goalJSON["id"].stringValue
+                let request = NSFetchRequest<Goal>(entityName: "Goal")
+                request.predicate = NSPredicate(format: "id == %@", goalId)
+                // TODO: Better error handling of failure here?
+                if let existingGoal = try! context.fetch(request).first {
+                    existingGoal.updateToMatch(json: goalJSON)
+                } else {
+                    let _ = Goal(context: context, owner: user, json: goalJSON)
+                }
             }
-        }
 
-        // Remove any deleted goals
-        let allGoalIds = Set(responseGoals.map { $0["id"].stringValue })
-        let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
-        for goal in goalsToDelete {
-            context.delete(goal)
-        }
+            // Remove any deleted goals
+            let allGoalIds = Set(responseGoals.map { $0["id"].stringValue })
+            let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
+            for goal in goalsToDelete {
+                context.delete(goal)
+            }
 
-        // TODO: Better error handling here?
-        try! context.save()
+            // Crash on save failure so we can learn about issues via testflight
+            try! context.save()
+        }
 
         return updatedGoals
     }

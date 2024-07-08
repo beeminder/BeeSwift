@@ -166,7 +166,6 @@ public class Goal: NSManagedObject {
     }
 
     public var hideDataEntry: Bool {
-        // TODO: Implement this
         return isDataProvidedAutomatically || won
     }
 }
