@@ -9,9 +9,12 @@
 import CoreData
 import Foundation
 import KeychainSwift
+import OSLog
 import SwiftyJSON
 
 public class CurrentUserManager {
+    let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CurrentUserManager")
+
     public static let signedInNotificationName     = "com.beeminder.signedInNotification"
     public static let willSignOutNotificationName  = "com.beeminder.willSignOutNotification"
     public static let failedSignInNotificationName = "com.beeminder.failedSignInNotification"
@@ -75,12 +78,16 @@ public class CurrentUserManager {
     }
 
 
-    private func user(context: NSManagedObjectContext? = nil) -> User? {
-        // Fetch a user from the persistent store
-        let request = NSFetchRequest<User>(entityName: "User")
-        // TODO: Handle (or at least log) an error here
-        let users = try? (context ?? container.newBackgroundContext()).fetch(request)
-        return users?.first
+    func user(context: NSManagedObjectContext? = nil) -> User? {
+        do {
+            let request = NSFetchRequest<User>(entityName: "User")
+            let requestContext = context ?? container.newBackgroundContext()
+            let users = try requestContext.fetch(request)
+            return users.first
+        } catch {
+            logger.error("Unable to fetch users \(error)")
+            return nil
+        }
     }
 
     private func modifyUser(_ callback: (User)->()) throws {

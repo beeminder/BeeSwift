@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreData
 import SwiftyJSON
 import OSLog
 import OrderedCollections
@@ -22,6 +23,7 @@ public actor GoalManager {
 
     private let requestManager: RequestManager
     private let currentUserManager: CurrentUserManager
+    private let container: BeeminderPersistentContainer
 
     /// The known set of goals
     /// Has two slightly differenty empty states. If nil, it means we have not fetched goals. If an empty dictionary, means we have
@@ -33,9 +35,10 @@ public actor GoalManager {
 
     private var queuedGoalsBackgroundTaskRunning : Bool = false
 
-    init(requestManager: RequestManager, currentUserManager: CurrentUserManager) {
+    init(requestManager: RequestManager, currentUserManager: CurrentUserManager, container: BeeminderPersistentContainer) {
         self.requestManager = requestManager
         self.currentUserManager = currentUserManager
+        self.container = container
 
         // Load any cached goals from previous app invocation
         if let goalJSON = self.cachedLastFetchedGoals() {
@@ -99,6 +102,7 @@ public actor GoalManager {
             return nil
         }
 
+        // Update memory goals representation
         let existingGoals = self.goalsBox.get() ?? OrderedDictionary()
 
         for goalJSON in responseGoals {
@@ -113,6 +117,36 @@ public actor GoalManager {
         }
 
         self.goalsBox.set(updatedGoals)
+
+        //  Update CoreData representation
+        let context = container.newBackgroundContext()
+        // The user may have logged out while waiting for the data, so ignore if so
+        if let user = self.currentUserManager.user(context: context) {
+
+            // Create and update existing goals
+            for goalJSON in responseGoals {
+                let goalId = goalJSON["id"].stringValue
+                let request = NSFetchRequest<Goal>(entityName: "Goal")
+                request.predicate = NSPredicate(format: "id == %@", goalId)
+                // TODO: Better error handling of failure here?
+                if let existingGoal = try! context.fetch(request).first {
+                    existingGoal.updateToMatch(json: goalJSON)
+                } else {
+                    let _ = Goal(context: context, owner: user, json: goalJSON)
+                }
+            }
+
+            // Remove any deleted goals
+            let allGoalIds = Set(responseGoals.map { $0["id"].stringValue })
+            let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
+            for goal in goalsToDelete {
+                context.delete(goal)
+            }
+
+            // Crash on save failure so we can learn about issues via testflight
+            try! context.save()
+        }
+
         return updatedGoals
     }
 

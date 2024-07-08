@@ -1,6 +1,7 @@
 import Foundation
 import CoreData
 
+@objc(User)
 public class User: NSManagedObject {
     @NSManaged public var username: String
     @NSManaged public var deadbeat: Bool
@@ -8,6 +9,12 @@ public class User: NSManagedObject {
     @NSManaged public var defaultAlertStart: Int32
     @NSManaged public var defaultDeadline: Int32
     @NSManaged public var defaultLeadTime: Int32
+
+    @NSManaged public var goals: Set<Goal>
+    @NSManaged func addGoalsObject(value: Goal)
+    @NSManaged func removeGoalsObject(value: Goal)
+    @NSManaged func addGoals(value: Set<Goal>)
+    @NSManaged func removeGoals(value: Set<Goal>)
 
     public init(context: NSManagedObjectContext,
                 username: String,
@@ -40,6 +47,4 @@ public class User: NSManagedObject {
     public override init(entity: NSEntityDescription, insertInto: NSManagedObjectContext?) {
         super.init(entity: entity, insertInto: insertInto)
     }
-
-
 }
