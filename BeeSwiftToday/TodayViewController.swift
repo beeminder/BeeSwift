@@ -14,9 +14,9 @@ import NotificationCenter
 import BeeKit
 
 class TodayViewController: UIViewController {
-    var goalDictionaries: [NSDictionary] = [] {
+    var goals: [Goal] = [] {
         didSet {
-            self.extensionContext?.widgetLargestAvailableDisplayMode = self.goalDictionaries.count > 1 ? .expanded : .compact
+            self.extensionContext?.widgetLargestAvailableDisplayMode = self.goals.count > 1 ? .expanded : .compact
         }
     }
     var tableView = UITableView()
@@ -46,16 +46,14 @@ class TodayViewController: UIViewController {
     }
     
     @objc func updateDataSource() {
-        let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
-        // Goal dictionaries will not be available if the user is logged out or has never fetched goals
-        self.goalDictionaries = defaults?.object(forKey: "todayGoalDictionaries") as? Array<NSDictionary> ?? Array()
+        self.goals = Array(ServiceLocator.currentUserManager.user(context: ServiceLocator.persistentContainer.viewContext)?.goals ?? [])
     }
 }
 
 extension TodayViewController : NCWidgetProviding {
     func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
         if activeDisplayMode == .expanded {
-            self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight * self.goalDictionaries.count)
+            self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight * self.goals.count)
         }
         else if activeDisplayMode == .compact {
             self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight)
@@ -65,7 +63,7 @@ extension TodayViewController : NCWidgetProviding {
 
 extension TodayViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let slug = self.goalDictionaries[indexPath.row]["slug"] as? String else { return }
+        let slug = self.goals[indexPath.row].slug
         self.extensionContext?.open(URL(string: "beeminder://?slug=\(slug)")!, completionHandler: nil)
     }
 }
@@ -76,7 +74,7 @@ extension TodayViewController : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.goalDictionaries.count
+        return self.goals.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -86,8 +84,8 @@ extension TodayViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier, for: indexPath) as! TodayTableViewCell
         
-        cell.goalDictionary = self.goalDictionaries[indexPath.row]
-        
+        cell.goal = self.goals[indexPath.row]
+
         return cell
     }
 }

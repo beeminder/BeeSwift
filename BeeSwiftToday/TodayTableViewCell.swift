@@ -16,12 +16,12 @@ import SwiftyJSON
 import BeeKit
 
 class TodayTableViewCell: UITableViewCell {
-    var goalDictionary:NSDictionary = [:] {
+    var goal: Goal? {
         didSet {
             self.configureCell()
         }
     }
-    
+
     let valueLabel = BSLabel()
     let valueStepper = UIStepper()
     let limitLabel = BSLabel()
@@ -43,6 +43,8 @@ class TodayTableViewCell: UITableViewCell {
     }
     
     fileprivate func configureCell() {
+        guard let goal = self.goal else { return }
+
         self.selectionStyle = .none
         
         self.addSubview(self.graphImageView)
@@ -54,11 +56,11 @@ class TodayTableViewCell: UITableViewCell {
             make.bottom.equalTo(-20)
         })
         self.graphImageView.image = self.thumbnailPlaceholder
-        self.setGraphImage(urlStr: self.goalDictionary["thumbUrl"] as? String)
-        
+        self.setGraphImage(urlStr: goal.thumbUrl)
+
         self.addSubview(self.limitLabel)
         self.limitLabel.numberOfLines = 0
-        self.limitLabel.text = self.goalDictionary["limSum"] as? String
+        self.limitLabel.text = "\(goal.slug.prefix(20)): \(goal.limSum)"
         self.limitLabel.font = UIFont.systemFont(ofSize: 14)
         
         self.limitLabel.snp.makeConstraints({ (make) -> Void in
@@ -67,7 +69,7 @@ class TodayTableViewCell: UITableViewCell {
             make.right.equalTo(-10)
         })
         
-        if self.goalDictionary["hideDataEntry"] as! Bool {
+        if goal.hideDataEntry {
             self.limitLabel.snp.remakeConstraints({ (make) in
                 make.left.equalTo(self.graphImageView.snp.right).offset(10)
                 make.centerY.equalTo(self.graphImageView)
@@ -117,6 +119,8 @@ class TodayTableViewCell: UITableViewCell {
     }
     
     @objc func addDataButtonPressed() {
+        guard let goal = self.goal else { return }
+
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
         hud.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
@@ -129,7 +133,7 @@ class TodayTableViewCell: UITableViewCell {
         let calendar = Calendar.current
         let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
         let currentHour = components.hour
-        guard let goalDeadline = self.goalDictionary["deadline"] as? Int else { return }
+        let goalDeadline = goal.deadline
         if goalDeadline > 0 && currentHour! < 6 && goalDeadline/3600 < currentHour! {
             offset = -1
         }
@@ -151,7 +155,7 @@ class TodayTableViewCell: UITableViewCell {
         formatter.dateFormat = "d"
         
         let params = ["urtext": "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
-        guard let slug = self.goalDictionary["slug"] as? String else { return }
+        let slug = goal.slug
 
         Task { @MainActor in
             do {
@@ -172,7 +176,8 @@ class TodayTableViewCell: UITableViewCell {
     
     @objc func refreshGoal() {
         Task { @MainActor in
-            guard let slug = self.goalDictionary["slug"] as? String else { return }
+            guard let goal = self.goal else { return }
+            let slug = goal.slug
 
             do {
                 let responseObject = try await ServiceLocator.requestManager.get(url: "api/v1/users/me/goals/\(slug)", parameters: [:])

@@ -78,7 +78,7 @@ public class CurrentUserManager {
     }
 
 
-    func user(context: NSManagedObjectContext? = nil) -> User? {
+    public func user(context: NSManagedObjectContext? = nil) -> User? {
         do {
             let request = NSFetchRequest<User>(entityName: "User")
             let requestContext = context ?? container.newBackgroundContext()
