@@ -3,12 +3,19 @@ import CoreData
 
 @objc(DataPoint)
 public class DataPoint: NSManagedObject {
+    // Server identified for the datapoint, globally unique.
     @NSManaged public var id: String?
+    // Goal this datapoint is associated with
     @NSManaged public var goal: Goal
 
+    // An optional comment about the datapoint.
+    // TODO: Check if this can be null
     @NSManaged public var comment: String
+    // The date of the datapoint (e.g., "20150831"). Raw value in the datastore
     @NSManaged private var daystampRaw: String
+    // If a datapoint was created via the API and this parameter was included, it will be echoed back.
     @NSManaged public var requestid: String?
+    // The value, e.g., how much you weighed on the day indicated by the timestamp.
     @NSManaged public var value: NSNumber
 
     public init(context: NSManagedObjectContext, goal: Goal, id: String?, comment: String, daystamp: Daystamp, requestid: String?, value: NSNumber) {
