@@ -38,45 +38,24 @@ public class DataPointManager {
         }
     }
 
-    private func updateDatapoint(goal : BeeGoal, datapoint : ExistingDataPoint, datapointValue : NSNumber, success: (() -> ())?, errorCompletion: (() -> ())?) {
-        Task { @MainActor in
-            let val = datapoint.value
-            if datapointValue == val {
-                success?()
-                return
-            }
-            let params = [
-                "value": "\(datapointValue)",
-                "comment": "Auto-updated via Apple Health",
-            ]
-            do {
-                let _ = try await requestManager.put(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json", parameters: params)
-                success?()
-            } catch {
-                errorCompletion?()
-            }
+    private func updateDatapoint(goal : BeeGoal, datapoint : ExistingDataPoint, datapointValue : NSNumber) async throws {
+        let val = datapoint.value
+        if datapointValue == val {
+            return
         }
+        let params = [
+            "value": "\(datapointValue)",
+            "comment": "Auto-updated via Apple Health",
+        ]
+        let _ = try await requestManager.put(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json", parameters: params)
     }
 
-    private func deleteDatapoint(goal: BeeGoal, datapoint : ExistingDataPoint) {
-        Task { @MainActor in
-            do {
-                let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)", parameters: nil)
-            } catch {
-                logger.error("Error deleting datapoint: \(error)")
-            }
-        }
+    private func deleteDatapoint(goal: BeeGoal, datapoint : ExistingDataPoint) async throws {
+        let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)", parameters: nil)
     }
 
-    private func postDatapoint(goal : BeeGoal, params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
-        Task { @MainActor in
-            do {
-                let response = try await requestManager.post(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
-                success?(response)
-            } catch {
-                failure?(error, error.localizedDescription)
-            }
-        }
+    private func postDatapoint(goal : BeeGoal, params : [String : String]) async throws {
+        let _ = try await requestManager.post(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
     }
 
     private func fetchDatapoints(goal: BeeGoal, sort: String, per: Int, page: Int) async throws -> [ExistingDataPoint] {
@@ -148,29 +127,17 @@ public class DataPointManager {
 
             logger.notice("Creating new datapoint for \(goal.id, privacy: .public) on \(newDataPoint.daystamp, privacy: .public): \(newDataPoint.value, privacy: .private)")
 
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                postDatapoint(goal: goal, params: params, success: { (responseObject) in
-                    continuation.resume()
-                }, failure: { (error, errorMessage) in
-                    continuation.resume(throwing: error!)
-                })
-            }
+            try await postDatapoint(goal: goal, params: params)
         } else if matchingDatapoints.count >= 1 {
             let firstDatapoint = matchingDatapoints.remove(at: 0)
-            matchingDatapoints.forEach { datapoint in
-                deleteDatapoint(goal: goal, datapoint: datapoint)
+            for datapoint in matchingDatapoints {
+                try await deleteDatapoint(goal: goal, datapoint: datapoint)
             }
 
             if !isApproximatelyEqual(firstDatapoint.value.doubleValue, newDataPoint.value.doubleValue) {
                 logger.notice("Updating datapoint for \(goal.id) on \(firstDatapoint.daystamp, privacy: .public) from \(firstDatapoint.value) to \(newDataPoint.value)")
 
-                try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                    updateDatapoint(goal: goal, datapoint: firstDatapoint, datapointValue: newDataPoint.value, success: {
-                        continuation.resume()
-                    }, errorCompletion: {
-                        continuation.resume(throwing: HealthKitError("Error updating data point"))
-                    })
-                }
+                try await updateDatapoint(goal: goal, datapoint: firstDatapoint, datapointValue: newDataPoint.value)
             }
         }
     }
