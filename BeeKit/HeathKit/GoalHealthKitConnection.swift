@@ -98,7 +98,7 @@ class GoalHealthKitConnection {
         let newDataPoints = try await metric.recentDataPoints(days: days, deadline: self.goal.deadline.intValue, healthStore: healthStore)
         let nonZeroDataPoints = newDataPoints.filter { dataPoint in dataPoint.value != 0 }
         logger.notice("Updating \(self.metric.databaseString, privacy: .public) goal with \(nonZeroDataPoints.count, privacy: .public) datapoints. Skipped \(newDataPoints.count - nonZeroDataPoints.count, privacy: .public) empty points.")
-        try await goal.updateToMatchDataPoints(healthKitDataPoints: nonZeroDataPoints)
+        try await ServiceLocator.dataPointManager.updateToMatchDataPoints(goal: goal, healthKitDataPoints: nonZeroDataPoints)
     }
 
 }
