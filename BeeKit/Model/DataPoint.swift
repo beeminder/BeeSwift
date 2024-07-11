@@ -1,6 +1,8 @@
 import Foundation
 import CoreData
 
+import SwiftyJSON
+
 @objc(DataPoint)
 public class DataPoint: NSManagedObject {
     // Server identified for the datapoint, globally unique.
@@ -41,6 +43,38 @@ public class DataPoint: NSManagedObject {
 
     public override init(entity: NSEntityDescription, insertInto: NSManagedObjectContext?) {
         super.init(entity: entity, insertInto: insertInto)
+    }
+
+    private init(context: NSManagedObjectContext, id: String, goal: Goal, json: JSON) {
+        let entity = NSEntityDescription.entity(forEntityName: "DataPoint", in: context)!
+        super.init(entity: entity, insertInto: context)
+        self.id = id
+        self.goal = goal
+
+        self.updateToMatch(json: json)
+    }
+
+    /// Produce a DataPoint matching the supplied JSON, either creating a new one or re-using an existing object in the datastore
+    public static func fromJSON(context: NSManagedObjectContext, goal: Goal, json: JSON) -> DataPoint {
+        // Check for an existing datapoint with the relevant ID, if so use it
+        let id = json["id"].stringValue
+
+        let fetchRequest = NSFetchRequest<DataPoint>(entityName: "DataPoint")
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id)
+        fetchRequest.fetchLimit = 1
+        if let existing = try? context.fetch(fetchRequest).first {
+            existing.updateToMatch(json: json)
+            return existing
+        }
+
+        return DataPoint(context: context, id: id, goal: goal, json: json)
+    }
+
+    public func updateToMatch(json: JSON) {
+        daystampRaw = json["daystamp"].stringValue
+        value = json["value"].numberValue
+        comment = json["comment"].stringValue
+        requestid = json["requestid"].stringValue
     }
 
     public var daystamp: Daystamp {
