@@ -4,7 +4,7 @@ import OSLog
 import SwiftyJSON
 
 /// Read and update datapoints from the beeminder server
-class DataPointManager {
+public class DataPointManager {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "DataPointManager")
 
     // Ignore automatic datapoint updates where the difference is a smaller fraction than this. This
@@ -19,7 +19,7 @@ class DataPointManager {
         self.container = container
     }
 
-    func fetchRecentDatapoints(goal: BeeGoal, success: @escaping ((_ datapoints : [ExistingDataPoint]) -> ()), errorCompletion: (() -> ())?) {
+    private func fetchRecentDatapoints(goal: BeeGoal, success: @escaping ((_ datapoints : [ExistingDataPoint]) -> ()), errorCompletion: (() -> ())?) {
         Task { @MainActor in
             let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
             do {
@@ -32,13 +32,13 @@ class DataPointManager {
         }
     }
 
-    func datapointsMatchingDaystamp(datapoints : [ExistingDataPoint], daystamp : Daystamp) -> [ExistingDataPoint] {
+    private func datapointsMatchingDaystamp(datapoints : [ExistingDataPoint], daystamp : Daystamp) -> [ExistingDataPoint] {
         datapoints.filter { (datapoint) -> Bool in
             return daystamp == datapoint.daystamp
         }
     }
 
-    func updateDatapoint(goal : BeeGoal, datapoint : ExistingDataPoint, datapointValue : NSNumber, success: (() -> ())?, errorCompletion: (() -> ())?) {
+    private func updateDatapoint(goal : BeeGoal, datapoint : ExistingDataPoint, datapointValue : NSNumber, success: (() -> ())?, errorCompletion: (() -> ())?) {
         Task { @MainActor in
             let val = datapoint.value
             if datapointValue == val {
@@ -58,7 +58,7 @@ class DataPointManager {
         }
     }
 
-    func deleteDatapoint(goal: BeeGoal, datapoint : ExistingDataPoint) {
+    private func deleteDatapoint(goal: BeeGoal, datapoint : ExistingDataPoint) {
         Task { @MainActor in
             do {
                 let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)", parameters: nil)
@@ -68,7 +68,7 @@ class DataPointManager {
         }
     }
 
-    func postDatapoint(goal : BeeGoal, params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
+    private func postDatapoint(goal : BeeGoal, params : [String : String], success : ((Any?) -> Void)?, failure : ((Error?, String?) -> Void)?) {
         Task { @MainActor in
             do {
                 let response = try await requestManager.post(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
@@ -79,7 +79,7 @@ class DataPointManager {
         }
     }
 
-    func fetchDatapoints(goal: BeeGoal, sort: String, per: Int, page: Int) async throws -> [ExistingDataPoint] {
+    private func fetchDatapoints(goal: BeeGoal, sort: String, per: Int, page: Int) async throws -> [ExistingDataPoint] {
         let params = ["sort" : sort, "per" : per, "page": page] as [String : Any]
         let response = try await requestManager.get(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
         let responseJSON = JSON(response!)
@@ -89,7 +89,7 @@ class DataPointManager {
     /// Retrieve all data points on or after the daystamp provided
     /// Estimates how many data points are needed to fetch the correct data points, and then performs additional requests if needed
     /// to guarantee all matching points have been fetched.
-    func datapointsSince(goal: BeeGoal, daystamp: Daystamp) async throws -> [ExistingDataPoint] {
+    private func datapointsSince(goal: BeeGoal, daystamp: Daystamp) async throws -> [ExistingDataPoint] {
         // Estimate how many points we need, based on one point per day
         let daysSince = Daystamp.now(deadline: goal.deadline.intValue) - daystamp
 
