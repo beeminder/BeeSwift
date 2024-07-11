@@ -52,6 +52,30 @@ public class Goal: NSManagedObject {
     /// The label for the y-axis of the graph. E.g., "Cumulative total hours".
     @NSManaged public var yAxis: String
 
+    @NSManaged public var recentData: NSOrderedSet
+
+    @objc(insertObject:inRecentDataAtIndex:)
+    @NSManaged private func insertIntoRecentData(_ value: DataPoint, at idx: Int)
+    @objc(removeObjectFromRecentDataAtIndex:)
+    @NSManaged private func removeFromRecentData(at idx: Int)
+    @objc(insertRecentData:atIndexes:)
+    @NSManaged private func insertIntoRecentData(_ values: [DataPoint], at indexes: NSIndexSet)
+    @objc(removeRecentDataAtIndexes:)
+    @NSManaged private func removeFromRecentData(at indexes: NSIndexSet)
+    @objc(replaceObjectInRecentDataAtIndex:withObject:)
+    @NSManaged private func replaceRecentData(at idx: Int, with value: DataPoint)
+    @objc(replaceRecentDataAtIndexes:withRecentData:)
+    @NSManaged private func replaceRecentData(at indexes: NSIndexSet, with values: [DataPoint])
+    @objc(addRecentDataObject:)
+    @NSManaged private func addToRecentData(_ value: DataPoint)
+    @objc(removeRecentDataObject:)
+    @NSManaged private func removeFromRecentData(_ value: DataPoint)
+    @objc(addRecentData:)
+    @NSManaged private func addToRecentData(_ values: NSOrderedSet)
+    @objc(removeRecentData:)
+    @NSManaged private func removeFromRecentData(_ values: NSOrderedSet)
+
+
     public init(
         context: NSManagedObjectContext,
         owner: User,
@@ -107,7 +131,6 @@ public class Goal: NSManagedObject {
         self.yAxis = yAxis
     }
 
-    // Question: Should this type know about JSON, or should there be an adapter / extension?
     public init(context: NSManagedObjectContext, owner: User, json: JSON) {
         let entity = NSEntityDescription.entity(forEntityName: "Goal", in: context)!
         super.init(entity: entity, insertInto: context)
@@ -156,6 +179,14 @@ public class Goal: NSManagedObject {
         self.useDefaults = json["use_defaults"].boolValue
         self.won = json["won"].boolValue
         self.yAxis = json["yaxis"].stringValue
+
+        // Replace recent data with results from server
+        // Note at present this leaks data points in the main db. This is probably fine for now
+        let newRecentData = NSOrderedSet(array: json["recent_data"].arrayValue.map {
+            DataPoint.fromJSON(context: self.managedObjectContext!, goal: self, json: $0)
+        })
+        removeFromRecentData(recentData)
+        addToRecentData(newRecentData)
     }
 
     public var isDataProvidedAutomatically: Bool {
