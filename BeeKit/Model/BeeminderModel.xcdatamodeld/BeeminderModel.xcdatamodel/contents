@@ -3,7 +3,7 @@
     <entity name="DataPoint" representedClassName="DataPoint" syncable="YES">
         <attribute name="comment" optional="YES" attributeType="String"/>
         <attribute name="daystampRaw" attributeType="String"/>
-        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="String"/>
         <attribute name="requestid" optional="YES" attributeType="String"/>
         <attribute name="value" attributeType="Decimal" defaultValueString="0.0"/>
         <relationship name="goal" maxCount="1" deletionRule="Nullify" destinationEntity="Goal"/>
