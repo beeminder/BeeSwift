@@ -21,7 +21,7 @@ class GoalImageView : UIView {
 
     public let isThumbnail: Bool
 
-    public var goal: BeeGoal? {
+    public var goal: GoalProtocol? {
         didSet {
             // If changed to a different goal, remove any current state
             if goal !== oldValue {

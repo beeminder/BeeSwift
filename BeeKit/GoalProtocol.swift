@@ -1,12 +1,16 @@
 import Foundation
 
-public protocol GoalProtocol {
+public protocol GoalProtocol : AnyObject {
     var id: String { get }
     var slug: String { get }
     var autodata: String? { get }
     var healthKitMetric: String? { get }
     var deadline: Int { get }
     var initDay: Int { get }
+    var queued: Bool { get }
+    var lastTouch: Int { get }
+    var graphUrl: String { get }
+    var thumbUrl: String { get }
 }
 
 extension GoalProtocol {
@@ -41,5 +45,25 @@ extension GoalProtocol {
 
         return try! Daystamp(fromString: dateString)
     }
+
+    public var cacheBustingThumbUrl: String {
+        let thumbUrlStr = self.thumbUrl
+        return cacheBuster(thumbUrlStr)
+    }
+    
+    public var cacheBustingGraphUrl: String {
+        let graphUrlStr = self.graphUrl
+        return cacheBuster(graphUrlStr)
+    }
+
+    private func cacheBuster(_ originUrlStr: String) -> String {
+        let queryCharacter = originUrlStr.range(of: "&") == nil ? "?" : "&"
+        
+        let cacheBustingUrlStr = "\(originUrlStr)\(queryCharacter)proctime=\(self.lastTouch)"
+        
+        return cacheBustingUrlStr
+    }
+
+
 
 }
