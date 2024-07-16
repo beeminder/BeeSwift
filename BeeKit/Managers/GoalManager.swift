@@ -256,7 +256,7 @@ public actor GoalManager {
         let todayGoals = goals.values.map { (goal) in
             let shortSlug = goal.slug.prefix(20)
             let limsum = goal.limsum ?? ""
-            return ["deadline" : goal.deadline.intValue, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()] as [String : Any]
+            return ["deadline" : goal.deadline, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()] as [String : Any]
         }
         return Array(todayGoals.prefix(3)) as Array<Any>
     }

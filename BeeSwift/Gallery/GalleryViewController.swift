@@ -421,7 +421,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     return goal1.slug < goal2.slug
                 }
                 else if selectedGoalSort == Constants.recentDataGoalSortString {
-                    return goal1.lasttouch?.intValue ?? 0 > goal2.lasttouch?.intValue ?? 0
+                    return goal1.lastTouch > goal2.lastTouch
                 }
                 else if selectedGoalSort == Constants.pledgeGoalSortString {
                     return goal1.pledge.intValue > goal2.pledge.intValue

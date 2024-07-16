@@ -9,7 +9,7 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
     public typealias Stride = Int
 
     private static let daystampPattern = try! NSRegularExpression(pattern: "^(?<year>\\d{4})(?<month>\\d{2})(?<day>\\d{2})$")
-    private static let secondsInDay = 24 * 60 * 60
+    private static let secondsInDay: Int = 24 * 60 * 60
 
     private static let calendar = {
         var calendar = Calendar(identifier: .iso8601)
@@ -81,7 +81,7 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
     /// The Date corresponding to the start of this Daystamp (inclusive)
     /// Note this uses the system timezone to determine when days start and end, which may not match the user's timezone
     func start(deadline: Int) -> Date {
-        return Daystamp.calendar.date(from: DateComponents(calendar: Daystamp.calendar, year: year, month: month, day: day, second: deadline))!
+        return Daystamp.calendar.date(from: DateComponents(calendar: Daystamp.calendar, year: year, month: month, day: day, second: Int(deadline)))!
     }
 
     /// The Date corresponding to the end of this Daystamp (exclusive)

@@ -6,9 +6,9 @@ public class User: NSManagedObject {
     @NSManaged public var username: String
     @NSManaged public var deadbeat: Bool
     @NSManaged public var timezone: String
-    @NSManaged public var defaultAlertStart: Int32
-    @NSManaged public var defaultDeadline: Int32
-    @NSManaged public var defaultLeadTime: Int32
+    @NSManaged public var defaultAlertStart: Int
+    @NSManaged public var defaultDeadline: Int
+    @NSManaged public var defaultLeadTime: Int
 
     @NSManaged public var goals: Set<Goal>
     @NSManaged func addGoalsObject(value: Goal)
@@ -20,9 +20,9 @@ public class User: NSManagedObject {
                 username: String,
                 deadbeat: Bool,
                 timezone: String,
-                defaultAlertStart: Int32,
-                defaultDeadline: Int32,
-                defaultLeadTime: Int32
+                defaultAlertStart: Int,
+                defaultDeadline: Int,
+                defaultLeadTime: Int
     ) {
         let entity = NSEntityDescription.entity(forEntityName: "User", in: context)!
         super.init(entity: entity, insertInto: context)

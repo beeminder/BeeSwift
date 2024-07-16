@@ -6,7 +6,7 @@ import SwiftyJSON
 @objc(DataPoint)
 public class DataPoint: NSManagedObject {
     // Server identified for the datapoint, globally unique.
-    @NSManaged public var id: String?
+    @NSManaged public var id: String
     // Goal this datapoint is associated with
     @NSManaged public var goal: Goal
 
@@ -20,7 +20,7 @@ public class DataPoint: NSManagedObject {
     // The value, e.g., how much you weighed on the day indicated by the timestamp.
     @NSManaged public var value: NSNumber
 
-    public init(context: NSManagedObjectContext, goal: Goal, id: String?, comment: String, daystamp: Daystamp, requestid: String?, value: NSNumber) {
+    public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String?, value: NSNumber) {
         let entity = NSEntityDescription.entity(forEntityName: "DataPoint", in: context)!
         super.init(entity: entity, insertInto: context)
         self.goal = goal

@@ -12,7 +12,7 @@ import BeeKit
 
 class HealthKitConfigTableViewCell: UITableViewCell {
 
-    var goal : BeeGoal? {
+    var goal : GoalProtocol? {
         didSet {
             self.goalnameLabel.text = self.goal?.slug
             self.autodataNameLabel.text = self.goal?.humanizedAutodata

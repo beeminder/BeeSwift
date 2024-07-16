@@ -144,7 +144,7 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let goal = self.goalAt(indexPath)
         
-        if goal.autodata.count == 0 {
+        if !goal.isDataProvidedAutomatically {
             let chooseHKMetricViewController = ChooseHKMetricViewController()
             chooseHKMetricViewController.goal = goal
             self.navigationController?.pushViewController(chooseHKMetricViewController, animated: true)
@@ -174,13 +174,13 @@ extension HealthKitConfigViewController {
     
     var autoSourcedModifiable: [BeeGoal] {
         return self.autoSourced.filter { goal -> Bool in
-            return "Apple".localizedCaseInsensitiveCompare(goal.autodata) == ComparisonResult.orderedSame
+            return "Apple".localizedCaseInsensitiveCompare(goal.autodata ?? "") == ComparisonResult.orderedSame
         }
     }
     
     var autoSourcedUnmodifiable: [BeeGoal] {
         return self.autoSourced.filter { goal -> Bool in
-            return "Apple".localizedCaseInsensitiveCompare(goal.autodata) != ComparisonResult.orderedSame
+            return "Apple".localizedCaseInsensitiveCompare(goal.autodata ?? "") != ComparisonResult.orderedSame
         }
     }
 }

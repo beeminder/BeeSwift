@@ -26,7 +26,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         super.init()
         self.goal = goal
         self.leadTimeStepper.value = goal.leadtime!.doubleValue
-        self.alertstart = goal.alertstart!
+        self.alertstart = goal.alertstart
         self.deadline = goal.deadline
     }
 

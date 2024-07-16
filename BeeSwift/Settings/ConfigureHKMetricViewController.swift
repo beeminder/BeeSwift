@@ -100,7 +100,7 @@ class ConfigureHKMetricViewController : UIViewController {
 
         self.datapointTableController.hhmmformat = self.goal.hhmmformat
         Task { @MainActor in
-            let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline.intValue, healthStore: ServiceLocator.healthStoreManager.healthStore)
+            let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline, healthStore: ServiceLocator.healthStoreManager.healthStore)
             self.datapointTableController.datapoints = datapoints
 
             if datapoints.isEmpty {

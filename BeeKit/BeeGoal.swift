@@ -13,29 +13,29 @@ import OSLog
 import UserNotifications
 import UIKit
 
-public class BeeGoal {
+public class BeeGoal : GoalProtocol {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
 
-    public var autodata: String = ""
-    public var graph_url: String?
+    public var autodata: String? = ""
+    public var graphUrl: String = ""
     public var healthKitMetric: String?
     public var id: String = ""
     public var pledge: NSNumber = 0
     public var yaxis: String = ""
     public var slug: String = ""
-    public var thumb_url: String?
+    public var thumbUrl: String = ""
     public var title: String = ""
     public var won: NSNumber = 0
-    public var safebuf: NSNumber = 0
+    public var safeBuf: Int = 0
     public var limsum: String?
     public var safesum: String?
-    public var initday: NSNumber?
-    public var deadline: NSNumber = 0
+    public var initDay: Int = 0
+    public var deadline: Int = 0
     public var leadtime: NSNumber?
-    public var alertstart: NSNumber?
-    public var lasttouch: NSNumber?
+    public var alertstart: Int = 0
+    public var lastTouch: Int = 0
     public var use_defaults: NSNumber?
-    public var queued: Bool?
+    public var queued: Bool = false
     public var todayta: Bool = false
     public var hhmmformat: Bool = false
     public var urgencykey: String = ""
@@ -52,12 +52,12 @@ public class BeeGoal {
 
         self.title = json["title"].string!
         self.slug = json["slug"].string!
-        self.initday = json["initday"].number!
-        self.deadline = json["deadline"].number!
+        self.initDay = json["initday"].intValue
+        self.deadline = json["deadline"].intValue
         self.leadtime = json["leadtime"].number!
-        self.alertstart = json["alertstart"].number!
+        self.alertstart = json["alertstart"].intValue
 
-        self.lasttouch = json["lasttouch"].string.flatMap { lasttouchString in
+        self.lastTouch = json["lasttouch"].string.flatMap { lasttouchString in
             let lastTouchDate: Date? = {
                 let df = ISO8601DateFormatter()
                 df.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -65,24 +65,24 @@ public class BeeGoal {
             }()
             
             if let date = lastTouchDate {
-                return NSNumber(value: date.timeIntervalSince1970)
+                return Int(date.timeIntervalSince1970)
             }
             return nil
-        }
+        } ?? 0
 
         self.queued = json["queued"].bool!
         self.yaxis = json["yaxis"].string!
         self.won = json["won"].number!
         self.limsum = json["limsum"].string
         self.safesum = json["safesum"].string
-        self.safebuf = json["safebuf"].number!
+        self.safeBuf = json["safebuf"].intValue
         self.use_defaults = json["use_defaults"].bool! as NSNumber
         self.pledge = json["pledge"].number!
         self.autodata = json["autodata"].string ?? ""
         
-        self.graph_url = json["graph_url"].string
-        self.thumb_url = json["thumb_url"].string
-        
+        self.graphUrl = json["graph_url"].stringValue
+        self.thumbUrl = json["thumb_url"].stringValue
+
         self.healthKitMetric = json["healthkitmetric"].string
         self.todayta = json["todayta"].bool!
         self.hhmmformat = json["hhmmformat"].bool!
@@ -92,7 +92,7 @@ public class BeeGoal {
     }
 
     public var countdownColor :UIColor {
-        let buf = self.safebuf.intValue
+        let buf = self.safeBuf
         if buf < 1 {
             return UIColor.beeminder.red
         }
@@ -110,25 +110,8 @@ public class BeeGoal {
         return safe.prefix(1).uppercased() + safe.dropFirst(1)
     }
     
-    public var humanizedAutodata: String? {
-        if self.autodata == "ifttt" { return "IFTTT" }
-        if self.autodata == "api" { return "API" }
-        if self.autodata == "apple" {
-            let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
-                metric.databaseString == self.healthKitMetric
-            })
-            return self.healthKitMetric == nil ? "Apple" : metric?.humanText
-        }
-        if self.autodata.count > 0 { return self.autodata.capitalized }
-        return nil
-    }
-
     public func hideDataEntry() -> Bool {
         return self.isDataProvidedAutomatically || self.won.boolValue
-    }
-
-    public var isDataProvidedAutomatically: Bool {
-        return !self.autodata.isEmpty
     }
 
     public var isLinkedToHealthKit: Bool {
@@ -149,45 +132,5 @@ public class BeeGoal {
         return nil
     }
 
-    /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
-    var initDaystamp: Daystamp {
-        let initDate = Date(timeIntervalSince1970: self.initday!.doubleValue)
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
-
-        // initDate is constructed such that if we resolve it to a datetime in US Eastern Time, the date part
-        // of that is guaranteed to be the user's local date on the day the goal was created.
-        formatter.timeZone = TimeZone(identifier: "America/New_York")
-        let dateString = formatter.string(from: initDate)
-
-        return try! Daystamp(fromString: dateString)
-    }
-
-}
-
-public extension BeeGoal {
-    var cacheBustingThumbUrl: String {
-        let thumbUrlStr = self.thumb_url!
-        return cacheBuster(thumbUrlStr)
-    }
-    
-    var cacheBustingGraphUrl: String {
-        let graphUrlStr = self.graph_url!
-        return cacheBuster(graphUrlStr)
-    }
-}
-
-private extension BeeGoal {
-    func cacheBuster(_ originUrlStr: String) -> String {
-        guard let lastTouch = self.lasttouch else {
-            return originUrlStr
-        }
-        
-        let queryCharacter = originUrlStr.range(of: "&") == nil ? "?" : "&"
-        
-        let cacheBustingUrlStr = "\(originUrlStr)\(queryCharacter)proctime=\(lastTouch)"
-        
-        return cacheBustingUrlStr
-    }
 }
