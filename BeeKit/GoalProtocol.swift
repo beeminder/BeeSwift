@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 public protocol GoalProtocol : AnyObject {
     var id: String { get }
@@ -16,6 +17,8 @@ public protocol GoalProtocol : AnyObject {
     var useDefaults: Bool { get }
     var alertStart: Int { get }
     var title: String { get }
+    var todayta: Bool { get }
+    var safeSum: String { get }
 }
 
 extension GoalProtocol {
@@ -68,7 +71,22 @@ extension GoalProtocol {
         
         return cacheBustingUrlStr
     }
+    
+    public func capitalSafesum() -> String {
+        return self.safeSum.prefix(1).uppercased() + self.safeSum.dropFirst(1)
+    }
 
-
-
+    public var countdownColor :UIColor {
+        let buf = self.safeBuf
+        if buf < 1 {
+            return UIColor.beeminder.red
+        }
+        else if buf < 2 {
+            return UIColor.beeminder.orange
+        }
+        else if buf < 3 {
+            return UIColor.beeminder.blue
+        }
+        return UIColor.beeminder.green
+    }
 }

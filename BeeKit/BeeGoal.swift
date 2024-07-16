@@ -28,7 +28,7 @@ public class BeeGoal : GoalProtocol {
     public var won: NSNumber = 0
     public var safeBuf: Int = 0
     public var limsum: String?
-    public var safesum: String?
+    public var safeSum: String = ""
     public var initDay: Int = 0
     public var deadline: Int = 0
     public var leadTime: Int = 0
@@ -74,7 +74,7 @@ public class BeeGoal : GoalProtocol {
         self.yaxis = json["yaxis"].string!
         self.won = json["won"].number!
         self.limsum = json["limsum"].string
-        self.safesum = json["safesum"].string
+        self.safeSum = json["safesum"].stringValue
         self.safeBuf = json["safebuf"].intValue
         self.useDefaults = json["use_defaults"].boolValue
         self.pledge = json["pledge"].number!
@@ -91,25 +91,6 @@ public class BeeGoal : GoalProtocol {
         self.recent_data = (try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()) ?? []
     }
 
-    public var countdownColor :UIColor {
-        let buf = self.safeBuf
-        if buf < 1 {
-            return UIColor.beeminder.red
-        }
-        else if buf < 2 {
-            return UIColor.beeminder.orange
-        }
-        else if buf < 3 {
-            return UIColor.beeminder.blue
-        }
-        return UIColor.beeminder.green
-    }
-    
-    public func capitalSafesum() -> String {
-        guard let safe = self.safesum else { return "" }
-        return safe.prefix(1).uppercased() + safe.dropFirst(1)
-    }
-    
     public func hideDataEntry() -> Bool {
         return self.isDataProvidedAutomatically || self.won.boolValue
     }
