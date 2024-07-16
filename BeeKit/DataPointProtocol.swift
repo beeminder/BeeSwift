@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol DataPointProtocol {
+public protocol DataPointProtocol : BeeDataPoint {
     var id: String { get }
     var daystamp: Daystamp { get }
     var value: NSNumber { get }
