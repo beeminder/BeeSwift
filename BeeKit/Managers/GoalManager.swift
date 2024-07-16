@@ -81,9 +81,12 @@ public actor GoalManager {
         return Array(goals.values)
     }
 
-    public func refreshGoal(_ goal: BeeGoal) async throws {
+    public func refreshGoal(_ goal: GoalProtocol) async throws {
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
-        goal.updateToMatch(json: JSON(responseObject!))
+
+        // TODO: We need to find the goal in both stores, and update them both with the response
+
+//        goal.updateToMatch(json: JSON(responseObject!))
 
         await performPostGoalUpdateBookkeeping()
     }

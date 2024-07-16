@@ -12,6 +12,10 @@ public protocol GoalProtocol : AnyObject {
     var graphUrl: String { get }
     var thumbUrl: String { get }
     var safeBuf: Int { get }
+    var leadTime: Int { get }
+    var useDefaults: Bool { get }
+    var alertStart: Int { get }
+    var title: String { get }
 }
 
 extension GoalProtocol {

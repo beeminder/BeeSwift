@@ -31,10 +31,10 @@ public class BeeGoal : GoalProtocol {
     public var safesum: String?
     public var initDay: Int = 0
     public var deadline: Int = 0
-    public var leadtime: NSNumber?
-    public var alertstart: Int = 0
+    public var leadTime: Int = 0
+    public var alertStart: Int = 0
     public var lastTouch: Int = 0
-    public var use_defaults: NSNumber?
+    public var useDefaults: Bool = false
     public var queued: Bool = false
     public var todayta: Bool = false
     public var hhmmformat: Bool = false
@@ -54,8 +54,8 @@ public class BeeGoal : GoalProtocol {
         self.slug = json["slug"].string!
         self.initDay = json["initday"].intValue
         self.deadline = json["deadline"].intValue
-        self.leadtime = json["leadtime"].number!
-        self.alertstart = json["alertstart"].intValue
+        self.leadTime = json["leadtime"].intValue
+        self.alertStart = json["alertstart"].intValue
 
         self.lastTouch = json["lasttouch"].string.flatMap { lasttouchString in
             let lastTouchDate: Date? = {
@@ -76,7 +76,7 @@ public class BeeGoal : GoalProtocol {
         self.limsum = json["limsum"].string
         self.safesum = json["safesum"].string
         self.safeBuf = json["safebuf"].intValue
-        self.use_defaults = json["use_defaults"].bool! as NSNumber
+        self.useDefaults = json["use_defaults"].boolValue
         self.pledge = json["pledge"].number!
         self.autodata = json["autodata"].string ?? ""
         
