@@ -83,10 +83,28 @@ public actor GoalManager {
 
     public func refreshGoal(_ goal: GoalProtocol) async throws {
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
+        let goalJSON = JSON(responseObject!)
+        let goalId = goalJSON["id"].stringValue
 
-        // TODO: We need to find the goal in both stores, and update them both with the response
+        // Update memory representation
+        let existingGoals = self.goalsBox.get() ?? OrderedDictionary()
 
-//        goal.updateToMatch(json: JSON(responseObject!))
+        if let existingGoal = existingGoals[goalId] {
+            existingGoal.updateToMatch(json: goalJSON)
+        } else {
+            logger.warning("Found no existing goal in memory store when refreshing \(goal.slug) with id \(goal.id)")
+        }
+
+        // Update CoreData representation
+        let context = container.newBackgroundContext()
+        let request = NSFetchRequest<Goal>(entityName: "Goal")
+        request.predicate = NSPredicate(format: "id == %@", goalId)
+        if let existingGoal = try context.fetch(request).first {
+            existingGoal.updateToMatch(json: goalJSON)
+        } else {
+            logger.warning("Found no existing goal in CoreData store when refreshing \(goal.slug) with id \(goal.id)")
+        }
+        try context.save()
 
         await performPostGoalUpdateBookkeeping()
     }
