@@ -15,8 +15,8 @@ import BeeKit
 class RemoveHKMetricViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RemoveHKMetricViewController")
     
-    var goal : BeeGoal!
-    
+    var goal : GoalProtocol!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -68,7 +68,6 @@ class RemoveHKMetricViewController: UIViewController {
     
     @objc func removeButtonPressed() {
         guard self.goal != nil else { return }
-        self.goal?.autodata = ""
         let params: [String: [String: String?]] = ["ii_params": ["name": nil, "metric": ""]]
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud.mode = .indeterminate
@@ -77,7 +76,7 @@ class RemoveHKMetricViewController: UIViewController {
             do {
                 let responseObject = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal!.slug).json", parameters: params)
 
-                self.goal = BeeGoal(json: JSON(responseObject!))
+                try await ServiceLocator.goalManager.refreshGoal(self.goal)
 
                 hud.mode = .customView
                 hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
