@@ -11,6 +11,7 @@ public protocol GoalProtocol : AnyObject {
     var lastTouch: Int { get }
     var graphUrl: String { get }
     var thumbUrl: String { get }
+    var safeBuf: Int { get }
 }
 
 extension GoalProtocol {

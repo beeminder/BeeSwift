@@ -135,8 +135,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         logger.notice("Updating badge count")
 
         guard let goals = ServiceLocator.goalManager.staleGoals() else { return }
-        let beemergencyCount = goals.filter({ (goal: BeeGoal) -> Bool in
-            return goal.safebuf.intValue < 1
+        let beemergencyCount = goals.filter({ (goal: GoalProtocol) -> Bool in
+            return goal.safeBuf < 1
         }).count
         logger.notice("Beemergency count is \(beemergencyCount, privacy: .public)")
 

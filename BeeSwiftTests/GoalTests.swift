@@ -99,7 +99,7 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.won, false)
         XCTAssertEqual(goal.safesum, "safe for 200 days")
         XCTAssertEqual(goal.lasttouch, 1670383300)
-        XCTAssertEqual(goal.safebuf, 3583)
+        XCTAssertEqual(goal.safeBuf, 3583)
         XCTAssertEqual(goal.todayta, false)
         XCTAssertEqual(goal.urgencykey, "FROx;PPRx;DL4102469999;P1000000000;test-goal")
         XCTAssertEqual(goal.hhmmformat, false)

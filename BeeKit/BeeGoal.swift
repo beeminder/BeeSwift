@@ -26,7 +26,7 @@ public class BeeGoal : GoalProtocol {
     public var thumbUrl: String = ""
     public var title: String = ""
     public var won: NSNumber = 0
-    public var safebuf: NSNumber = 0
+    public var safeBuf: Int = 0
     public var limsum: String?
     public var safesum: String?
     public var initDay: Int = 0
@@ -75,7 +75,7 @@ public class BeeGoal : GoalProtocol {
         self.won = json["won"].number!
         self.limsum = json["limsum"].string
         self.safesum = json["safesum"].string
-        self.safebuf = json["safebuf"].number!
+        self.safeBuf = json["safebuf"].intValue
         self.use_defaults = json["use_defaults"].bool! as NSNumber
         self.pledge = json["pledge"].number!
         self.autodata = json["autodata"].string ?? ""
@@ -92,7 +92,7 @@ public class BeeGoal : GoalProtocol {
     }
 
     public var countdownColor :UIColor {
-        let buf = self.safebuf.intValue
+        let buf = self.safeBuf
         if buf < 1 {
             return UIColor.beeminder.red
         }
