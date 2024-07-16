@@ -19,7 +19,7 @@ public class DataPointManager {
         self.container = container
     }
 
-    private func fetchRecentDatapoints(goal: BeeGoal, success: @escaping ((_ datapoints : [ExistingDataPoint]) -> ()), errorCompletion: (() -> ())?) {
+    private func fetchRecentDatapoints(goal: BeeGoal, success: @escaping ((_ datapoints : [DataPointProtocol]) -> ()), errorCompletion: (() -> ())?) {
         Task { @MainActor in
             let params = ["sort" : "daystamp", "count" : 7] as [String : Any]
             do {
@@ -32,13 +32,13 @@ public class DataPointManager {
         }
     }
 
-    private func datapointsMatchingDaystamp(datapoints : [ExistingDataPoint], daystamp : Daystamp) -> [ExistingDataPoint] {
+    private func datapointsMatchingDaystamp(datapoints : [DataPointProtocol], daystamp : Daystamp) -> [DataPointProtocol] {
         datapoints.filter { (datapoint) -> Bool in
             return daystamp == datapoint.daystamp
         }
     }
 
-    private func updateDatapoint(goal : BeeGoal, datapoint : ExistingDataPoint, datapointValue : NSNumber) async throws {
+    private func updateDatapoint(goal : BeeGoal, datapoint : DataPointProtocol, datapointValue : NSNumber) async throws {
         let val = datapoint.value
         if datapointValue == val {
             return
@@ -50,7 +50,7 @@ public class DataPointManager {
         let _ = try await requestManager.put(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json", parameters: params)
     }
 
-    private func deleteDatapoint(goal: BeeGoal, datapoint : ExistingDataPoint) async throws {
+    private func deleteDatapoint(goal: BeeGoal, datapoint : DataPointProtocol) async throws {
         let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)", parameters: nil)
     }
 
@@ -58,7 +58,7 @@ public class DataPointManager {
         let _ = try await requestManager.post(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
     }
 
-    private func fetchDatapoints(goal: BeeGoal, sort: String, per: Int, page: Int) async throws -> [ExistingDataPoint] {
+    private func fetchDatapoints(goal: BeeGoal, sort: String, per: Int, page: Int) async throws -> [DataPointProtocol] {
         let params = ["sort" : sort, "per" : per, "page": page] as [String : Any]
         let response = try await requestManager.get(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
         let responseJSON = JSON(response!)
@@ -68,7 +68,7 @@ public class DataPointManager {
     /// Retrieve all data points on or after the daystamp provided
     /// Estimates how many data points are needed to fetch the correct data points, and then performs additional requests if needed
     /// to guarantee all matching points have been fetched.
-    private func datapointsSince(goal: BeeGoal, daystamp: Daystamp) async throws -> [ExistingDataPoint] {
+    private func datapointsSince(goal: BeeGoal, daystamp: Daystamp) async throws -> [DataPointProtocol] {
         // Estimate how many points we need, based on one point per day
         let daysSince = Daystamp.now(deadline: goal.deadline.intValue) - daystamp
 
@@ -113,7 +113,7 @@ public class DataPointManager {
         }
     }
 
-    private func updateToMatchDataPoint(goal: BeeGoal, newDataPoint : BeeDataPoint, recentDatapoints: [ExistingDataPoint]) async throws {
+    private func updateToMatchDataPoint(goal: BeeGoal, newDataPoint : BeeDataPoint, recentDatapoints: [DataPointProtocol]) async throws {
         var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: newDataPoint.daystamp)
         if matchingDatapoints.count == 0 {
             // If there are not already data points for this day, do not add points

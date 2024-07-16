@@ -1,5 +1,4 @@
 import Foundation
 
-protocol GoalProtocol {
-
+public protocol GoalProtocol {
 }

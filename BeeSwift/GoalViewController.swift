@@ -384,7 +384,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: BeeDataPoint) {
         guard !self.goal.hideDataEntry() else { return }
-        guard let existingDatapoint = datapoint as? ExistingDataPoint else { return }
+        guard let existingDatapoint = datapoint as? DataPointProtocol else { return }
 
         let editDatapointViewController = EditDatapointViewController(goal: goal, datapoint: existingDatapoint)
         let navigationController = UINavigationController(rootViewController: editDatapointViewController)

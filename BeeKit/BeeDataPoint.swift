@@ -12,7 +12,7 @@ public protocol BeeDataPoint {
 
 /// A data point received from the server. This will have had an ID allocated
 public struct ExistingDataPoint : BeeDataPoint, DataPointProtocol {
-    public let id: String
+    public let id: String?
     public let requestid: String
     public let daystamp: Daystamp
     public let value: NSNumber
