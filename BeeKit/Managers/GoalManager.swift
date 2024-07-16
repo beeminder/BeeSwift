@@ -109,7 +109,7 @@ public actor GoalManager {
         await performPostGoalUpdateBookkeeping()
     }
 
-    public func forceAutodataRefresh(_ goal: BeeGoal) async throws {
+    public func forceAutodataRefresh(_ goal: GoalProtocol) async throws {
         let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
     }
 
