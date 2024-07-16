@@ -16,7 +16,7 @@ import UIKit
 public class BeeGoal : GoalProtocol {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
 
-    public var autodata: String = ""
+    public var autodata: String? = ""
     public var graph_url: String?
     public var healthKitMetric: String?
     public var id: String = ""
@@ -110,25 +110,8 @@ public class BeeGoal : GoalProtocol {
         return safe.prefix(1).uppercased() + safe.dropFirst(1)
     }
     
-    public var humanizedAutodata: String? {
-        if self.autodata == "ifttt" { return "IFTTT" }
-        if self.autodata == "api" { return "API" }
-        if self.autodata == "apple" {
-            let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
-                metric.databaseString == self.healthKitMetric
-            })
-            return self.healthKitMetric == nil ? "Apple" : metric?.humanText
-        }
-        if self.autodata.count > 0 { return self.autodata.capitalized }
-        return nil
-    }
-
     public func hideDataEntry() -> Bool {
         return self.isDataProvidedAutomatically || self.won.boolValue
-    }
-
-    public var isDataProvidedAutomatically: Bool {
-        return !self.autodata.isEmpty
     }
 
     public var isLinkedToHealthKit: Bool {
