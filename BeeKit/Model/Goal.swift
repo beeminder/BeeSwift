@@ -10,7 +10,7 @@ public class Goal: NSManagedObject {
     @NSManaged public var slug: String
 
     /// Seconds after midnight that we start sending you reminders (on the day that you're scheduled to start getting them).
-    @NSManaged public var alertStart: Int64
+    @NSManaged public var alertStart: Int
     /// The name of automatic data source, if this goal has one. Will be null for manual goals.
     @NSManaged public var autodata: String?
     /// Seconds by which your deadline differs from midnight. Negative is before midnight, positive is after midnight. Allowed range is -17*3600 to 6*3600 (7am to 6am).
@@ -22,19 +22,19 @@ public class Goal: NSManagedObject {
     /// Whether to show data in a "timey" way, with colons. For example, this would make a 1.5 show up as 1:30.
     @NSManaged public var hhmmFormat: Bool
     /// Unix timestamp (in seconds) of the start of the bright red line.
-    @NSManaged public var initDay: Int64
+    @NSManaged public var initDay: Int
     /// Undocumented.
-    @NSManaged public var lastTouch: Int64
+    @NSManaged public var lastTouch: Int
     /// Summary of what you need to do to eke by, e.g., "+2 within 1 day".
     @NSManaged public var limSum: String
     /// Days before derailing we start sending you reminders. Zero means we start sending them on the beemergency day, when you will derail later that day.
-    @NSManaged public var leadTime: Int64
+    @NSManaged public var leadTime: Int
     /// Amount pledged (USD) on the goal.
-    @NSManaged public var pledge: Int64
+    @NSManaged public var pledge: Int
     /// Whether the graph is currently being updated to reflect new data.
     @NSManaged public var queued: Bool
     /// The integer number of safe days. If it's a beemergency this will be zero.
-    @NSManaged public var safeBuf: Int64
+    @NSManaged public var safeBuf: Int
     /// Undocumented
     @NSManaged public var safeSum: String
     /// URL for the goal's graph thumbnail image. E.g., "http://static.beeminder.com/alice/weight-thumb.png".
@@ -81,19 +81,19 @@ public class Goal: NSManagedObject {
         owner: User,
         id: String,
         slug: String,
-        alertStart: Int64,
+        alertStart: Int,
         autodata: String?,
         deadline: Int,
         graphUrl: String,
         healthKitMetric: String,
         hhmmFormat: Bool,
-        initDay: Int64,
-        lastTouch: Int64,
+        initDay: Int,
+        lastTouch: Int,
         limSum: String,
-        leadTime: Int64,
-        pledge: Int64,
+        leadTime: Int,
+        pledge: Int,
         queued: Bool,
-        safeBuf: Int64,
+        safeBuf: Int,
         safeSum: String,
         thumbUrl: String,
         title: String,
@@ -158,19 +158,19 @@ public class Goal: NSManagedObject {
     public func updateToMatch(json: JSON) {
         self.slug = json["slug"].stringValue
 
-        self.alertStart = json["alertstart"].int64Value
+        self.alertStart = json["alertstart"].intValue
         self.autodata = json["autodata"].string
         self.deadline = json["deadline"].intValue
         self.graphUrl = json["graph_url"].stringValue
         self.healthKitMetric = json["healthkitmetric"].stringValue
         self.hhmmFormat = json["hhmmformat"].boolValue
-        self.initDay = json["initday"].int64Value
-        self.lastTouch = json["updated_at"].int64Value
+        self.initDay = json["initday"].intValue
+        self.lastTouch = json["updated_at"].intValue
         self.limSum = json["limsum"].stringValue
-        self.leadTime = json["leadtime"].int64Value
-        self.pledge = json["pledge"].int64Value
+        self.leadTime = json["leadtime"].intValue
+        self.pledge = json["pledge"].intValue
         self.queued = json["queued"].boolValue
-        self.safeBuf = json["safebuf"].int64Value
+        self.safeBuf = json["safebuf"].intValue
         self.safeSum = json["safesum"].stringValue
         self.thumbUrl = json["thumb_url"].stringValue
         self.title = json["title"].stringValue

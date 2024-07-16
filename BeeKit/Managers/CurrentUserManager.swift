@@ -70,9 +70,9 @@ public class CurrentUserManager {
             username: userDefaults.object(forKey: CurrentUserManager.usernameKey) as! String,
             deadbeat: userDefaults.object(forKey: CurrentUserManager.deadbeatKey) != nil,
             timezone: userDefaults.object(forKey: CurrentUserManager.beemTZKey) as? String ?? "Unknown",
-            defaultAlertStart: (userDefaults.object(forKey: CurrentUserManager.defaultAlertstartKey) ?? 0) as! Int32,
-            defaultDeadline: (userDefaults.object(forKey: CurrentUserManager.defaultDeadlineKey) ?? 0) as! Int32,
-            defaultLeadTime: (userDefaults.object(forKey: CurrentUserManager.defaultLeadtimeKey) ?? 0) as! Int32
+            defaultAlertStart: (userDefaults.object(forKey: CurrentUserManager.defaultAlertstartKey) ?? 0) as! Int,
+            defaultDeadline: (userDefaults.object(forKey: CurrentUserManager.defaultDeadlineKey) ?? 0) as! Int,
+            defaultLeadTime: (userDefaults.object(forKey: CurrentUserManager.defaultLeadtimeKey) ?? 0) as! Int
        )
         try! context.save()
     }
@@ -133,25 +133,25 @@ public class CurrentUserManager {
     }
     
     public func setDefaultLeadTime(_ leadtime : NSNumber) {
-        try! modifyUser { $0.defaultLeadTime = leadtime as! Int32 }
+        try! modifyUser { $0.defaultLeadTime = leadtime as! Int }
         self.set(leadtime, forKey: CurrentUserManager.defaultLeadtimeKey)
     }
 
-    public func defaultAlertstart() -> NSNumber {
-        return (user()?.defaultAlertStart ?? 0) as NSNumber
+    public func defaultAlertstart() -> Int {
+        return (user()?.defaultAlertStart ?? 0) as Int
     }
     
-    public func setDefaultAlertstart(_ alertstart : NSNumber) {
-        try! modifyUser { $0.defaultAlertStart = alertstart as! Int32 }
+    public func setDefaultAlertstart(_ alertstart : Int) {
+        try! modifyUser { $0.defaultAlertStart = alertstart }
         self.set(alertstart, forKey: CurrentUserManager.defaultAlertstartKey)
     }
     
-    public func defaultDeadline() -> NSNumber {
-        return (user()?.defaultDeadline ?? 0) as NSNumber
+    public func defaultDeadline() -> Int {
+        return (user()?.defaultDeadline ?? 0) as Int
     }
     
-    public func setDefaultDeadline(_ deadline : NSNumber) {
-        try! modifyUser { $0.defaultDeadline = deadline as! Int32 }
+    public func setDefaultDeadline(_ deadline : Int) {
+        try! modifyUser { $0.defaultDeadline = deadline }
         self.set(deadline, forKey: CurrentUserManager.defaultDeadlineKey)
     }
     
@@ -198,9 +198,9 @@ public class CurrentUserManager {
              username: responseJSON[CurrentUserManager.usernameKey].string!,
              deadbeat: responseJSON["deadbeat"].boolValue,
              timezone: responseJSON[CurrentUserManager.beemTZKey].string!,
-             defaultAlertStart: responseJSON[CurrentUserManager.defaultAlertstartKey].int32!,
-             defaultDeadline: responseJSON[CurrentUserManager.defaultDeadlineKey].int32!,
-             defaultLeadTime: responseJSON[CurrentUserManager.defaultLeadtimeKey].int32!)
+             defaultAlertStart: responseJSON[CurrentUserManager.defaultAlertstartKey].intValue,
+             defaultDeadline: responseJSON[CurrentUserManager.defaultDeadlineKey].intValue,
+             defaultLeadTime: responseJSON[CurrentUserManager.defaultLeadtimeKey].intValue)
         try context.save()
 
         if responseJSON["deadbeat"].boolValue {
@@ -222,9 +222,9 @@ public class CurrentUserManager {
         let responseJSON = JSON(response!)
 
         try! modifyUser { user in
-            user.defaultAlertStart = responseJSON["default_alertstart"].int32!
-            user.defaultDeadline = responseJSON["default_deadline"].int32!
-            user.defaultLeadTime = responseJSON["default_leadtime"].int32!
+            user.defaultAlertStart = responseJSON["default_alertstart"].intValue
+            user.defaultDeadline = responseJSON["default_deadline"].intValue
+            user.defaultLeadTime = responseJSON["default_leadtime"].intValue
         }
 
         self.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")

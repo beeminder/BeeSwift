@@ -20,13 +20,13 @@ class EditNotificationsViewController: UIViewController {
                 self.timePickerView.isHidden = true
             } else if self.timePickerEditingMode == .alertstart {
                 self.timePickerView.isHidden = false
-                self.setTimePickerComponents(self.alertstart.intValue)
+                self.setTimePickerComponents(self.alertstart)
                 self.alertStartLabel.font = UIFont.beeminder.defaultBoldFont
                 self.deadlineLabel.font = UIFont.beeminder.defaultFont
             }
             else if self.timePickerEditingMode == .deadline {
                 self.timePickerView.isHidden = false
-                self.setTimePickerComponents(self.deadline.intValue)
+                self.setTimePickerComponents(self.deadline)
                 self.alertStartLabel.font = UIFont.beeminder.defaultFont
                 self.deadlineLabel.font = UIFont.beeminder.defaultBoldFont
             }
@@ -37,12 +37,12 @@ class EditNotificationsViewController: UIViewController {
     var leadTimeStepper = UIStepper()
     var alertStartLabel = BSLabel()
     var deadlineLabel = BSLabel()
-    var alertstart = NSNumber() {
+    var alertstart = Int() {
         didSet {
             self.updateAlertstartLabel(self.alertstart)
         }
     }
-    var deadline = NSNumber() {
+    var deadline = Int() {
         didSet {
             self.updateDeadlineLabel(self.deadline)
         }
@@ -117,16 +117,16 @@ class EditNotificationsViewController: UIViewController {
         self.timePickerEditingMode = .deadline
     }
     
-    func updateAlertstartLabel(_ alertstart : NSNumber) {
+    func updateAlertstartLabel(_ alertstart : Int) {
         self.alertStartLabel.text = "Start notifications at: \(self.stringFromMidnightOffset(alertstart))"
     }
     
-    func updateDeadlineLabel(_ deadline: NSNumber) {
+    func updateDeadlineLabel(_ deadline: Int) {
         self.deadlineLabel.text = "Goal deadline: \(self.stringFromMidnightOffset(deadline))"
     }
     
-    func stringFromMidnightOffset(_ offset : NSNumber) -> NSString {
-        let date = Date(timeInterval: offset.doubleValue, since: Calendar.current.startOfDay(for: Date()))
+    func stringFromMidnightOffset(_ offset : Int) -> NSString {
+        let date = Date(timeInterval: Double(offset), since: Calendar.current.startOfDay(for: Date()))
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: self.use24HourTime() ? "en_UK" : "en_US")
         dateFormatter.timeStyle = DateFormatter.Style.short
@@ -190,11 +190,11 @@ extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerView
         return 2
     }
     
-    func midnightOffsetFromTimePickerView() -> NSNumber {
+    func midnightOffsetFromTimePickerView() -> Int {
         let minute = NSNumber.init(value: self.timePickerView.selectedRow(inComponent: 1))
         let hour = self.hourFromTimePicker()
         
-        return NSNumber(value: 3600*hour.intValue + 60*minute.intValue)
+        return 3600*hour.intValue + 60*minute.intValue
     }
     
     // we're doing this instead of just using a UIDatePicker so that we can use the

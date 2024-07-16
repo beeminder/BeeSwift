@@ -29,10 +29,10 @@ public class BeeGoal : GoalProtocol {
     public var safebuf: NSNumber = 0
     public var limsum: String?
     public var safesum: String?
-    public var initday: NSNumber?
-    public var deadline: NSNumber = 0
+    public var initDay: Int = 0
+    public var deadline: Int = 0
     public var leadtime: NSNumber?
-    public var alertstart: NSNumber?
+    public var alertstart: Int = 0
     public var lasttouch: NSNumber?
     public var use_defaults: NSNumber?
     public var queued: Bool?
@@ -52,10 +52,10 @@ public class BeeGoal : GoalProtocol {
 
         self.title = json["title"].string!
         self.slug = json["slug"].string!
-        self.initday = json["initday"].number!
-        self.deadline = json["deadline"].number!
+        self.initDay = json["initday"].intValue
+        self.deadline = json["deadline"].intValue
         self.leadtime = json["leadtime"].number!
-        self.alertstart = json["alertstart"].number!
+        self.alertstart = json["alertstart"].intValue
 
         self.lasttouch = json["lasttouch"].string.flatMap { lasttouchString in
             let lastTouchDate: Date? = {
@@ -132,20 +132,6 @@ public class BeeGoal : GoalProtocol {
         return nil
     }
 
-    /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
-    var initDaystamp: Daystamp {
-        let initDate = Date(timeIntervalSince1970: self.initday!.doubleValue)
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
-
-        // initDate is constructed such that if we resolve it to a datetime in US Eastern Time, the date part
-        // of that is guaranteed to be the user's local date on the day the goal was created.
-        formatter.timeZone = TimeZone(identifier: "America/New_York")
-        let dateString = formatter.string(from: initDate)
-
-        return try! Daystamp(fromString: dateString)
-    }
 
 }
 

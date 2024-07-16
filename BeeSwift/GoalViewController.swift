@@ -210,13 +210,13 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         let calendar = Calendar.current
         let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
         let currentHour = components.hour
-        if self.goal.deadline.intValue > 0 && currentHour! < 6 && currentHour! < self.goal.deadline.intValue/3600 {
+        if self.goal.deadline > 0 && currentHour! < 6 && currentHour! < self.goal.deadline/3600 {
             self.dateStepper.value = -1
         }
 
         // if the goal's deadline is before midnight and has already passed for this calendar day, default to entering data for the "next" day
-        if self.goal.deadline.intValue < 0 {
-            let deadlineSecondsAfterMidnight = 24*3600 + self.goal.deadline.intValue
+        if self.goal.deadline < 0 {
+            let deadlineSecondsAfterMidnight = 24*3600 + self.goal.deadline
             let deadlineHour = deadlineSecondsAfterMidnight/3600
             let deadlineMinute = (deadlineSecondsAfterMidnight % 3600)/60
             let currentMinute = components.minute
