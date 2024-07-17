@@ -55,13 +55,13 @@ public actor GoalManager {
 
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
-    public nonisolated func staleGoals() -> [BeeGoal]? {
+    public nonisolated func staleGoals() -> [GoalProtocol]? {
         guard let goals = self.goalsBox.get() else { return nil }
         return Array(goals.values)
     }
 
     /// Fetch and return the latest set of goals from the server
-    public func fetchGoals() async throws -> [BeeGoal] {
+    public func fetchGoals() async throws -> [GoalProtocol] {
         guard let username = currentUserManager.username else {
             try await currentUserManager.signOut()
             return []
