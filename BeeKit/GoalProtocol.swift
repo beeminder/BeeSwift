@@ -4,8 +4,6 @@ import UIKit
 public protocol GoalProtocol : AnyObject {
     var id: String { get }
     var slug: String { get }
-    var autodata: String? { get set }
-    var healthKitMetric: String? { get set }
     var deadline: Int { get }
     var initDay: Int { get }
     var queued: Bool { get }
@@ -22,7 +20,13 @@ public protocol GoalProtocol : AnyObject {
     var won: Bool { get }
     var hhmmFormat: Bool { get }
     var yAxis: String { get }
+    var pledge: Int { get }
+    var urgencyKey: String { get }
     var recentData: Set<AnyHashable> { get }
+
+    // Allow setters for synx test, for now
+    var autodata: String? { get set }
+    var healthKitMetric: String? { get set }
 }
 
 extension GoalProtocol {

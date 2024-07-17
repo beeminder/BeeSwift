@@ -20,7 +20,7 @@ public class BeeGoal : GoalProtocol {
     public var graphUrl: String = ""
     public var healthKitMetric: String?
     public var id: String = ""
-    public var pledge: NSNumber = 0
+    public var pledge: Int = 0
     public var yAxis: String = ""
     public var slug: String = ""
     public var thumbUrl: String = ""
@@ -38,7 +38,7 @@ public class BeeGoal : GoalProtocol {
     public var queued: Bool = false
     public var todayta: Bool = false
     public var hhmmFormat: Bool = false
-    public var urgencykey: String = ""
+    public var urgencyKey: String = ""
     public var recentData: Set<AnyHashable> = Set()
 
     public init(json: JSON) {
@@ -77,7 +77,7 @@ public class BeeGoal : GoalProtocol {
         self.safeSum = json["safesum"].stringValue
         self.safeBuf = json["safebuf"].intValue
         self.useDefaults = json["use_defaults"].boolValue
-        self.pledge = json["pledge"].number!
+        self.pledge = json["pledge"].intValue
         self.autodata = json["autodata"].string ?? ""
         
         self.graphUrl = json["graph_url"].stringValue
@@ -86,7 +86,7 @@ public class BeeGoal : GoalProtocol {
         self.healthKitMetric = json["healthkitmetric"].string
         self.todayta = json["todayta"].bool!
         self.hhmmFormat = json["hhmmformat"].bool!
-        self.urgencykey = json["urgencykey"].string!
+        self.urgencyKey = json["urgencykey"].string!
 
         self.recentData = Set(arrayLiteral: try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue) ?? [])
     }

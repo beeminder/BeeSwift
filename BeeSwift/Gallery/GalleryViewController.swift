@@ -33,9 +33,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var goals : Array<BeeGoal> = []
-    var filteredGoals : Array<BeeGoal> = []
-    
+    var goals : Array<GoalProtocol> = []
+    var filteredGoals : Array<GoalProtocol> = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -424,12 +424,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     return goal1.lastTouch > goal2.lastTouch
                 }
                 else if selectedGoalSort == Constants.pledgeGoalSortString {
-                    return goal1.pledge.intValue > goal2.pledge.intValue
+                    return goal1.pledge > goal2.pledge
                 }
             }
 
             // urgencykey is guaranteed to result in goals sorting into the canonical order
-            return goal1.urgencykey < goal2.urgencykey
+            return goal1.urgencyKey < goal2.urgencyKey
         })
         self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
     }
@@ -474,8 +474,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let goal:BeeGoal = self.filteredGoals[(indexPath as NSIndexPath).row]
-        
+        let goal:GoalProtocol = self.filteredGoals[(indexPath as NSIndexPath).row]
+
         cell.goal = goal
         
         return cell
@@ -509,7 +509,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
-    func openGoal(_ goal: BeeGoal) {
+    func openGoal(_ goal: GoalProtocol) {
         let goalViewController = GoalViewController()
         goalViewController.goal = goal
         self.navigationController?.pushViewController(goalViewController, animated: true)
