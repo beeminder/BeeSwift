@@ -54,9 +54,14 @@ public class Goal: NSManagedObject {
 
     @NSManaged public var recentData: Set<DataPoint>
 
-    // TODO: Set of points
-
-
+    @objc(addRecentDataObject:)
+    @NSManaged public func addToRecentData(_ value: DataPoint)
+    @objc(removeRecentDataObject:)
+    @NSManaged public func removeFromRecentData(_ value: DataPoint)
+    @objc(addRecentData:)
+    @NSManaged public func addToRecentData(_ values: Set<DataPoint>)
+    @objc(removeRecentData:)
+    @NSManaged public func removeFromRecentData(_ values: Set<DataPoint>)
 
     public init(
         context: NSManagedObjectContext,
@@ -164,13 +169,12 @@ public class Goal: NSManagedObject {
 
         // Replace recent data with results from server
         // Note at present this leaks data points in the main db. This is probably fine for now
-        let newRecentData = NSOrderedSet(array: json["recent_data"].arrayValue.map {
+        let newRecentData = Set<DataPoint>(json["recent_data"].arrayValue.map {
             DataPoint.fromJSON(context: self.managedObjectContext!, goal: self, json: $0)
         })
 
-        // TODO: Add the right sigs
-        //removeFromRecentData(recentData)
-        //addToRecentData(newRecentData)
+        removeFromRecentData(recentData)
+        addToRecentData(newRecentData)
     }
 
     public var isDataProvidedAutomatically: Bool {
