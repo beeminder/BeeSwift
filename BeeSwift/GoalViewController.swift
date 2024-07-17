@@ -22,7 +22,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
 
-    var goal : BeeGoal!
+    var goal : GoalProtocol!
 
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
     fileprivate var datapointTableController = DatapointTableViewController()
@@ -329,10 +329,10 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         do {
             let hoursRegex = try NSRegularExpression(pattern: "(hr|hour)s?")
             let minutesRegex = try NSRegularExpression(pattern: "(min|minute)s?")
-            if hoursRegex.firstMatch(in: self.goal.yaxis, options: [], range: NSMakeRange(0, self.goal.yaxis.count)) != nil {
+            if hoursRegex.firstMatch(in: self.goal.yAxis, options: [], range: NSMakeRange(0, self.goal.yAxis.count)) != nil {
                 controller.units = "hours"
             }
-            if minutesRegex.firstMatch(in: self.goal.yaxis, options: [], range: NSMakeRange(0, self.goal.yaxis.count)) != nil {
+            if minutesRegex.firstMatch(in: self.goal.yAxis, options: [], range: NSMakeRange(0, self.goal.yAxis.count)) != nil {
                 controller.units = "minutes"
             }
         } catch {
@@ -384,7 +384,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: BeeDataPoint) {
         guard !self.goal.hideDataEntry() else { return }
-        guard let existingDatapoint = datapoint as? DataPointProtocol else { return }
+        guard let existingDatapoint = datapoint as? any DataPointProtocol else { return }
 
         let editDatapointViewController = EditDatapointViewController(goal: goal, datapoint: existingDatapoint)
         let navigationController = UINavigationController(rootViewController: editDatapointViewController)
@@ -510,12 +510,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func updateInterfaceToMatchGoal() {
-        self.datapointTableController.hhmmformat = goal.hhmmformat
-        if let data = goal.recent_data {
-            self.datapointTableController.datapoints = data
-        } else {
-            self.datapointTableController.datapoints = []
-        }
+        self.datapointTableController.hhmmformat = goal.hhmmFormat
+        self.datapointTableController.datapoints = goal.recentData.map({$0 as! any DataPointProtocol}).sorted(by: {$0.updatedAt > $1.updatedAt})
 
         self.refreshCountdown()
     }

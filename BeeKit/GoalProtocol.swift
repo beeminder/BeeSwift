@@ -19,6 +19,10 @@ public protocol GoalProtocol : AnyObject {
     var title: String { get }
     var todayta: Bool { get }
     var safeSum: String { get }
+    var won: Bool { get }
+    var hhmmFormat: Bool { get }
+    var yAxis: String { get }
+    var recentData: Set<AnyHashable> { get }
 }
 
 extension GoalProtocol {
@@ -34,7 +38,7 @@ extension GoalProtocol {
         if let autodata = self.autodata, autodata.count > 0 { return autodata.capitalized }
         return nil
     }
-    
+
     public var isDataProvidedAutomatically: Bool {
         return !(self.autodata ?? "").isEmpty
     }
@@ -58,7 +62,7 @@ extension GoalProtocol {
         let thumbUrlStr = self.thumbUrl
         return cacheBuster(thumbUrlStr)
     }
-    
+
     public var cacheBustingGraphUrl: String {
         let graphUrlStr = self.graphUrl
         return cacheBuster(graphUrlStr)
@@ -66,12 +70,12 @@ extension GoalProtocol {
 
     private func cacheBuster(_ originUrlStr: String) -> String {
         let queryCharacter = originUrlStr.range(of: "&") == nil ? "?" : "&"
-        
+
         let cacheBustingUrlStr = "\(originUrlStr)\(queryCharacter)proctime=\(self.lastTouch)"
-        
+
         return cacheBustingUrlStr
     }
-    
+
     public func capitalSafesum() -> String {
         return self.safeSum.prefix(1).uppercased() + self.safeSum.dropFirst(1)
     }
@@ -88,5 +92,27 @@ extension GoalProtocol {
             return UIColor.beeminder.blue
         }
         return UIColor.beeminder.green
+    }
+
+    public func hideDataEntry() -> Bool {
+        return self.isDataProvidedAutomatically || self.won
+    }
+
+    public var isLinkedToHealthKit: Bool {
+        return self.autodata == "apple"
+    }
+
+    /// A hint for the value the user is likely to enter, based on past data points
+    public var suggestedNextValue: NSNumber? {
+        let recentData = self.recentData
+        for dataPoint in recentData.map{ $0 as! any DataPointProtocol }.sorted(by: { $0.updatedAt > $1.updatedAt }) {
+            let comment = dataPoint.comment
+            // Ignore data points with comments suggesting they aren't a real value
+            if comment.contains("#DERAIL") || comment.contains("#SELFDESTRUCT") || comment.contains("#THISWILLSELFDESTRUCT") || comment.contains("#RESTART") || comment.contains("#TARE") {
+                continue
+            }
+            return dataPoint.value
+        }
+        return nil
     }
 }

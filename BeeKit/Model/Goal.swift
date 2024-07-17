@@ -52,28 +52,10 @@ public class Goal: NSManagedObject {
     /// The label for the y-axis of the graph. E.g., "Cumulative total hours".
     @NSManaged public var yAxis: String
 
-    @NSManaged public var recentData: NSOrderedSet
+    @NSManaged public var recentData: Set<DataPoint>
 
-    @objc(insertObject:inRecentDataAtIndex:)
-    @NSManaged private func insertIntoRecentData(_ value: DataPoint, at idx: Int)
-    @objc(removeObjectFromRecentDataAtIndex:)
-    @NSManaged private func removeFromRecentData(at idx: Int)
-    @objc(insertRecentData:atIndexes:)
-    @NSManaged private func insertIntoRecentData(_ values: [DataPoint], at indexes: NSIndexSet)
-    @objc(removeRecentDataAtIndexes:)
-    @NSManaged private func removeFromRecentData(at indexes: NSIndexSet)
-    @objc(replaceObjectInRecentDataAtIndex:withObject:)
-    @NSManaged private func replaceRecentData(at idx: Int, with value: DataPoint)
-    @objc(replaceRecentDataAtIndexes:withRecentData:)
-    @NSManaged private func replaceRecentData(at indexes: NSIndexSet, with values: [DataPoint])
-    @objc(addRecentDataObject:)
-    @NSManaged private func addToRecentData(_ value: DataPoint)
-    @objc(removeRecentDataObject:)
-    @NSManaged private func removeFromRecentData(_ value: DataPoint)
-    @objc(addRecentData:)
-    @NSManaged private func addToRecentData(_ values: NSOrderedSet)
-    @objc(removeRecentData:)
-    @NSManaged private func removeFromRecentData(_ values: NSOrderedSet)
+    // TODO: Set of points
+
 
 
     public init(
@@ -185,8 +167,10 @@ public class Goal: NSManagedObject {
         let newRecentData = NSOrderedSet(array: json["recent_data"].arrayValue.map {
             DataPoint.fromJSON(context: self.managedObjectContext!, goal: self, json: $0)
         })
-        removeFromRecentData(recentData)
-        addToRecentData(newRecentData)
+
+        // TODO: Add the right sigs
+        //removeFromRecentData(recentData)
+        //addToRecentData(newRecentData)
     }
 
     public var isDataProvidedAutomatically: Bool {

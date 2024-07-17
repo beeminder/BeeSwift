@@ -84,7 +84,7 @@ public class HealthStoreManager :NSObject {
     /// - Parameters:
     ///   - goal: The healthkit-connected goal to be updated
     ///   - days: How many days of history to update. Supplying 1 will update the current day.
-    public func updateWithRecentData(goal: BeeGoal, days: Int) async throws {
+    public func updateWithRecentData(goal: GoalProtocol, days: Int) async throws {
         logger.notice("Updating \(goal.healthKitMetric ?? "nil", privacy: .public) goal with recent day for last \(days, privacy: .public) days")
         guard let connection = self.connectionFor(goal: goal) else {
             throw HealthKitError("Failed to find connection for goal")
@@ -107,7 +107,7 @@ public class HealthStoreManager :NSObject {
     }
 
     /// Gets or creates an appropriate connection object for the supplied goal
-    private func connectionFor(goal: BeeGoal) -> GoalHealthKitConnection? {
+    private func connectionFor(goal: GoalProtocol) -> GoalHealthKitConnection? {
         connectionsSemaphore.wait()
 
         if (goal.healthKitMetric ?? "") == "" {
