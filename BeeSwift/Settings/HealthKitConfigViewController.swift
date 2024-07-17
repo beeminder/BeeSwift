@@ -18,7 +18,7 @@ class HealthKitConfigViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthKitConfigViewController")
     
     var tableView = UITableView()
-    var goals : [BeeGoal] = []
+    var goals : [GoalProtocol] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
     let margin = 12
     
@@ -131,7 +131,7 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
         }
     }
     
-    private func goalAt(_ indexPath: IndexPath) -> BeeGoal {
+    private func goalAt(_ indexPath: IndexPath) -> GoalProtocol {
         if indexPath.section == 0 {
             return self.manualSourced[indexPath.row]
         } else if indexPath.section == 1 {
@@ -164,21 +164,21 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
 }
 
 extension HealthKitConfigViewController {
-    var autoSourced: [BeeGoal] {
+    var autoSourced: [GoalProtocol] {
         return self.goals.filter { $0.isDataProvidedAutomatically }
     }
     
-    var manualSourced: [BeeGoal] {
+    var manualSourced: [GoalProtocol] {
         return self.goals.filter { !$0.isDataProvidedAutomatically }
     }
     
-    var autoSourcedModifiable: [BeeGoal] {
+    var autoSourcedModifiable: [GoalProtocol] {
         return self.autoSourced.filter { goal -> Bool in
             return "Apple".localizedCaseInsensitiveCompare(goal.autodata ?? "") == ComparisonResult.orderedSame
         }
     }
     
-    var autoSourcedUnmodifiable: [BeeGoal] {
+    var autoSourcedUnmodifiable: [GoalProtocol] {
         return self.autoSourced.filter { goal -> Bool in
             return "Apple".localizedCaseInsensitiveCompare(goal.autodata ?? "") != ComparisonResult.orderedSame
         }
