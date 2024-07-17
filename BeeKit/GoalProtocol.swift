@@ -4,8 +4,8 @@ import UIKit
 public protocol GoalProtocol : AnyObject {
     var id: String { get }
     var slug: String { get }
-    var autodata: String? { get }
-    var healthKitMetric: String? { get }
+    var autodata: String? { get set }
+    var healthKitMetric: String? { get set }
     var deadline: Int { get }
     var initDay: Int { get }
     var queued: Bool { get }

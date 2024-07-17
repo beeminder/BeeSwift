@@ -35,7 +35,7 @@ public class HealthStoreManager :NSObject {
     }
 
     /// Start listening for background updates to the supplied goal if we are not already doing so
-    public func ensureUpdatesRegularly(goal: BeeGoal) async throws {
+    public func ensureUpdatesRegularly(goal: GoalProtocol) async throws {
         try await self.ensureUpdatesRegularly(goals: [goal])
     }
 
@@ -44,7 +44,7 @@ public class HealthStoreManager :NSObject {
     ///
     /// It is safe to pass the same goal or set of goals to this function multiple times, this function
     /// will ensure duplicate observers are not installed.
-    public func ensureUpdatesRegularly(goals: [BeeGoal]) async throws {
+    public func ensureUpdatesRegularly(goals: [GoalProtocol]) async throws {
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
 
         var permissions = Set<HKObjectType>()
@@ -69,7 +69,7 @@ public class HealthStoreManager :NSObject {
     ///
     /// This function will never show a permissions dialog - instead it will not update for
     /// metrics where we do not have permission.
-    public func silentlyInstallObservers(goals: [BeeGoal]) {
+    public func silentlyInstallObservers(goals: [GoalProtocol]) {
         logger.notice("Silently installing observer queries")
 
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
