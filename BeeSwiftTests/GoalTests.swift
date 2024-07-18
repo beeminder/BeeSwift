@@ -113,9 +113,9 @@ final class GoalTests: XCTestCase {
     func testSuggestedNextValueBasedOnLastValue() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = [
-            ["value": 1, "daystamp": "20221130", "updated_at": 100],
+            ["value": 1, "daystamp": "20221130", "updated_at": 300],
             ["value": 2, "daystamp": "20221126", "updated_at": 200],
-            ["value": 3.5, "daystamp": "20221125", "updated_at": 300],
+            ["value": 3.5, "daystamp": "20221125", "updated_at": 100],
         ]
         let goal = BeeGoal(json: testJSON)
 
@@ -133,12 +133,12 @@ final class GoalTests: XCTestCase {
     func testSuggestedNextValueIgnoresDerailsAndSelfDestructs() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = [
-            ["value": 0, "daystamp": "20221131", "comment": "Goal #RESTART Point"],
-            ["value": 0, "daystamp": "20221131", "comment": "This will #SELFDESTRUCT"],
-            ["value": 0, "daystamp": "20221131", "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT"],
-            ["value": 0, "daystamp": "20221130", "comment": "#DERAIL ON THE 1st"],
-            ["value": 2, "daystamp": "20221126"],
-            ["value": 3.5, "daystamp": "20221125"],
+            ["value": 0, "daystamp": "20221131", "updated_at": 600, "comment": "Goal #RESTART Point"],
+            ["value": 0, "daystamp": "20221131", "updated_at": 500, "comment": "This will #SELFDESTRUCT"],
+            ["value": 0, "daystamp": "20221131", "updated_at": 400, "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT"],
+            ["value": 0, "daystamp": "20221130", "updated_at": 300, "comment": "#DERAIL ON THE 1st"],
+            ["value": 2, "daystamp": "20221126", "updated_at": 200],
+            ["value": 3.5, "daystamp": "20221125", "updated_at": 100],
         ]
         let goal = BeeGoal(json: testJSON)
 

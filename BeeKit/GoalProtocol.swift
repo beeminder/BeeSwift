@@ -109,7 +109,7 @@ extension GoalProtocol {
     /// A hint for the value the user is likely to enter, based on past data points
     public var suggestedNextValue: NSNumber? {
         let recentData = self.recentData
-        for dataPoint in recentData.map({ $0 as! any DataPointProtocol }).sorted(by: { $0.updatedAt < $1.updatedAt }) {
+        for dataPoint in recentData.map({ $0 as! any DataPointProtocol }).sorted(by: { $0.updatedAt > $1.updatedAt }) {
             let comment = dataPoint.comment
             // Ignore data points with comments suggesting they aren't a real value
             if comment.contains("#DERAIL") || comment.contains("#SELFDESTRUCT") || comment.contains("#THISWILLSELFDESTRUCT") || comment.contains("#RESTART") || comment.contains("#TARE") {
