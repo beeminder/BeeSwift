@@ -55,13 +55,13 @@ public actor GoalManager {
 
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
-    public nonisolated func staleGoals() -> [BeeGoal]? {
+    public nonisolated func staleGoals() -> [GoalProtocol]? {
         guard let goals = self.goalsBox.get() else { return nil }
         return Array(goals.values)
     }
 
     /// Fetch and return the latest set of goals from the server
-    public func fetchGoals() async throws -> [BeeGoal] {
+    public func fetchGoals() async throws -> [GoalProtocol] {
         guard let username = currentUserManager.username else {
             try await currentUserManager.signOut()
             return []
@@ -81,14 +81,35 @@ public actor GoalManager {
         return Array(goals.values)
     }
 
-    public func refreshGoal(_ goal: BeeGoal) async throws {
+    public func refreshGoal(_ goal: GoalProtocol) async throws {
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
-        goal.updateToMatch(json: JSON(responseObject!))
+        let goalJSON = JSON(responseObject!)
+        let goalId = goalJSON["id"].stringValue
+
+        // Update memory representation
+        let existingGoals = self.goalsBox.get() ?? OrderedDictionary()
+
+        if let existingGoal = existingGoals[goalId] {
+            existingGoal.updateToMatch(json: goalJSON)
+        } else {
+            logger.warning("Found no existing goal in memory store when refreshing \(goal.slug) with id \(goal.id)")
+        }
+
+        // Update CoreData representation
+        let context = container.newBackgroundContext()
+        let request = NSFetchRequest<Goal>(entityName: "Goal")
+        request.predicate = NSPredicate(format: "id == %@", goalId)
+        if let existingGoal = try context.fetch(request).first {
+            existingGoal.updateToMatch(json: goalJSON)
+        } else {
+            logger.warning("Found no existing goal in CoreData store when refreshing \(goal.slug) with id \(goal.id)")
+        }
+        try context.save()
 
         await performPostGoalUpdateBookkeeping()
     }
 
-    public func forceAutodataRefresh(_ goal: BeeGoal) async throws {
+    public func forceAutodataRefresh(_ goal: GoalProtocol) async throws {
         let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
     }
 
@@ -179,7 +200,7 @@ public actor GoalManager {
             while true {
                 // If there are no queued goals then we are complete and can stop checking
                 guard let goals = goalsBox.get() else { break }
-                let queuedGoals = goals.values.filter { goal in goal.queued ?? false }
+                let queuedGoals = goals.values.filter { $0.queued }
                 if queuedGoals.isEmpty {
                     break
                 }

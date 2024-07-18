@@ -20,27 +20,27 @@ public class BeeGoal : GoalProtocol {
     public var graphUrl: String = ""
     public var healthKitMetric: String?
     public var id: String = ""
-    public var pledge: NSNumber = 0
-    public var yaxis: String = ""
+    public var pledge: Int = 0
+    public var yAxis: String = ""
     public var slug: String = ""
     public var thumbUrl: String = ""
     public var title: String = ""
-    public var won: NSNumber = 0
+    public var won: Bool = false
     public var safeBuf: Int = 0
     public var limsum: String?
-    public var safesum: String?
+    public var safeSum: String = ""
     public var initDay: Int = 0
     public var deadline: Int = 0
-    public var leadtime: NSNumber?
-    public var alertstart: Int = 0
+    public var leadTime: Int = 0
+    public var alertStart: Int = 0
     public var lastTouch: Int = 0
-    public var use_defaults: NSNumber?
+    public var useDefaults: Bool = false
     public var queued: Bool = false
     public var todayta: Bool = false
-    public var hhmmformat: Bool = false
-    public var urgencykey: String = ""
-    public var recent_data: [ExistingDataPoint]?
-    
+    public var hhmmFormat: Bool = false
+    public var urgencyKey: String = ""
+    public var recentData: Set<AnyHashable> = Set()
+
     public init(json: JSON) {
         self.id = json["id"].string!
         self.updateToMatch(json: json)
@@ -54,8 +54,8 @@ public class BeeGoal : GoalProtocol {
         self.slug = json["slug"].string!
         self.initDay = json["initday"].intValue
         self.deadline = json["deadline"].intValue
-        self.leadtime = json["leadtime"].number!
-        self.alertstart = json["alertstart"].intValue
+        self.leadTime = json["leadtime"].intValue
+        self.alertStart = json["alertstart"].intValue
 
         self.lastTouch = json["lasttouch"].string.flatMap { lasttouchString in
             let lastTouchDate: Date? = {
@@ -71,13 +71,13 @@ public class BeeGoal : GoalProtocol {
         } ?? 0
 
         self.queued = json["queued"].bool!
-        self.yaxis = json["yaxis"].string!
-        self.won = json["won"].number!
+        self.yAxis = json["yaxis"].string!
+        self.won =  json["won"].boolValue
         self.limsum = json["limsum"].string
-        self.safesum = json["safesum"].string
+        self.safeSum = json["safesum"].stringValue
         self.safeBuf = json["safebuf"].intValue
-        self.use_defaults = json["use_defaults"].bool! as NSNumber
-        self.pledge = json["pledge"].number!
+        self.useDefaults = json["use_defaults"].boolValue
+        self.pledge = json["pledge"].intValue
         self.autodata = json["autodata"].string ?? ""
         
         self.graphUrl = json["graph_url"].stringValue
@@ -85,52 +85,16 @@ public class BeeGoal : GoalProtocol {
 
         self.healthKitMetric = json["healthkitmetric"].string
         self.todayta = json["todayta"].bool!
-        self.hhmmformat = json["hhmmformat"].bool!
-        self.urgencykey = json["urgencykey"].string!
+        self.hhmmFormat = json["hhmmformat"].bool!
+        self.urgencyKey = json["urgencykey"].string!
 
-        self.recent_data = (try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue).reversed()) ?? []
-    }
-
-    public var countdownColor :UIColor {
-        let buf = self.safeBuf
-        if buf < 1 {
-            return UIColor.beeminder.red
+        if let dataPoints = try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue) {
+            self.recentData = Set(dataPoints)
+        } else {
+            self.recentData = Set<ExistingDataPoint>()
         }
-        else if buf < 2 {
-            return UIColor.beeminder.orange
-        }
-        else if buf < 3 {
-            return UIColor.beeminder.blue
-        }
-        return UIColor.beeminder.green
-    }
-    
-    public func capitalSafesum() -> String {
-        guard let safe = self.safesum else { return "" }
-        return safe.prefix(1).uppercased() + safe.dropFirst(1)
-    }
-    
-    public func hideDataEntry() -> Bool {
-        return self.isDataProvidedAutomatically || self.won.boolValue
     }
 
-    public var isLinkedToHealthKit: Bool {
-        return self.autodata == "apple"
-    }
-
-    /// A hint for the value the user is likely to enter, based on past data points
-    public var suggestedNextValue: NSNumber? {
-        guard let recentData = self.recent_data else { return nil }
-        for dataPoint in recentData.reversed() {
-            let comment = dataPoint.comment
-            // Ignore data points with comments suggesting they aren't a real value
-            if comment.contains("#DERAIL") || comment.contains("#SELFDESTRUCT") || comment.contains("#THISWILLSELFDESTRUCT") || comment.contains("#RESTART") || comment.contains("#TARE") {
-                continue
-            }
-            return dataPoint.value
-        }
-        return nil
-    }
 
 
 }

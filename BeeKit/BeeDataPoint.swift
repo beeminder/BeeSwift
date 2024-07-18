@@ -17,6 +17,7 @@ public struct ExistingDataPoint : BeeDataPoint, DataPointProtocol {
     public let daystamp: Daystamp
     public let value: NSNumber
     public let comment: String
+    public let updatedAt: Int
 
     init(json: JSON) throws {
         // To maximize compatibility with server changes we only parse fields
@@ -26,6 +27,7 @@ public struct ExistingDataPoint : BeeDataPoint, DataPointProtocol {
         value = json["value"].numberValue
         comment = json["comment"].stringValue
         requestid = json["requestid"].stringValue
+        updatedAt = json["updated_at"].intValue
     }
 
     static func fromJSONArray(array: [JSON]) throws -> [ExistingDataPoint] {

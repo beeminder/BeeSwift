@@ -20,7 +20,9 @@ public class DataPoint: NSManagedObject {
     // The value, e.g., how much you weighed on the day indicated by the timestamp.
     @NSManaged public var value: NSNumber
 
-    public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String?, value: NSNumber) {
+    @NSManaged public var updatedAt: Int
+
+    public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String?, value: NSNumber, updatedAt: Int) {
         let entity = NSEntityDescription.entity(forEntityName: "DataPoint", in: context)!
         super.init(entity: entity, insertInto: context)
         self.goal = goal
@@ -29,6 +31,7 @@ public class DataPoint: NSManagedObject {
         self.daystamp = daystamp
         self.requestid = requestid
         self.value = value
+        self.updatedAt = updatedAt
     }
 
     @available(*, unavailable)

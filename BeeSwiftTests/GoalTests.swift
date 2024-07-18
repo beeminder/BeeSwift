@@ -90,32 +90,32 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.graphUrl, "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.png")
         XCTAssertEqual(goal.thumbUrl, "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc-thumb.png")
         XCTAssertEqual(goal.deadline, 0)
-        XCTAssertEqual(goal.leadtime, 0)
-        XCTAssertEqual(goal.alertstart, 34200)
-        XCTAssertEqual(goal.use_defaults, true)
+        XCTAssertEqual(goal.leadTime, 0)
+        XCTAssertEqual(goal.alertStart, 34200)
+        XCTAssertEqual(goal.useDefaults, true)
         XCTAssertEqual(goal.id, "737aaa34f0118a330852e4bd")
         XCTAssertEqual(goal.queued, false)
         XCTAssertEqual(goal.limsum, "100 in 200 days")
         XCTAssertEqual(goal.won, false)
-        XCTAssertEqual(goal.safesum, "safe for 200 days")
+        XCTAssertEqual(goal.safeSum, "safe for 200 days")
         XCTAssertEqual(goal.lastTouch, 1670383300)
         XCTAssertEqual(goal.safeBuf, 3583)
         XCTAssertEqual(goal.todayta, false)
-        XCTAssertEqual(goal.urgencykey, "FROx;PPRx;DL4102469999;P1000000000;test-goal")
-        XCTAssertEqual(goal.hhmmformat, false)
-        XCTAssertEqual(goal.yaxis, "cumulative total test-goal")
+        XCTAssertEqual(goal.urgencyKey, "FROx;PPRx;DL4102469999;P1000000000;test-goal")
+        XCTAssertEqual(goal.hhmmFormat, false)
+        XCTAssertEqual(goal.yAxis, "cumulative total test-goal")
         XCTAssertEqual(goal.initDay, 1668963600)
         XCTAssertEqual(goal.pledge, 0)
-        XCTAssertEqual(goal.recent_data!.count, 5)
+        XCTAssertEqual(goal.recentData.count, 5)
 
     }
 
     func testSuggestedNextValueBasedOnLastValue() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = [
-            ["value": 1, "daystamp": "20221130"],
-            ["value": 2, "daystamp": "20221126"],
-            ["value": 3.5, "daystamp": "20221125"],
+            ["value": 1, "daystamp": "20221130", "updated_at": 300],
+            ["value": 2, "daystamp": "20221126", "updated_at": 200],
+            ["value": 3.5, "daystamp": "20221125", "updated_at": 100],
         ]
         let goal = BeeGoal(json: testJSON)
 
@@ -133,12 +133,12 @@ final class GoalTests: XCTestCase {
     func testSuggestedNextValueIgnoresDerailsAndSelfDestructs() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = [
-            ["value": 0, "daystamp": "20221131", "comment": "Goal #RESTART Point"],
-            ["value": 0, "daystamp": "20221131", "comment": "This will #SELFDESTRUCT"],
-            ["value": 0, "daystamp": "20221131", "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT"],
-            ["value": 0, "daystamp": "20221130", "comment": "#DERAIL ON THE 1st"],
-            ["value": 2, "daystamp": "20221126"],
-            ["value": 3.5, "daystamp": "20221125"],
+            ["value": 0, "daystamp": "20221131", "updated_at": 600, "comment": "Goal #RESTART Point"],
+            ["value": 0, "daystamp": "20221131", "updated_at": 500, "comment": "This will #SELFDESTRUCT"],
+            ["value": 0, "daystamp": "20221131", "updated_at": 400, "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT"],
+            ["value": 0, "daystamp": "20221130", "updated_at": 300, "comment": "#DERAIL ON THE 1st"],
+            ["value": 2, "daystamp": "20221126", "updated_at": 200],
+            ["value": 3.5, "daystamp": "20221125", "updated_at": 100],
         ]
         let goal = BeeGoal(json: testJSON)
 

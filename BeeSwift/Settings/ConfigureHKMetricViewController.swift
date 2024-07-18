@@ -12,7 +12,7 @@ class ConfigureHKMetricViewController : UIViewController {
 
     let componentMargin = 10
 
-    private let goal: BeeGoal
+    private let goal: GoalProtocol
     private let metric: HealthKitMetric
 
     let previewDescriptionLabel = BSLabel()
@@ -20,7 +20,7 @@ class ConfigureHKMetricViewController : UIViewController {
     fileprivate let noDataFoundLabel = BSLabel()
     let saveButton = BSButton()
 
-    init(goal: BeeGoal, metric : HealthKitMetric) {
+    init(goal: GoalProtocol, metric : HealthKitMetric) {
         self.goal = goal
         self.metric = metric
         super.init(nibName: nil, bundle: nil)
@@ -98,7 +98,7 @@ class ConfigureHKMetricViewController : UIViewController {
         saveButton.setTitle("Save", for: .normal)
         saveButton.addTarget(self, action: #selector(self.saveButtonPressed), for: .touchUpInside)
 
-        self.datapointTableController.hhmmformat = self.goal.hhmmformat
+        self.datapointTableController.hhmmformat = self.goal.hhmmFormat
         Task { @MainActor in
             let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline, healthStore: ServiceLocator.healthStoreManager.healthStore)
             self.datapointTableController.datapoints = datapoints

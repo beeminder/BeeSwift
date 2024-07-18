@@ -5,6 +5,7 @@
         <attribute name="daystampRaw" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="requestid" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="value" attributeType="Decimal" defaultValueString="0.0"/>
         <relationship name="goal" maxCount="1" deletionRule="Nullify" destinationEntity="Goal"/>
     </entity>
@@ -33,7 +34,7 @@
         <attribute name="won" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="yAxis" attributeType="String"/>
         <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="goals" inverseEntity="User"/>
-        <relationship name="recentData" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="DataPoint"/>
+        <relationship name="recentData" toMany="YES" deletionRule="Nullify" destinationEntity="DataPoint"/>
     </entity>
     <entity name="User" representedClassName=".User" syncable="YES">
         <attribute name="deadbeat" attributeType="Boolean" usesScalarValueType="NO"/>
