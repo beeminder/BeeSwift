@@ -200,7 +200,7 @@ public actor GoalManager {
             while true {
                 // If there are no queued goals then we are complete and can stop checking
                 guard let goals = goalsBox.get() else { break }
-                let queuedGoals = goals.values.filter { goal in goal.queued ?? false }
+                let queuedGoals = goals.values.filter { $0.queued }
                 if queuedGoals.isEmpty {
                     break
                 }

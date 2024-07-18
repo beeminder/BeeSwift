@@ -113,9 +113,9 @@ final class GoalTests: XCTestCase {
     func testSuggestedNextValueBasedOnLastValue() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = [
-            ["value": 1, "daystamp": "20221130"],
-            ["value": 2, "daystamp": "20221126"],
-            ["value": 3.5, "daystamp": "20221125"],
+            ["value": 1, "daystamp": "20221130", "updated_at": 100],
+            ["value": 2, "daystamp": "20221126", "updated_at": 200],
+            ["value": 3.5, "daystamp": "20221125", "updated_at": 300],
         ]
         let goal = BeeGoal(json: testJSON)
 

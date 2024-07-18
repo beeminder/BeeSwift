@@ -104,7 +104,7 @@ class GoalImageView : UIView {
 
         // When queued, we should show a loading indicator over any existing graph,
         // but not over the placeholder image.
-        if goal.queued ?? false {
+        if goal.queued {
             beeLemniscateView.isHidden = !currentlyShowingGraph
         }
 

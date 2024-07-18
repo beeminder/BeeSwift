@@ -72,7 +72,7 @@ public class BeeGoal : GoalProtocol {
 
         self.queued = json["queued"].bool!
         self.yAxis = json["yaxis"].string!
-        self.won = Bool(json["won"].numberValue)
+        self.won =  json["won"].boolValue
         self.limsum = json["limsum"].string
         self.safeSum = json["safesum"].stringValue
         self.safeBuf = json["safebuf"].intValue
@@ -88,7 +88,11 @@ public class BeeGoal : GoalProtocol {
         self.hhmmFormat = json["hhmmformat"].bool!
         self.urgencyKey = json["urgencykey"].string!
 
-        self.recentData = Set(arrayLiteral: try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue) ?? [])
+        if let dataPoints = try? ExistingDataPoint.fromJSONArray(array: json["recent_data"].arrayValue) {
+            self.recentData = Set(dataPoints)
+        } else {
+            self.recentData = Set<ExistingDataPoint>()
+        }
     }
 
 
