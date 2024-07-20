@@ -22,13 +22,13 @@ class GoalHealthKitConnection {
 
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalHealthKitConnection")
     private let healthStore: HKHealthStore
-    private let goal : GoalProtocol
+    private let goal : Goal
     private var observerQuery : HKObserverQuery? = nil
     private var lastObserverUpdate : Date? = nil
 
     public let metric : HealthKitMetric
 
-    init(goal: GoalProtocol, metric : HealthKitMetric, healthStore: HKHealthStore) {
+    init(goal: Goal, metric : HealthKitMetric, healthStore: HKHealthStore) {
         // TODO: We can't store this goal object because of context
         self.goal = goal
         self.metric = metric

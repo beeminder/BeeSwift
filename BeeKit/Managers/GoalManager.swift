@@ -25,12 +25,6 @@ public actor GoalManager {
     private let currentUserManager: CurrentUserManager
     private let container: BeeminderPersistentContainer
 
-    /// The known set of goals
-    /// Has two slightly differenty empty states. If nil, it means we have not fetched goals. If an empty dictionary, means we have
-    /// fetched goals and found there to be none.
-    /// Can be read in non-isolated context, so protected with a synchronized wrapper.
-    private let goalsBox = SynchronizedBox<OrderedDictionary<String, BeeGoal>?>(nil)
-
     public var goalsFetchedAt : Date? = nil
 
     private var queuedGoalsBackgroundTaskRunning : Bool = false
@@ -54,7 +48,7 @@ public actor GoalManager {
     }
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
-    public nonisolated func staleGoals(context: NSManagedObjectContext) -> [GoalProtocol]? {
+    public nonisolated func staleGoals(context: NSManagedObjectContext) -> [Goal]? {
         guard let user = self.currentUserManager.user(context: context) else {
             return nil
         }
@@ -85,15 +79,6 @@ public actor GoalManager {
         let goalJSON = JSON(responseObject!)
         let goalId = goalJSON["id"].stringValue
 
-        // Update memory representation
-        let existingGoals = self.goalsBox.get() ?? OrderedDictionary()
-
-        if let existingGoal = existingGoals[goalId] {
-            existingGoal.updateToMatch(json: goalJSON)
-        } else {
-            logger.warning("Found no existing goal in memory store when refreshing \(goal.slug) with id \(goal.id)")
-        }
-
         // Update CoreData representation
         let context = container.newBackgroundContext()
         let request = NSFetchRequest<Goal>(entityName: "Goal")
@@ -115,27 +100,9 @@ public actor GoalManager {
     /// Update the set of goals to match those in the provided json. Existing Goal objects will be re-used when they match an ID in the json
     /// This function is nonisolated but should only be called either from isolated contexts or the constructor
     private nonisolated func updateGoalsFromJson(_ responseJSON: JSON) {
-        var updatedGoals = OrderedDictionary<String, BeeGoal>()
         guard let responseGoals = responseJSON.array else {
-            self.goalsBox.set(nil)
             return
         }
-
-        // Update memory goals representation
-        let existingGoals = self.goalsBox.get() ?? OrderedDictionary()
-
-        for goalJSON in responseGoals {
-            let goalId = goalJSON["id"].stringValue
-            if let existingGoal = existingGoals[goalId] {
-                existingGoal.updateToMatch(json: goalJSON)
-                updatedGoals[existingGoal.id] = existingGoal
-            } else {
-                let newGoal = BeeGoal(json: goalJSON)
-                updatedGoals[newGoal.id] = newGoal
-            }
-        }
-
-        self.goalsBox.set(updatedGoals)
 
         //  Update CoreData representation
         let context = container.newBackgroundContext()
@@ -246,13 +213,14 @@ public actor GoalManager {
     }
 
     private func resetStateForSignOut() {
-        self.goalsBox.set(nil)
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
         currentUserManager.removeObject(forKey: cachedLastFetchedGoalsKey)
 
         if let sharedDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier) {
             sharedDefaults.removeObject(forKey: "todayGoalDictionaries")
         }
+
+        // TODO: Delete from CoreData
     }
 
     // MARK: Today Widget
