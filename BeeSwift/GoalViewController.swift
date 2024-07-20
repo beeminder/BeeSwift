@@ -22,7 +22,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
 
-    var goal : GoalProtocol!
+    var goal : Goal!
 
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
     fileprivate var datapointTableController = DatapointTableViewController()

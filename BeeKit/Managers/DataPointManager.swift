@@ -25,7 +25,7 @@ public class DataPointManager {
         }
     }
 
-    private func updateDatapoint(goal : GoalProtocol, datapoint : any DataPointProtocol, datapointValue : NSNumber) async throws {
+    private func updateDatapoint(goal : Goal, datapoint : any DataPointProtocol, datapointValue : NSNumber) async throws {
         let val = datapoint.value
         if datapointValue == val {
             return
@@ -37,11 +37,11 @@ public class DataPointManager {
         let _ = try await requestManager.put(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json", parameters: params)
     }
 
-    private func deleteDatapoint(goal: GoalProtocol, datapoint : any DataPointProtocol) async throws {
+    private func deleteDatapoint(goal: Goal, datapoint : any DataPointProtocol) async throws {
         let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)", parameters: nil)
     }
 
-    private func postDatapoint(goal : GoalProtocol, params : [String : String]) async throws {
+    private func postDatapoint(goal : Goal, params : [String : String]) async throws {
         let _ = try await requestManager.post(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
     }
 
@@ -101,7 +101,7 @@ public class DataPointManager {
         }
     }
 
-    private func updateToMatchDataPoint(goal: GoalProtocol, newDataPoint : BeeDataPoint, recentDatapoints: [any DataPointProtocol]) async throws {
+    private func updateToMatchDataPoint(goal: Goal, newDataPoint : BeeDataPoint, recentDatapoints: [any DataPointProtocol]) async throws {
         var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: newDataPoint.daystamp)
         if matchingDatapoints.count == 0 {
             // If there are not already data points for this day, do not add points

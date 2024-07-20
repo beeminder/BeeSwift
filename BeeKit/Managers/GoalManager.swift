@@ -74,7 +74,7 @@ public actor GoalManager {
         await performPostGoalUpdateBookkeeping()
     }
 
-    public func refreshGoal(_ goal: GoalProtocol) async throws {
+    public func refreshGoal(_ goal: Goal) async throws {
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
         let goalJSON = JSON(responseObject!)
         let goalId = goalJSON["id"].stringValue
@@ -93,7 +93,7 @@ public actor GoalManager {
         await performPostGoalUpdateBookkeeping()
     }
 
-    public func forceAutodataRefresh(_ goal: GoalProtocol) async throws {
+    public func forceAutodataRefresh(_ goal: Goal) async throws {
         let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
     }
 

@@ -15,10 +15,10 @@ import BeeKit
 class EditGoalNotificationsViewController : EditNotificationsViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditGoalNotificationsViewController")
 
-    var goal : GoalProtocol
+    var goal : Goal
     fileprivate var useDefaultsSwitch = UISwitch()
     
-    init(goal : GoalProtocol) {
+    init(goal : Goal) {
         self.goal = goal
         
         super.init()

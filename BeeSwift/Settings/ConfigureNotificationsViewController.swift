@@ -15,7 +15,7 @@ import BeeKit
 class ConfigureNotificationsViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ConfigureNotificationsViewController")
     
-    fileprivate var goals : [GoalProtocol] = []
+    fileprivate var goals : [Goal] = []
     fileprivate var cellReuseIdentifier = "configureNotificationsTableViewCell"
     fileprivate var tableView = UITableView()
     fileprivate let settingsButton = BSButton()

@@ -33,8 +33,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var goals : Array<GoalProtocol> = []
-    var filteredGoals : Array<GoalProtocol> = []
+    var goals : Array<Goal> = []
+    var filteredGoals : Array<Goal> = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,7 +42,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
@@ -265,13 +264,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
-    @objc func userDefaultsDidChange() {
-        DispatchQueue.main.async {
-            self.sortGoals()
-            self.collectionView?.reloadData()
-        }
-    }
-    
     @objc func handleSignIn() {
         self.dismiss(animated: true, completion: nil)
         self.fetchGoals()
@@ -474,7 +466,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let goal:GoalProtocol = self.filteredGoals[(indexPath as NSIndexPath).row]
+        let goal:Goal = self.filteredGoals[(indexPath as NSIndexPath).row]
 
         cell.goal = goal
         
@@ -509,7 +501,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
-    func openGoal(_ goal: GoalProtocol) {
+    func openGoal(_ goal: Goal) {
         let goalViewController = GoalViewController()
         goalViewController.goal = goal
         self.navigationController?.pushViewController(goalViewController, animated: true)

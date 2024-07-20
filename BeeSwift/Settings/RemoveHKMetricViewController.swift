@@ -15,7 +15,7 @@ import BeeKit
 class RemoveHKMetricViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RemoveHKMetricViewController")
     
-    var goal : GoalProtocol!
+    var goal : Goal!
 
     override func viewDidLoad() {
         super.viewDidLoad()
