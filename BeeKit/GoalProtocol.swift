@@ -22,7 +22,7 @@ public protocol GoalProtocol : AnyObject {
     var yAxis: String { get }
     var pledge: Int { get }
     var urgencyKey: String { get }
-    var recentData: Set<AnyHashable> { get }
+    var recentData: Set<DataPoint> { get }
 
     // Allow setters for synx test, for now
     var autodata: String? { get set }

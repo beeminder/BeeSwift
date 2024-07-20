@@ -89,20 +89,8 @@ class ConfigureNotificationsViewController: UIViewController {
     
     func fetchGoals() {
         Task { @MainActor in
-            do {
-                let goals = try await ServiceLocator.goalManager.fetchGoals()
-                self.goals = goals
-                self.sortGoals()
-            } catch {
-                logger.error("Failure fetching goals: \(error)")
-
-                MBProgressHUD.hide(for: self.view, animated: true)
-                if UIApplication.shared.applicationState == .active {
-                    let alert = UIAlertController(title: "Error fetching goals", message: error.localizedDescription, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    self.present(alert, animated: true, completion: nil)
-                }
-            }
+            self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+            self.sortGoals()
             self.tableView.reloadData()
         }
     }

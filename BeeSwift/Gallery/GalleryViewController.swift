@@ -216,7 +216,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
         } else {
-            self.goals = ServiceLocator.goalManager.staleGoals() ?? []
+            self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
             self.collectionView!.reloadData()
         }
         self.fetchGoals()
@@ -224,7 +224,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc func handleGoalsFetchedNotification() {
         Task {
-            self.goals = ServiceLocator.goalManager.staleGoals() ?? []
+            self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
             self.lastUpdated = await ServiceLocator.goalManager.goalsFetchedAt
             self.didFetchGoals()
         }
@@ -397,8 +397,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
 
             do {
-                let goals = try await ServiceLocator.goalManager.fetchGoals()
-                self.goals = goals
+                try await ServiceLocator.goalManager.refreshGoals()
+                self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
                 self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
                 self.didFetchGoals()
             } catch {

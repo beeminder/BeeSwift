@@ -497,7 +497,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             }
 
             do {
-                let _ = try await ServiceLocator.goalManager.fetchGoals()
+                try await ServiceLocator.goalManager.refreshGoals()
             } catch {
                 logger.error("Failed up refresh goals after posting: \(error)")
             }

@@ -13,7 +13,7 @@ import OSLog
 import UserNotifications
 import UIKit
 
-public class BeeGoal : GoalProtocol {
+public class BeeGoal {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "Goal")
 
     public var autodata: String? = ""

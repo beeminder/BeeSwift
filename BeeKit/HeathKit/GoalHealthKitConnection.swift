@@ -29,6 +29,7 @@ class GoalHealthKitConnection {
     public let metric : HealthKitMetric
 
     init(goal: GoalProtocol, metric : HealthKitMetric, healthStore: HKHealthStore) {
+        // TODO: We can't store this goal object because of context
         self.goal = goal
         self.metric = metric
         self.healthStore = healthStore

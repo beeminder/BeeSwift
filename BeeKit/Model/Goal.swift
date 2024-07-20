@@ -4,7 +4,7 @@ import CoreData
 import SwiftyJSON
 
 @objc(Goal)
-public class Goal: NSManagedObject {
+public class Goal: NSManagedObject, GoalProtocol {
     @NSManaged public var owner: User
     @NSManaged public var id: String
     @NSManaged public var slug: String
@@ -18,7 +18,7 @@ public class Goal: NSManagedObject {
     /// URL for the goal's graph image. E.g., "http://static.beeminder.com/alice/weight.png".
     @NSManaged public var graphUrl: String
     /// The internal app identifier for the healthkit metric to sync to this goal
-    @NSManaged public var healthKitMetric: String
+    @NSManaged public var healthKitMetric: String?
     /// Whether to show data in a "timey" way, with colons. For example, this would make a 1.5 show up as 1:30.
     @NSManaged public var hhmmFormat: Bool
     /// Unix timestamp (in seconds) of the start of the bright red line.
