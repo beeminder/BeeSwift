@@ -511,7 +511,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func updateInterfaceToMatchGoal() {
         self.datapointTableController.hhmmformat = goal.hhmmFormat
-        self.datapointTableController.datapoints = goal.recentData.map({$0 as! any DataPointProtocol}).sorted(by: {$0.updatedAt > $1.updatedAt})
+        self.datapointTableController.datapoints = goal.recentData.map({$0 as! any DataPointProtocol}).sorted(by: {$0.updatedAt < $1.updatedAt})
 
         self.refreshCountdown()
     }

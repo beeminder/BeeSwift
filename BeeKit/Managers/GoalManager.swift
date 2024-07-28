@@ -143,6 +143,7 @@ public actor GoalManager {
 
         // Notify all listeners of the update
         await Task { @MainActor in
+            container.viewContext.refreshAllObjects()
             NotificationCenter.default.post(name: Notification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: self)
         }.value
     }

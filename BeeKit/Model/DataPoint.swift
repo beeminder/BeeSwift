@@ -78,6 +78,7 @@ public class DataPoint: NSManagedObject, DataPointProtocol {
         value = json["value"].numberValue
         comment = json["comment"].stringValue
         requestid = json["requestid"].stringValue
+        updatedAt = json["updated_at"].intValue
     }
 
     public var daystamp: Daystamp {
