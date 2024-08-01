@@ -74,7 +74,7 @@ class RemoveHKMetricViewController: UIViewController {
 
         Task { @MainActor in
             do {
-                let responseObject = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal!.slug).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal!.slug).json", parameters: params)
 
                 try await ServiceLocator.goalManager.refreshGoal(self.goal)
 

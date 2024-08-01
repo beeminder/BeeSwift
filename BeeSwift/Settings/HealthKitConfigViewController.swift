@@ -73,7 +73,7 @@ class HealthKitConfigViewController: UIViewController {
             MBProgressHUD.showAdded(to: self.view, animated: true)
             do {
                 try await ServiceLocator.goalManager.refreshGoals()
-                let goals = try await ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+                let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
                 MBProgressHUD.hide(for: self.view, animated: true)
                 self.goals = goals
                 self.sortGoals()
