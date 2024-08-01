@@ -122,7 +122,7 @@ public class Goal: NSManagedObject, GoalProtocol {
         let entity = NSEntityDescription.entity(forEntityName: "Goal", in: context)!
         super.init(entity: entity, insertInto: context)
         self.owner = owner
-        self.id = json["id"].stringValue
+        self.id = json["id"].string!
 
         self.updateToMatch(json: json)
     }
@@ -143,7 +143,7 @@ public class Goal: NSManagedObject, GoalProtocol {
     
     // Question: Should this type know about JSON, or should there be an adapter / extension?
     public func updateToMatch(json: JSON) {
-        self.slug = json["slug"].stringValue
+        self.slug = json["slug"].string!
 
         self.alertStart = json["alertstart"].intValue
         self.autodata = json["autodata"].string

@@ -60,7 +60,7 @@ public class DataPoint: NSManagedObject, DataPointProtocol {
     /// Produce a DataPoint matching the supplied JSON, either creating a new one or re-using an existing object in the datastore
     public static func fromJSON(context: NSManagedObjectContext, goal: Goal, json: JSON) -> DataPoint {
         // Check for an existing datapoint with the relevant ID, if so use it
-        let id = json["id"].stringValue
+        let id = json["id"].string!
 
         let fetchRequest = NSFetchRequest<DataPoint>(entityName: "DataPoint")
         fetchRequest.predicate = NSPredicate(format: "id == %@", id)
