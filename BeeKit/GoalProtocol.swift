@@ -7,7 +7,7 @@ public protocol GoalProtocol : AnyObject {
     var deadline: Int { get }
     var initDay: Int { get }
     var queued: Bool { get }
-    var lastTouch: Int { get }
+    var lastTouch: String { get }
     var graphUrl: String { get }
     var thumbUrl: String { get }
     var safeBuf: Int { get }

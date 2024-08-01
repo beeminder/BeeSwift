@@ -24,7 +24,7 @@ public class Goal: NSManagedObject, GoalProtocol {
     /// Unix timestamp (in seconds) of the start of the bright red line.
     @NSManaged public var initDay: Int
     /// Undocumented.
-    @NSManaged public var lastTouch: Int
+    @NSManaged public var lastTouch: String
     /// Summary of what you need to do to eke by, e.g., "+2 within 1 day".
     @NSManaged public var limSum: String
     /// Days before derailing we start sending you reminders. Zero means we start sending them on the beemergency day, when you will derail later that day.
@@ -75,7 +75,7 @@ public class Goal: NSManagedObject, GoalProtocol {
         healthKitMetric: String,
         hhmmFormat: Bool,
         initDay: Int,
-        lastTouch: Int,
+        lastTouch: String,
         limSum: String,
         leadTime: Int,
         pledge: Int,
@@ -152,7 +152,7 @@ public class Goal: NSManagedObject, GoalProtocol {
         self.healthKitMetric = json["healthkitmetric"].stringValue
         self.hhmmFormat = json["hhmmformat"].boolValue
         self.initDay = json["initday"].intValue
-        self.lastTouch = json["updated_at"].intValue
+        self.lastTouch = json["lasttouch"].stringValue
         self.limSum = json["limsum"].stringValue
         self.leadTime = json["leadtime"].intValue
         self.pledge = json["pledge"].intValue
