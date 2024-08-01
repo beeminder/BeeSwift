@@ -33,8 +33,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var goals : Array<Goal> = []
-    var filteredGoals : Array<Goal> = []
+    var goals : [Goal] = []
+    var filteredGoals : [Goal] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
