@@ -69,7 +69,7 @@ public class HealthStoreManager :NSObject {
     ///
     /// This function will never show a permissions dialog - instead it will not update for
     /// metrics where we do not have permission.
-    public func silentlyInstallObservers(goals: [Goal]) {
+    public func silentlyInstallObservers(goals: any Sequence<Goal>) {
         logger.notice("Silently installing observer queries")
 
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }

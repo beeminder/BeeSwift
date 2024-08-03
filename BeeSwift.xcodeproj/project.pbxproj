@@ -131,8 +131,7 @@
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
 		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
 		E4E63C6D2C3F9083005E00DA /* DataPointManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */; };
-		E4E63C6F2C461701005E00DA /* GoalProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C6E2C461701005E00DA /* GoalProtocol.swift */; };
-		E4E63C712C461727005E00DA /* DataPointProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C702C461727005E00DA /* DataPointProtocol.swift */; };
+		E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */; };
 		E4E8DD3B2BE87F890059C64F /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8DD3A2BE87F890059C64F /* Goal.swift */; };
 		E4E8DD3D2BE881440059C64F /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8DD3C2BE881440059C64F /* DataPoint.swift */; };
 		E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
@@ -348,8 +347,7 @@
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
 		E4E43D8729F39CE800697116 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
 		E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPointManager.swift; sourceTree = "<group>"; };
-		E4E63C6E2C461701005E00DA /* GoalProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalProtocol.swift; sourceTree = "<group>"; };
-		E4E63C702C461727005E00DA /* DataPointProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPointProtocol.swift; sourceTree = "<group>"; };
+		E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalExtensions.swift; sourceTree = "<group>"; };
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryHealthKitMetric.swift; sourceTree = "<group>"; };
@@ -733,8 +731,7 @@
 				E45470272B60E24500EE648B /* Daystamp.swift */,
 				E57BE6E32655EBDA00BA540B /* Info.plist */,
 				E44CE7722993317B00394E87 /* ServiceLocator.swift */,
-				E4E63C6E2C461701005E00DA /* GoalProtocol.swift */,
-				E4E63C702C461727005E00DA /* DataPointProtocol.swift */,
+				E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */,
 			);
 			path = BeeKit;
 			sourceTree = "<group>";
@@ -1206,7 +1203,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4E63C6F2C461701005E00DA /* GoalProtocol.swift in Sources */,
 				E458C8152AD11C9D000DCA5C /* TimeInBedHealthKitMetric.swift in Sources */,
 				E458C8052AD11BC8000DCA5C /* VersionManager.swift in Sources */,
 				E458C8142AD11C99000DCA5C /* QuantityHealthKitMetric.swift in Sources */,
@@ -1223,7 +1219,6 @@
 				E458C80F2AD11C80000DCA5C /* HealthKitConfig.swift in Sources */,
 				E458C8262AD11E12000DCA5C /* BSTextField.swift in Sources */,
 				E458C8022AD11BB9000DCA5C /* CurrentUserManager.swift in Sources */,
-				E4E63C712C461727005E00DA /* DataPointProtocol.swift in Sources */,
 				E458C8182AD11CAC000DCA5C /* TimeAsleepHealthKitMetric.swift in Sources */,
 				E458C80B2AD11C2B000DCA5C /* ServiceLocator.swift in Sources */,
 				E458C81B2AD11CD8000DCA5C /* UIColorExtension.swift in Sources */,
@@ -1240,6 +1235,7 @@
 				E458C8062AD11BCD000DCA5C /* GoalManager.swift in Sources */,
 				E458C8272AD11F81000DCA5C /* BSLabel.swift in Sources */,
 				E46071022B451FAC00305DB4 /* BeeminderPersistantContainer.swift in Sources */,
+				E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */,
 				E458C8252AD11E01000DCA5C /* BSButton.swift in Sources */,
 				E458C81D2AD11CEC000DCA5C /* UIDevice.swift in Sources */,
 				E4E63C6D2C3F9083005E00DA /* DataPointManager.swift in Sources */,

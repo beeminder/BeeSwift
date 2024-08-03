@@ -18,13 +18,13 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
 
     private let margin = 10
     
-    var datapoint : any DataPointProtocol
+    var datapoint : DataPoint
     var goal : Goal
     fileprivate var datePicker = InlineDatePicker()
     fileprivate var valueField = UITextField()
     fileprivate var commentField = UITextField()
 
-    init(goal: Goal, datapoint: any DataPointProtocol) {
+    init(goal: Goal, datapoint: DataPoint) {
         self.goal = goal
         self.datapoint = datapoint
         super.init(nibName: nil, bundle: nil)

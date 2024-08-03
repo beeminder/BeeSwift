@@ -4,7 +4,7 @@ import CoreData
 import SwiftyJSON
 
 @objc(DataPoint)
-public class DataPoint: NSManagedObject, DataPointProtocol {
+public class DataPoint: NSManagedObject, BeeDataPoint {
     // Server identified for the datapoint, globally unique.
     @NSManaged public var id: String
     // Goal this datapoint is associated with
