@@ -7,7 +7,7 @@ public protocol GoalProtocol : AnyObject {
     var deadline: Int { get }
     var initDay: Int { get }
     var queued: Bool { get }
-    var lastTouch: Int { get }
+    var lastTouch: String { get }
     var graphUrl: String { get }
     var thumbUrl: String { get }
     var safeBuf: Int { get }
@@ -22,7 +22,7 @@ public protocol GoalProtocol : AnyObject {
     var yAxis: String { get }
     var pledge: Int { get }
     var urgencyKey: String { get }
-    var recentData: Set<AnyHashable> { get }
+    var recentData: Set<DataPoint> { get }
 
     // Allow setters for synx test, for now
     var autodata: String? { get set }
@@ -109,7 +109,7 @@ extension GoalProtocol {
     /// A hint for the value the user is likely to enter, based on past data points
     public var suggestedNextValue: NSNumber? {
         let recentData = self.recentData
-        for dataPoint in recentData.map({ $0 as! any DataPointProtocol }).sorted(by: { $0.updatedAt > $1.updatedAt }) {
+        for dataPoint in recentData.sorted(by: { $0.updatedAt > $1.updatedAt }) {
             let comment = dataPoint.comment
             // Ignore data points with comments suggesting they aren't a real value
             if comment.contains("#DERAIL") || comment.contains("#SELFDESTRUCT") || comment.contains("#THISWILLSELFDESTRUCT") || comment.contains("#RESTART") || comment.contains("#TARE") {

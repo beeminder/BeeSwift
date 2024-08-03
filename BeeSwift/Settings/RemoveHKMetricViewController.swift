@@ -15,7 +15,7 @@ import BeeKit
 class RemoveHKMetricViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RemoveHKMetricViewController")
     
-    var goal : GoalProtocol!
+    var goal : Goal!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,7 +74,7 @@ class RemoveHKMetricViewController: UIViewController {
 
         Task { @MainActor in
             do {
-                let responseObject = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal!.slug).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal!.slug).json", parameters: params)
 
                 try await ServiceLocator.goalManager.refreshGoal(self.goal)
 

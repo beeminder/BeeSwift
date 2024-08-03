@@ -18,7 +18,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
-    var goal: GoalProtocol? {
+    var goal: Goal? {
         didSet {
             self.thumbnailImageView.goal = goal
             self.titleLabel.text = goal?.title

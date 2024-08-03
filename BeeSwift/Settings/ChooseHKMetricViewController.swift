@@ -17,7 +17,7 @@ class ChooseHKMetricViewController: UIViewController {
     fileprivate let cellReuseIdentifier = "hkMetricTableViewCell"
     fileprivate let headerReusedIdentifier = "hkMetricTableHeader"
     fileprivate var tableView = UITableView()
-    var goal : GoalProtocol!
+    var goal : Goal!
 
     override func viewDidLoad() {
         super.viewDidLoad()

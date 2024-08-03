@@ -22,7 +22,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
 
-    var goal : GoalProtocol!
+    var goal : Goal!
 
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
     fileprivate var datapointTableController = DatapointTableViewController()
@@ -497,7 +497,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             }
 
             do {
-                let _ = try await ServiceLocator.goalManager.fetchGoals()
+                try await ServiceLocator.goalManager.refreshGoals()
             } catch {
                 logger.error("Failed up refresh goals after posting: \(error)")
             }
@@ -511,7 +511,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func updateInterfaceToMatchGoal() {
         self.datapointTableController.hhmmformat = goal.hhmmFormat
-        self.datapointTableController.datapoints = goal.recentData.map({$0 as! any DataPointProtocol}).sorted(by: {$0.updatedAt > $1.updatedAt})
+        self.datapointTableController.datapoints = goal.recentData.map({$0 as! any DataPointProtocol}).sorted(by: {$0.updatedAt < $1.updatedAt})
 
         self.refreshCountdown()
     }

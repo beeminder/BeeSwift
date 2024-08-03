@@ -12,7 +12,7 @@ class ConfigureHKMetricViewController : UIViewController {
 
     let componentMargin = 10
 
-    private let goal: GoalProtocol
+    private let goal: Goal
     private let metric: HealthKitMetric
 
     let previewDescriptionLabel = BSLabel()
@@ -20,7 +20,7 @@ class ConfigureHKMetricViewController : UIViewController {
     fileprivate let noDataFoundLabel = BSLabel()
     let saveButton = BSButton()
 
-    init(goal: GoalProtocol, metric : HealthKitMetric) {
+    init(goal: Goal, metric : HealthKitMetric) {
         self.goal = goal
         self.metric = metric
         super.init(nibName: nil, bundle: nil)

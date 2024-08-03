@@ -4,7 +4,7 @@ import CoreData
 import SwiftyJSON
 
 @objc(Goal)
-public class Goal: NSManagedObject {
+public class Goal: NSManagedObject, GoalProtocol {
     @NSManaged public var owner: User
     @NSManaged public var id: String
     @NSManaged public var slug: String
@@ -18,13 +18,13 @@ public class Goal: NSManagedObject {
     /// URL for the goal's graph image. E.g., "http://static.beeminder.com/alice/weight.png".
     @NSManaged public var graphUrl: String
     /// The internal app identifier for the healthkit metric to sync to this goal
-    @NSManaged public var healthKitMetric: String
+    @NSManaged public var healthKitMetric: String?
     /// Whether to show data in a "timey" way, with colons. For example, this would make a 1.5 show up as 1:30.
     @NSManaged public var hhmmFormat: Bool
     /// Unix timestamp (in seconds) of the start of the bright red line.
     @NSManaged public var initDay: Int
     /// Undocumented.
-    @NSManaged public var lastTouch: Int
+    @NSManaged public var lastTouch: String
     /// Summary of what you need to do to eke by, e.g., "+2 within 1 day".
     @NSManaged public var limSum: String
     /// Days before derailing we start sending you reminders. Zero means we start sending them on the beemergency day, when you will derail later that day.
@@ -75,7 +75,7 @@ public class Goal: NSManagedObject {
         healthKitMetric: String,
         hhmmFormat: Bool,
         initDay: Int,
-        lastTouch: Int,
+        lastTouch: String,
         limSum: String,
         leadTime: Int,
         pledge: Int,
@@ -122,7 +122,7 @@ public class Goal: NSManagedObject {
         let entity = NSEntityDescription.entity(forEntityName: "Goal", in: context)!
         super.init(entity: entity, insertInto: context)
         self.owner = owner
-        self.id = json["id"].stringValue
+        self.id = json["id"].string!
 
         self.updateToMatch(json: json)
     }
@@ -143,7 +143,7 @@ public class Goal: NSManagedObject {
     
     // Question: Should this type know about JSON, or should there be an adapter / extension?
     public func updateToMatch(json: JSON) {
-        self.slug = json["slug"].stringValue
+        self.slug = json["slug"].string!
 
         self.alertStart = json["alertstart"].intValue
         self.autodata = json["autodata"].string
@@ -152,7 +152,7 @@ public class Goal: NSManagedObject {
         self.healthKitMetric = json["healthkitmetric"].stringValue
         self.hhmmFormat = json["hhmmformat"].boolValue
         self.initDay = json["initday"].intValue
-        self.lastTouch = json["updated_at"].intValue
+        self.lastTouch = json["lasttouch"].stringValue
         self.limSum = json["limsum"].stringValue
         self.leadTime = json["leadtime"].intValue
         self.pledge = json["pledge"].intValue

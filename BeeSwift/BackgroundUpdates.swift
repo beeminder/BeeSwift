@@ -44,7 +44,9 @@ class BackgroundUpdates {
 
                 async let goalUpdateResult: () = ServiceLocator.healthStoreManager.updateAllGoalsWithRecentData(days: 3)
 
-                let goals = try await ServiceLocator.goalManager.fetchGoals()
+                try await ServiceLocator.goalManager.refreshGoals()
+                let context = ServiceLocator.persistentContainer.newBackgroundContext()
+                let goals = ServiceLocator.goalManager.staleGoals(context: context) ?? []
                 ServiceLocator.healthStoreManager.silentlyInstallObservers(goals: goals)
 
                 try await goalUpdateResult

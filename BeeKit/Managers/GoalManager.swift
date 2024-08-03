@@ -25,12 +25,6 @@ public actor GoalManager {
     private let currentUserManager: CurrentUserManager
     private let container: BeeminderPersistentContainer
 
-    /// The known set of goals
-    /// Has two slightly differenty empty states. If nil, it means we have not fetched goals. If an empty dictionary, means we have
-    /// fetched goals and found there to be none.
-    /// Can be read in non-isolated context, so protected with a synchronized wrapper.
-    private let goalsBox = SynchronizedBox<OrderedDictionary<String, BeeGoal>?>(nil)
-
     public var goalsFetchedAt : Date? = nil
 
     private var queuedGoalsBackgroundTaskRunning : Bool = false
@@ -53,23 +47,24 @@ public actor GoalManager {
         NotificationCenter.default.addObserver(self, selector: #selector(self.onSignedOutNotification), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
     }
 
-
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
-    public nonisolated func staleGoals() -> [GoalProtocol]? {
-        guard let goals = self.goalsBox.get() else { return nil }
-        return Array(goals.values)
+    public nonisolated func staleGoals(context: NSManagedObjectContext) -> [Goal]? {
+        guard let user = self.currentUserManager.user(context: context) else {
+            return nil
+        }
+        return Array(user.goals)
     }
 
     /// Fetch and return the latest set of goals from the server
-    public func fetchGoals() async throws -> [GoalProtocol] {
+    public func refreshGoals() async throws {
         guard let username = currentUserManager.username else {
             try await currentUserManager.signOut()
-            return []
+            return
         }
 
         let responseObject = try await requestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)!
         let response = JSON(responseObject)
-        guard let goals = self.updateGoalsFromJson(response) else { return [] }
+        self.updateGoalsFromJson(response) // TODO: Return failure info
 
         self.updateTodayWidget()
         self.goalsFetchedAt = Date()
@@ -77,23 +72,12 @@ public actor GoalManager {
         self.setCachedLastFetchedGoals(response)
 
         await performPostGoalUpdateBookkeeping()
-
-        return Array(goals.values)
     }
 
-    public func refreshGoal(_ goal: GoalProtocol) async throws {
+    public func refreshGoal(_ goal: Goal) async throws {
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
         let goalJSON = JSON(responseObject!)
         let goalId = goalJSON["id"].stringValue
-
-        // Update memory representation
-        let existingGoals = self.goalsBox.get() ?? OrderedDictionary()
-
-        if let existingGoal = existingGoals[goalId] {
-            existingGoal.updateToMatch(json: goalJSON)
-        } else {
-            logger.warning("Found no existing goal in memory store when refreshing \(goal.slug) with id \(goal.id)")
-        }
 
         // Update CoreData representation
         let context = container.newBackgroundContext()
@@ -109,35 +93,16 @@ public actor GoalManager {
         await performPostGoalUpdateBookkeeping()
     }
 
-    public func forceAutodataRefresh(_ goal: GoalProtocol) async throws {
+    public func forceAutodataRefresh(_ goal: Goal) async throws {
         let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
     }
 
     /// Update the set of goals to match those in the provided json. Existing Goal objects will be re-used when they match an ID in the json
     /// This function is nonisolated but should only be called either from isolated contexts or the constructor
-    @discardableResult
-    private nonisolated func updateGoalsFromJson(_ responseJSON: JSON) -> OrderedDictionary<String, BeeGoal>? {
-        var updatedGoals = OrderedDictionary<String, BeeGoal>()
+    private nonisolated func updateGoalsFromJson(_ responseJSON: JSON) {
         guard let responseGoals = responseJSON.array else {
-            self.goalsBox.set(nil)
-            return nil
+            return
         }
-
-        // Update memory goals representation
-        let existingGoals = self.goalsBox.get() ?? OrderedDictionary()
-
-        for goalJSON in responseGoals {
-            let goalId = goalJSON["id"].stringValue
-            if let existingGoal = existingGoals[goalId] {
-                existingGoal.updateToMatch(json: goalJSON)
-                updatedGoals[existingGoal.id] = existingGoal
-            } else {
-                let newGoal = BeeGoal(json: goalJSON)
-                updatedGoals[newGoal.id] = newGoal
-            }
-        }
-
-        self.goalsBox.set(updatedGoals)
 
         //  Update CoreData representation
         let context = container.newBackgroundContext()
@@ -167,8 +132,6 @@ public actor GoalManager {
             // Crash on save failure so we can learn about issues via testflight
             try! context.save()
         }
-
-        return updatedGoals
     }
 
     private func performPostGoalUpdateBookkeeping() async {
@@ -180,6 +143,7 @@ public actor GoalManager {
 
         // Notify all listeners of the update
         await Task { @MainActor in
+            container.viewContext.refreshAllObjects()
             NotificationCenter.default.post(name: Notification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: self)
         }.value
     }
@@ -199,8 +163,8 @@ public actor GoalManager {
         do {
             while true {
                 // If there are no queued goals then we are complete and can stop checking
-                guard let goals = goalsBox.get() else { break }
-                let queuedGoals = goals.values.filter { $0.queued }
+                guard let user = currentUserManager.user() else { break }
+                let queuedGoals = user.goals.filter { $0.queued }
                 if queuedGoals.isEmpty {
                     break
                 }
@@ -250,13 +214,14 @@ public actor GoalManager {
     }
 
     private func resetStateForSignOut() {
-        self.goalsBox.set(nil)
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
         currentUserManager.removeObject(forKey: cachedLastFetchedGoalsKey)
 
         if let sharedDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier) {
             sharedDefaults.removeObject(forKey: "todayGoalDictionaries")
         }
+
+        // TODO: Delete from CoreData
     }
 
     // MARK: Today Widget
@@ -272,11 +237,11 @@ public actor GoalManager {
     }
 
     private func todayGoalDictionaries() -> Array<Any> {
-        guard let goals = self.goalsBox.get() else { return [] }
+        guard let user = currentUserManager.user() else { return [] }
 
-        let todayGoals = goals.values.map { (goal) in
+        let todayGoals = user.goals.map { (goal) in
             let shortSlug = goal.slug.prefix(20)
-            let limsum = goal.limsum ?? ""
+            let limsum = goal.limSum
             return ["deadline" : goal.deadline, "thumbUrl": goal.cacheBustingThumbUrl, "limSum": "\(shortSlug): \(limsum)", "slug": goal.slug, "hideDataEntry": goal.hideDataEntry()] as [String : Any]
         }
         return Array(todayGoals.prefix(3)) as Array<Any>

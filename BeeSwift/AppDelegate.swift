@@ -38,7 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // in order to successfully be delivered background updates. This means we cannot wait
             // for a round trip to the server to fetch latest goals, so use a potentially stale
             // list from last time we did a successful update.
-            if let goals = ServiceLocator.goalManager.staleGoals() {
+            let context = ServiceLocator.persistentContainer.newBackgroundContext()
+            if let goals = ServiceLocator.goalManager.staleGoals(context: context) {
                 ServiceLocator.healthStoreManager.silentlyInstallObservers(goals: goals)
             }
         }
@@ -134,8 +135,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc func updateBadgeCount() {
         logger.notice("Updating badge count")
 
-        guard let goals = ServiceLocator.goalManager.staleGoals() else { return }
-        let beemergencyCount = goals.filter({ (goal: GoalProtocol) -> Bool in
+        let context = ServiceLocator.persistentContainer.newBackgroundContext()
+        guard let goals = ServiceLocator.goalManager.staleGoals(context: context) else { return }
+        let beemergencyCount = goals.filter({ (goal: Goal) -> Bool in
             return goal.safeBuf < 1
         }).count
         logger.notice("Beemergency count is \(beemergencyCount, privacy: .public)")
@@ -151,7 +153,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 logger.error("Error updating from healthkit: \(error)")
             }
             do {
-                let _ = try await ServiceLocator.goalManager.fetchGoals()
+                try await ServiceLocator.goalManager.refreshGoals()
             } catch {
                 logger.error("Error refreshing goals: \(error)")
             }

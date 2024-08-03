@@ -18,7 +18,7 @@
         <attribute name="hhmmFormat" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="initDay" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="lastTouch" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastTouch" attributeType="String"/>
         <attribute name="leadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="limSum" attributeType="String"/>
         <attribute name="pledge" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>

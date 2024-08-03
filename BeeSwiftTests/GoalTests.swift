@@ -6,11 +6,20 @@
 //  Copyright © 2023 APB. All rights reserved.
 //
 
+import CoreData
 import XCTest
 import SwiftyJSON
 @testable import BeeKit
 
 final class GoalTests: XCTestCase {
+    var container: BeeminderPersistentContainer!
+    var user: User!
+
+    override func setUp() {
+        super.setUp()
+        container = BeeminderPersistentContainer.createMemoryBackedForTests()
+        user = createTestUser(context: container.viewContext)
+    }
 
     func testCreateGoalFromJSON() throws {
         // This is a partial copy of the beeminder api response, reduced to
@@ -40,41 +49,31 @@ final class GoalTests: XCTestCase {
           "pledge": 0,
           "recent_data": [
             {
-              "id": {
-                "$oid": "888000000000000000000001"
-              },
+              "id": "888000000000000000000001",
               "comment": "Auto-entered via Apple Health",
               "value": 10.5,
               "daystamp": "20221203"
             },
             {
-              "id": {
-                "$oid": "888000000000000000000002"
-              },
+              "id": "888000000000000000000002",
               "comment": "Auto-entered via Apple Health",
               "value": 20.5,
               "daystamp": "20221130"
             },
             {
-              "id": {
-                "$oid": "888000000000000000000003"
-              },
+              "id": "888000000000000000000003",
               "comment": "Auto-updated via Apple Health",
               "value": 30.5,
               "daystamp": "20221126"
             },
             {
-              "id": {
-                "$oid": "888000000000000000000004"
-              },
+              "id": "888000000000000000000004",
               "comment": "Auto-updated via Apple Health",
               "value": 5.5,
               "daystamp": "20221125"
             },
             {
-              "id": {
-                "$oid": "888000000000000000000005"
-              },
+              "id": "888000000000000000000005",
               "comment": "Auto-updated via Apple Health",
               "value": 1.5,
               "daystamp": "20221121"
@@ -83,7 +82,7 @@ final class GoalTests: XCTestCase {
         }
         """)
 
-        let goal = BeeGoal(json: testJSON)
+        let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
 
         XCTAssertEqual(goal.slug, "test-goal")
         XCTAssertEqual(goal.title, "Goal for Testing Purposes")
@@ -95,10 +94,10 @@ final class GoalTests: XCTestCase {
         XCTAssertEqual(goal.useDefaults, true)
         XCTAssertEqual(goal.id, "737aaa34f0118a330852e4bd")
         XCTAssertEqual(goal.queued, false)
-        XCTAssertEqual(goal.limsum, "100 in 200 days")
+        XCTAssertEqual(goal.limSum, "100 in 200 days")
         XCTAssertEqual(goal.won, false)
         XCTAssertEqual(goal.safeSum, "safe for 200 days")
-        XCTAssertEqual(goal.lastTouch, 1670383300)
+        XCTAssertEqual(goal.lastTouch, "2022-12-07T03:21:40.000Z")
         XCTAssertEqual(goal.safeBuf, 3583)
         XCTAssertEqual(goal.todayta, false)
         XCTAssertEqual(goal.urgencyKey, "FROx;PPRx;DL4102469999;P1000000000;test-goal")
@@ -113,11 +112,12 @@ final class GoalTests: XCTestCase {
     func testSuggestedNextValueBasedOnLastValue() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = [
-            ["value": 1, "daystamp": "20221130", "updated_at": 300],
-            ["value": 2, "daystamp": "20221126", "updated_at": 200],
-            ["value": 3.5, "daystamp": "20221125", "updated_at": 100],
+            ["id": "101", "value": 1, "daystamp": "20221130", "updated_at": 300],
+            ["id": "102", "value": 2, "daystamp": "20221126", "updated_at": 200],
+            ["id": "103", "value": 3.5, "daystamp": "20221125", "updated_at": 100],
         ]
-        let goal = BeeGoal(json: testJSON)
+
+        let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
 
         XCTAssertEqual(goal.suggestedNextValue, 1)
     }
@@ -125,7 +125,8 @@ final class GoalTests: XCTestCase {
     func testSuggestedNextValueEmptyIfNoData() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = []
-        let goal = BeeGoal(json: testJSON)
+
+        let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
 
         XCTAssertEqual(goal.suggestedNextValue, nil)
     }
@@ -133,17 +134,23 @@ final class GoalTests: XCTestCase {
     func testSuggestedNextValueIgnoresDerailsAndSelfDestructs() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = [
-            ["value": 0, "daystamp": "20221131", "updated_at": 600, "comment": "Goal #RESTART Point"],
-            ["value": 0, "daystamp": "20221131", "updated_at": 500, "comment": "This will #SELFDESTRUCT"],
-            ["value": 0, "daystamp": "20221131", "updated_at": 400, "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT"],
-            ["value": 0, "daystamp": "20221130", "updated_at": 300, "comment": "#DERAIL ON THE 1st"],
-            ["value": 2, "daystamp": "20221126", "updated_at": 200],
-            ["value": 3.5, "daystamp": "20221125", "updated_at": 100],
+            ["id": "101", "value": 0, "daystamp": "20221131", "updated_at": 600, "comment": "Goal #RESTART Point"],
+            ["id": "102", "value": 0, "daystamp": "20221131", "updated_at": 500, "comment": "This will #SELFDESTRUCT"],
+            ["id": "103", "value": 0, "daystamp": "20221131", "updated_at": 400, "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT"],
+            ["id": "104", "value": 0, "daystamp": "20221130", "updated_at": 300, "comment": "#DERAIL ON THE 1st"],
+            ["id": "105", "value": 2, "daystamp": "20221126", "updated_at": 200],
+            ["id": "106", "value": 3.5, "daystamp": "20221125", "updated_at": 100],
         ]
-        let goal = BeeGoal(json: testJSON)
+
+        let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
 
         XCTAssertEqual(goal.suggestedNextValue, 2)
     }
+
+    func createTestUser(context: NSManagedObjectContext) -> User {
+        return User(context: context, username: "test-user", deadbeat: false, timezone: "Etc/UTC", defaultAlertStart: 0, defaultDeadline: 0, defaultLeadTime: 0)
+    }
+
 
     /// Return the minimum set of required attributes for creating a goal
     func requiredGoalJson() -> JSON {

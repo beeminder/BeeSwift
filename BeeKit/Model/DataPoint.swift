@@ -4,7 +4,7 @@ import CoreData
 import SwiftyJSON
 
 @objc(DataPoint)
-public class DataPoint: NSManagedObject {
+public class DataPoint: NSManagedObject, DataPointProtocol {
     // Server identified for the datapoint, globally unique.
     @NSManaged public var id: String
     // Goal this datapoint is associated with
@@ -16,13 +16,13 @@ public class DataPoint: NSManagedObject {
     // The date of the datapoint (e.g., "20150831"). Raw value in the datastore
     @NSManaged private var daystampRaw: String
     // If a datapoint was created via the API and this parameter was included, it will be echoed back.
-    @NSManaged public var requestid: String?
+    @NSManaged public var requestid: String
     // The value, e.g., how much you weighed on the day indicated by the timestamp.
     @NSManaged public var value: NSNumber
 
     @NSManaged public var updatedAt: Int
 
-    public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String?, value: NSNumber, updatedAt: Int) {
+    public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String, value: NSNumber, updatedAt: Int) {
         let entity = NSEntityDescription.entity(forEntityName: "DataPoint", in: context)!
         super.init(entity: entity, insertInto: context)
         self.goal = goal
@@ -60,7 +60,7 @@ public class DataPoint: NSManagedObject {
     /// Produce a DataPoint matching the supplied JSON, either creating a new one or re-using an existing object in the datastore
     public static func fromJSON(context: NSManagedObjectContext, goal: Goal, json: JSON) -> DataPoint {
         // Check for an existing datapoint with the relevant ID, if so use it
-        let id = json["id"].stringValue
+        let id = json["id"].string!
 
         let fetchRequest = NSFetchRequest<DataPoint>(entityName: "DataPoint")
         fetchRequest.predicate = NSPredicate(format: "id == %@", id)
@@ -78,6 +78,7 @@ public class DataPoint: NSManagedObject {
         value = json["value"].numberValue
         comment = json["comment"].stringValue
         requestid = json["requestid"].stringValue
+        updatedAt = json["updated_at"].intValue
     }
 
     public var daystamp: Daystamp {

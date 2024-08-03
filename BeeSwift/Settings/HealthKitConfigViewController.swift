@@ -18,7 +18,7 @@ class HealthKitConfigViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthKitConfigViewController")
     
     var tableView = UITableView()
-    var goals : [GoalProtocol] = []
+    var goals : [Goal] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
     let margin = 12
     
@@ -47,7 +47,7 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-        self.goals = ServiceLocator.goalManager.staleGoals() ?? []
+        self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
         self.sortGoals()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricRemovedNotification(notification:)), name: NSNotification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: nil)
@@ -72,7 +72,8 @@ class HealthKitConfigViewController: UIViewController {
 
             MBProgressHUD.showAdded(to: self.view, animated: true)
             do {
-                let goals = try await ServiceLocator.goalManager.fetchGoals()
+                try await ServiceLocator.goalManager.refreshGoals()
+                let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
                 MBProgressHUD.hide(for: self.view, animated: true)
                 self.goals = goals
                 self.sortGoals()
@@ -131,7 +132,7 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
         }
     }
     
-    private func goalAt(_ indexPath: IndexPath) -> GoalProtocol {
+    private func goalAt(_ indexPath: IndexPath) -> Goal {
         if indexPath.section == 0 {
             return self.manualSourced[indexPath.row]
         } else if indexPath.section == 1 {
@@ -164,21 +165,21 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
 }
 
 extension HealthKitConfigViewController {
-    var autoSourced: [GoalProtocol] {
+    var autoSourced: [Goal] {
         return self.goals.filter { $0.isDataProvidedAutomatically }
     }
     
-    var manualSourced: [GoalProtocol] {
+    var manualSourced: [Goal] {
         return self.goals.filter { !$0.isDataProvidedAutomatically }
     }
     
-    var autoSourcedModifiable: [GoalProtocol] {
+    var autoSourcedModifiable: [Goal] {
         return self.autoSourced.filter { goal -> Bool in
             return "Apple".localizedCaseInsensitiveCompare(goal.autodata ?? "") == ComparisonResult.orderedSame
         }
     }
     
-    var autoSourcedUnmodifiable: [GoalProtocol] {
+    var autoSourcedUnmodifiable: [Goal] {
         return self.autoSourced.filter { goal -> Bool in
             return "Apple".localizedCaseInsensitiveCompare(goal.autodata ?? "") != ComparisonResult.orderedSame
         }
