@@ -125,7 +125,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
 
         let dataEntryView = UIView()
-        dataEntryView.isHidden = self.goal.hideDataEntry()
+        dataEntryView.isHidden = self.goal.hideDataEntry
 
         self.scrollView.addSubview(dataEntryView)
         dataEntryView.snp.makeConstraints { (make) -> Void in
@@ -287,7 +287,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
 
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
-        if (!self.goal.hideDataEntry()) {
+        if (!self.goal.hideDataEntry) {
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
 
@@ -383,8 +383,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: BeeDataPoint) {
-        guard !self.goal.hideDataEntry() else { return }
-        guard let existingDatapoint = datapoint as? any DataPointProtocol else { return }
+        guard !self.goal.hideDataEntry else { return }
+        guard let existingDatapoint = datapoint as? DataPoint else { return }
 
         let editDatapointViewController = EditDatapointViewController(goal: goal, datapoint: existingDatapoint)
         let navigationController = UINavigationController(rootViewController: editDatapointViewController)
@@ -511,7 +511,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func updateInterfaceToMatchGoal() {
         self.datapointTableController.hhmmformat = goal.hhmmFormat
-        self.datapointTableController.datapoints = goal.recentData.map({$0 as! any DataPointProtocol}).sorted(by: {$0.updatedAt < $1.updatedAt})
+        self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
 
         self.refreshCountdown()
     }

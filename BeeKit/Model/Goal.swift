@@ -4,7 +4,7 @@ import CoreData
 import SwiftyJSON
 
 @objc(Goal)
-public class Goal: NSManagedObject, GoalProtocol {
+public class Goal: NSManagedObject {
     @NSManaged public var owner: User
     @NSManaged public var id: String
     @NSManaged public var slug: String
@@ -175,16 +175,5 @@ public class Goal: NSManagedObject, GoalProtocol {
 
         removeFromRecentData(recentData)
         addToRecentData(newRecentData)
-    }
-
-    public var isDataProvidedAutomatically: Bool {
-        guard let autodata = self.autodata else {
-            return false
-        }
-        return !autodata.isEmpty
-    }
-
-    public var hideDataEntry: Bool {
-        return isDataProvidedAutomatically || won
     }
 }

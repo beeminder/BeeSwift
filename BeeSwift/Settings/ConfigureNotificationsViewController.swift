@@ -62,13 +62,7 @@ class ConfigureNotificationsViewController: UIViewController {
     @objc func settingsButtonTapped() {
         UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
     }
-    
-    func sortGoals() {
-        self.goals.sort { (goal1, goal2) -> Bool in
-            return goal1.slug > goal2.slug
-        }
-    }
-    
+
     func updateHiddenElements() {
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in
             DispatchQueue.main.async {
@@ -89,8 +83,10 @@ class ConfigureNotificationsViewController: UIViewController {
     
     func fetchGoals() {
         Task { @MainActor in
-            self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
-            self.sortGoals()
+            let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+            self.goals = goals.sorted { (goal1, goal2) -> Bool in
+                return goal1.slug > goal2.slug
+            }
             self.tableView.reloadData()
         }
     }

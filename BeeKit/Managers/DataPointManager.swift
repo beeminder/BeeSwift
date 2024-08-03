@@ -19,13 +19,13 @@ public class DataPointManager {
         self.container = container
     }
 
-    private func datapointsMatchingDaystamp(datapoints : [any DataPointProtocol], daystamp : Daystamp) -> [any DataPointProtocol] {
+    private func datapointsMatchingDaystamp(datapoints : [DataPoint], daystamp : Daystamp) -> [DataPoint] {
         datapoints.filter { (datapoint) -> Bool in
             return daystamp == datapoint.daystamp
         }
     }
 
-    private func updateDatapoint(goal : Goal, datapoint : any DataPointProtocol, datapointValue : NSNumber) async throws {
+    private func updateDatapoint(goal : Goal, datapoint : DataPoint, datapointValue : NSNumber) async throws {
         let val = datapoint.value
         if datapointValue == val {
             return
@@ -37,7 +37,7 @@ public class DataPointManager {
         let _ = try await requestManager.put(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json", parameters: params)
     }
 
-    private func deleteDatapoint(goal: Goal, datapoint : any DataPointProtocol) async throws {
+    private func deleteDatapoint(goal: Goal, datapoint : DataPoint) async throws {
         let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)", parameters: nil)
     }
 
@@ -45,7 +45,7 @@ public class DataPointManager {
         let _ = try await requestManager.post(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
     }
 
-    private func fetchDatapoints(goal: Goal, sort: String, per: Int, page: Int) async throws -> [any DataPointProtocol] {
+    private func fetchDatapoints(goal: Goal, sort: String, per: Int, page: Int) async throws -> [DataPoint] {
         let params = ["sort" : sort, "per" : per, "page": page] as [String : Any]
         let response = try await requestManager.get(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
         let responseJSON = JSON(response!)
@@ -56,7 +56,7 @@ public class DataPointManager {
     /// Retrieve all data points on or after the daystamp provided
     /// Estimates how many data points are needed to fetch the correct data points, and then performs additional requests if needed
     /// to guarantee all matching points have been fetched.
-    private func datapointsSince(goal: Goal, daystamp: Daystamp) async throws -> [any DataPointProtocol] {
+    private func datapointsSince(goal: Goal, daystamp: Daystamp) async throws -> [DataPoint] {
         // Estimate how many points we need, based on one point per day
         let daysSince = Daystamp.now(deadline: goal.deadline) - daystamp
 
@@ -101,7 +101,7 @@ public class DataPointManager {
         }
     }
 
-    private func updateToMatchDataPoint(goal: Goal, newDataPoint : BeeDataPoint, recentDatapoints: [any DataPointProtocol]) async throws {
+    private func updateToMatchDataPoint(goal: Goal, newDataPoint : BeeDataPoint, recentDatapoints: [DataPoint]) async throws {
         var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: newDataPoint.daystamp)
         if matchingDatapoints.count == 0 {
             // If there are not already data points for this day, do not add points

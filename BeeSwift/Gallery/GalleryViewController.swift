@@ -160,10 +160,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.noGoalsLabel.numberOfLines = 0
         self.noGoalsLabel.isHidden = true
         
+        self.updateGoals()
         self.fetchGoals()
-        
 
-        
         if ServiceLocator.currentUserManager.signedIn() {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
@@ -215,17 +214,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
         } else {
-            self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
-            self.collectionView!.reloadData()
+            self.updateGoals()
+            self.fetchGoals()
         }
-        self.fetchGoals()
     }
     
     @objc func handleGoalsFetchedNotification() {
         Task {
-            self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
             self.lastUpdated = await ServiceLocator.goalManager.goalsFetchedAt
-            self.didFetchGoals()
+            self.updateGoals()
         }
     }
     
@@ -242,9 +239,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         if searchBar.isHidden {
             self.searchBar.text = ""
-            self.filteredGoals = self.goals
             self.searchBar.resignFirstResponder()
-            self.collectionView?.reloadData()
+            self.updateGoals()
         } else {
             self.searchBar.becomeFirstResponder()
         }
@@ -286,31 +282,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.updateFilteredGoals(searchText: searchText)
-        self.collectionView?.reloadData()
+        updateGoals()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let searchText = searchBar.text else { return }
         self.searchBar.resignFirstResponder()
-        self.updateFilteredGoals(searchText: searchText)
-        self.collectionView?.reloadData()
+        updateGoals()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.toggleSearchBar()
     }
     
-    func updateFilteredGoals(searchText : String) {
-        if searchText == "" {
-            self.filteredGoals = self.goals
-        } else {
-        self.filteredGoals = self.goals.filter { (goal) -> Bool in
-                return goal.slug.lowercased().contains(searchText.lowercased())
-            }
-        }
-    }
-    
+
     func updateDeadbeatHeight() {
         self.deadbeatView.snp.remakeConstraints { (make) -> Void in
             make.left.equalTo(0)
@@ -351,9 +335,79 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         lastText.addAttribute(NSAttributedString.Key.foregroundColor, value: color, range: NSRange(location: 0, length: lastText.string.count))
         self.lastUpdatedLabel.attributedText = lastText
     }
+
     
-    @objc func didFetchGoals() {
-        self.sortGoals()
+    func setupHealthKit() {
+        Task { @MainActor in
+            do {
+                try await ServiceLocator.healthStoreManager.ensureUpdatesRegularly(goals: self.goals)
+            } catch {
+                // We should display an error UI
+            }
+        }
+    }
+
+    @objc func fetchGoals() {
+        Task { @MainActor in
+            if self.goals.count == 0 {
+                MBProgressHUD.showAdded(to: self.view, animated: true)
+            }
+
+            do {
+                try await ServiceLocator.goalManager.refreshGoals()
+                self.updateGoals()
+            } catch {
+                if UIApplication.shared.applicationState == .active {
+                    let alert = UIAlertController(title: "Error fetching goals", message: error.localizedDescription, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                }
+                self.collectionView?.refreshControl?.endRefreshing()
+                MBProgressHUD.hide(for: self.view, animated: true)
+                self.collectionView!.reloadData()
+            }
+        }
+    }
+
+    func updateGoals() {
+        let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+        self.goals = sortedGoals(goals)
+        self.updateFilteredGoals()
+        self.didUpdateGoals()
+    }
+
+    func sortedGoals(_ goals: any Sequence<Goal>) -> [Goal] {
+        return goals.sorted(by: { (goal1, goal2) -> Bool in
+            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
+                if selectedGoalSort == Constants.nameGoalSortString {
+                    return goal1.slug < goal2.slug
+                }
+                else if selectedGoalSort == Constants.recentDataGoalSortString {
+                    return goal1.lastTouch > goal2.lastTouch
+                }
+                else if selectedGoalSort == Constants.pledgeGoalSortString {
+                    return goal1.pledge > goal2.pledge
+                }
+            }
+
+            // urgencykey is guaranteed to result in goals sorting into the canonical order
+            return goal1.urgencyKey < goal2.urgencyKey
+        })
+    }
+
+    func updateFilteredGoals() {
+        let searchText = searchBar.text ?? ""
+
+        if searchText == "" {
+            self.filteredGoals = self.goals
+        } else {
+            self.filteredGoals = self.goals.filter { (goal) -> Bool in
+                return goal.slug.lowercased().contains(searchText.lowercased())
+            }
+        }
+    }
+
+    @objc func didUpdateGoals() {
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
@@ -371,66 +425,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
         self.navigationItem.leftBarButtonItem = searchItem
     }
-    
-    func setupHealthKit() {
-        Task { @MainActor in
-            do {
-                try await ServiceLocator.healthStoreManager.ensureUpdatesRegularly(goals: self.goals)
-            } catch {
-                // We should display an error UI
-            }
-        }
-    }
-    
-    @objc func fetchGoals() {
-        Task { @MainActor in
-            if self.goals.count == 0 {
-                MBProgressHUD.showAdded(to: self.view, animated: true)
-            }
 
-            do {
-                try await ServiceLocator.goalManager.refreshGoals()
-                self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
-                self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
-                self.didFetchGoals()
-            } catch {
-                if UIApplication.shared.applicationState == .active {
-                    let alert = UIAlertController(title: "Error fetching goals", message: error.localizedDescription, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    self.present(alert, animated: true, completion: nil)
-                }
-                self.collectionView?.refreshControl?.endRefreshing()
-                MBProgressHUD.hide(for: self.view, animated: true)
-                self.collectionView!.reloadData()
-            }
-        }
-    }
-    
-    func sortGoals() {
-        self.goals.sort(by: { (goal1, goal2) -> Bool in
-            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
-                if selectedGoalSort == Constants.nameGoalSortString {
-                    return goal1.slug < goal2.slug
-                }
-                else if selectedGoalSort == Constants.recentDataGoalSortString {
-                    return goal1.lastTouch > goal2.lastTouch
-                }
-                else if selectedGoalSort == Constants.pledgeGoalSortString {
-                    return goal1.pledge > goal2.pledge
-                }
-            }
-
-            // urgencykey is guaranteed to result in goals sorting into the canonical order
-            return goal1.urgencyKey < goal2.urgencyKey
-        })
-        self.updateFilteredGoals(searchText: self.searchBar.text ?? "")
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return ServiceLocator.versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count
     }

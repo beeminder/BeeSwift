@@ -1,35 +1,7 @@
 import Foundation
 import UIKit
 
-public protocol GoalProtocol : AnyObject {
-    var id: String { get }
-    var slug: String { get }
-    var deadline: Int { get }
-    var initDay: Int { get }
-    var queued: Bool { get }
-    var lastTouch: String { get }
-    var graphUrl: String { get }
-    var thumbUrl: String { get }
-    var safeBuf: Int { get }
-    var leadTime: Int { get }
-    var useDefaults: Bool { get }
-    var alertStart: Int { get }
-    var title: String { get }
-    var todayta: Bool { get }
-    var safeSum: String { get }
-    var won: Bool { get }
-    var hhmmFormat: Bool { get }
-    var yAxis: String { get }
-    var pledge: Int { get }
-    var urgencyKey: String { get }
-    var recentData: Set<DataPoint> { get }
-
-    // Allow setters for synx test, for now
-    var autodata: String? { get set }
-    var healthKitMetric: String? { get set }
-}
-
-extension GoalProtocol {
+extension Goal {
     public var humanizedAutodata: String? {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
@@ -98,7 +70,7 @@ extension GoalProtocol {
         return UIColor.beeminder.green
     }
 
-    public func hideDataEntry() -> Bool {
+    public var hideDataEntry: Bool {
         return self.isDataProvidedAutomatically || self.won
     }
 

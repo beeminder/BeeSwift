@@ -47,16 +47,17 @@ class HealthKitConfigViewController: UIViewController {
         self.tableView.tableFooterView = UIView()
         self.tableView.backgroundColor = UIColor.clear
         self.tableView.register(HealthKitConfigTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-        self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
-        self.sortGoals()
-        
+
+        self.updateGoals()
+
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricRemovedNotification(notification:)), name: NSNotification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: nil)
     }
-    
-    func sortGoals() {
-        self.goals.sort { $0.slug < $1.slug }
+
+    func updateGoals() {
+        let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+        self.goals = goals.sorted { $0.slug < $1.slug }
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         self.fetchGoals()
     }
@@ -73,10 +74,8 @@ class HealthKitConfigViewController: UIViewController {
             MBProgressHUD.showAdded(to: self.view, animated: true)
             do {
                 try await ServiceLocator.goalManager.refreshGoals()
-                let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+                updateGoals()
                 MBProgressHUD.hide(for: self.view, animated: true)
-                self.goals = goals
-                self.sortGoals()
             } catch {
                 logger.error("Error fetching goals: \(error)")
 
