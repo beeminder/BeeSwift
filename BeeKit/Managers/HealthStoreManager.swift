@@ -6,12 +6,16 @@
 //  Copyright © 2017 APB. All rights reserved.
 //
 
+import CoreData
 import Foundation
 import HealthKit
 import OSLog
 
-public class HealthStoreManager :NSObject {
+public class HealthStoreManager {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
+
+    private let goalManager: GoalManager
+    private let container: NSPersistentContainer
 
     // TODO: Public for now to use from config
     public let healthStore = HKHealthStore()
@@ -22,6 +26,11 @@ public class HealthStoreManager :NSObject {
 
     /// Protect concurrent modifications to the connections dictionary
     private let connectionsSemaphore = DispatchSemaphore(value: 1)
+
+    init(goalManager: GoalManager, container: NSPersistentContainer) {
+        self.goalManager = goalManager
+        self.container = container
+    }
 
     /// Request acess to HealthKit data for the supplied metric
     ///
@@ -35,8 +44,16 @@ public class HealthStoreManager :NSObject {
     }
 
     /// Start listening for background updates to the supplied goal if we are not already doing so
-    public func ensureUpdatesRegularly(goal: Goal) async throws {
+    public func ensureUpdatesRegularly(goalID: NSManagedObjectID) async throws {
+        let context = container.newBackgroundContext()
+        let goal = try context.existingObject(with: goalID) as! Goal
         try await self.ensureUpdatesRegularly(goals: [goal])
+    }
+
+    public func ensureGoalsUpdateRegularly() async throws {
+        let context = container.newBackgroundContext()
+        guard let goals = goalManager.staleGoals(context: context) else { return }
+        return try await ensureUpdatesRegularly(goals: goals)
     }
 
     /// Ensure we have background update listeners for all of the supplied goals such that they
@@ -44,7 +61,7 @@ public class HealthStoreManager :NSObject {
     ///
     /// It is safe to pass the same goal or set of goals to this function multiple times, this function
     /// will ensure duplicate observers are not installed.
-    public func ensureUpdatesRegularly(goals: [Goal]) async throws {
+    private func ensureUpdatesRegularly(goals: any Sequence<Goal>) async throws {
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
 
         var permissions = Set<HKObjectType>()
@@ -69,8 +86,11 @@ public class HealthStoreManager :NSObject {
     ///
     /// This function will never show a permissions dialog - instead it will not update for
     /// metrics where we do not have permission.
-    public func silentlyInstallObservers(goals: any Sequence<Goal>) {
+    public func silentlyInstallObservers() {
         logger.notice("Silently installing observer queries")
+
+        let context = container.newBackgroundContext()
+        guard let goals = goalManager.staleGoals(context: context) else { return }
 
         let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
         for connection in goalConnections {
