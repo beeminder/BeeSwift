@@ -102,9 +102,10 @@ public class HealthStoreManager {
 
         let context = container.newBackgroundContext()
         guard let goals = goalManager.staleGoals(context: context) else { return }
+        let goalsWithHealthData = goals.filter { $0.healthKitMetric != nil && $0.healthKitMetric != "" }
 
         try await withThrowingTaskGroup(of: Void.self) { group in
-            for goal in goals {
+            for goal in goalsWithHealthData {
                 group.addTask {
                     try await self.updateWithRecentData(goal: goal, days: days)
                 }
@@ -194,7 +195,9 @@ public class HealthStoreManager {
     private func updateWithRecentData(goal: Goal, days: Int) async throws {
         guard let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
             metric.databaseString == goal.healthKitMetric
-        }) else { throw HealthKitError("No metric found for goal \(goal.slug) with metric \(goal.healthKitMetric ?? "nil")")}
+        }) else {
+            throw HealthKitError("No metric found for goal \(goal.slug) with metric \(goal.healthKitMetric ?? "nil")")
+        }
         let newDataPoints = try await metric.recentDataPoints(days: days, deadline: goal.deadline, healthStore: healthStore)
         // TODO: In the future we should gain confidence this code is correct and remove the filter so we handle deleted data better
         let nonZeroDataPoints = newDataPoints.filter { dataPoint in dataPoint.value != 0 }
