@@ -149,7 +149,7 @@ public class Goal: NSManagedObject {
         self.autodata = json["autodata"].string
         self.deadline = json["deadline"].intValue
         self.graphUrl = json["graph_url"].stringValue
-        self.healthKitMetric = json["healthkitmetric"].stringValue
+        self.healthKitMetric = json["healthkitmetric"].string
         self.hhmmFormat = json["hhmmformat"].boolValue
         self.initDay = json["initday"].intValue
         self.lastTouch = json["lasttouch"].stringValue
