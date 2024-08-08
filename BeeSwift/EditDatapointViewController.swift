@@ -213,7 +213,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                     "urtext": self.urtext()
                 ]
                 let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: params)
-                try await ServiceLocator.goalManager.refreshGoal(self.goal)
+                try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
 
                 hud.mode = .customView
                 hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
@@ -235,7 +235,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
 
             do {
                 let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: nil)
-                try await ServiceLocator.goalManager.refreshGoal(self.goal)
+                try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
 
                 hud.mode = .customView
                 hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))

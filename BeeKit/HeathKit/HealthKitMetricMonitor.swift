@@ -8,8 +8,9 @@ class HealthKitMetricMonitor {
     static let minimumIntervalBetweenObserverUpdates : TimeInterval = 5 // Seconds
 
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthKitMetricMonitor")
+
     private let healthStore: HKHealthStore
-    private let metric : HealthKitMetric
+    public let metric : HealthKitMetric
     private let onUpdate: (HealthKitMetric) async -> Void
 
     private var observerQuery : HKObserverQuery? = nil

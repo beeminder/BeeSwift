@@ -64,19 +64,14 @@ public actor GoalManager {
         await performPostGoalUpdateBookkeeping()
     }
 
-    public func refreshGoal(_ goal: Goal) async throws {
+    public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
+        let context = container.newBackgroundContext()
+        let goal = try context.existingObject(with: goalID) as! Goal
+
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
         let goalJSON = JSON(responseObject!)
-        let goalId = goalJSON["id"].stringValue
 
-        let context = container.newBackgroundContext()
-        let request = NSFetchRequest<Goal>(entityName: "Goal")
-        request.predicate = NSPredicate(format: "id == %@", goalId)
-        if let existingGoal = try context.fetch(request).first {
-            existingGoal.updateToMatch(json: goalJSON)
-        } else {
-            logger.warning("Found no existing goal in CoreData store when refreshing \(goal.slug) with id \(goal.id)")
-        }
+        goal.updateToMatch(json: goalJSON)
         try context.save()
 
         await performPostGoalUpdateBookkeeping()
@@ -148,9 +143,10 @@ public actor GoalManager {
         queuedGoalsBackgroundTaskRunning = true
 
         do {
+            let context = container.newBackgroundContext()
             while true {
                 // If there are no queued goals then we are complete and can stop checking
-                guard let user = currentUserManager.user() else { break }
+                guard let user = currentUserManager.user(context: context) else { break }
                 let queuedGoals = user.goals.filter { $0.queued }
                 if queuedGoals.isEmpty {
                     break
@@ -160,7 +156,8 @@ public actor GoalManager {
                 try await withThrowingTaskGroup(of: Void.self) { group in
                     for goal in queuedGoals {
                         group.addTask {
-                            try await self.refreshGoal(goal)
+                            // TODO: We don't really need to reload the goal in a new context here
+                            try await self.refreshGoal(goal.objectID)
                         }
                     }
                     try await group.waitForAll()
