@@ -62,7 +62,7 @@ public class HealthStoreManager {
     public func ensureGoalsUpdateRegularly() async throws {
         let context = container.newBackgroundContext()
         guard let goals = goalManager.staleGoals(context: context) else { return }
-        let metrics = goals.compactMap { $0.healthKitMetric }
+        let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
         return try await ensureUpdatesRegularly(metricNames: metrics, removeMissing: true)
     }
 
@@ -75,7 +75,7 @@ public class HealthStoreManager {
 
         let context = container.newBackgroundContext()
         guard let goals = goalManager.staleGoals(context: context) else { return }
-        let metrics = goals.compactMap { $0.healthKitMetric }
+        let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
         let monitors = updateKnownMonitors(metricNames: metrics, removeMissing: true)
 
         for monitor in monitors {
