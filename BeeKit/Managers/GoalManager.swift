@@ -71,9 +71,11 @@ public actor GoalManager {
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
         let goalJSON = JSON(responseObject!)
 
+        // The goal may have changed during the network operation, reload latest version
+        context.refresh(goal, mergeChanges: false)
         goal.updateToMatch(json: goalJSON)
-        try context.save()
 
+        try context.save()
         await performPostGoalUpdateBookkeeping()
     }
 
