@@ -111,6 +111,7 @@ public class HealthStoreManager {
                     let goalID = goal.objectID
                     group.addTask {
                         // This is a new thread, so we are not allowed to use the goal object from CoreData
+                        // TODO: This will generate lots of unneccesary reloads
                         try await self.updateWithRecentData(goalID: goalID, days: days)
                     }
                 }
