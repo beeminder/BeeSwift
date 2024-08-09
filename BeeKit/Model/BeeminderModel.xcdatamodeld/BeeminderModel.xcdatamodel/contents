@@ -7,7 +7,7 @@
         <attribute name="requestid" optional="YES" attributeType="String"/>
         <attribute name="updatedAt" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="value" attributeType="Decimal" defaultValueString="0.0"/>
-        <relationship name="goal" maxCount="1" deletionRule="Nullify" destinationEntity="Goal"/>
+        <relationship name="goal" maxCount="1" deletionRule="Nullify" destinationEntity="Goal" inverseName="data" inverseEntity="Goal"/>
     </entity>
     <entity name="Goal" representedClassName="Goal" syncable="YES">
         <attribute name="alertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -33,6 +33,7 @@
         <attribute name="useDefaults" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="won" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="yAxis" attributeType="String"/>
+        <relationship name="data" toMany="YES" deletionRule="Cascade" destinationEntity="DataPoint" inverseName="goal" inverseEntity="DataPoint"/>
         <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="goals" inverseEntity="User"/>
         <relationship name="recentData" toMany="YES" deletionRule="Nullify" destinationEntity="DataPoint"/>
     </entity>
