@@ -98,21 +98,24 @@ public class HealthStoreManager {
 
     /// Immediately update all known goals based on HealthKit's data record
     public func updateAllGoalsWithRecentData(days: Int) async throws {
-        logger.notice("Updating all goals with recent day for last \(days, privacy: .public) days")
+        try await Task {
+            logger.notice("Updating all goals with recent day for last \(days, privacy: .public) days")
 
-        let context = container.newBackgroundContext()
-        guard let goals = goalManager.staleGoals(context: context) else { return }
-        let goalsWithHealthData = goals.filter { $0.healthKitMetric != nil && $0.healthKitMetric != "" }
+            // We must create this context in a backgrounfd thread as it will be used in background threads
+            let context = container.newBackgroundContext()
+            guard let goals = goalManager.staleGoals(context: context) else { return }
+            let goalsWithHealthData = goals.filter { $0.healthKitMetric != nil && $0.healthKitMetric != "" }
 
-        try await withThrowingTaskGroup(of: Void.self) { group in
-            for goal in goalsWithHealthData {
-                group.addTask {
-                    try await self.updateWithRecentData(goal: goal, days: days)
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                for goal in goalsWithHealthData {
+                    group.addTask {
+                        try await self.updateWithRecentData(goal: goal, days: days)
+                    }
                 }
+                try await group.waitForAll()
             }
-            try await group.waitForAll()
-        }
-        try await goalManager.refreshGoals()
+            try await goalManager.refreshGoals()
+        }.value
     }
 
     private func ensureUpdatesRegularly(metricNames: any Sequence<String>, removeMissing: Bool) async throws {

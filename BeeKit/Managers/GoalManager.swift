@@ -143,9 +143,9 @@ public actor GoalManager {
         queuedGoalsBackgroundTaskRunning = true
 
         do {
-            let context = container.newBackgroundContext()
             while true {
                 // If there are no queued goals then we are complete and can stop checking
+                let context = container.newBackgroundContext()
                 guard let user = currentUserManager.user(context: context) else { break }
                 let queuedGoals = user.goals.filter { $0.queued }
                 if queuedGoals.isEmpty {
