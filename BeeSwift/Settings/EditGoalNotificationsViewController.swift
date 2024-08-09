@@ -67,7 +67,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
             do {
                 let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params as [String : Any])
 
-                try await ServiceLocator.goalManager.refreshGoal(self.goal)
+                try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
 
             } catch {
                 logger.error("Error sending lead time to server: \(error)")
@@ -83,7 +83,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 do {
                     let params = ["alertstart" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
                     let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
-                    try await ServiceLocator.goalManager.refreshGoal(self.goal)
+                    try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
 
                     self.useDefaultsSwitch.isOn = false
                 } catch {
@@ -96,7 +96,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 do {
                     let params = ["deadline" : self.midnightOffsetFromTimePickerView(), "use_defaults" : false]
                     let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
-                    try await ServiceLocator.goalManager.refreshGoal(self.goal)
+                    try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
 
                     self.useDefaultsSwitch.isOn = false
                 } catch {
@@ -118,7 +118,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     do {
                         let params = ["use_defaults" : true]
                         let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
-                        try await ServiceLocator.goalManager.refreshGoal(self.goal)
+                        try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
                     } catch {
                         self.logger.error("Error setting goal to use defaults: \(error)")
                         // TODO: Show UI failure
@@ -150,7 +150,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                 do {
                     let params = ["use_defaults" : false]
                     let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
-                    try await ServiceLocator.goalManager.refreshGoal(self.goal)
+                    try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
                 } catch {
                     logger.error("Error setting goal to NOT use defaults: \(error)")
                     // foo

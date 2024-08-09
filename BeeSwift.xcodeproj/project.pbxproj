@@ -75,7 +75,6 @@
 		E458C80F2AD11C80000DCA5C /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
 		E458C8102AD11C87000DCA5C /* CategoryHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */; };
 		E458C8112AD11C8B000DCA5C /* MindfulSessionHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */; };
-		E458C8122AD11C90000DCA5C /* GoalHealthKitConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */; };
 		E458C8132AD11C94000DCA5C /* HealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */; };
 		E458C8142AD11C99000DCA5C /* QuantityHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */; };
 		E458C8152AD11C9D000DCA5C /* TimeInBedHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6428F2910D327004F3EA9 /* TimeInBedHealthKitMetric.swift */; };
@@ -129,6 +128,7 @@
 		E4B0A33128C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
+		E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */; };
 		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
 		E4E63C6D2C3F9083005E00DA /* DataPointManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */; };
 		E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */; };
@@ -345,6 +345,7 @@
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
+		E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricMonitor.swift; sourceTree = "<group>"; };
 		E4E43D8729F39CE800697116 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
 		E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPointManager.swift; sourceTree = "<group>"; };
 		E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalExtensions.swift; sourceTree = "<group>"; };
@@ -355,7 +356,6 @@
 		E4E6428F2910D327004F3EA9 /* TimeInBedHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInBedHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E8DD3A2BE87F890059C64F /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		E4E8DD3C2BE881440059C64F /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
-		E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalHealthKitConnection.swift; sourceTree = "<group>"; };
 		E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AddDataIntents.intentdefinition; sourceTree = "<group>"; };
 		E55760F426549D310076B95A /* AddDataIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataIntentHandler.swift; sourceTree = "<group>"; };
 		E55FEE6A23FF7552007C20B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -702,7 +702,6 @@
 				A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */,
 				E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */,
 				E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */,
-				E52094FD2741D72300CB766F /* GoalHealthKitConnection.swift */,
 				E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */,
 				E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */,
 				E4E6428F2910D327004F3EA9 /* TimeInBedHealthKitMetric.swift */,
@@ -711,6 +710,7 @@
 				E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */,
 				E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */,
 				E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */,
+				E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */,
 			);
 			path = HeathKit;
 			sourceTree = "<group>";
@@ -1206,13 +1206,13 @@
 				E458C8152AD11C9D000DCA5C /* TimeInBedHealthKitMetric.swift in Sources */,
 				E458C8052AD11BC8000DCA5C /* VersionManager.swift in Sources */,
 				E458C8142AD11C99000DCA5C /* QuantityHealthKitMetric.swift in Sources */,
+				E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */,
 				E458C8092AD11C13000DCA5C /* SynchronizedBox.swift in Sources */,
 				E458C8102AD11C87000DCA5C /* CategoryHealthKitMetric.swift in Sources */,
 				E458C8192AD11CB0000DCA5C /* StandHoursHealthKitMetric.swift in Sources */,
 				E45470282B60E24500EE648B /* Daystamp.swift in Sources */,
 				E458C8042AD11BC3000DCA5C /* SignedRequestManager.swift in Sources */,
 				E458C8162AD11CA2000DCA5C /* HealthKitError.swift in Sources */,
-				E458C8122AD11C90000DCA5C /* GoalHealthKitConnection.swift in Sources */,
 				E458C81E2AD11D05000DCA5C /* DateUtils.swift in Sources */,
 				E4B0A33128C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */,
 				E458C8132AD11C94000DCA5C /* HealthKitMetric.swift in Sources */,

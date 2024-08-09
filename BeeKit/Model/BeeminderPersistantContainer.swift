@@ -16,7 +16,13 @@ public class BeeminderPersistentContainer: NSPersistentContainer {
             if let error = error {
                 logger.error("Unable to load persistent stores: \(error, privacy: .public)")
                 // TODO: Reconsider this approach after we use this data for real
-                try! FileManager.default.removeItem(at: BeeminderPersistentContainer.defaultDirectoryURL())
+                for storeDescription in container.persistentStoreDescriptions {
+                    if let url = storeDescription.url {
+                        try! FileManager.default.removeItem(at: url)
+                    } else {
+                        logger.warning("No URL for store description: \(storeDescription, privacy: .public)")
+                    }
+                }
                 container.loadPersistentStores { description, error in
                     if let error = error {
                         fatalError("Unable to load persistent stores on retry: \(error)")

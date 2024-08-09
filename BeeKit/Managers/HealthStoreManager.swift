@@ -6,22 +6,38 @@
 //  Copyright © 2017 APB. All rights reserved.
 //
 
+import CoreData
 import Foundation
 import HealthKit
 import OSLog
 
-public class HealthStoreManager :NSObject {
+public class HealthStoreManager {
+    /// The number of days to update when we are informed of a change. We are only called when the device is unlocked, so we must look
+    /// at the previous day in case data was added after the last time the device was locked. There may also be other integrations which report
+    /// data with some lag, so we look a bit further back for safety
+    /// This does mean users who have very little buffer, and are not regularly unlocking their phone, may erroneously derail. There is nothing we
+    /// can do about this.
+    static let daysToUpdateOnChangeNotification = 7
+
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
+
+    private let goalManager: GoalManager
+    private let container: NSPersistentContainer
 
     // TODO: Public for now to use from config
     public let healthStore = HKHealthStore()
 
     /// The Connection objects responsible for updating goals based on their healthkit metrics
     /// Dictionary key is the goal id, as this is stable across goal renames
-    private var connections: [String: GoalHealthKitConnection] = [:]
+    private var monitors: [String: HealthKitMetricMonitor] = [:]
 
     /// Protect concurrent modifications to the connections dictionary
-    private let connectionsSemaphore = DispatchSemaphore(value: 1)
+    private let monitorsSemaphore = DispatchSemaphore(value: 1)
+
+    init(goalManager: GoalManager, container: NSPersistentContainer) {
+        self.goalManager = goalManager
+        self.container = container
+    }
 
     /// Request acess to HealthKit data for the supplied metric
     ///
@@ -30,51 +46,40 @@ public class HealthStoreManager :NSObject {
     /// granted read permission
     public func requestAuthorization(metric: HealthKitMetric) async throws {
         logger.notice("requestAuthorization for \(metric.databaseString, privacy: .public)")
-
-        try await self.requestAuthorization(read: [metric.sampleType()])
+        try await self.healthStore.requestAuthorization(toShare: Set(), read: [metric.sampleType()])
     }
 
     /// Start listening for background updates to the supplied goal if we are not already doing so
-    public func ensureUpdatesRegularly(goal: Goal) async throws {
-        try await self.ensureUpdatesRegularly(goals: [goal])
+    public func ensureUpdatesRegularly(goalID: NSManagedObjectID) async throws {
+        let context = container.newBackgroundContext()
+        let goal = try context.existingObject(with: goalID) as! Goal
+        guard let metricName = goal.healthKitMetric else { return }
+        try await self.ensureUpdatesRegularly(metricNames: [metricName], removeMissing: false)
     }
 
-    /// Ensure we have background update listeners for all of the supplied goals such that they
+    /// Ensure we have background update listeners for all known goals such that they
     /// will be updated any time the health data changes.
-    ///
-    /// It is safe to pass the same goal or set of goals to this function multiple times, this function
-    /// will ensure duplicate observers are not installed.
-    public func ensureUpdatesRegularly(goals: [Goal]) async throws {
-        let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
-
-        var permissions = Set<HKObjectType>()
-        for connection in goalConnections {
-            permissions.insert(connection.metric.permissionType())
-        }
-        if permissions.count > 0 {
-            try await self.requestAuthorization(read: permissions)
-        }
-
-        try await withThrowingTaskGroup(of: Void.self) { group in
-            for connection in goalConnections {
-                group.addTask {
-                    try await connection.setupHealthKit()
-                }
-            }
-            try await group.waitForAll()
-        }
+    public func ensureGoalsUpdateRegularly() async throws {
+        let context = container.newBackgroundContext()
+        guard let goals = goalManager.staleGoals(context: context) else { return }
+        let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
+        return try await ensureUpdatesRegularly(metricNames: metrics, removeMissing: true)
     }
 
     /// Install observers for any goals we currently have permission to read
     ///
     /// This function will never show a permissions dialog - instead it will not update for
     /// metrics where we do not have permission.
-    public func silentlyInstallObservers(goals: any Sequence<Goal>) {
+    public func silentlyInstallObservers() {
         logger.notice("Silently installing observer queries")
 
-        let goalConnections = goals.compactMap { self.connectionFor(goal:$0) }
-        for connection in goalConnections {
-            connection.registerObserverQuery()
+        let context = container.newBackgroundContext()
+        guard let goals = goalManager.staleGoals(context: context) else { return }
+        let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
+        let monitors = updateKnownMonitors(metricNames: metrics, removeMissing: true)
+
+        for monitor in monitors {
+            monitor.registerObserverQuery()
         }
     }
 
@@ -84,77 +89,122 @@ public class HealthStoreManager :NSObject {
     /// - Parameters:
     ///   - goal: The healthkit-connected goal to be updated
     ///   - days: How many days of history to update. Supplying 1 will update the current day.
-    public func updateWithRecentData(goal: Goal, days: Int) async throws {
-        logger.notice("Updating \(goal.healthKitMetric ?? "nil", privacy: .public) goal with recent day for last \(days, privacy: .public) days")
-        guard let connection = self.connectionFor(goal: goal) else {
-            throw HealthKitError("Failed to find connection for goal")
-        }
-        try await connection.updateWithRecentData(days: days)
+    public func updateWithRecentData(goalID: NSManagedObjectID, days: Int) async throws {
+        let context = container.newBackgroundContext()
+        let goal = try context.existingObject(with: goalID) as! Goal
+        try await updateWithRecentData(goal: goal, days: days)
+        try await goalManager.refreshGoal(goalID)
     }
 
     /// Immediately update all known goals based on HealthKit's data record
     public func updateAllGoalsWithRecentData(days: Int) async throws {
-        logger.notice("Updating all goals with recent day for last \(days, privacy: .public) days")
+        try await Task {
+            logger.notice("Updating all goals with recent day for last \(days, privacy: .public) days")
+
+            // We must create this context in a backgrounfd thread as it will be used in background threads
+            let context = container.newBackgroundContext()
+            guard let goals = goalManager.staleGoals(context: context) else { return }
+            let goalsWithHealthData = goals.filter { $0.healthKitMetric != nil && $0.healthKitMetric != "" }
+
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                for goal in goalsWithHealthData {
+                    group.addTask {
+                        try await self.updateWithRecentData(goal: goal, days: days)
+                    }
+                }
+                try await group.waitForAll()
+            }
+            try await goalManager.refreshGoals()
+        }.value
+    }
+
+    private func ensureUpdatesRegularly(metricNames: any Sequence<String>, removeMissing: Bool) async throws {
+        let monitors = updateKnownMonitors(metricNames: metricNames, removeMissing: removeMissing)
+
+        var permissions = Set<HKObjectType>()
+        for monitor in monitors {
+            permissions.insert(monitor.metric.permissionType())
+        }
+        if permissions.count > 0 {
+            try await self.healthStore.requestAuthorization(toShare: Set(), read: permissions)
+
+        }
 
         try await withThrowingTaskGroup(of: Void.self) { group in
-            for (_, connection) in self.connections {
+            for monitor in monitors {
                 group.addTask {
-                    try await connection.updateWithRecentData(days: days)
+                    try await monitor.setupHealthKit()
                 }
             }
             try await group.waitForAll()
         }
     }
 
-    /// Gets or creates an appropriate connection object for the supplied goal
-    private func connectionFor(goal: Goal) -> GoalHealthKitConnection? {
-        connectionsSemaphore.wait()
+    private func updateKnownMonitors(metricNames: any Sequence<String>, removeMissing: Bool) -> [HealthKitMetricMonitor] {
+        monitorsSemaphore.wait()
 
-        if (goal.healthKitMetric ?? "") == "" {
-            // Goal does not have a metric. Make sure any prior connection is removed
-            if let connection = connections[goal.id] {
-                connection.unregisterObserverQuery()
-                connections.removeValue(forKey: goal.id)
-            }
-        } else {
-            // If a connection exists but is for the wrong metric then remove it
-            if let connection = connections[goal.id] {
-                if connection.metric.databaseString != goal.healthKitMetric {
-                    connection.unregisterObserverQuery()
-                    connections.removeValue(forKey: goal.id)
+        for metricName in metricNames {
+            if monitors[metricName] == nil {
+                guard let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
+                    metric.databaseString == metricName
+                }) else {
+                    logger.error("No metric found for \(metricName, privacy: .public)")
+                    continue
                 }
+                monitors[metricName] = HealthKitMetricMonitor(healthStore: healthStore, metric: metric, onUpdate: { [weak self] metric in
+                    await self?.updateGoalsForMetricChange(metricName: metricName, metric: metric)
+                })
             }
+        }
 
-            // If there is no connection (or we just removed it) then create a new one
-            if connections[goal.id] == nil {
-                logger.notice("Creating connection for \(goal.slug, privacy: .private) (\(goal.id, privacy: .public)) to metric \(goal.healthKitMetric ?? "nil", privacy: .public)")
-
-                if let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
-                    metric.databaseString == goal.healthKitMetric
-                }) {
-                    connections[goal.id] = GoalHealthKitConnection(goal: goal, metric: metric, healthStore: healthStore)
+        if removeMissing {
+            for (metricName, monitor) in monitors {
+                if !metricNames.contains(metricName) {
+                    monitor.unregisterObserverQuery()
+                    monitors.removeValue(forKey: metricName)
                 }
             }
         }
 
-        let connection = connections[goal.id]
-        connectionsSemaphore.signal()
+        let requestedMonitors = metricNames.compactMap { monitors[$0] }
 
-        return connection
+        monitorsSemaphore.signal()
+        return requestedMonitors
     }
 
-    private func requestAuthorization(read: Set<HKObjectType>) async throws {
-        try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Void, Error>) in
-            self.healthStore.requestAuthorization(toShare: nil, read: read) { success, error in
-                if error != nil {
-                    continuation.resume(throwing: error!)
-                } else if success == false {
-                    continuation.resume(throwing: HealthKitError("Error requesting HealthKit authorization"))
-                } else {
-                    continuation.resume()
-                }
+    private func updateGoalsForMetricChange(metricName: String, metric: HealthKitMetric) async {
+        do {
+            let context = container.newBackgroundContext()
+            guard let allGoals = goalManager.staleGoals(context: context) else { return }
+            let goalsForMetric = allGoals.filter { $0.healthKitMetric == metricName }
+            if goalsForMetric.count == 0 {
+                logger.notice("Received an update for metric \(metricName, privacy: .public) but no goals using it")
+                return
             }
-        })
+
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                for goal in goalsForMetric {
+                    group.addTask {
+                        try await self.updateWithRecentData(goal: goal, days: HealthStoreManager.daysToUpdateOnChangeNotification)
+                    }
+                }
+                try await group.waitForAll()
+            }
+        } catch {
+            logger.error("Error updating goals for metric change: \(error, privacy: .public)")
+        }
     }
 
+    private func updateWithRecentData(goal: Goal, days: Int) async throws {
+        guard let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
+            metric.databaseString == goal.healthKitMetric
+        }) else {
+            throw HealthKitError("No metric found for goal \(goal.slug) with metric \(goal.healthKitMetric ?? "nil")")
+        }
+        let newDataPoints = try await metric.recentDataPoints(days: days, deadline: goal.deadline, healthStore: healthStore)
+        // TODO: In the future we should gain confidence this code is correct and remove the filter so we handle deleted data better
+        let nonZeroDataPoints = newDataPoints.filter { dataPoint in dataPoint.value != 0 }
+        logger.notice("Updating \(metric.databaseString, privacy: .public) goal with \(nonZeroDataPoints.count, privacy: .public) datapoints. Skipped \(newDataPoints.count - nonZeroDataPoints.count, privacy: .public) empty points.")
+        try await ServiceLocator.dataPointManager.updateToMatchDataPoints(goal: goal, healthKitDataPoints: nonZeroDataPoints)
+    }
 }
