@@ -158,7 +158,6 @@ public actor GoalManager {
                 try await withThrowingTaskGroup(of: Void.self) { group in
                     for goal in queuedGoals {
                         group.addTask {
-                            // TODO: We don't really need to reload the goal in a new context here
                             try await self.refreshGoal(goal.objectID)
                         }
                     }

@@ -108,8 +108,10 @@ public class HealthStoreManager {
 
             try await withThrowingTaskGroup(of: Void.self) { group in
                 for goal in goalsWithHealthData {
+                    let goalID = goal.objectID
                     group.addTask {
-                        try await self.updateWithRecentData(goal: goal, days: days)
+                        // This is a new thread, so we are not allowed to use the goal object from CoreData
+                        try await self.updateWithRecentData(goalID: goalID, days: days)
                     }
                 }
                 try await group.waitForAll()
@@ -182,13 +184,8 @@ public class HealthStoreManager {
                 return
             }
 
-            try await withThrowingTaskGroup(of: Void.self) { group in
-                for goal in goalsForMetric {
-                    group.addTask {
-                        try await self.updateWithRecentData(goal: goal, days: HealthStoreManager.daysToUpdateOnChangeNotification)
-                    }
-                }
-                try await group.waitForAll()
+            for goal in goalsForMetric {
+                try await self.updateWithRecentData(goal: goal, days: HealthStoreManager.daysToUpdateOnChangeNotification)
             }
         } catch {
             logger.error("Error updating goals for metric change: \(error, privacy: .public)")
