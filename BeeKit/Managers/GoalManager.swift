@@ -71,9 +71,11 @@ public actor GoalManager {
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
         let goalJSON = JSON(responseObject!)
 
+        // The goal may have changed during the network operation, reload latest version
+        context.refresh(goal, mergeChanges: false)
         goal.updateToMatch(json: goalJSON)
-        try context.save()
 
+        try context.save()
         await performPostGoalUpdateBookkeeping()
     }
 
@@ -156,7 +158,6 @@ public actor GoalManager {
                 try await withThrowingTaskGroup(of: Void.self) { group in
                     for goal in queuedGoals {
                         group.addTask {
-                            // TODO: We don't really need to reload the goal in a new context here
                             try await self.refreshGoal(goal.objectID)
                         }
                     }
