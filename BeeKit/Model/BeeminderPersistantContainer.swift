@@ -4,6 +4,8 @@ import OSLog
 
 public class BeeminderPersistentContainer: NSPersistentContainer {
     private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "BeeminderPersistentContainer")
+    private var spotlightIndexer: NSCoreDataCoreSpotlightDelegate?
+
 
     override open class func defaultDirectoryURL() -> URL {
         let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.beeminder.beeminder")
@@ -12,6 +14,14 @@ public class BeeminderPersistentContainer: NSPersistentContainer {
 
     static func create() -> BeeminderPersistentContainer {
         let container = BeeminderPersistentContainer(name: "BeeminderModel")
+
+        guard let description = container.persistentStoreDescriptions.first else {
+            fatalError("Failed to retrieve a persistent store description.")
+        }
+        // Spotlight indexing requires sqlite and history tracking
+        description.type = NSSQLiteStoreType
+        description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+
         container.loadPersistentStores { description, error in
             if let error = error {
                 logger.error("Unable to load persistent stores: \(error, privacy: .public)")
@@ -30,6 +40,10 @@ public class BeeminderPersistentContainer: NSPersistentContainer {
                 }
             }
         }
+
+        container.spotlightIndexer = BeeminderSpotlightDelegate(forStoreWith: description, coordinator: container.persistentStoreCoordinator)
+        container.spotlightIndexer?.startSpotlightIndexing()
+
         return container
     }
 

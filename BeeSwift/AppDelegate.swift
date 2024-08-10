@@ -6,12 +6,15 @@
 //  Copyright (c) 2015 APB. All rights reserved.
 //
 
-import UIKit
-import IQKeyboardManagerSwift
+import CoreSpotlight
 import HealthKit
-import AlamofireNetworkActivityIndicator
-import BeeKit
 import OSLog
+import UIKit
+
+import IQKeyboardManagerSwift
+import AlamofireNetworkActivityIndicator
+
+import BeeKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -171,7 +174,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        if let intent = userActivity.interaction?.intent as? AddDataIntent {
+        if userActivity.activityType == CSSearchableItemActionType {
+            guard let goalIdentifier = userActivity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return false
+            }
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["identifier": goalIdentifier])
+        } else if let intent = userActivity.interaction?.intent as? AddDataIntent {
             guard let goalSlug = intent.goal else { return false }
             NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": goalSlug])
         } else if let goalSlug = userActivity.userInfo?["slug"] {

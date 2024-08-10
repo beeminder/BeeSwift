@@ -9,7 +9,7 @@
         <attribute name="value" attributeType="Decimal" defaultValueString="0.0"/>
         <relationship name="goal" maxCount="1" deletionRule="Nullify" destinationEntity="Goal" inverseName="data" inverseEntity="Goal"/>
     </entity>
-    <entity name="Goal" representedClassName="Goal" syncable="YES">
+    <entity name="Goal" representedClassName="Goal" syncable="YES" coreSpotlightDisplayNameExpression="slug">
         <attribute name="alertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="autodata" optional="YES" attributeType="String"/>
         <attribute name="deadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -25,9 +25,9 @@
         <attribute name="queued" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="safeBuf" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="safeSum" attributeType="String"/>
-        <attribute name="slug" attributeType="String"/>
+        <attribute name="slug" attributeType="String" spotlightIndexingEnabled="YES"/>
         <attribute name="thumbUrl" attributeType="String"/>
-        <attribute name="title" attributeType="String"/>
+        <attribute name="title" attributeType="String" spotlightIndexingEnabled="YES"/>
         <attribute name="todayta" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="urgencyKey" attributeType="String"/>
         <attribute name="useDefaults" attributeType="Boolean" usesScalarValueType="YES"/>

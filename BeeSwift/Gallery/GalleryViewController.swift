@@ -486,10 +486,20 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     @objc func openGoalFromNotification(_ notification: Notification) {
-        let slug = (notification as NSNotification).userInfo!["slug"] as! String
-        let matchingGoal = self.goals.filter({ (goal) -> Bool in
-            return goal.slug == slug
-        }).last
+        guard let notif = notification as NSNotification? else { return }
+        var matchingGoal: Goal?
+
+        if let identifier = notif.userInfo?["identifier"] as? String {
+            let context = ServiceLocator.persistentContainer.viewContext
+            if let url = URL(string: identifier), let objectID = context.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
+                matchingGoal = context.object(with: objectID) as? Goal
+            }
+        }
+        else if let slug = notif.userInfo?["slug"] as? String {
+            matchingGoal = self.goals.filter({ (goal) -> Bool in
+                return goal.slug == slug
+            }).last
+        }
         if matchingGoal != nil {
             self.navigationController?.popToRootViewController(animated: false)
             self.openGoal(matchingGoal!)

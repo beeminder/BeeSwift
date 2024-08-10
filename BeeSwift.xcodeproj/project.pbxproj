@@ -129,6 +129,7 @@
 		E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
 		E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */; };
+		E4D5BD5F2C6709060007B0BE /* BeeminderSpotlightDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */; };
 		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
 		E4E63C6D2C3F9083005E00DA /* DataPointManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */; };
 		E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */; };
@@ -346,6 +347,7 @@
 		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
 		E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricMonitor.swift; sourceTree = "<group>"; };
+		E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderSpotlightDelegate.swift; sourceTree = "<group>"; };
 		E4E43D8729F39CE800697116 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
 		E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPointManager.swift; sourceTree = "<group>"; };
 		E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalExtensions.swift; sourceTree = "<group>"; };
@@ -641,6 +643,7 @@
 				E46070EE2B36A4D900305DB4 /* User.swift */,
 				E4E8DD3A2BE87F890059C64F /* Goal.swift */,
 				E4E8DD3C2BE881440059C64F /* DataPoint.swift */,
+				E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1221,6 +1224,7 @@
 				E458C8022AD11BB9000DCA5C /* CurrentUserManager.swift in Sources */,
 				E458C8182AD11CAC000DCA5C /* TimeAsleepHealthKitMetric.swift in Sources */,
 				E458C80B2AD11C2B000DCA5C /* ServiceLocator.swift in Sources */,
+				E4D5BD5F2C6709060007B0BE /* BeeminderSpotlightDelegate.swift in Sources */,
 				E458C81B2AD11CD8000DCA5C /* UIColorExtension.swift in Sources */,
 				E458C8082AD11BFB000DCA5C /* BeeDataPoint.swift in Sources */,
 				E458C81C2AD11CDE000DCA5C /* UIFontExtension.swift in Sources */,
