@@ -13,13 +13,20 @@ import MBProgressHUD
 import BeeKit
 
 class TimerViewController: UIViewController {
+     init(goal: Goal) {
+         self.goal = goal
+         super.init(nibName: nil, bundle: nil)
+     }
+
+     required init?(coder aDecoder: NSCoder) {
+         fatalError("init(coder:) has not been implemented")
+     }
     
     let timerLabel = BSLabel()
     let startStopButton = BSButton()
-    var goal : Goal?
+    var goal: Goal
     var timingSince: Date?
     var timer: Timer?
-    var slug: String?
     var units: String?
     var accumulatedSeconds = 0
 
@@ -64,7 +71,7 @@ class TimerViewController: UIViewController {
         }
         addDatapointButton.backgroundColor = .clear
         addDatapointButton.addTarget(self, action: #selector(self.addDatapointButtonPressed), for: .touchUpInside)
-        addDatapointButton.setTitle("Add Datapoint", for: .normal)
+        addDatapointButton.setTitle("Add Datapoint to \(self.goal.slug)", for: .normal)
         
         let resetButton = BSButton()
         self.view.addSubview(resetButton)
@@ -76,11 +83,6 @@ class TimerViewController: UIViewController {
         resetButton.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
         resetButton.setTitle("Reset", for: .normal)
         resetButton.backgroundColor = .clear
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     @objc func exitButtonPressed() {
@@ -138,13 +140,13 @@ class TimerViewController: UIViewController {
         let calendar = Calendar.current
         let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
         let currentHour = components.hour
-        if self.goal!.deadline > 0 && currentHour! < 6 && self.goal!.deadline/3600 < currentHour! {
+        if self.goal.deadline > 0 && currentHour! < 6 && self.goal.deadline/3600 < currentHour! {
             offset = -1
         }
         
         // if the goal's deadline is before midnight and has already passed for this calendar day, default to entering data for the "next" day
-        if self.goal!.deadline < 0 {
-            let deadlineSecondsAfterMidnight = 24*3600 + self.goal!.deadline
+        if self.goal.deadline < 0 {
+            let deadlineSecondsAfterMidnight = 24*3600 + self.goal.deadline
             let deadlineHour = deadlineSecondsAfterMidnight/3600
             let deadlineMinute = (deadlineSecondsAfterMidnight % 3600)/60
             let currentMinute = components.minute
@@ -167,14 +169,13 @@ class TimerViewController: UIViewController {
     }
     
     @objc func addDatapointButtonPressed() {
-        if self.slug == nil { return }
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud.mode = .indeterminate
 
         Task { @MainActor in
             do {
                 let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
-                let _ = try await ServiceLocator.requestManager.post(url: "api/v1/users/{username}/goals/\(self.slug!)/datapoints.json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.post(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints.json", parameters: params)
                 hud.mode = .text
                 hud.label.text = "Added!"
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
