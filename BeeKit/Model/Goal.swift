@@ -63,6 +63,9 @@ public class Goal: NSManagedObject {
     @objc(removeRecentData:)
     @NSManaged public func removeFromRecentData(_ values: Set<DataPoint>)
 
+    /// The last time this record in the CoreData store was updated
+    @NSManaged public var lastModifiedLocal: Date
+
     public init(
         context: NSManagedObjectContext,
         owner: User,
@@ -116,6 +119,8 @@ public class Goal: NSManagedObject {
         self.useDefaults = useDefaults
         self.won = won
         self.yAxis = yAxis
+
+        lastModifiedLocal = Date()
     }
 
     public init(context: NSManagedObjectContext, owner: User, json: JSON) {
@@ -175,5 +180,7 @@ public class Goal: NSManagedObject {
 
         removeFromRecentData(recentData)
         addToRecentData(newRecentData)
+
+        lastModifiedLocal = Date()
     }
 }
