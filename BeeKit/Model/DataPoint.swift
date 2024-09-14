@@ -97,7 +97,7 @@ extension DataPoint {
     /// Is this a DataPoint containing metadata, rather than a real value
     /// DataPoints are used to track certain events, like automatic pessimistic values, goal restarts, derailments, etc. These should sometimes
     /// be treated differently, e.g. not deleted as part of syncing with HealthKit
-    public func isMetaPoint() -> Bool {
+    public func isMeta() -> Bool {
         for tag in DataPoint.metaPointHashtags {
             if comment.contains(tag) {
                 return true

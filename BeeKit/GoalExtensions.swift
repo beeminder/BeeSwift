@@ -82,7 +82,7 @@ extension Goal {
     public var suggestedNextValue: NSNumber? {
         let recentData = self.recentData
         for dataPoint in recentData.sorted(by: { $0.updatedAt > $1.updatedAt }) {
-            if dataPoint.isMetaPoint() {
+            if dataPoint.isMeta() {
                 continue
             }
             return dataPoint.value
