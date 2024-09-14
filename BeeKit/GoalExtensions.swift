@@ -82,9 +82,7 @@ extension Goal {
     public var suggestedNextValue: NSNumber? {
         let recentData = self.recentData
         for dataPoint in recentData.sorted(by: { $0.updatedAt > $1.updatedAt }) {
-            let comment = dataPoint.comment
-            // Ignore data points with comments suggesting they aren't a real value
-            if comment.contains("#DERAIL") || comment.contains("#SELFDESTRUCT") || comment.contains("#THISWILLSELFDESTRUCT") || comment.contains("#RESTART") || comment.contains("#TARE") {
+            if dataPoint.isMeta() {
                 continue
             }
             return dataPoint.value
