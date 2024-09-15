@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23G93" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="DataPoint" representedClassName="DataPoint" syncable="YES">
         <attribute name="comment" optional="YES" attributeType="String"/>
         <attribute name="daystampRaw" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
+        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="requestid" optional="YES" attributeType="String"/>
         <attribute name="updatedAt" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="value" attributeType="Decimal" defaultValueString="0.0"/>
@@ -18,6 +19,7 @@
         <attribute name="hhmmFormat" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="initDay" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastTouch" attributeType="String"/>
         <attribute name="leadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="limSum" attributeType="String"/>
@@ -42,6 +44,7 @@
         <attribute name="defaultAlertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="defaultDeadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="defaultLeadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="timezone" attributeType="String"/>
         <attribute name="username" attributeType="String"/>
         <relationship name="goals" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Goal" inverseName="owner" inverseEntity="Goal"/>

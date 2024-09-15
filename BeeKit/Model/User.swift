@@ -16,6 +16,9 @@ public class User: NSManagedObject {
     @NSManaged func addGoals(value: Set<Goal>)
     @NSManaged func removeGoals(value: Set<Goal>)
 
+    /// The last time this record in the CoreData store was updated
+    @NSManaged public var lastModifiedLocal: Date
+
     public init(context: NSManagedObjectContext,
                 username: String,
                 deadbeat: Bool,
@@ -32,6 +35,8 @@ public class User: NSManagedObject {
         self.defaultAlertStart = defaultAlertStart
         self.defaultDeadline = defaultDeadline
         self.defaultLeadTime = defaultLeadTime
+
+        lastModifiedLocal = Date()
     }
 
     @available(*, unavailable)
