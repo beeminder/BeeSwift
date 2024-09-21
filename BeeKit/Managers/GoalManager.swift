@@ -20,7 +20,7 @@ public actor GoalManager {
     public static let goalsUpdatedNotificationName = "com.beeminder.goalsUpdatedNotification"
 
     private let requestManager: RequestManager
-    private let currentUserManager: CurrentUserManager
+    private nonisolated let currentUserManager: CurrentUserManager
     private let container: BeeminderPersistentContainer
 
     public var goalsFetchedAt : Date? = nil

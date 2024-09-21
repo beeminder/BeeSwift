@@ -2,7 +2,7 @@ import UIKit
 import CoreData
 import OSLog
 
-public class BeeminderPersistentContainer: NSPersistentContainer {
+public class BeeminderPersistentContainer: NSPersistentContainer, @unchecked Sendable {
     private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "BeeminderPersistentContainer")
     private var spotlightIndexer: NSCoreDataCoreSpotlightDelegate?
 
