@@ -4,22 +4,27 @@ Changes to be released in next version
 =================================================
 
 ✨ Features
- * 
+ * Goals are searchable via Spotlight (#472)
 
 🙌 Improvements
- * 
+ * Support dark mode and tint for app icon (#478)
+ * Support webcredentials for password manager login (#449)
+ * Sort by urgency instead of deadline (#451)
 
 🐛 Bugfix
- * 
+ * Fix calculation for meditation minutes (#453)
+ * HealthKit should not delete derailment metadata points (#474)
+ * Add #THISWILLSELFDESTRUCT to list of points ignored for value suggestion (#457)
 
 ⚠️  API Changes
  * 
 
 🧱 Build
- * 
+ * Update RubyGem versions (#476)
 
 Others
- * 
+ * Rewrite the app's representation to use CoreData
+ * Remove the "delta text" UI section (#455)
 
 6.6 (2024-03-07)
 =================================================
