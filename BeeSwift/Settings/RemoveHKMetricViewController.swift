@@ -15,7 +15,16 @@ import BeeKit
 class RemoveHKMetricViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RemoveHKMetricViewController")
     
-    var goal : Goal!
+    let goal: Goal
+    
+    init(goal: Goal) {
+        self.goal = goal
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,14 +76,13 @@ class RemoveHKMetricViewController: UIViewController {
     }
     
     @objc func removeButtonPressed() {
-        guard self.goal != nil else { return }
         let params: [String: [String: String?]] = ["ii_params": ["name": nil, "metric": ""]]
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud.mode = .indeterminate
 
         Task { @MainActor in
             do {
-                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal!.slug).json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
 
                 try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
 

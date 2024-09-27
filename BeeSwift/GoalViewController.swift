@@ -22,7 +22,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
 
-    var goal : Goal!
+    let goal: Goal
 
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
     fileprivate var datapointTableController = DatapointTableViewController()
@@ -39,6 +39,15 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
     fileprivate let viewGoalActivityType = "com.beeminder.viewGoal"
+
+    init(goal: Goal) {
+        self.goal = goal
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.systemBackground

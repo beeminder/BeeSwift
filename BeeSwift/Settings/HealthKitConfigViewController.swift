@@ -145,12 +145,10 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
         let goal = self.goalAt(indexPath)
         
         if !goal.isDataProvidedAutomatically {
-            let chooseHKMetricViewController = ChooseHKMetricViewController()
-            chooseHKMetricViewController.goal = goal
+            let chooseHKMetricViewController = ChooseHKMetricViewController(goal: goal)
             self.navigationController?.pushViewController(chooseHKMetricViewController, animated: true)
         } else if goal.autodata == "apple" {
-            let controller = RemoveHKMetricViewController()
-            controller.goal = goal
+            let controller = RemoveHKMetricViewController(goal: goal)
             self.navigationController?.pushViewController(controller, animated: true)
         } else {
             let alert: UIAlertController = {

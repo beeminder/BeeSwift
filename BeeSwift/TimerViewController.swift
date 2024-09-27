@@ -13,15 +13,6 @@ import MBProgressHUD
 import BeeKit
 
 class TimerViewController: UIViewController {
-     init(goal: Goal) {
-         self.goal = goal
-         super.init(nibName: nil, bundle: nil)
-     }
-
-     required init?(coder aDecoder: NSCoder) {
-         fatalError("init(coder:) has not been implemented")
-     }
-    
     let timerLabel = BSLabel()
     let startStopButton = BSButton(type: .system)
     let goal: Goal
@@ -29,6 +20,15 @@ class TimerViewController: UIViewController {
     var timer: Timer?
     var units: String?
     var accumulatedSeconds = 0
+
+    init(goal: Goal) {
+        self.goal = goal
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
