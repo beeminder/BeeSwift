@@ -11,7 +11,7 @@ import UIKit
 
 extension UIColor {
     
-    public struct beeminder {
+    public struct Beeminder {
         public static let green: UIColor = .init(red: 81.0/255.0,
                                                    green: 163.0/255.0,
                                                    blue: 81.0/255.0,

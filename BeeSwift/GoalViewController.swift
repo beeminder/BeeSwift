@@ -138,8 +138,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         dataEntryView.addSubview(self.dateTextField)
         self.dateTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
-        self.dateTextField.tintColor = UIColor.beeminder.gray
-        self.dateTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
+        self.dateTextField.tintColor = UIColor.Beeminder.gray
+        self.dateTextField.layer.borderColor = UIColor.Beeminder.gray.cgColor
         self.dateTextField.layer.borderWidth = 1
         self.dateTextField.isUserInteractionEnabled = false
         self.dateTextField.textAlignment = .center
@@ -153,8 +153,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         dataEntryView.addSubview(self.valueTextField)
         self.valueTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
-        self.valueTextField.tintColor = UIColor.beeminder.gray
-        self.valueTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
+        self.valueTextField.tintColor = UIColor.Beeminder.gray
+        self.valueTextField.layer.borderColor = UIColor.Beeminder.gray.cgColor
         self.valueTextField.layer.borderWidth = 1
         self.valueTextField.delegate = self
         self.valueTextField.textAlignment = .center
@@ -176,8 +176,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.commentTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
         self.commentTextField.leftView = commentLeftPaddingView
         self.commentTextField.leftViewMode = .always
-        self.commentTextField.tintColor = UIColor.beeminder.gray
-        self.commentTextField.layer.borderColor = UIColor.beeminder.gray.cgColor
+        self.commentTextField.tintColor = UIColor.Beeminder.gray
+        self.commentTextField.layer.borderColor = UIColor.Beeminder.gray.cgColor
         self.commentTextField.layer.borderWidth = 1
         self.commentTextField.delegate = self
         self.commentTextField.placeholder = "Comment"
@@ -198,7 +198,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.right.equalTo(self.commentTextField)
         }
 
-        self.dateStepper.tintColor = UIColor.beeminder.gray
+        self.dateStepper.tintColor = UIColor.Beeminder.gray
         dataEntryView.addSubview(self.dateStepper)
         self.dateStepper.addTarget(self, action: #selector(GoalViewController.dateStepperValueChanged), for: .valueChanged)
         self.dateStepper.value = 0
@@ -246,7 +246,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.top.equalTo(self.dateStepper.snp.bottom).offset(elementSpacing)
         }
 
-        self.valueStepper.tintColor = UIColor.beeminder.gray
+        self.valueStepper.tintColor = UIColor.Beeminder.gray
         dataEntryView.addSubview(self.valueStepper)
         self.valueStepper.addTarget(self, action: #selector(GoalViewController.valueStepperValueChanged), for: .valueChanged)
         self.valueStepper.snp.makeConstraints { (make) -> Void in
