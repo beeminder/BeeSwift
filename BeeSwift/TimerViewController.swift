@@ -23,8 +23,8 @@ class TimerViewController: UIViewController {
      }
     
     let timerLabel = BSLabel()
-    let startStopButton = BSButton()
-    var goal: Goal
+    let startStopButton = UIButton(type: .system)
+    let goal: Goal
     var timingSince: Date?
     var timer: Timer?
     var units: String?
@@ -43,46 +43,46 @@ class TimerViewController: UIViewController {
         self.timerLabel.textColor = .white
         self.timerLabel.font = UIFont.beeminder.defaultBoldFont.withSize(48)
         
-        let exitButton = BSButton()
+        let exitButton = UIButton(type: .system)
+        exitButton.configuration = .filled()
         self.view.addSubview(exitButton)
         exitButton.snp.makeConstraints { (make) in
-            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
+            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(10)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
-            make.right.equalTo(self.view.snp.centerX)
+            make.right.equalTo(self.view.snp.centerX).offset(-10)
         }
-        exitButton.backgroundColor = .clear
         exitButton.addTarget(self, action: #selector(self.exitButtonPressed), for: .touchUpInside)
         exitButton.setTitle("Exit", for: .normal)
         
         self.view.addSubview(self.startStopButton)
+        startStopButton.configuration = .filled()
         self.startStopButton.snp.makeConstraints { (make) in
             make.top.equalTo(self.view.snp.centerY).offset(10)
             make.centerX.equalTo(self.view)
         }
-        self.startStopButton.backgroundColor = .clear
         self.startStopButton.addTarget(self, action: #selector(self.startStopButtonPressed), for: .touchUpInside)
         self.startStopButton.setTitle("Start", for: .normal)
         
-        let addDatapointButton = BSButton()
+        let addDatapointButton = UIButton(type: .system)
+        addDatapointButton.configuration = .filled()
         self.view.addSubview(addDatapointButton)
         addDatapointButton.snp.makeConstraints { (make) in
             make.top.equalTo(self.startStopButton.snp.bottom).offset(10)
             make.centerX.equalTo(self.view)
         }
-        addDatapointButton.backgroundColor = .clear
         addDatapointButton.addTarget(self, action: #selector(self.addDatapointButtonPressed), for: .touchUpInside)
         addDatapointButton.setTitle("Add Datapoint to \(self.goal.slug)", for: .normal)
         
-        let resetButton = BSButton()
+        let resetButton = UIButton(type: .system)
+        resetButton.configuration = .filled()
         self.view.addSubview(resetButton)
         resetButton.snp.makeConstraints { (make) in
-            make.left.equalTo(self.view.snp.centerX)
-            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
+            make.left.equalTo(self.view.snp.centerX).offset(10)
+            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-10)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
         }
         resetButton.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
         resetButton.setTitle("Reset", for: .normal)
-        resetButton.backgroundColor = .clear
     }
     
     @objc func exitButtonPressed() {
