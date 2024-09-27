@@ -12,16 +12,20 @@ import UIKit
 extension UIColor {
     
     public struct beeminder {
-        public static var green: UIColor {
-            return UIColor(red: 81.0/255.0, green: 163.0/255.0, blue: 81.0/255.0, alpha: 1)
-        }
+        public static let green: UIColor = .init(red: 81.0/255.0,
+                                                   green: 163.0/255.0,
+                                                   blue: 81.0/255.0,
+                                                   alpha: 1)
 
-        public static var blue: UIColor = UIColor.systemBlue
-        public static var orange: UIColor = UIColor.systemOrange
-        public static var red: UIColor = UIColor.systemRed
+        public static let blue: UIColor = .systemBlue
+        public static let orange: UIColor = .systemOrange
+        public static let red: UIColor = .systemRed
 
-        public static var gray: UIColor {
-            return UIColor(white: 0.7, alpha: 1.0)
-        }
+        public static let gray: UIColor = .init(white: 0.7, alpha: 1.0)
+        
+        public static let yellow = UIColor.init(red: 255.0/255.0,
+                                                green: 217.0/255.0,
+                                                blue: 17.0/255.0,
+                                                alpha: 1)
     }
 }
