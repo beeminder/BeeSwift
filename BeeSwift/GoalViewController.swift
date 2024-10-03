@@ -322,9 +322,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     @objc func timerButtonPressed() {
-        let controller = TimerViewController()
-        controller.slug = self.goal.slug
-        controller.goal = self.goal
+        let controller = TimerViewController(goal: self.goal)
         controller.modalPresentationStyle = .fullScreen
         do {
             let hoursRegex = try NSRegularExpression(pattern: "(hr|hour)s?")
