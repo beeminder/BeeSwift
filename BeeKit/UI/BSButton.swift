@@ -22,9 +22,13 @@ public class BSButton : UIButton {
     }
     
     func setup() {
-        self.titleLabel?.font = UIFont.beeminder.defaultFont
-        self.setTitleColor(UIColor.white, for: UIControl.State())
-        self.backgroundColor = UIColor.beeminder.gray
+        self.titleLabel?.font = UIFont.beeminder.defaultBoldFont
+        self.setTitleColor(UIColor.Beeminder.yellow, for: UIControl.State())
+        self.tintColor = .black
+        self.configuration = .filled()
+        
+        self.layer.borderColor = UIColor.Beeminder.yellow.cgColor
+        self.layer.borderWidth = 1
     }
     
 }

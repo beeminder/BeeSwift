@@ -68,7 +68,7 @@ class EditNotificationsViewController: UIViewController {
         
         self.leadTimeStepper.minimumValue = 0
         self.leadTimeStepper.maximumValue = 30
-        self.leadTimeStepper.tintColor = UIColor.beeminder.gray
+        self.leadTimeStepper.tintColor = UIColor.Beeminder.gray
         self.leadTimeStepper.addTarget(self, action: #selector(EditNotificationsViewController.leadTimeStepperValueChanged), for: .valueChanged)
         self.view.addSubview(self.leadTimeStepper)
         self.leadTimeStepper.snp.makeConstraints { (make) -> Void in

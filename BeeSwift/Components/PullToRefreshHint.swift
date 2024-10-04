@@ -33,7 +33,7 @@ class PullToRefreshView : UIView {
     private func setupView() {
         self.addSubview(label)
         label.text = message
-        label.textColor = UIColor.beeminder.gray
+        label.textColor = UIColor.Beeminder.gray
         label.textAlignment = NSTextAlignment.center
         label.numberOfLines = 0
         label.snp.makeConstraints { (make) -> Void in
@@ -45,7 +45,7 @@ class PullToRefreshView : UIView {
         let iconLabel = UILabel()
         iconLabel.text = "⇩"
         iconLabel.font = UIFont.systemFont(ofSize: 30, weight: .ultraLight)
-        iconLabel.textColor = UIColor.beeminder.gray
+        iconLabel.textColor = UIColor.Beeminder.gray
         iconLabel.textAlignment = NSTextAlignment.center
         self.addSubview(iconLabel)
         iconLabel.snp.makeConstraints { (make) -> Void in

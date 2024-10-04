@@ -130,7 +130,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             make.top.equalTo(commentLabel.snp.bottom).offset(3)
         }
         
-        let updateButton = UIButton(type: .system)
+        let updateButton = BSButton(type: .system)
         self.view.addSubview(updateButton)
         updateButton.setTitle("Update", for: .normal)
         updateButton.configuration = .filled()

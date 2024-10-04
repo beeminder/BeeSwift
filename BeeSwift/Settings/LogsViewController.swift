@@ -12,8 +12,8 @@ import OrderedCollections
 class LogsViewController: UIViewController {
 
     let logTextView = UITextView()
-    let systemLogsToggle = UIButton()
-    let errorLevelButton = UIButton()
+    let systemLogsToggle = UIButton(type: .system)
+    let errorLevelButton = UIButton(type: .system)
 
     let logReader = LogReader()
 
