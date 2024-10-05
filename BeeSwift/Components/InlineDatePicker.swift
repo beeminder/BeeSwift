@@ -15,6 +15,12 @@ class InlineDatePicker : UIDatePicker {
         super.init(frame: .zero)
         self.preferredDatePickerStyle = .compact
 
+        registerForTraitChanges(
+            [UITraitUserInterfaceStyle.self, UITraitUserInterfaceLevel.self, UITraitUserInterfaceIdiom.self]) {
+            (self: Self, previousTraitCollection: UITraitCollection) in
+            self.resetStyle()
+        }
+
         resetStyle()
     }
 
@@ -29,11 +35,6 @@ class InlineDatePicker : UIDatePicker {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        resetStyle()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
         resetStyle()
     }
 

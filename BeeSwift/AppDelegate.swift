@@ -140,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }).count
         logger.notice("Beemergency count is \(beemergencyCount, privacy: .public)")
 
-        UIApplication.shared.applicationIconBadgeNumber = beemergencyCount
+        UNUserNotificationCenter.current().setBadgeCount(beemergencyCount)
     }
 
     private func refreshGoalsAndLogErrors() {
