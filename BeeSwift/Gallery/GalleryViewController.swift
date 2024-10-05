@@ -507,8 +507,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func openGoal(_ goal: Goal) {
-        let goalViewController = GoalViewController()
-        goalViewController.goal = goal
+        let goalViewController = GoalViewController(goal: goal)
         self.navigationController?.pushViewController(goalViewController, animated: true)
     }
     
