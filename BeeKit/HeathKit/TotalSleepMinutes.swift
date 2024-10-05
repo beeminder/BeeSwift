@@ -26,7 +26,7 @@ func isRelevantToSleep(_ sample: HKCategorySample) -> Bool {
             HKCategoryValueSleepAnalysis.asleepREM,
             HKCategoryValueSleepAnalysis.asleepDeep,
             HKCategoryValueSleepAnalysis.asleepCore,
-            HKCategoryValueSleepAnalysis.asleep
+            HKCategoryValueSleepAnalysis.asleepUnspecified
         ]
     } else {
         // Fallback on earlier versions

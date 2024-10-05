@@ -69,11 +69,11 @@ class DatapointValueAccessory : UIInputView {
         colonButton.layer.shadowOpacity = 0.5
 
         updateColorsToMatchMode()
-    }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        updateColorsToMatchMode()
+        registerForTraitChanges([UITraitUserInterfaceStyle.self]) {
+            (self: Self, previousTraitCollection: UITraitCollection) in
+            self.updateColorsToMatchMode()
+        }
     }
 
     private func updateColorsToMatchMode() {
