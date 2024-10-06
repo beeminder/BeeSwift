@@ -29,6 +29,7 @@ public class BSButton : UIButton {
         
         self.layer.borderColor = UIColor.Beeminder.yellow.cgColor
         self.layer.borderWidth = 1
+        self.layer.cornerRadius = 4
     }
     
 }
