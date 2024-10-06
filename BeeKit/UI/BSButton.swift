@@ -24,7 +24,7 @@ public class BSButton : UIButton {
     private func setUp() {
         self.titleLabel?.font = UIFont.beeminder.defaultBoldFont
         self.setTitleColor(UIColor.Beeminder.yellow, for: UIControl.State())
-        self.tintColor = .black
+        self.tintColor = dynamicTintFillColor
         self.configuration = .filled()
         
         self.layer.borderColor = UIColor.Beeminder.yellow.cgColor
@@ -32,4 +32,15 @@ public class BSButton : UIButton {
         self.layer.cornerRadius = 4
     }
     
+    private let dynamicTintFillColor = UIColor { traitCollection in
+        switch traitCollection.userInterfaceStyle {
+        case .dark:
+            return UIColor.black
+        default:
+            return UIColor(red: 59.0/255.0,
+                           green: 59.0/255.0,
+                           blue: 59.0/255.0,
+                           alpha: 0.5)
+        }
+    }
 }
