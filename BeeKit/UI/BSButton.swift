@@ -13,11 +13,25 @@ public class BSButton : UIButton {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        
+        registerForTraitChanges(
+            [UITraitUserInterfaceStyle.self]) {
+                (self: Self, previousTraitCollection: UITraitCollection) in
+                self.resetStyle()
+            }
+        
         self.setUp()
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        registerForTraitChanges(
+            [UITraitUserInterfaceStyle.self]) {
+                (self: Self, previousTraitCollection: UITraitCollection) in
+                self.resetStyle()
+            }
+        
         self.setUp()
     }
     
@@ -30,6 +44,10 @@ public class BSButton : UIButton {
         self.layer.borderColor = UIColor.Beeminder.yellow.cgColor
         self.layer.borderWidth = 1
         self.layer.cornerRadius = 4
+    }
+    
+    private func resetStyle() {
+        self.tintColor = dynamicTintFillColor
     }
     
     private let dynamicTintFillColor = UIColor { traitCollection in
