@@ -13,15 +13,15 @@ public class BSButton : UIButton {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.setup()
+        self.setUp()
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.setup()
+        self.setUp()
     }
     
-    func setup() {
+    func setUp() {
         self.titleLabel?.font = UIFont.beeminder.defaultBoldFont
         self.setTitleColor(UIColor.Beeminder.yellow, for: UIControl.State())
         self.tintColor = .black
