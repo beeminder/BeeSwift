@@ -1,73 +1,65 @@
 import Foundation
-import CoreData
+import SwiftData
 
 import SwiftyJSON
 
-@objc(Goal)
-public class Goal: NSManagedObject {
-    @NSManaged public var owner: User
-    @NSManaged public var id: String
-    @NSManaged public var slug: String
+@Model public class Goal {
+    public var owner: User
+    public var id: String
+    public var slug: String
 
     /// Seconds after midnight that we start sending you reminders (on the day that you're scheduled to start getting them).
-    @NSManaged public var alertStart: Int
+    public var alertStart: Int
     /// The name of automatic data source, if this goal has one. Will be null for manual goals.
-    @NSManaged public var autodata: String?
+    public var autodata: String?
     /// Seconds by which your deadline differs from midnight. Negative is before midnight, positive is after midnight. Allowed range is -17*3600 to 6*3600 (7am to 6am).
-    @NSManaged public var deadline: Int
+    public var deadline: Int
     /// URL for the goal's graph image. E.g., "http://static.beeminder.com/alice/weight.png".
-    @NSManaged public var graphUrl: String
+    public var graphUrl: String
     /// The internal app identifier for the healthkit metric to sync to this goal
-    @NSManaged public var healthKitMetric: String?
+    public var healthKitMetric: String?
     /// Whether to show data in a "timey" way, with colons. For example, this would make a 1.5 show up as 1:30.
-    @NSManaged public var hhmmFormat: Bool
+    public var hhmmFormat: Bool
     /// Unix timestamp (in seconds) of the start of the bright red line.
-    @NSManaged public var initDay: Int
+    public var initDay: Int
     /// Undocumented.
-    @NSManaged public var lastTouch: String
+    public var lastTouch: String
     /// Summary of what you need to do to eke by, e.g., "+2 within 1 day".
-    @NSManaged public var limSum: String
+    public var limSum: String
     /// Days before derailing we start sending you reminders. Zero means we start sending them on the beemergency day, when you will derail later that day.
-    @NSManaged public var leadTime: Int
+    public var leadTime: Int
     /// Amount pledged (USD) on the goal.
-    @NSManaged public var pledge: Int
+    public var pledge: Int
     /// Whether the graph is currently being updated to reflect new data.
-    @NSManaged public var queued: Bool
+    public var queued: Bool
     /// The integer number of safe days. If it's a beemergency this will be zero.
-    @NSManaged public var safeBuf: Int
+    public var safeBuf: Int
     /// Undocumented
-    @NSManaged public var safeSum: String
+    public var safeSum: String
     /// URL for the goal's graph thumbnail image. E.g., "http://static.beeminder.com/alice/weight-thumb.png".
-    @NSManaged public var thumbUrl: String
+    public var thumbUrl: String
     /// The title that the user specified for the goal. E.g., "Weight Loss".
-    @NSManaged public var title: String
+    public var title: String
     /// Whether there are any datapoints for today.
-    @NSManaged public var todayta: Bool
+    public var todayta: Bool
     /// Sort by this key to put the goals in order of decreasing urgency. (Case-sensitive ascii or unicode sorting is assumed).
-    @NSManaged public var urgencyKey: String
+    public var urgencyKey: String
     /// Undocumented
-    @NSManaged public var useDefaults: Bool
+    public var useDefaults: Bool
     /// Whether the goal has been successfully completed.
-    @NSManaged public var won: Bool
+    public var won: Bool
     /// The label for the y-axis of the graph. E.g., "Cumulative total hours".
-    @NSManaged public var yAxis: String
+    public var yAxis: String
 
-    @NSManaged public var recentData: Set<DataPoint>
+    @Relationship(deleteRule: .cascade) var data: Set<DataPoint>
 
-    @objc(addRecentDataObject:)
-    @NSManaged public func addToRecentData(_ value: DataPoint)
-    @objc(removeRecentDataObject:)
-    @NSManaged public func removeFromRecentData(_ value: DataPoint)
-    @objc(addRecentData:)
-    @NSManaged public func addToRecentData(_ values: Set<DataPoint>)
-    @objc(removeRecentData:)
-    @NSManaged public func removeFromRecentData(_ values: Set<DataPoint>)
+    public var recentData: Set<DataPoint>
+
 
     /// The last time this record in the CoreData store was updated
-    @NSManaged public var lastModifiedLocal: Date
+    public var lastModifiedLocal: Date
 
     public init(
-        context: NSManagedObjectContext,
         owner: User,
         id: String,
         slug: String,
@@ -93,8 +85,6 @@ public class Goal: NSManagedObject {
         won: Bool,
         yAxis: String
     ) {
-        let entity = NSEntityDescription.entity(forEntityName: "Goal", in: context)!
-        super.init(entity: entity, insertInto: context)
         self.owner = owner
         self.id = id
         self.slug = slug
@@ -123,29 +113,13 @@ public class Goal: NSManagedObject {
         lastModifiedLocal = Date()
     }
 
-    public init(context: NSManagedObjectContext, owner: User, json: JSON) {
-        let entity = NSEntityDescription.entity(forEntityName: "Goal", in: context)!
-        super.init(entity: entity, insertInto: context)
+    public init(owner: User, json: JSON) {
         self.owner = owner
         self.id = json["id"].string!
 
         self.updateToMatch(json: json)
     }
 
-    @available(*, unavailable)
-    public init() {
-        fatalError()
-    }
-
-    @available(*, unavailable)
-    public init(context: NSManagedObjectContext) {
-        fatalError()
-    }
-
-    public override init(entity: NSEntityDescription, insertInto: NSManagedObjectContext?) {
-        super.init(entity: entity, insertInto: insertInto)
-    }
-    
     // Question: Should this type know about JSON, or should there be an adapter / extension?
     public func updateToMatch(json: JSON) {
         self.slug = json["slug"].string!

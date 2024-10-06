@@ -1,33 +1,30 @@
 import Foundation
-import CoreData
+import SwiftData
 
 import SwiftyJSON
 
-@objc(DataPoint)
-public class DataPoint: NSManagedObject, BeeDataPoint {
+@Model public class DataPoint: BeeDataPoint {
     // Server identified for the datapoint, globally unique.
-    @NSManaged public var id: String
+    public var id: String
     // Goal this datapoint is associated with
-    @NSManaged public var goal: Goal
+    public var goal: Goal
 
     // An optional comment about the datapoint.
     // TODO: Check if this can be null
-    @NSManaged public var comment: String
+    public var comment: String
     // The date of the datapoint (e.g., "20150831"). Raw value in the datastore
-    @NSManaged private var daystampRaw: String
+    private var daystampRaw: String
     // If a datapoint was created via the API and this parameter was included, it will be echoed back.
-    @NSManaged public var requestid: String
+    public var requestid: String
     // The value, e.g., how much you weighed on the day indicated by the timestamp.
-    @NSManaged public var value: NSNumber
+    public var value: NSNumber
 
-    @NSManaged public var updatedAt: Int
+    public var updatedAt: Int
 
     /// The last time this record in the CoreData store was updated
-    @NSManaged public var lastModifiedLocal: Date
+    public var lastModifiedLocal: Date
 
-    public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String, value: NSNumber, updatedAt: Int) {
-        let entity = NSEntityDescription.entity(forEntityName: "DataPoint", in: context)!
-        super.init(entity: entity, insertInto: context)
+    public init(goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String, value: NSNumber, updatedAt: Int) {
         self.goal = goal
         self.id = id
         self.comment = comment
@@ -38,23 +35,7 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
         lastModifiedLocal = Date()
     }
 
-    @available(*, unavailable)
-    public init() {
-        fatalError()
-    }
-
-    @available(*, unavailable)
-    public init(context: NSManagedObjectContext) {
-        fatalError()
-    }
-
-    public override init(entity: NSEntityDescription, insertInto: NSManagedObjectContext?) {
-        super.init(entity: entity, insertInto: insertInto)
-    }
-
-    private init(context: NSManagedObjectContext, id: String, goal: Goal, json: JSON) {
-        let entity = NSEntityDescription.entity(forEntityName: "DataPoint", in: context)!
-        super.init(entity: entity, insertInto: context)
+    private init(id: String, goal: Goal, json: JSON) {
         self.id = id
         self.goal = goal
 
@@ -62,19 +43,20 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
     }
 
     /// Produce a DataPoint matching the supplied JSON, either creating a new one or re-using an existing object in the datastore
-    public static func fromJSON(context: NSManagedObjectContext, goal: Goal, json: JSON) -> DataPoint {
+    public static func fromJSON(goal: Goal, json: JSON) -> DataPoint {
         // Check for an existing datapoint with the relevant ID, if so use it
         let id = json["id"].string!
 
-        let fetchRequest = NSFetchRequest<DataPoint>(entityName: "DataPoint")
-        fetchRequest.predicate = NSPredicate(format: "id == %@", id)
-        fetchRequest.fetchLimit = 1
-        if let existing = try? context.fetch(fetchRequest).first {
-            existing.updateToMatch(json: json)
-            return existing
-        }
+        // TODO: Learn to find existing instance
+//        let fetchRequest = NSFetchRequest<DataPoint>(entityName: "DataPoint")
+//        fetchRequest.predicate = NSPredicate(format: "id == %@", id)
+//        fetchRequest.fetchLimit = 1
+//        if let existing = try? context.fetch(fetchRequest).first {
+//            existing.updateToMatch(json: json)
+//            return existing
+//        }
 
-        return DataPoint(context: context, id: id, goal: goal, json: json)
+        return DataPoint(id: id, goal: goal, json: json)
     }
 
     public func updateToMatch(json: JSON) {
