@@ -21,7 +21,7 @@ public class BSButton : UIButton {
         self.setUp()
     }
     
-    func setUp() {
+    private func setUp() {
         self.titleLabel?.font = UIFont.beeminder.defaultBoldFont
         self.setTitleColor(UIColor.Beeminder.yellow, for: UIControl.State())
         self.tintColor = .black
