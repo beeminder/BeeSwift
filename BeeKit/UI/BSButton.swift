@@ -12,15 +12,7 @@ import UIKit
 public class BSButton : UIButton {
     
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        
-        registerForTraitChanges(
-            [UITraitUserInterfaceStyle.self]) {
-                (self: Self, previousTraitCollection: UITraitCollection) in
-                self.resetStyle()
-            }
-        
-        self.resetStyle()
+        fatalError("init(coder:) has not been implemented; neither xib nor storyboards in use")
     }
     
     override init(frame: CGRect) {
