@@ -131,19 +131,25 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 { return 1 }
-        if section == 1 { return self.goalsUsingDefaultNotifications.count }
-        else { return self.goalsUsingNonDefaultNotifications.count }
+        switch section {
+        case 0:
+            return 1
+        case 1:
+            return self.goalsUsingDefaultNotifications.count
+        default:
+            return self.goalsUsingNonDefaultNotifications.count
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 {
+        switch section {
+        case 0:
             guard !goals.isEmpty else { return nil }
             return "Defaults"
-        } else if section == 1 {
+        case 1:
             guard !goalsUsingDefaultNotifications.isEmpty else { return nil }
             return "Using Defaults"
-        } else {
+        default:
             guard !goalsUsingNonDefaultNotifications.isEmpty else { return nil }
             return "Customized"
         }
@@ -170,15 +176,20 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
-            self.navigationController?.pushViewController(EditDefaultNotificationsViewController(), animated: true)
-        } else if indexPath.section == 1 {
+        let editNotificationsVC: UIViewController
+        
+        switch indexPath.section {
+        case 0:
+            editNotificationsVC = EditDefaultNotificationsViewController()
+        case 1:
             let goal = self.goalsUsingDefaultNotifications[indexPath.row]
-            self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
-        } else {
+            editNotificationsVC = EditGoalNotificationsViewController(goal: goal)
+        default:
             let goal = self.goalsUsingNonDefaultNotifications[indexPath.row]
-            self.navigationController?.pushViewController(EditGoalNotificationsViewController(goal: goal), animated: true)
+            editNotificationsVC = EditGoalNotificationsViewController(goal: goal)
         }
+        
+        self.navigationController?.pushViewController(editNotificationsVC, animated: true)
         self.tableView.deselectRow(at: indexPath, animated: true)
     }
 }
