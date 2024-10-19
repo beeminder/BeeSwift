@@ -12,15 +12,7 @@ import UIKit
 public class BSButton : UIButton {
     
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        
-        registerForTraitChanges(
-            [UITraitUserInterfaceStyle.self]) {
-                (self: Self, previousTraitCollection: UITraitCollection) in
-                self.resetStyle()
-            }
-        
-        self.setUp()
+        fatalError("init(coder:) has not been implemented; neither xib nor storyboards in use")
     }
     
     override init(frame: CGRect) {
@@ -32,23 +24,22 @@ public class BSButton : UIButton {
                 self.resetStyle()
             }
         
-        self.setUp()
-    }
-    
-    private func setUp() {
-        self.titleLabel?.font = UIFont.beeminder.defaultBoldFont
-        self.setTitleColor(dynamicTitleColor, for: UIControl.State())
-        self.tintColor = dynamicTintFillColor
-        self.configuration = .filled()
-        
-        self.layer.borderColor = UIColor.Beeminder.yellow.cgColor
-        self.layer.borderWidth = 1
-        self.layer.cornerRadius = 4
+        self.resetStyle()
     }
     
     private func resetStyle() {
-        self.tintColor = dynamicTintFillColor
+        self.configuration = .filled()
+
+        self.titleLabel?.font = UIFont.beeminder.defaultBoldFont
+
         self.setTitleColor(dynamicTitleColor, for: UIControl.State())
+        self.tintColor = dynamicTintFillColor
+
+        self.backgroundColor = .clear
+        
+        self.layer.borderColor = traitCollection.userInterfaceStyle == .dark ? UIColor.Beeminder.yellow.cgColor : UIColor.clear.cgColor
+        self.layer.borderWidth = traitCollection.userInterfaceStyle == .dark ? 1 : 0
+        self.layer.cornerRadius = traitCollection.userInterfaceStyle == .dark ? 4 : 0
     }
     
     private let dynamicTintFillColor = UIColor { traitCollection in
