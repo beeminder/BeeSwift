@@ -39,11 +39,11 @@ class ConfigureNotificationsViewController: UIViewController {
     
         self.view.addSubview(self.tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(10)
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
-
+            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.left)
+            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.right)
+            
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
         }
         self.tableView.isHidden = true
         self.tableView.delegate = self
