@@ -216,7 +216,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         // default to entering data for the "previous" day.
         let now = Date()
         let calendar = Calendar.current
-        let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
+        let components = calendar.dateComponents([.hour, .minute], from: now)
         let currentHour = components.hour
         if self.goal.deadline > 0 && currentHour! < 6 && currentHour! < self.goal.deadline/3600 {
             self.dateStepper.value = -1
@@ -403,7 +403,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         var components = DateComponents()
         components.day = Int(self.dateStepper.value)
 
-        let newDate = (calendar as NSCalendar?)?.date(byAdding: components, to: Date(), options: [])
+        let newDate = calendar.date(byAdding: components, to: Date())
 
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US")

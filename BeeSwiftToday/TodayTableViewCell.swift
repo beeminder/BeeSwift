@@ -131,7 +131,7 @@ class TodayTableViewCell: UITableViewCell {
         let now = Date()
         var offset: Double = 0
         let calendar = Calendar.current
-        let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
+        let components = calendar.dateComponents([.hour, .minute], from: now)
         let currentHour = components.hour
         let goalDeadline = goal.deadline
         if goalDeadline > 0 && currentHour! < 6 && goalDeadline/3600 < currentHour! {
