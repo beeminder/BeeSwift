@@ -143,7 +143,7 @@ class TimerViewController: UIViewController {
         let now = Date()
         var offset: Double = 0
         let calendar = Calendar.current
-        let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
+        let components = calendar.dateComponents([.hour, .minute], from: now)
         let currentHour = components.hour
         if self.goal.deadline > 0 && currentHour! < 6 && self.goal.deadline/3600 < currentHour! {
             offset = -1
