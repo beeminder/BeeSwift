@@ -368,7 +368,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         var components = DateComponents()
         components.day = Int(self.dateStepper.value)
 
-        let newDate = (calendar as NSCalendar?)?.date(byAdding: components, to: Date(), options: [])
+        let newDate = calendar.date(byAdding: components, to: Date())
 
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US")
