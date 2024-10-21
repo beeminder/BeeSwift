@@ -377,22 +377,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         
         let isDifferentYear = calendar.component(.year, from: now) != calendar.component(.year, from: date)
         let isDifferentMonth = calendar.component(.month, from: now) != calendar.component(.month, from: date)
-        
-        let formatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "en_US")
 
-            if isDifferentYear {
-                formatter.dateFormat = "yyyy-MM-dd"
-            } else if isDifferentMonth {
-                formatter.dateFormat = "MMM d"
-            } else {
-                formatter.dateFormat = "d"
-            }
-            return formatter
-        }()
-        
-        self.dateTextField.text = formatter.string(from: self.date)
+        self.dateTextField.text = DateFormatter.dateTextFieldString(from: self.date, isDifferentYear: isDifferentYear, isDifferentMonth: isDifferentMonth)
     }
 
     func setValueTextField() {
@@ -537,5 +523,38 @@ private extension DateFormatter {
     
     static func urtextDateString(from date: Date) -> String {
         urtextDateFormatter.string(from: date)
+    }
+}
+
+private extension DateFormatter {
+    private static let newDatapointDateDifferentYearDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+    
+    private static let newDatapointDateDifferentMonthDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.dateFormat = "MMM d"
+        return formatter
+    }()
+    
+    private static let newDatapointDateWithinSameMonthDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.dateFormat = "d"
+        return formatter
+    }()
+    
+    static func dateTextFieldString(from date: Date, isDifferentYear: Bool, isDifferentMonth: Bool) -> String {
+        if isDifferentYear {
+            return newDatapointDateDifferentYearDateFormatter.string(from: date)
+        } else if isDifferentMonth {
+            return newDatapointDateDifferentMonthDateFormatter.string(from: date)
+        } else {
+            return newDatapointDateWithinSameMonthDateFormatter.string(from: date)
+        }
     }
 }
