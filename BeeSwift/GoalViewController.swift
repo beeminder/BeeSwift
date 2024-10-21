@@ -457,14 +457,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     private var urtext: String {
-        let urtextDateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "en_US")
-            formatter.dateFormat = "yyyy MM dd"
-            return formatter
-        }()
-        
-        return "\(urtextDateFormatter.string(from: self.date)) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
+        return "\(DateFormatter.urtextDateString(from: self.date)) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
     }
 
     @objc func submitDatapoint() {
@@ -530,5 +523,19 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
+    }
+}
+
+
+private extension DateFormatter {
+    private static let urtextDateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US")
+            formatter.dateFormat = "yyyy MM dd"
+            return formatter
+        }()
+    
+    static func urtextDateString(from date: Date) -> String {
+        urtextDateFormatter.string(from: date)
     }
 }
