@@ -40,6 +40,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate let headerWidth = Double(1.0/3.0)
     fileprivate let viewGoalActivityType = "com.beeminder.viewGoal"
 
+    // date corresponding to the datapoint to be created
+    private var date: Date = Date()
+    
     init(goal: Goal) {
         self.goal = goal
         super.init(nibName: nil, bundle: nil)
@@ -368,12 +371,28 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         var components = DateComponents()
         components.day = Int(self.dateStepper.value)
 
-        let newDate = calendar.date(byAdding: components, to: Date())
+        let now = Date()
+        guard let newDate = calendar.date(byAdding: components, to: now) else { return }
+        self.date = newDate
+        
+        let isDifferentYear = calendar.component(.year, from: now) != calendar.component(.year, from: date)
+        let isDifferentMonth = calendar.component(.month, from: now) != calendar.component(.month, from: date)
+        
+        let formatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US")
 
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.dateFormat = "d"
-        self.dateTextField.text = formatter.string(from: newDate!)
+            if isDifferentYear {
+                formatter.dateFormat = "yyyy-MM-dd"
+            } else if isDifferentMonth {
+                formatter.dateFormat = "MMM d"
+            } else {
+                formatter.dateFormat = "d"
+            }
+            return formatter
+        }()
+        
+        self.dateTextField.text = formatter.string(from: self.date)
     }
 
     func setValueTextField() {
@@ -436,9 +455,16 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         return true
     }
-
-    func urtextFromTextFields() -> String {
-        return "\(self.dateTextField.text!) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
+    
+    private var urtext: String {
+        let urtextDateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US")
+            formatter.dateFormat = "yyyy MM dd"
+            return formatter
+        }()
+        
+        return "\(urtextDateFormatter.string(from: self.date)) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
     }
 
     @objc func submitDatapoint() {
@@ -450,7 +476,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
 
             do {
-                let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug)
+                let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: self.urtext, slug: self.goal.slug)
                 self.commentTextField.text = ""
 
                 try await updateGoalAndInterface()
