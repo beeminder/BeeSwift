@@ -298,7 +298,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
 
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
-        if (!self.goal.hideDataEntry) {
+        if !self.goal.hideDataEntry {
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
 
@@ -457,12 +457,12 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if (textField.isEqual(self.valueTextField)) {
+        if textField.isEqual(self.valueTextField) {
             // Only allow a single decimal separator (, or .)
             if textField.text!.components(separatedBy: ".").count > 1 {
                 if string == "." || string == "," { return false }
             }
-            if (string == ",") {
+            if string == "," {
                 textField.text = textField.text! + "."
                 return false
             }
