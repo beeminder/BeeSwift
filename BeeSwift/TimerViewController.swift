@@ -18,7 +18,19 @@ class TimerViewController: UIViewController {
     let goal: Goal
     var timingSince: Date?
     var timer: Timer?
-    var units: String?
+    private var units: String? {
+        guard let hoursRegex = try? NSRegularExpression(pattern: "(hr|hour)s?") else { return nil }
+        if hoursRegex.firstMatch(in: self.goal.yAxis, options: [], range: NSMakeRange(0, self.goal.yAxis.count)) != nil {
+            return "hours"
+        }
+        
+        guard let minutesRegex = try? NSRegularExpression(pattern: "(min|minute)s?") else { return nil }
+        if minutesRegex.firstMatch(in: self.goal.yAxis, options: [], range: NSMakeRange(0, self.goal.yAxis.count)) != nil {
+            return "minutes"
+        }
+        
+        return nil
+    }
     var accumulatedSeconds = 0
 
     init(goal: Goal) {
