@@ -62,12 +62,11 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
-            make.top.equalToSuperview()
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-            make.bottom.equalTo(0)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
+            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
+            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
         }
-
 
         self.scrollView.refreshControl = {
             let refreshControl = UIRefreshControl()
