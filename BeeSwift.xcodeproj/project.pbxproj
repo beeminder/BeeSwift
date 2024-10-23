@@ -97,7 +97,7 @@
 		E458C8352AD1266B000DCA5C /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8342AD1266B000DCA5C /* SwiftyJSON */; };
 		E458C8372AD12671000DCA5C /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8362AD12671000DCA5C /* KeychainSwift */; };
 		E46071012B451FA400305DB4 /* BeeminderModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E41286EC2A62DF330093D598 /* BeeminderModel.xcdatamodeld */; };
-		E46071022B451FAC00305DB4 /* BeeminderPersistantContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46070F72B3FEFD400305DB4 /* BeeminderPersistantContainer.swift */; };
+		E46071022B451FAC00305DB4 /* BeeminderPersistentContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46070F72B3FEFD400305DB4 /* BeeminderPersistentContainer.swift */; };
 		E46071032B451FB100305DB4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46070EE2B36A4D900305DB4 /* User.swift */; };
 		E462BA3629AC44EA00E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3529AC44EA00E80EF0 /* Alamofire */; };
 		E462BA3929AC450000E80EF0 /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3829AC450000E80EF0 /* AlamofireImage */; };
@@ -333,7 +333,7 @@
 		E45470292B60E25C00EE648B /* DaystampTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DaystampTests.swift; sourceTree = "<group>"; };
 		E457BE5C28C192B50012F5D0 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
 		E46070EE2B36A4D900305DB4 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		E46070F72B3FEFD400305DB4 /* BeeminderPersistantContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderPersistantContainer.swift; sourceTree = "<group>"; };
+		E46070F72B3FEFD400305DB4 /* BeeminderPersistentContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderPersistentContainer.swift; sourceTree = "<group>"; };
 		E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedBox.swift; sourceTree = "<group>"; };
 		E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshHint.swift; sourceTree = "<group>"; };
 		E46FF15A2984C522009F8C7A /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
@@ -639,7 +639,7 @@
 			isa = PBXGroup;
 			children = (
 				E41286EC2A62DF330093D598 /* BeeminderModel.xcdatamodeld */,
-				E46070F72B3FEFD400305DB4 /* BeeminderPersistantContainer.swift */,
+				E46070F72B3FEFD400305DB4 /* BeeminderPersistentContainer.swift */,
 				E46070EE2B36A4D900305DB4 /* User.swift */,
 				E4E8DD3A2BE87F890059C64F /* Goal.swift */,
 				E4E8DD3C2BE881440059C64F /* DataPoint.swift */,
@@ -1238,7 +1238,7 @@
 				E458C80E2AD11C77000DCA5C /* HealthStoreManager.swift in Sources */,
 				E458C8062AD11BCD000DCA5C /* GoalManager.swift in Sources */,
 				E458C8272AD11F81000DCA5C /* BSLabel.swift in Sources */,
-				E46071022B451FAC00305DB4 /* BeeminderPersistantContainer.swift in Sources */,
+				E46071022B451FAC00305DB4 /* BeeminderPersistentContainer.swift in Sources */,
 				E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */,
 				E458C8252AD11E01000DCA5C /* BSButton.swift in Sources */,
 				E458C81D2AD11CEC000DCA5C /* UIDevice.swift in Sources */,
