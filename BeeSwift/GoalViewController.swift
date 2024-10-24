@@ -332,18 +332,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     @objc func timerButtonPressed() {
         let controller = TimerViewController(goal: self.goal)
         controller.modalPresentationStyle = .fullScreen
-        do {
-            let hoursRegex = try NSRegularExpression(pattern: "(hr|hour)s?")
-            let minutesRegex = try NSRegularExpression(pattern: "(min|minute)s?")
-            if hoursRegex.firstMatch(in: self.goal.yAxis, options: [], range: NSMakeRange(0, self.goal.yAxis.count)) != nil {
-                controller.units = "hours"
-            }
-            if minutesRegex.firstMatch(in: self.goal.yAxis, options: [], range: NSMakeRange(0, self.goal.yAxis.count)) != nil {
-                controller.units = "minutes"
-            }
-        } catch {
-            //
-        }
         self.present(controller, animated: true, completion: nil)
     }
 

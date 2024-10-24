@@ -13,16 +13,22 @@ import MBProgressHUD
 import BeeKit
 
 class TimerViewController: UIViewController {
+    private enum TimerUnit {
+        case hours, minutes
+    }
+
     let timerLabel = BSLabel()
     let startStopButton = BSButton(type: .system)
     let goal: Goal
     var timingSince: Date?
     var timer: Timer?
-    var units: String?
-    var accumulatedSeconds = 0
+    private let units: TimerUnit
 
+    var accumulatedSeconds = 0
+    
     init(goal: Goal) {
         self.goal = goal
+        self.units = Self.timerUnit(goal: goal) ?? .hours
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -165,8 +171,14 @@ class TimerViewController: UIViewController {
         formatter.locale = Locale(identifier: "en_US")
         formatter.dateFormat = "d"
         
-        var value = self.totalSeconds()/3600.0
-        if self.units == "minutes" { value = self.totalSeconds()/60.0 }
+        let value: Double
+
+        switch self.units {
+        case .minutes:
+            value = self.totalSeconds()/60.0
+        case .hours:
+            value = self.totalSeconds()/3600.0
+        }
         
         let comment = "Automatically entered from iOS timer interface"
         
@@ -197,5 +209,21 @@ class TimerViewController: UIViewController {
                 self.present(alertController, animated: true)
             }
         }
+    }
+}
+
+private extension TimerViewController {
+    static private func timerUnit(goal: Goal) -> TimerUnit? {
+        guard let hoursRegex = try? NSRegularExpression(pattern: "(hr|hour)s?") else { return nil }
+        if hoursRegex.firstMatch(in: goal.yAxis, options: [], range: NSMakeRange(0, goal.yAxis.count)) != nil {
+            return .hours
+        }
+        
+        guard let minutesRegex = try? NSRegularExpression(pattern: "(min|minute)s?") else { return nil }
+        if minutesRegex.firstMatch(in: goal.yAxis, options: [], range: NSMakeRange(0, goal.yAxis.count)) != nil {
+            return .minutes
+        }
+        
+        return nil
     }
 }
