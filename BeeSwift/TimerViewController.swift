@@ -14,7 +14,7 @@ import BeeKit
 
 class TimerViewController: UIViewController {
     private enum TimerUnit {
-        case hours, minutes, other
+        case hours, minutes
     }
 
     let timerLabel = BSLabel()
@@ -28,7 +28,7 @@ class TimerViewController: UIViewController {
     
     init(goal: Goal) {
         self.goal = goal
-        self.units = Self.timerUnit(goal: goal)
+        self.units = Self.timerUnit(goal: goal) ?? .hours
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -176,7 +176,7 @@ class TimerViewController: UIViewController {
         switch self.units {
         case .minutes:
             value = self.totalSeconds()/60.0
-        case .hours, .other:
+        case .hours:
             value = self.totalSeconds()/3600.0
         }
         
@@ -213,17 +213,17 @@ class TimerViewController: UIViewController {
 }
 
 private extension TimerViewController {
-    static private func timerUnit(goal: Goal) -> TimerUnit {
-        guard let hoursRegex = try? NSRegularExpression(pattern: "(hr|hour)s?") else { return .other }
+    static private func timerUnit(goal: Goal) -> TimerUnit? {
+        guard let hoursRegex = try? NSRegularExpression(pattern: "(hr|hour)s?") else { return nil }
         if hoursRegex.firstMatch(in: goal.yAxis, options: [], range: NSMakeRange(0, goal.yAxis.count)) != nil {
             return .hours
         }
         
-        guard let minutesRegex = try? NSRegularExpression(pattern: "(min|minute)s?") else { return .other }
+        guard let minutesRegex = try? NSRegularExpression(pattern: "(min|minute)s?") else { return nil }
         if minutesRegex.firstMatch(in: goal.yAxis, options: [], range: NSMakeRange(0, goal.yAxis.count)) != nil {
             return .minutes
         }
         
-        return .other
+        return nil
     }
 }
