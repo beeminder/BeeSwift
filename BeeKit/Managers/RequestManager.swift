@@ -26,7 +26,7 @@ struct ServerError: Error {
 }
 
 public class RequestManager {
-    public let baseURLString = Config.init().baseURLString
+    public let baseURLString = Config().baseURLString
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
     
     func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?, headers: HTTPHeaders) async throws -> Any? {
