@@ -65,7 +65,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         
         self.lastUpdatedView.addSubview(self.lastUpdatedLabel)
-        self.lastUpdatedLabel.text = nil
         self.lastUpdatedLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         self.lastUpdatedLabel.textAlignment = NSTextAlignment.center
         self.lastUpdatedLabel.snp.makeConstraints { (make) -> Void in
