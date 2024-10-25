@@ -314,11 +314,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func updateLastUpdatedLabel() {
         let lastUpdated = self.lastUpdated ?? .distantPast
         
-        let backgroundColor = lastUpdated.timeIntervalSinceNow < -3600 ? UIColor.Beeminder.red : UIColor.Beeminder.gray
-        let lastTextString = "Last updated: " + lastUpdatedDF.localizedString(for: lastUpdated, relativeTo: Date())
-        
-        self.lastUpdatedView.backgroundColor = backgroundColor
-        self.lastUpdatedLabel.text = lastTextString
+        self.lastUpdatedView.backgroundColor = lastUpdated.timeIntervalSinceNow < -3600 ? UIColor.Beeminder.red : UIColor.Beeminder.gray
+        self.lastUpdatedLabel.text = "Last updated: " + lastUpdatedDF.localizedString(for: lastUpdated, relativeTo: Date())
     }
 
     
