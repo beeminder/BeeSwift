@@ -27,7 +27,29 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let cellReuseIdentifier = "Cell"
     var deadbeatView = UIView()
     var outofdateView = UIView()
-    let noGoalsLabel = BSLabel()
+    var noGoalsLabel: BSLabel {
+        let label = BSLabel()
+        label.text = """
+                     You have no Beeminder goals!
+                     
+                     You'll need to create one before this app will be any use.
+                     """
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        
+        return label
+    }
+    var noGoalsMatchingFilterLabel: BSLabel {
+        let label = BSLabel()
+        label.text = """
+                     You have Beeminder goals!
+                     None match the current filter.
+                     """
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        
+        return label
+    }
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
     var lastUpdated: Date?
@@ -149,16 +171,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(0)
         }
-        
-        self.view.addSubview(self.noGoalsLabel)
-        self.noGoalsLabel.snp.makeConstraints { (make) in
-            make.top.left.right.equalTo(self.collectionView!)
-        }
-        self.noGoalsLabel.text = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
-        self.noGoalsLabel.textAlignment = .center
-        self.noGoalsLabel.numberOfLines = 0
-        self.noGoalsLabel.isHidden = true
-        
+
         self.updateGoals()
         self.fetchGoals()
 
@@ -397,13 +410,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.updateDeadbeatHeight()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
-        if self.goals.count == 0 {
-            self.noGoalsLabel.isHidden = false
-            self.collectionView?.isHidden = true
-        } else {
-            self.noGoalsLabel.isHidden = true
-            self.collectionView?.isHidden = false
-        }
         let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
         self.navigationItem.leftBarButtonItem = searchItem
     }
@@ -413,9 +419,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        switch (filteredGoals.isEmpty, goals.isEmpty) {
+        case (true, false):
+            collectionView.backgroundView = self.noGoalsMatchingFilterLabel
+            return 0
+        case (true, true):
+            collectionView.backgroundView = self.noGoalsLabel
+            return 0
+        default:
+            collectionView.backgroundView = nil
+            return 1
+        }
     }
-    
+        
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let minimumWidth: CGFloat = 320
 
