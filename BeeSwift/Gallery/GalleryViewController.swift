@@ -35,29 +35,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     private let freshnessIndicator = FreshnessIndicatorView()
     var deadbeatView = UIView()
     var outofdateView = UIView()
-    var noGoalsLabel: BSLabel {
-        let label = BSLabel()
-        label.text = """
-                     You have no Beeminder goals!
-                     
-                     You'll need to create one before this app will be any use.
-                     """
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        
-        return label
-    }
-    var noGoalsMatchingFilterLabel: BSLabel {
-        let label = BSLabel()
-        label.text = """
-                     You have Beeminder goals!
-                     None match the current filter.
-                     """
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        
-        return label
-    }
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
     var lastUpdated: Date?
@@ -526,5 +503,60 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
         self.fetchGoals()
+    }
+}
+
+private extension GalleryViewController {
+    enum NoGoalReason: CaseIterable {
+        case noActiveGoals
+        case noGoalsMatchingFilter
+    }
+    
+    func makeViewForEmptyCollection(when reason: NoGoalReason) -> UIView {
+        let container = UIView()
+        
+        let viewCorrespondingToReason: UIView = {
+            switch reason {
+            case .noActiveGoals:
+                return noGoalsView
+            case .noGoalsMatchingFilter:
+                return noGoalsMatchingFilterView
+            }
+        }()
+        container.addSubview(viewCorrespondingToReason)
+        container.addSubview(UIView())
+
+        viewCorrespondingToReason.snp.makeConstraints { make in
+            make.top.lessThanOrEqualTo(100)
+            make.horizontalEdges.equalTo(container)
+        }
+
+        return container
+    }
+
+    private var noGoalsView: UIView {
+        let label = BSLabel()
+        label.text = """
+        You have no Beeminder goals!
+
+        You'll need to create one before this app will be any use.
+        """
+        label.textAlignment = .center
+        label.numberOfLines = 0
+
+        return label
+    }
+
+    private var noGoalsMatchingFilterView: UIView {
+        let label = BSLabel()
+        label.text = """
+        You have Beeminder goals!
+
+        None match the current filter.
+        """
+        label.textAlignment = .center
+        label.numberOfLines = 0
+
+        return label
     }
 }
