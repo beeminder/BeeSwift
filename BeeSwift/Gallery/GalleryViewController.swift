@@ -305,7 +305,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
-    private let lastUpdatedDF: RelativeDateTimeFormatter = {
+    private let lastUpdatedDateFormatter: RelativeDateTimeFormatter = {
         let formatter = RelativeDateTimeFormatter()
         formatter.dateTimeStyle = .named
         return formatter
@@ -315,7 +315,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let lastUpdated = self.lastUpdated ?? .distantPast
         
         self.lastUpdatedView.backgroundColor = lastUpdated.timeIntervalSinceNow < -3600 ? UIColor.Beeminder.red : UIColor.Beeminder.gray
-        self.lastUpdatedLabel.text = "Last updated: " + lastUpdatedDF.localizedString(for: lastUpdated, relativeTo: Date())
+        self.lastUpdatedLabel.text = "Last updated: " + lastUpdatedDateFormatter.localizedString(for: lastUpdated, relativeTo: Date())
     }
 
     
