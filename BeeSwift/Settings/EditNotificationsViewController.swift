@@ -191,7 +191,7 @@ extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerView
     }
     
     func midnightOffsetFromTimePickerView() -> Int {
-        let minute = NSNumber.init(value: self.timePickerView.selectedRow(inComponent: 1))
+        let minute = NSNumber(value: self.timePickerView.selectedRow(inComponent: 1))
         let hour = self.hourFromTimePicker()
         
         return 3600*hour.intValue + 60*minute.intValue
