@@ -49,7 +49,7 @@ class CategoryHealthKitMetric : HealthKitMetric {
     private func getDataPoint(date : Daystamp, deadline : Int, healthStore : HKHealthStore) async throws -> BeeDataPoint {
 
         let samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
-            let query = HKSampleQuery.init(
+            let query = HKSampleQuery(
                 sampleType: sampleType(),
                 predicate: HKQuery.predicateForSamples(withStart: date.start(deadline: deadline), end: date.end(deadline: deadline)),
                 limit: 0,

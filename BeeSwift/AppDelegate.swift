@@ -135,9 +135,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let context = ServiceLocator.persistentContainer.newBackgroundContext()
         guard let goals = ServiceLocator.goalManager.staleGoals(context: context) else { return }
-        let beemergencyCount = goals.filter({ (goal: Goal) -> Bool in
-            return goal.safeBuf < 1
-        }).count
+        let beemergencyCount = goals.count(where: { $0.safeBuf < 1})
         logger.notice("Beemergency count is \(beemergencyCount, privacy: .public)")
 
         UNUserNotificationCenter.current().setBadgeCount(beemergencyCount)

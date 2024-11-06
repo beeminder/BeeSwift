@@ -29,7 +29,7 @@ class TodayViewController: UIViewController {
         
         self.updateDataSource()
         
-        self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight)
+        self.preferredContentSize = CGSize(width: 0, height: self.rowHeight)
         
         self.view.addSubview(self.tableView)
         self.tableView.dataSource = self
@@ -53,10 +53,10 @@ class TodayViewController: UIViewController {
 extension TodayViewController : NCWidgetProviding {
     func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
         if activeDisplayMode == .expanded {
-            self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight * self.goals.count)
+            self.preferredContentSize = CGSize(width: 0, height: self.rowHeight * self.goals.count)
         }
         else if activeDisplayMode == .compact {
-            self.preferredContentSize = CGSize.init(width: 0, height: self.rowHeight)
+            self.preferredContentSize = CGSize(width: 0, height: self.rowHeight)
         }
     }
 }

@@ -296,7 +296,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
         if (!self.goal.hideDataEntry) {
-            self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage.init(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
+            self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(onGoalsUpdatedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
@@ -332,18 +332,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     @objc func timerButtonPressed() {
         let controller = TimerViewController(goal: self.goal)
         controller.modalPresentationStyle = .fullScreen
-        do {
-            let hoursRegex = try NSRegularExpression(pattern: "(hr|hour)s?")
-            let minutesRegex = try NSRegularExpression(pattern: "(min|minute)s?")
-            if hoursRegex.firstMatch(in: self.goal.yAxis, options: [], range: NSMakeRange(0, self.goal.yAxis.count)) != nil {
-                controller.units = "hours"
-            }
-            if minutesRegex.firstMatch(in: self.goal.yAxis, options: [], range: NSMakeRange(0, self.goal.yAxis.count)) != nil {
-                controller.units = "minutes"
-            }
-        } catch {
-            //
-        }
         self.present(controller, animated: true, completion: nil)
     }
 

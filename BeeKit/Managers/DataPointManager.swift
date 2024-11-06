@@ -95,7 +95,7 @@ public class DataPointManager {
         guard let firstDaystamp = healthKitDataPoints.map({ point in point.daystamp }).min() else { return }
 
         let datapoints = try await datapointsSince(goal: goal, daystamp: try! Daystamp(fromString: firstDaystamp.description))
-        let realDatapoints = datapoints.filter{ !$0.isMeta() }
+        let realDatapoints = datapoints.filter{ !$0.isMeta }
 
         for newDataPoint in healthKitDataPoints {
             try await self.updateToMatchDataPoint(goal: goal, newDataPoint: newDataPoint, recentDatapoints: realDatapoints)

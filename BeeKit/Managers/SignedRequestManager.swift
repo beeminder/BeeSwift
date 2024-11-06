@@ -59,7 +59,7 @@ public class SignedRequestManager {
             base += "\(escapedKey!)=\(escapedValue!)"
         }
         
-        let token = base.hmac(algorithm: HMACAlgorithm.SHA1, key: Config.init().requestSigningKey)
+        let token = base.hmac(algorithm: HMACAlgorithm.SHA1, key: Config().requestSigningKey)
         signed?["beemios_token"] = token
         return signed! as [String : Any]
     }
