@@ -40,7 +40,12 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
 
         self.init(year: year, month: month, day: day)
     }
-
+    
+    /// Creates a Daystamp of having submitted a datapoint on a particular date given the goal's deadline
+    ///
+    /// - Parameters:
+    ///   - date: a calendar date
+    ///   - deadline: a ``Goal/deadline``
     public init(fromDate date: Date, deadline: Int) {
         let secondsAfterMidnight =
             Daystamp.calendar.component(.hour, from: date) * 60 * 60
