@@ -41,7 +41,7 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
         self.init(year: year, month: month, day: day)
     }
 
-    init(fromDate date: Date, deadline: Int) {
+    public init(fromDate date: Date, deadline: Int) {
         let secondsAfterMidnight =
             Daystamp.calendar.component(.hour, from: date) * 60 * 60
             + Daystamp.calendar.component(.minute, from: date) * 60
