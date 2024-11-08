@@ -109,6 +109,7 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
 
     // Trait: CustomStringConvertible
 
+    /// Daystamp formatted as a YYYYMMdd string
     public var description: String {
         return String(format: "%04d%02d%02d", year, month, day)
     }
