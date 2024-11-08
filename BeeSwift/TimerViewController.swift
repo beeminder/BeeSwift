@@ -143,7 +143,11 @@ class TimerViewController: UIViewController {
     }
     
     func urtext() -> String {
-        let day = Daystamp(fromDate: Date(), deadline: goal.deadline).day
+        let urtextDaystamp: String = {
+            let daystamp = Daystamp(fromDate: Date(), deadline: goal.deadline)
+            
+            return String(format: "%04d %02d %02d", daystamp.year, daystamp.month, daystamp.day)
+        }()
         
         let value: Double
 
@@ -156,7 +160,7 @@ class TimerViewController: UIViewController {
         
         let comment = "Automatically entered from iOS timer interface"
         
-        return "\(day) \(value) \"\(comment)\""
+        return "\(urtextDaystamp) \(value) \"\(comment)\""
     }
     
     @objc func addDatapointButtonPressed() {
