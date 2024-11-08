@@ -115,6 +115,9 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
 
     // Trait: Strideable
 
+    /// how many days apart two daystamps are
+    /// - Parameter other: another daystamp
+    /// - Returns: number of days as distance between the daystamps
     public func distance(to other: Daystamp) -> Int {
         let selfDate = Daystamp.calendar.date(from: DateComponents(calendar: Daystamp.calendar, year: year, month: month, day: day))!
         let otherDate = Daystamp.calendar.date(from: DateComponents(calendar: Daystamp.calendar, year: other.year, month: other.month, day: other.day))!
