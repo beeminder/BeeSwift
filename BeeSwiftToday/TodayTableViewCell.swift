@@ -125,36 +125,13 @@ class TodayTableViewCell: UITableViewCell {
         hud.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
         
-        // if the goal's deadline is after midnight, and it's after midnight,
-        // but before the deadline,
-        // default to entering data for the "previous" day.
-        let now = Date()
-        var offset: Double = 0
-        let calendar = Calendar.current
-        let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
-        let currentHour = components.hour
-        let goalDeadline = goal.deadline
-        if goalDeadline > 0 && currentHour! < 6 && goalDeadline/3600 < currentHour! {
-            offset = -1
-        }
+        let urtextDaystamp: String = {
+            let daystamp = Daystamp(fromDate: Date(), deadline: goal.deadline)
+            
+            return String(format: "%04d %02d %02d", daystamp.year, daystamp.month, daystamp.day)
+        }()
         
-        // if the goal's deadline is before midnight and has already passed for this calendar day, default to entering data for the "next" day
-        if goalDeadline < 0 {
-            let deadlineSecondsAfterMidnight = 24*3600 + goalDeadline
-            let deadlineHour = deadlineSecondsAfterMidnight/3600
-            let deadlineMinute = (deadlineSecondsAfterMidnight % 3600)/60
-            let currentMinute = components.minute
-            if deadlineHour < currentHour! ||
-                (deadlineHour == currentHour! && deadlineMinute < currentMinute!) {
-                offset = 1
-            }
-        }
-        
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.dateFormat = "d"
-        
-        let params = ["urtext": "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
+        let params = ["urtext": "\(urtextDaystamp) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
         let slug = goal.slug
 
         Task { @MainActor in
