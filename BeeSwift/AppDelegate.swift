@@ -33,9 +33,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             UIFont.beeminder.defaultFontPlain.withSize(20)]
         UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedString.Key.font : UIFont.beeminder.defaultFontPlain.withSize(18)], for: UIControl.State())
 
-        IQKeyboardManager.shared.enable = true
-        IQKeyboardManager.shared.enableAutoToolbar = false
-
+        IQKeyboardManager.shared.isEnabled = true
+        
         if HKHealthStore.isHealthDataAvailable() {
                 // We must register queries for all our healthkit metrics before this method completes
                 // in order to successfully be delivered background updates.

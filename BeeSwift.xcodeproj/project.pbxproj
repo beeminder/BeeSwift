@@ -2071,7 +2071,7 @@
 			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 6.5.0;
+				minimumVersion = 8.0.0;
 			};
 		};
 		E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */ = {

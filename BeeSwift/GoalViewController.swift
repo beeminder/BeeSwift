@@ -309,9 +309,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         // Ensure the submit button is always visible below the keyboard when interacting with
         // the submit datapoint controls
         let addDataPointAdditionalKeyboardDistance = self.submitButton.frame.height
-        self.dateTextField.keyboardDistanceFromTextField = addDataPointAdditionalKeyboardDistance
-        self.valueTextField.keyboardDistanceFromTextField = addDataPointAdditionalKeyboardDistance
-        self.commentTextField.keyboardDistanceFromTextField = addDataPointAdditionalKeyboardDistance
+        self.dateTextField.iq.distanceFromKeyboard = addDataPointAdditionalKeyboardDistance
+        self.valueTextField.iq.distanceFromKeyboard = addDataPointAdditionalKeyboardDistance
+        self.commentTextField.iq.distanceFromKeyboard = addDataPointAdditionalKeyboardDistance
     }
 
     @objc func onGoalsUpdatedNotification() {
