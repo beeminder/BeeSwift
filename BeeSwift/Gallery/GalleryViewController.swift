@@ -65,7 +65,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         
         self.lastUpdatedView.addSubview(self.lastUpdatedLabel)
-        self.lastUpdatedLabel.text = "Last updated:"
         self.lastUpdatedLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         self.lastUpdatedLabel.textAlignment = NSTextAlignment.center
         self.lastUpdatedLabel.snp.makeConstraints { (make) -> Void in
@@ -306,34 +305,17 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
+    private let lastUpdatedDateFormatter: RelativeDateTimeFormatter = {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.dateTimeStyle = .named
+        return formatter
+    }()
+    
     @objc func updateLastUpdatedLabel() {
-        var lastTextString = ""
-        var color = UIColor.black
-        if let lastUpdated = self.lastUpdated {
-            if lastUpdated.timeIntervalSinceNow < -3600 {
-                color = UIColor.Beeminder.red
-                lastTextString = "Last updated: a long time ago..."
-            }
-            else if lastUpdated.timeIntervalSinceNow < -120 {
-                color = UIColor.black
-                lastTextString = "Last updated: \(-1 * Int(lastUpdated.timeIntervalSinceNow / 60)) minutes ago"
-            }
-            else if lastUpdated.timeIntervalSinceNow < -60 {
-                color = UIColor.black
-                lastTextString = "Last updated: 1 minute ago"
-            }
-            else {
-                color = UIColor.black
-                lastTextString = "Last updated: less than a minute ago"
-            }
-        }
-        else {
-            color = UIColor.Beeminder.red
-            lastTextString = "Last updated: a long time ago..."
-        }
-        let lastText: NSMutableAttributedString = NSMutableAttributedString(string: lastTextString)
-        lastText.addAttribute(NSAttributedString.Key.foregroundColor, value: color, range: NSRange(location: 0, length: lastText.string.count))
-        self.lastUpdatedLabel.attributedText = lastText
+        let lastUpdated = self.lastUpdated ?? .distantPast
+        
+        self.lastUpdatedView.backgroundColor = lastUpdated.timeIntervalSinceNow < -3600 ? UIColor.Beeminder.red : UIColor.Beeminder.gray
+        self.lastUpdatedLabel.text = "Last updated: " + lastUpdatedDateFormatter.localizedString(for: lastUpdated, relativeTo: Date())
     }
 
     
