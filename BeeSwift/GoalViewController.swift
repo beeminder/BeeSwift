@@ -209,15 +209,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.dateStepper.tintColor = UIColor.Beeminder.gray
         dataEntryView.addSubview(self.dateStepper)
         self.dateStepper.addTarget(self, action: #selector(GoalViewController.dateStepperValueChanged), for: .valueChanged)
-        self.dateStepper.value = {
-            let now = Date()
-            let daystampAccountingForTheGoalsDeadline = Daystamp(fromDate: now,
-                                                                 deadline: goal.deadline)
-            let daystampAssumingMidnightDeadline = Daystamp(fromDate: now,
-                                                            deadline: 0)
-            
-            return Double(daystampAccountingForTheGoalsDeadline.distance(to: daystampAssumingMidnightDeadline))
-        }()
+        self.dateStepper.value = Self.makeInitialDateStepperValue(for: goal)
 
         self.dateStepper.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.dateTextField.snp.bottom).offset(elementSpacing)
@@ -497,6 +489,15 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.goalImageView
+    }
+    
+    private static func makeInitialDateStepperValue(date: Date = Date(), for goal: Goal) -> Double {
+        let daystampAccountingForTheGoalsDeadline = Daystamp(fromDate: date,
+                                                             deadline: goal.deadline)
+        let daystampAssumingMidnightDeadline = Daystamp(fromDate: date,
+                                                        deadline: 0)
+        
+        return Double(daystampAccountingForTheGoalsDeadline.distance(to: daystampAssumingMidnightDeadline))
     }
 
     // MARK: - SFSafariViewControllerDelegate

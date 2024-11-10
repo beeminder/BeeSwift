@@ -156,4 +156,20 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
 
     // Trait: Hashable
     // This is generated automatically for structs by the compiler
+    
+    
+    /// generates the daystamp as a string for use in urtext, considering both the submission date and goal's deadline
+    /// - Parameters:
+    ///   - submissionDate: calendar date on which the datapoint would be submitted
+    ///   - goal: the goal for which the urtext is to be created
+    /// - Returns: string of the daystamp, suitable for use in urtext
+    public static func makeUrtextDaystamp(submissionDate: Date = Date(), goal: Goal) -> String {
+        let daystamp = Daystamp(fromDate: submissionDate,
+                                deadline: goal.deadline)
+        
+        return String(format: "%04d %02d %02d",
+                      daystamp.year,
+                      daystamp.month,
+                      daystamp.day)
+    }
 }

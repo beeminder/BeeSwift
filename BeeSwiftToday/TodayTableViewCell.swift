@@ -125,13 +125,11 @@ class TodayTableViewCell: UITableViewCell {
         hud.mode = .indeterminate
         self.addDataButton.isUserInteractionEnabled = false
         
-        let urtextDaystamp: String = {
-            let daystamp = Daystamp(fromDate: Date(), deadline: goal.deadline)
-            
-            return String(format: "%04d %02d %02d", daystamp.year, daystamp.month, daystamp.day)
-        }()
+        let urtextDaystamp = Daystamp.makeUrtextDaystamp(submissionDate: Date(), goal: goal)
+        let value = Int(self.valueStepper.value)
+        let comment = "Added via iOS widget"
         
-        let params = ["urtext": "\(urtextDaystamp) \(Int(self.valueStepper.value)) \"Added via iOS widget\"", "requestid": UUID().uuidString]
+        let params = ["urtext": "\(urtextDaystamp) \(value) \"\(comment)\"", "requestid": UUID().uuidString]
         let slug = goal.slug
 
         Task { @MainActor in

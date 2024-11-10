@@ -143,11 +143,7 @@ class TimerViewController: UIViewController {
     }
     
     func urtext() -> String {
-        let urtextDaystamp: String = {
-            let daystamp = Daystamp(fromDate: Date(), deadline: goal.deadline)
-            
-            return String(format: "%04d %02d %02d", daystamp.year, daystamp.month, daystamp.day)
-        }()
+        let urtextDaystamp = Daystamp.makeUrtextDaystamp(submissionDate: Date(), goal: goal)
         
         let value: Double
 
