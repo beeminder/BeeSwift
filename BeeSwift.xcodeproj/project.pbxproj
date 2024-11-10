@@ -37,7 +37,6 @@
 		A1B672401B0989E800584782 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723F1B0989E800584782 /* UIKit.framework */; };
 		A1B672421B0989ED00584782 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B672411B0989ED00584782 /* CoreGraphics.framework */; };
 		A1BD0D181AEB30A5001EDE8B /* GoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */; };
-		A1BD0D1C1AEB34E0001EDE8B /* GalleryNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BD0D1B1AEB34E0001EDE8B /* GalleryNavigationController.swift */; };
 		A1BE73AA1E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */; };
 		A1BE73AC1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */; };
 		A1D853281EB0DE0700FC75DE /* TodayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1D853271EB0DE0700FC75DE /* TodayTableViewCell.swift */; };
@@ -85,7 +84,6 @@
 		E458C81A2AD11CB5000DCA5C /* WorkoutMinutesHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */; };
 		E458C81B2AD11CD8000DCA5C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B341AED9184006F48DA /* UIColorExtension.swift */; };
 		E458C81C2AD11CDE000DCA5C /* UIFontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */; };
-		E458C81D2AD11CEC000DCA5C /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11488BD1EE9B0CE003316E1 /* UIDevice.swift */; };
 		E458C81E2AD11D05000DCA5C /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46FF15A2984C522009F8C7A /* DateUtils.swift */; };
 		E458C8202AD11D35000DCA5C /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E458C81F2AD11D35000DCA5C /* SwiftyJSON */; };
 		E458C8222AD11D40000DCA5C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8212AD11D40000DCA5C /* Alamofire */; };
@@ -260,7 +258,6 @@
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
 		A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveHKMetricViewController.swift; sourceTree = "<group>"; };
-		A11488BD1EE9B0CE003316E1 /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
 		A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseGoalSortViewController.swift; sourceTree = "<group>"; };
 		A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoreManager.swift; sourceTree = "<group>"; };
 		A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewController.swift; sourceTree = "<group>"; };
@@ -304,7 +301,6 @@
 		A1B672411B0989ED00584782 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		A1BCE9841AFFFB3A007322CC /* RequestManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestManager.swift; sourceTree = "<group>"; };
 		A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoalViewController.swift; sourceTree = "<group>"; };
-		A1BD0D1B1AEB34E0001EDE8B /* GalleryNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryNavigationController.swift; sourceTree = "<group>"; };
 		A1BD3E021AE41AE400B1390A /* BeeSwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeeSwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChooseHKMetricViewController.swift; sourceTree = "<group>"; };
 		A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitMetricTableViewCell.swift; sourceTree = "<group>"; };
@@ -516,7 +512,6 @@
 			children = (
 				A1C11B471B06F5D100D22871 /* Constants.swift */,
 				A12BA9531AFFF21800AFEF32 /* Crypto.swift */,
-				A11488BD1EE9B0CE003316E1 /* UIDevice.swift */,
 				E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */,
 			);
 			path = Util;
@@ -693,7 +688,6 @@
 			isa = PBXGroup;
 			children = (
 				A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */,
-				A1BD0D1B1AEB34E0001EDE8B /* GalleryNavigationController.swift */,
 				A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */,
 			);
 			path = Gallery;
@@ -1155,7 +1149,6 @@
 				A1453B3F1AEDFCC8006F48DA /* SignInViewController.swift in Sources */,
 				A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */,
 				E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */,
-				A1BD0D1C1AEB34E0001EDE8B /* GalleryNavigationController.swift in Sources */,
 				E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */,
 				A196CB1F1AE4142F00B90A3E /* GalleryViewController.swift in Sources */,
 				A1BE73AA1E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift in Sources */,
@@ -1241,7 +1234,6 @@
 				E46071022B451FAC00305DB4 /* BeeminderPersistentContainer.swift in Sources */,
 				E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */,
 				E458C8252AD11E01000DCA5C /* BSButton.swift in Sources */,
-				E458C81D2AD11CEC000DCA5C /* UIDevice.swift in Sources */,
 				E4E63C6D2C3F9083005E00DA /* DataPointManager.swift in Sources */,
 				E458C8172AD11CA7000DCA5C /* TotalSleepMinutes.swift in Sources */,
 				E4E8DD3B2BE87F890059C64F /* Goal.swift in Sources */,
