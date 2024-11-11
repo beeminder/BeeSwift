@@ -143,33 +143,7 @@ class TimerViewController: UIViewController {
     }
     
     func urtext() -> String {
-        // if the goal's deadline is after midnight, and it's after midnight,
-        // but before the deadline,
-        // default to entering data for the "previous" day.
-        let now = Date()
-        var offset: Double = 0
-        let calendar = Calendar.current
-        let components = (calendar as NSCalendar).components([.hour, .minute], from: now)
-        let currentHour = components.hour
-        if self.goal.deadline > 0 && currentHour! < 6 && self.goal.deadline/3600 < currentHour! {
-            offset = -1
-        }
-        
-        // if the goal's deadline is before midnight and has already passed for this calendar day, default to entering data for the "next" day
-        if self.goal.deadline < 0 {
-            let deadlineSecondsAfterMidnight = 24*3600 + self.goal.deadline
-            let deadlineHour = deadlineSecondsAfterMidnight/3600
-            let deadlineMinute = (deadlineSecondsAfterMidnight % 3600)/60
-            let currentMinute = components.minute
-            if deadlineHour < currentHour! ||
-                (deadlineHour == currentHour! && deadlineMinute < currentMinute!) {
-                offset = 1
-            }
-        }
-        
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.dateFormat = "d"
+        let urtextDaystamp = Daystamp.makeUrtextDaystamp(submissionDate: Date(), goal: goal)
         
         let value: Double
 
@@ -182,7 +156,7 @@ class TimerViewController: UIViewController {
         
         let comment = "Automatically entered from iOS timer interface"
         
-        return "\(formatter.string(from: Date(timeIntervalSinceNow: offset*24*3600))) \(value) \"\(comment)\""
+        return "\(urtextDaystamp) \(value) \"\(comment)\""
     }
     
     @objc func addDatapointButtonPressed() {

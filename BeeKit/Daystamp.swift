@@ -40,8 +40,13 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
 
         self.init(year: year, month: month, day: day)
     }
-
-    init(fromDate date: Date, deadline: Int) {
+    
+    /// Creates a Daystamp of having submitted a datapoint on a particular date given the goal's deadline
+    ///
+    /// - Parameters:
+    ///   - date: a calendar date
+    ///   - deadline: a ``Goal/deadline``
+    public init(fromDate date: Date, deadline: Int) {
         let secondsAfterMidnight =
             Daystamp.calendar.component(.hour, from: date) * 60 * 60
             + Daystamp.calendar.component(.minute, from: date) * 60
@@ -104,12 +109,16 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
 
     // Trait: CustomStringConvertible
 
+    /// Daystamp formatted as a YYYYMMdd string
     public var description: String {
         return String(format: "%04d%02d%02d", year, month, day)
     }
 
     // Trait: Strideable
 
+    /// how many days apart two daystamps are
+    /// - Parameter other: another daystamp
+    /// - Returns: number of days as distance between the daystamps
     public func distance(to other: Daystamp) -> Int {
         let selfDate = Daystamp.calendar.date(from: DateComponents(calendar: Daystamp.calendar, year: year, month: month, day: day))!
         let otherDate = Daystamp.calendar.date(from: DateComponents(calendar: Daystamp.calendar, year: other.year, month: other.month, day: other.day))!
@@ -147,4 +156,20 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
 
     // Trait: Hashable
     // This is generated automatically for structs by the compiler
+    
+    
+    /// generates the daystamp as a string for use in urtext, considering both the submission date and goal's deadline
+    /// - Parameters:
+    ///   - submissionDate: calendar date on which the datapoint would be submitted
+    ///   - goal: the goal for which the urtext is to be created
+    /// - Returns: string of the daystamp, suitable for use in urtext
+    public static func makeUrtextDaystamp(submissionDate: Date = Date(), goal: Goal) -> String {
+        let daystamp = Daystamp(fromDate: submissionDate,
+                                deadline: goal.deadline)
+        
+        return String(format: "%04d %02d %02d",
+                      daystamp.year,
+                      daystamp.month,
+                      daystamp.day)
+    }
 }
