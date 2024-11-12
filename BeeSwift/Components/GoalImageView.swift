@@ -9,17 +9,18 @@ import BeeKit
 /// Shows the current graph for a goal
 /// Handles placeholders for loading and queued states, and automatically updates when the goal changes
 class GoalImageView : UIView {
-    private static let downloader = ImageDownloader(imageCache: AutoPurgingImageCache())
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalImageView")
 
     private let imageView = UIImageView()
     private let beeLemniscateView = BeeLemniscateView()
 
     private var currentlyShowingGraph = false
-    private var inProgressDownload: RequestReceipt? = nil
-    private var currentDownloadToken: UUID? = nil
 
     public let isThumbnail: Bool
+    
+    private enum Constant {
+        static var placeholderImage: UIImage { UIImage(named: "GraphPlaceholder")! }
+    }
 
     public var goal: Goal? {
         didSet {
@@ -48,13 +49,13 @@ class GoalImageView : UIView {
         imageView.snp.makeConstraints { (make) in
             make.edges.equalToSuperview()
         }
-        self.imageView.image = UIImage(named: "GraphPlaceholder")
+        self.imageView.image = Constant.placeholderImage
 
         self.addSubview(beeLemniscateView)
         beeLemniscateView.snp.makeConstraints { (make) in
             make.edges.equalToSuperview()
         }
-        beeLemniscateView.isHidden = true
+        beeLemniscateView.isHidden = false
 
         NotificationCenter.default.addObserver(
             forName: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName),
@@ -68,78 +69,40 @@ class GoalImageView : UIView {
     }
 
     private func clearGoalGraph() {
-        imageView.image = UIImage(named: "GraphPlaceholder")
+        imageView.af.cancelImageRequest()
+
+        imageView.af.run(.noTransition, with: Constant.placeholderImage)
         currentlyShowingGraph = false
         beeLemniscateView.isHidden = true
     }
 
-    private func showGraphImage(image: UIImage) {
-        imageView.image = image
-        currentlyShowingGraph = true
-        beeLemniscateView.isHidden = !(goal?.queued ?? false)
-    }
-
     private func refresh() {
-        // Invalidate the download token, meaning that any queued download callbacks
-        // will no-op. This avoids race conditions with downloads finishing out of order.
-        let newDownloadToken = UUID()
-        self.currentDownloadToken = newDownloadToken
-
-        if let downloadReceipt = inProgressDownload {
-            GoalImageView.downloader.cancelRequest(with: downloadReceipt)
-            inProgressDownload = nil
-        }
-
         //  - Deadbeat: Placeholder, no animation
-        if ServiceLocator.currentUserManager.isDeadbeat() {
+        guard !ServiceLocator.currentUserManager.isDeadbeat() else {
             clearGoalGraph()
             return
         }
 
         //  No Goal: Placeholder, no animation
-        guard let goal = self.goal else {
+        guard let goal else {
             clearGoalGraph()
             return
         }
 
+        // Load the appropriate image for the goal
+        let urlString = isThumbnail ? goal.cacheBustingThumbUrl : goal.cacheBustingGraphUrl
+        let request = URLRequest(url: URL(string: urlString)!)
+        
         // When queued, we should show a loading indicator over any existing graph,
         // but not over the placeholder image.
-        if goal.queued {
-            beeLemniscateView.isHidden = !currentlyShowingGraph
-        }
-
-        // Load the approppriate iamge for the goal
-        let urlString = if isThumbnail {
-            goal.cacheBustingThumbUrl
-        } else {
-            goal.cacheBustingGraphUrl
-        }
-        let request = URLRequest(url: URL(string: urlString)!)
-
-        // Explicitly check the cache to see if the image is already present, and if so set it directly
-        // This avoids flicker when showing images from the cache, which will otherwise briefly show
-        // the placeholder while waiting for the async download callback
-        if let image = GoalImageView.downloader.imageCache?.image(for: request, withIdentifier: nil) {
-            showGraphImage(image: image)
-            return
-        }
-
-        // Download the image and show it once downloaded
-        inProgressDownload = GoalImageView.downloader.download(request, completion: { response in
-            if newDownloadToken != self.currentDownloadToken {
-                // Another refresh has happend since we were enqueued. Skip performing any updates
-                return
-            }
-
-            switch(response.result) {
-            case .success(let image):
-                // Image downloaded. Show it, and have loading indicator match queued state
-                self.showGraphImage(image: image)
-                break;
-            case .failure(let error):
-                self.logger.error("Error downloading goal graph: \(error)")
-                self.clearGoalGraph()
-            }
-        })
+        beeLemniscateView.isHidden = !currentlyShowingGraph
+        
+        imageView.af.setImage(withURLRequest: request,
+                              cacheKey: urlString,
+                              placeholderImage: imageView.image == nil ? Constant.placeholderImage : nil,
+                              filter: RoundedCornersFilter(radius: isThumbnail ? 2 : 4),
+                              progressQueue: DispatchQueue.global(qos: .background),
+                              imageTransition: .crossDissolve(0.4),
+                              runImageTransitionIfCached: false)
     }
 }
