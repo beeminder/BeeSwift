@@ -41,8 +41,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var goals : [Goal] = []
-    var filteredGoals : [Goal] = []
+    var goals : [Goal] = [] {
+        didSet {
+            setBackgroundView(filteredGoals: filteredGoals, goals: goals)
+        }
+    }
+    var filteredGoals : [Goal] = [] {
+        didSet {
+            setBackgroundView(filteredGoals: filteredGoals, goals: goals)
+        }
+    }
 
     init(currentUserManager: CurrentUserManager, 
          viewContext: NSManagedObjectContext,
@@ -384,15 +392,26 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         switch (filteredGoals.isEmpty, goals.isEmpty) {
         case (true, false):
-            collectionView.backgroundView = self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
             return 0
         case (true, true):
-            collectionView.backgroundView = self.makeViewForEmptyCollection(when: .noActiveGoals)
             return 0
         default:
-            collectionView.backgroundView = nil
             return 1
         }
+    }
+    
+    private func setBackgroundView(filteredGoals: [Goal], goals: [Goal]) {
+        var view: UIView? {
+            switch (filteredGoals.isEmpty, goals.isEmpty) {
+            case (true, false):
+                return self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
+            case (true, true):
+                return self.makeViewForEmptyCollection(when: .noActiveGoals)
+            default:
+                return nil
+            }
+        }
+        collectionView?.backgroundView = view
     }
         
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
