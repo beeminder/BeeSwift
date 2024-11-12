@@ -384,6 +384,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.applySnapshot()
+        self.setBackgroundView(filteredGoals: filteredGoals, goals: goals)
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
@@ -484,18 +485,23 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        switch (filteredGoals.isEmpty, goals.isEmpty) {
-        case (true, false):
-            collectionView.backgroundView = self.noGoalsMatchingFilterLabel
-            return 0
-        case (true, true):
-            collectionView.backgroundView = self.noGoalsLabel
-            return 0
-        default:
-            collectionView.backgroundView = nil
-            return 1
-        }
+        [filteredGoals.isEmpty, goals.isEmpty].contains(true) ? 0 : 1
     }
+    
+    private func setBackgroundView(filteredGoals: [Goal], goals: [Goal]) {
+        var view: UIView? {
+            switch (filteredGoals.isEmpty, goals.isEmpty) {
+            case (true, false):
+                return self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
+            case (true, true):
+                return self.makeViewForEmptyCollection(when: .noActiveGoals)
+            default:
+                return nil
+            }
+        }
+        collectionView?.backgroundView = view
+    }
+    
     
     // MARK: - SFSafariViewControllerDelegate
     
