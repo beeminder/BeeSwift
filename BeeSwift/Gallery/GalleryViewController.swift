@@ -389,14 +389,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        switch (filteredGoals.isEmpty, goals.isEmpty) {
-        case (true, false):
-            return 0
-        case (true, true):
-            return 0
-        default:
-            return 1
-        }
+        [filteredGoals.isEmpty, goals.isEmpty].contains(true) ? 0 : 1
     }
     
     private func setBackgroundView(filteredGoals: [Goal], goals: [Goal]) {
