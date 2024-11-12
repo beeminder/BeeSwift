@@ -35,16 +35,16 @@ class GoalImageView : UIView {
     init(isThumbnail: Bool) {
         self.isThumbnail = isThumbnail
         super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-        setupView()
+        setUpView()
     }
 
     required init?(coder: NSCoder) {
         self.isThumbnail = false
         super.init(coder: coder)
-        setupView()
+        setUpView()
     }
 
-    private func setupView() {
+    private func setUpView() {
         self.addSubview(imageView)
         imageView.snp.makeConstraints { (make) in
             make.edges.equalToSuperview()
