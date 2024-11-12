@@ -395,8 +395,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.updateDeadbeatHeight()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
-        let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
-        self.navigationItem.leftBarButtonItem = searchItem
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
