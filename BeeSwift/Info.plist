@@ -100,13 +100,6 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>apb.local</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSExceptionRequiresForwardSecrecy</key>
-				<false/>
-			</dict>
 			<key>imac.local</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>

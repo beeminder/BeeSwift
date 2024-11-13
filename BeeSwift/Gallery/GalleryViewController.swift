@@ -14,6 +14,7 @@ import HealthKit
 import SafariServices
 import OSLog
 import CoreData
+import WidgetKit
 
 import BeeKit
 
@@ -444,7 +445,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     @objc func openGoalFromNotification(_ notification: Notification) {
-        guard let notif = notification as NSNotification? else { return }
         var matchingGoal: Goal?
 
         if let identifier = notif.userInfo?["identifier"] as? String {
