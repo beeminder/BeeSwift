@@ -51,7 +51,7 @@ import SwiftyJSON
     /// The label for the y-axis of the graph. E.g., "Cumulative total hours".
     public var yAxis: String
 
-    @Relationship(deleteRule: .cascade) var data: Set<DataPoint>
+    @Relationship(deleteRule: .cascade) var data = [DataPoint]()
 
     public var recentData = [DataPoint]()
 

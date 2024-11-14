@@ -79,7 +79,7 @@ extension Goal {
     }
 
     /// A hint for the value the user is likely to enter, based on past data points
-    public var suggestedNextValue: NSNumber? {
+    public var suggestedNextValue: Double? {
         let candidateDatapoints = self.recentData
             .filter { !$0.isMeta }
             .sorted(using: [SortDescriptor(\.updatedAt, order: .reverse)])

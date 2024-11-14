@@ -63,26 +63,26 @@ public class CurrentUserManager {
             return
         }
 
-        let context = container.newBackgroundContext()
+        let context = ModelContext(container)
 
         // Create a new user
-        let _ = User(context: context,
+        let user = User(
             username: userDefaults.object(forKey: CurrentUserManager.usernameKey) as! String,
             deadbeat: userDefaults.object(forKey: CurrentUserManager.deadbeatKey) != nil,
             timezone: userDefaults.object(forKey: CurrentUserManager.beemTZKey) as? String ?? "Unknown",
             defaultAlertStart: (userDefaults.object(forKey: CurrentUserManager.defaultAlertstartKey) ?? 0) as! Int,
             defaultDeadline: (userDefaults.object(forKey: CurrentUserManager.defaultDeadlineKey) ?? 0) as! Int,
             defaultLeadTime: (userDefaults.object(forKey: CurrentUserManager.defaultLeadtimeKey) ?? 0) as! Int
-       )
+        )
+        context.insert(user)
         try! context.save()
     }
 
 
-    public func user(context: NSManagedObjectContext? = nil) -> User? {
+    public func user(context: ModelContext? = nil) -> User? {
         do {
-            let request = NSFetchRequest<User>(entityName: "User")
-            let requestContext = context ?? container.newBackgroundContext()
-            let users = try requestContext.fetch(request)
+            let modelContext = context ?? ModelContext(container)
+            let users = try modelContext.fetch(FetchDescriptor<User>())
             return users.first
         } catch {
             logger.error("Unable to fetch users \(error)")
@@ -91,14 +91,14 @@ public class CurrentUserManager {
     }
 
     private func modifyUser(_ callback: (User)->()) throws {
-        let context = container.newBackgroundContext()
+        let context = ModelContext(container)
         guard let user = self.user(context: context) else { return }
         callback(user)
         try context.save()
     }
 
     private func deleteUser() throws {
-        let context = container.newBackgroundContext()
+        let context = ModelContext(container)
 
         // Delete any existing users. We expect at most one, but delete all to be safe.
         while let user = self.user(context: context) {
@@ -192,15 +192,16 @@ public class CurrentUserManager {
     func handleSuccessfulSignin(_ responseJSON: JSON) async throws {
         try deleteUser()
 
-        let context = container.newBackgroundContext()
+        let context = ModelContext(container)
 
-        let _ = User(context: context,
+        let user = User(
              username: responseJSON[CurrentUserManager.usernameKey].string!,
              deadbeat: responseJSON["deadbeat"].boolValue,
              timezone: responseJSON[CurrentUserManager.beemTZKey].string!,
              defaultAlertStart: responseJSON[CurrentUserManager.defaultAlertstartKey].intValue,
              defaultDeadline: responseJSON[CurrentUserManager.defaultDeadlineKey].intValue,
              defaultLeadTime: responseJSON[CurrentUserManager.defaultLeadtimeKey].intValue)
+        context.insert(user)
         try context.save()
 
         if responseJSON["deadbeat"].boolValue {
