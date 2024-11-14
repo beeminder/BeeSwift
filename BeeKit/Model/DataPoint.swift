@@ -11,20 +11,20 @@ import SwiftyJSON
 
     // An optional comment about the datapoint.
     // TODO: Check if this can be null
-    public var comment: String
+    public var comment: String = ""
     // The date of the datapoint (e.g., "20150831"). Raw value in the datastore
-    private var daystampRaw: String
+    private var daystampRaw: String = ""
     // If a datapoint was created via the API and this parameter was included, it will be echoed back.
-    public var requestid: String
+    public var requestid: String = ""
     // The value, e.g., how much you weighed on the day indicated by the timestamp.
-    public var value: NSNumber
+    public var value: Double = 0
 
-    public var updatedAt: Int
+    public var updatedAt: Int = 0
 
     /// The last time this record in the CoreData store was updated
-    public var lastModifiedLocal: Date
+    public var lastModifiedLocal: Date = Date(timeIntervalSince1970: 0)
 
-    public init(goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String, value: NSNumber, updatedAt: Int) {
+    public init(goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String, value: Double, updatedAt: Int) {
         self.goal = goal
         self.id = id
         self.comment = comment
@@ -61,7 +61,7 @@ import SwiftyJSON
 
     public func updateToMatch(json: JSON) {
         daystampRaw = json["daystamp"].stringValue
-        value = json["value"].numberValue
+        value = json["value"].doubleValue
         comment = json["comment"].stringValue
         requestid = json["requestid"].stringValue
         updatedAt = json["updated_at"].intValue

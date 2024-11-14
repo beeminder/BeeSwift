@@ -68,7 +68,7 @@ class CategoryHealthKitMetric : HealthKitMetric {
 
         let id = "apple-heath-" + date.description
         let datapointValue = self.hkDatapointValueForSamples(samples: samples, startOfDate: date.start(deadline: deadline))
-        return NewDataPoint(requestid: id, daystamp: date, value: NSNumber(value: datapointValue), comment: "Auto-entered via Apple Health")
+        return NewDataPoint(requestid: id, daystamp: date, value: datapointValue, comment: "Auto-entered via Apple Health")
     }
 
     /// Predict to filter samples to those relevant to this metric, for cases where with cannot be encoded in the healthkit query

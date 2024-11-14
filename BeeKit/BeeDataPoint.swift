@@ -6,7 +6,7 @@ import SwiftyJSON
 public protocol BeeDataPoint {
     var requestid: String { get }
     var daystamp: Daystamp { get }
-    var value: NSNumber { get }
+    var value: Double { get }
     var comment: String { get }
 }
 
@@ -14,6 +14,6 @@ public protocol BeeDataPoint {
 public struct NewDataPoint : BeeDataPoint {
     public let requestid: String
     public let daystamp: Daystamp
-    public let value: NSNumber
+    public let value: Double
     public let comment: String
 }
