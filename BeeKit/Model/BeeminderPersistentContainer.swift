@@ -1,50 +1,38 @@
 import UIKit
-import CoreData
+import SwiftData
 import OSLog
 
-public class BeeminderPersistentContainer: NSPersistentContainer, @unchecked Sendable {
+public class BeeminderPersistentContainer {
     private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "BeeminderPersistentContainer")
-    private var spotlightIndexer: NSCoreDataCoreSpotlightDelegate?
+//    private var spotlightIndexer: NSCoreDataCoreSpotlightDelegate?
 
 
-    override open class func defaultDirectoryURL() -> URL {
-        let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.beeminder.beeminder")
-        return storeURL!
-    }
+    static func create() -> ModelContainer {
+        let schema = Schema([User.self , Goal.self, DataPoint.self])
+        let storeURL = URL.applicationSupportDirectory.appending(path: "beeeminder.sqlite")
+        let configuration = ModelConfiguration(schema: schema, url: storeURL)
+        let container = try! ModelContainer(configurations: configuration)
 
-    static func create() -> BeeminderPersistentContainer {
-        let container = BeeminderPersistentContainer(name: "BeeminderModel")
-
-        guard let description = container.persistentStoreDescriptions.first else {
-            fatalError("Failed to retrieve a persistent store description.")
-        }
         // Spotlight indexing requires sqlite and history tracking
-        description.type = NSSQLiteStoreType
-        description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-
-        container.loadPersistentStores { description, error in
-            if let error = error {
-                fatalError("Unable to load persistent stores: \(error)")
-            }
-        }
-
-        container.spotlightIndexer = BeeminderSpotlightDelegate(forStoreWith: description, coordinator: container.persistentStoreCoordinator)
-        container.spotlightIndexer?.startSpotlightIndexing()
+//        description.type = NSSQLiteStoreType
+//        description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+//
+//        container.loadPersistentStores { description, error in
+//            if let error = error {
+//                fatalError("Unable to load persistent stores: \(error)")
+//            }
+//        }
+//
+//        container.spotlightIndexer = BeeminderSpotlightDelegate(forStoreWith: description, coordinator: container.persistentStoreCoordinator)
+//        container.spotlightIndexer?.startSpotlightIndexing()
 
         return container
     }
 
-    static func createMemoryBackedForTests() -> BeeminderPersistentContainer {
-        let container = BeeminderPersistentContainer(name: "BeeminderModel")
-        let description = NSPersistentStoreDescription()
-        description.type = NSInMemoryStoreType
-        container.persistentStoreDescriptions = [description]
-
-        container.loadPersistentStores { (storeDescription, error) in
-            if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
-            }
-        }
+    static func createMemoryBackedForTests() -> ModelContainer {
+        let schema = Schema([User.self , Goal.self, DataPoint.self])
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(configurations: configuration)
 
         return container
     }

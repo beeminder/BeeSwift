@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 APB. All rights reserved.
 //
 
-import CoreData
+import SwiftData
 import Foundation
 import KeychainSwift
 import OSLog
@@ -37,7 +37,7 @@ public class CurrentUserManager {
 
     private let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
     private let requestManager: RequestManager
-    private let container: BeeminderPersistentContainer
+    private let container: ModelContainer
 
     fileprivate static var allKeys: [String] {
         [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
@@ -45,7 +45,7 @@ public class CurrentUserManager {
     
     let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
     
-    init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
+    init(requestManager: RequestManager, container: ModelContainer) {
         self.requestManager = requestManager
         self.container = container
         migrateValuesToCoreData()

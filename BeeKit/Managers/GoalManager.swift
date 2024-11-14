@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import CoreData
+import SwiftData
 import SwiftyJSON
 import OSLog
 import OrderedCollections
@@ -21,13 +21,13 @@ public actor GoalManager {
 
     private let requestManager: RequestManager
     private nonisolated let currentUserManager: CurrentUserManager
-    private let container: BeeminderPersistentContainer
+    private let container: ModelContainer
 
     public var goalsFetchedAt : Date? = nil
 
     private var queuedGoalsBackgroundTaskRunning : Bool = false
 
-    init(requestManager: RequestManager, currentUserManager: CurrentUserManager, container: BeeminderPersistentContainer) {
+    init(requestManager: RequestManager, currentUserManager: CurrentUserManager, container: ModelContainer) {
         self.requestManager = requestManager
         self.currentUserManager = currentUserManager
         self.container = container

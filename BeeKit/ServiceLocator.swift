@@ -8,6 +8,7 @@
 
 import Foundation
 import OSLog
+import SwiftData
 
 public class ServiceLocator {
     private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ServiceLocationm")

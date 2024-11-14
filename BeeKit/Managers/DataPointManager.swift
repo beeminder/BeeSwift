@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import SwiftData
 
 import SwiftyJSON
 
@@ -12,9 +13,9 @@ public class DataPointManager {
     private let datapointValueEpsilon = 0.00000001
 
     let requestManager: RequestManager
-    let container: BeeminderPersistentContainer
+    let container: ModelContainer
 
-    init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
+    init(requestManager: RequestManager, container: ModelContainer) {
         self.requestManager = requestManager
         self.container = container
     }

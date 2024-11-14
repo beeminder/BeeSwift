@@ -6,7 +6,7 @@
 //  Copyright © 2017 APB. All rights reserved.
 //
 
-import CoreData
+import SwiftData
 import Foundation
 import HealthKit
 import OSLog
@@ -22,7 +22,7 @@ public class HealthStoreManager {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
 
     private let goalManager: GoalManager
-    private let container: NSPersistentContainer
+    private let container: ModelContainer
 
     // TODO: Public for now to use from config
     public let healthStore = HKHealthStore()
@@ -34,7 +34,7 @@ public class HealthStoreManager {
     /// Protect concurrent modifications to the connections dictionary
     private let monitorsSemaphore = DispatchSemaphore(value: 1)
 
-    init(goalManager: GoalManager, container: NSPersistentContainer) {
+    init(goalManager: GoalManager, container: ModelContainer) {
         self.goalManager = goalManager
         self.container = container
     }
