@@ -13,19 +13,6 @@ public class BeeminderPersistentContainer {
         let configuration = ModelConfiguration(schema: schema, url: storeURL)
         let container = try! ModelContainer(configurations: configuration)
 
-        // Spotlight indexing requires sqlite and history tracking
-//        description.type = NSSQLiteStoreType
-//        description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-//
-//        container.loadPersistentStores { description, error in
-//            if let error = error {
-//                fatalError("Unable to load persistent stores: \(error)")
-//            }
-//        }
-//
-//        container.spotlightIndexer = BeeminderSpotlightDelegate(forStoreWith: description, coordinator: container.persistentStoreCoordinator)
-//        container.spotlightIndexer?.startSpotlightIndexing()
-
         return container
     }
 

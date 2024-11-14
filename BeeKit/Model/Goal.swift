@@ -53,7 +53,7 @@ import SwiftyJSON
 
     @Relationship(deleteRule: .cascade) var data: Set<DataPoint>
 
-    public var recentData: Set<DataPoint>
+    public var recentData = [DataPoint]()
 
 
     /// The last time this record in the CoreData store was updated
@@ -148,12 +148,9 @@ import SwiftyJSON
 
         // Replace recent data with results from server
         // Note at present this leaks data points in the main db. This is probably fine for now
-        let newRecentData = Set<DataPoint>(json["recent_data"].arrayValue.map {
-            DataPoint.fromJSON(context: self.managedObjectContext!, goal: self, json: $0)
-        })
-
-        removeFromRecentData(recentData)
-        addToRecentData(newRecentData)
+        recentData = json["recent_data"].arrayValue.map {
+            DataPoint.fromJSON(goal: self, json: $0)
+        }
 
         lastModifiedLocal = Date()
     }

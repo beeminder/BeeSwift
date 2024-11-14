@@ -9,7 +9,7 @@ import SwiftData
     public var defaultDeadline: Int
     public var defaultLeadTime: Int
 
-    @Relationship(deleteRule: .cascade)  public var goals: Set<Goal>
+    @Relationship(deleteRule: .cascade)  public var goals = [Goal]()
 
     /// The last time this record in the CoreData store was updated
     public var lastModifiedLocal: Date
