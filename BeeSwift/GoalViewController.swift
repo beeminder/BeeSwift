@@ -40,6 +40,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate let headerWidth = Double(1.0/3.0)
     fileprivate let viewGoalActivityType = "com.beeminder.viewGoal"
 
+    // date corresponding to the datapoint to be created
+    private var date: Date = Date()
+    
     init(goal: Goal) {
         self.goal = goal
         super.init(nibName: nil, bundle: nil)
@@ -272,7 +275,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
 
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
-        if (!self.goal.hideDataEntry) {
+        if !self.goal.hideDataEntry {
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
 
@@ -368,12 +371,14 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         var components = DateComponents()
         components.day = Int(self.dateStepper.value)
 
-        let newDate = (calendar as NSCalendar?)?.date(byAdding: components, to: Date(), options: [])
+        let now = Date()
+        guard let newDate = calendar.date(byAdding: components, to: now) else { return }
+        self.date = newDate
+        
+        let isDifferentYear = calendar.component(.year, from: now) != calendar.component(.year, from: date)
+        let isDifferentMonth = calendar.component(.month, from: now) != calendar.component(.month, from: date)
 
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.dateFormat = "d"
-        self.dateTextField.text = formatter.string(from: newDate!)
+        self.dateTextField.text = DateFormatter.dateTextFieldString(from: self.date, isDifferentYear: isDifferentYear, isDifferentMonth: isDifferentMonth)
     }
 
     func setValueTextField() {
@@ -417,12 +422,12 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if (textField.isEqual(self.valueTextField)) {
+        if textField.isEqual(self.valueTextField) {
             // Only allow a single decimal separator (, or .)
             if textField.text!.components(separatedBy: ".").count > 1 {
                 if string == "." || string == "," { return false }
             }
-            if (string == ",") {
+            if string == "," {
                 textField.text = textField.text! + "."
                 return false
             }
@@ -436,9 +441,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         return true
     }
-
-    func urtextFromTextFields() -> String {
-        return "\(self.dateTextField.text!) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
+    
+    private var urtext: String {
+        return "\(DateFormatter.urtextDateString(from: self.date)) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
     }
 
     @objc func submitDatapoint() {
@@ -450,7 +455,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
 
             do {
-                let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: self.urtextFromTextFields(), slug: self.goal.slug)
+                let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: self.urtext, slug: self.goal.slug)
                 self.commentTextField.text = ""
 
                 try await updateGoalAndInterface()
@@ -504,5 +509,52 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
+    }
+}
+
+
+private extension DateFormatter {
+    private static let urtextDateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US")
+            formatter.dateFormat = "yyyy MM dd"
+            return formatter
+        }()
+    
+    static func urtextDateString(from date: Date) -> String {
+        urtextDateFormatter.string(from: date)
+    }
+}
+
+private extension DateFormatter {
+    private static let newDatapointDateDifferentYearDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+    
+    private static let newDatapointDateDifferentMonthDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.dateFormat = "MMM d"
+        return formatter
+    }()
+    
+    private static let newDatapointDateWithinSameMonthDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.dateFormat = "d"
+        return formatter
+    }()
+    
+    static func dateTextFieldString(from date: Date, isDifferentYear: Bool, isDifferentMonth: Bool) -> String {
+        if isDifferentYear {
+            return newDatapointDateDifferentYearDateFormatter.string(from: date)
+        } else if isDifferentMonth {
+            return newDatapointDateDifferentMonthDateFormatter.string(from: date)
+        } else {
+            return newDatapointDateWithinSameMonthDateFormatter.string(from: date)
+        }
     }
 }
