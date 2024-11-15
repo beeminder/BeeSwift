@@ -41,7 +41,7 @@ public actor GoalManager {
     }
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
-    public nonisolated func staleGoals(context: NSManagedObjectContext) -> Set<Goal>? {
+    public nonisolated func staleGoals(context: ModelContext) -> [Goal]? {
         guard let user = self.currentUserManager.user(context: context) else {
             return nil
         }
@@ -64,15 +64,14 @@ public actor GoalManager {
         await performPostGoalUpdateBookkeeping()
     }
 
-    public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
-        let context = container.newBackgroundContext()
-        let goal = try context.existingObject(with: goalID) as! Goal
+    public func refreshGoal(_ goalID: PersistentIdentifier) async throws {
+        let context = ModelContext(container)
+        let goal = context.model(for: goalID) as! Goal
 
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
         let goalJSON = JSON(responseObject!)
 
         // The goal may have changed during the network operation, reload latest version
-        context.refresh(goal, mergeChanges: false)
         goal.updateToMatch(json: goalJSON)
 
         try context.save()
@@ -89,20 +88,23 @@ public actor GoalManager {
         }
 
         //  Update CoreData representation
-        let context = container.newBackgroundContext()
+        let context = ModelContext(container)
         // The user may have logged out while waiting for the data, so ignore if so
         if let user = self.currentUserManager.user(context: context) {
 
             // Create and update existing goals
             for goalJSON in responseGoals {
                 let goalId = goalJSON["id"].stringValue
-                let request = NSFetchRequest<Goal>(entityName: "Goal")
-                request.predicate = NSPredicate(format: "id == %@", goalId)
+                let descriptor = FetchDescriptor<Goal>(
+                    predicate: #Predicate<Goal> { $0.id == goalId }
+                )
+
                 // TODO: Better error handling of failure here?
-                if let existingGoal = try! context.fetch(request).first {
+                if let existingGoal = try! context.fetch(descriptor).first {
                     existingGoal.updateToMatch(json: goalJSON)
                 } else {
-                    let _ = Goal(context: context, owner: user, json: goalJSON)
+                    let goal = Goal(owner: user, json: goalJSON)
+                    context.insert(goal)
                 }
             }
 
@@ -127,7 +129,6 @@ public actor GoalManager {
 
         // Notify all listeners of the update
         await Task { @MainActor in
-            container.viewContext.refreshAllObjects()
             NotificationCenter.default.post(name: Notification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: self)
         }.value
     }
@@ -147,7 +148,7 @@ public actor GoalManager {
         do {
             while true {
                 // If there are no queued goals then we are complete and can stop checking
-                let context = container.newBackgroundContext()
+                let context = ModelContext(container)
                 guard let user = currentUserManager.user(context: context) else { break }
                 let queuedGoals = user.goals.filter { $0.queued }
                 if queuedGoals.isEmpty {
@@ -158,7 +159,7 @@ public actor GoalManager {
                 try await withThrowingTaskGroup(of: Void.self) { group in
                     for goal in queuedGoals {
                         group.addTask {
-                            try await self.refreshGoal(goal.objectID)
+                            try await self.refreshGoal(goal.persistentModelID)
                         }
                     }
                     try await group.waitForAll()

@@ -352,7 +352,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     func updateGoals() {
-        let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+        let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.mainContext) ?? []
         self.goals = sortedGoals(goals)
         self.updateFilteredGoals()
         self.didUpdateGoals()
@@ -472,10 +472,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         var matchingGoal: Goal?
 
         if let identifier = notif.userInfo?["identifier"] as? String {
-            let context = ServiceLocator.persistentContainer.viewContext
-            if let url = URL(string: identifier), let objectID = context.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
-                matchingGoal = context.object(with: objectID) as? Goal
-            }
+//            let context = ServiceLocator.persistentContainer.mainContext
+//            if let url = URL(string: identifier), let objectID = ServiceLocator.persistentContainer.managedObjectID(for: url) {
+//                matchingGoal = context.model(for: objectID) as? Goal
+//            }
         }
         else if let slug = notif.userInfo?["slug"] as? String {
             matchingGoal = self.goals.filter({ (goal) -> Bool in

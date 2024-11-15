@@ -5,51 +5,51 @@ import SwiftyJSON
 
 @Model public class Goal {
     public var owner: User
-    public var id: String
-    public var slug: String
+    public var id: String = ""
+    public var slug: String = ""
 
     /// Seconds after midnight that we start sending you reminders (on the day that you're scheduled to start getting them).
-    public var alertStart: Int
+    public var alertStart: Int = 0
     /// The name of automatic data source, if this goal has one. Will be null for manual goals.
-    public var autodata: String?
+    public var autodata: String? = nil
     /// Seconds by which your deadline differs from midnight. Negative is before midnight, positive is after midnight. Allowed range is -17*3600 to 6*3600 (7am to 6am).
-    public var deadline: Int
+    public var deadline: Int = 0
     /// URL for the goal's graph image. E.g., "http://static.beeminder.com/alice/weight.png".
-    public var graphUrl: String
+    public var graphUrl: String = ""
     /// The internal app identifier for the healthkit metric to sync to this goal
-    public var healthKitMetric: String?
+    public var healthKitMetric: String? = nil
     /// Whether to show data in a "timey" way, with colons. For example, this would make a 1.5 show up as 1:30.
-    public var hhmmFormat: Bool
+    public var hhmmFormat: Bool = false
     /// Unix timestamp (in seconds) of the start of the bright red line.
-    public var initDay: Int
+    public var initDay: Int = 0
     /// Undocumented.
-    public var lastTouch: String
+    public var lastTouch: String = ""
     /// Summary of what you need to do to eke by, e.g., "+2 within 1 day".
-    public var limSum: String
+    public var limSum: String = ""
     /// Days before derailing we start sending you reminders. Zero means we start sending them on the beemergency day, when you will derail later that day.
-    public var leadTime: Int
+    public var leadTime: Int = 0
     /// Amount pledged (USD) on the goal.
-    public var pledge: Int
+    public var pledge: Int = 0
     /// Whether the graph is currently being updated to reflect new data.
-    public var queued: Bool
+    public var queued: Bool = false
     /// The integer number of safe days. If it's a beemergency this will be zero.
-    public var safeBuf: Int
+    public var safeBuf: Int = 0
     /// Undocumented
-    public var safeSum: String
+    public var safeSum: String = ""
     /// URL for the goal's graph thumbnail image. E.g., "http://static.beeminder.com/alice/weight-thumb.png".
-    public var thumbUrl: String
+    public var thumbUrl: String = ""
     /// The title that the user specified for the goal. E.g., "Weight Loss".
-    public var title: String
+    public var title: String = ""
     /// Whether there are any datapoints for today.
-    public var todayta: Bool
+    public var todayta: Bool = false
     /// Sort by this key to put the goals in order of decreasing urgency. (Case-sensitive ascii or unicode sorting is assumed).
-    public var urgencyKey: String
+    public var urgencyKey: String = ""
     /// Undocumented
-    public var useDefaults: Bool
+    public var useDefaults: Bool = false
     /// Whether the goal has been successfully completed.
-    public var won: Bool
+    public var won: Bool = false
     /// The label for the y-axis of the graph. E.g., "Cumulative total hours".
-    public var yAxis: String
+    public var yAxis: String = ""
 
     @Relationship(deleteRule: .cascade) var data = [DataPoint]()
 
@@ -57,7 +57,7 @@ import SwiftyJSON
 
 
     /// The last time this record in the CoreData store was updated
-    public var lastModifiedLocal: Date
+    public var lastModifiedLocal: Date = Date(timeIntervalSince1970: 0)
 
     public init(
         owner: User,

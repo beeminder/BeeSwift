@@ -50,9 +50,9 @@ public class HealthStoreManager {
     }
 
     /// Start listening for background updates to the supplied goal if we are not already doing so
-    public func ensureUpdatesRegularly(goalID: NSManagedObjectID) async throws {
-        let context = container.newBackgroundContext()
-        let goal = try context.existingObject(with: goalID) as! Goal
+    public func ensureUpdatesRegularly(goalID: PersistentIdentifier) async throws {
+        let context = ModelContext(container)
+        let goal = context.model(for: goalID) as! Goal
         guard let metricName = goal.healthKitMetric else { return }
         try await self.ensureUpdatesRegularly(metricNames: [metricName], removeMissing: false)
     }
@@ -60,7 +60,7 @@ public class HealthStoreManager {
     /// Ensure we have background update listeners for all known goals such that they
     /// will be updated any time the health data changes.
     public func ensureGoalsUpdateRegularly() async throws {
-        let context = container.newBackgroundContext()
+        let context = ModelContext(container)
         guard let goals = goalManager.staleGoals(context: context) else { return }
         let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
         return try await ensureUpdatesRegularly(metricNames: metrics, removeMissing: true)
@@ -73,7 +73,7 @@ public class HealthStoreManager {
     public func silentlyInstallObservers() {
         logger.notice("Silently installing observer queries")
 
-        let context = container.newBackgroundContext()
+        let context = ModelContext(container)
         guard let goals = goalManager.staleGoals(context: context) else { return }
         let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
         let monitors = updateKnownMonitors(metricNames: metrics, removeMissing: true)
@@ -89,9 +89,9 @@ public class HealthStoreManager {
     /// - Parameters:
     ///   - goal: The healthkit-connected goal to be updated
     ///   - days: How many days of history to update. Supplying 1 will update the current day.
-    public func updateWithRecentData(goalID: NSManagedObjectID, days: Int) async throws {
-        let context = container.newBackgroundContext()
-        let goal = try context.existingObject(with: goalID) as! Goal
+    public func updateWithRecentData(goalID: PersistentIdentifier, days: Int) async throws {
+        let context = ModelContext(container)
+        let goal = context.model(for: goalID) as! Goal
         try await updateWithRecentData(goal: goal, days: days)
         try await goalManager.refreshGoal(goalID)
     }
@@ -102,13 +102,13 @@ public class HealthStoreManager {
             logger.notice("Updating all goals with recent day for last \(days, privacy: .public) days")
 
             // We must create this context in a backgrounfd thread as it will be used in background threads
-            let context = container.newBackgroundContext()
+            let context = ModelContext(container)
             guard let goals = goalManager.staleGoals(context: context) else { return }
             let goalsWithHealthData = goals.filter { $0.healthKitMetric != nil && $0.healthKitMetric != "" }
 
             try await withThrowingTaskGroup(of: Void.self) { group in
                 for goal in goalsWithHealthData {
-                    let goalID = goal.objectID
+                    let goalID = goal.persistentModelID
                     group.addTask {
                         // This is a new thread, so we are not allowed to use the goal object from CoreData
                         // TODO: This will generate lots of unneccesary reloads
@@ -177,7 +177,7 @@ public class HealthStoreManager {
 
     private func updateGoalsForMetricChange(metricName: String, metric: HealthKitMetric) async {
         do {
-            let context = container.newBackgroundContext()
+            let context = ModelContext(container)
             guard let allGoals = goalManager.staleGoals(context: context) else { return }
             let goalsForMetric = allGoals.filter { $0.healthKitMetric == metricName }
             if goalsForMetric.count == 0 {

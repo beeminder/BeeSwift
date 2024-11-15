@@ -6,19 +6,16 @@
 //  Copyright © 2023 APB. All rights reserved.
 //
 
-import CoreData
 import XCTest
 import SwiftyJSON
 @testable import BeeKit
 
 final class GoalTests: XCTestCase {
-    var container: BeeminderPersistentContainer!
     var user: User!
 
     override func setUp() {
         super.setUp()
-        container = BeeminderPersistentContainer.createMemoryBackedForTests()
-        user = createTestUser(context: container.viewContext)
+        user = createTestUser()
     }
 
     func testCreateGoalFromJSON() throws {
@@ -82,7 +79,7 @@ final class GoalTests: XCTestCase {
         }
         """)
 
-        let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
+        let goal = Goal(owner: user, json: testJSON)
 
         XCTAssertEqual(goal.slug, "test-goal")
         XCTAssertEqual(goal.title, "Goal for Testing Purposes")
@@ -117,7 +114,7 @@ final class GoalTests: XCTestCase {
             ["id": "103", "value": 3.5, "daystamp": "20221125", "updated_at": 100],
         ]
 
-        let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
+        let goal = Goal(owner: user, json: testJSON)
 
         XCTAssertEqual(goal.suggestedNextValue, 1)
     }
@@ -126,7 +123,7 @@ final class GoalTests: XCTestCase {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = []
 
-        let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
+        let goal = Goal(owner: user, json: testJSON)
 
         XCTAssertEqual(goal.suggestedNextValue, nil)
     }
@@ -142,13 +139,13 @@ final class GoalTests: XCTestCase {
             ["id": "106", "value": 3.5, "daystamp": "20221125", "updated_at": 100],
         ]
 
-        let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
+        let goal = Goal(owner: user, json: testJSON)
 
         XCTAssertEqual(goal.suggestedNextValue, 2)
     }
 
-    func createTestUser(context: NSManagedObjectContext) -> User {
-        return User(context: context, username: "test-user", deadbeat: false, timezone: "Etc/UTC", defaultAlertStart: 0, defaultDeadline: 0, defaultLeadTime: 0)
+    func createTestUser() -> User {
+        return User(username: "test-user", deadbeat: false, timezone: "Etc/UTC", defaultAlertStart: 0, defaultDeadline: 0, defaultLeadTime: 0)
     }
 
 

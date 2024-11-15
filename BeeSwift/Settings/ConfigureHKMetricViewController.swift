@@ -142,7 +142,7 @@ class ConfigureHKMetricViewController : UIViewController {
             self.goal.autodata = "apple"
 
             do {
-                try await ServiceLocator.healthStoreManager.ensureUpdatesRegularly(goalID: self.goal.objectID)
+                try await ServiceLocator.healthStoreManager.ensureUpdatesRegularly(goalID: self.goal.persistentModelID)
             } catch {
                 logger.error("Error setting up goal \(error)")
                 hud.hide(animated: true)

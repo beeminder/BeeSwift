@@ -26,7 +26,7 @@ public class DataPointManager {
         }
     }
 
-    private func updateDatapoint(goal : Goal, datapoint : DataPoint, datapointValue : NSNumber) async throws {
+    private func updateDatapoint(goal : Goal, datapoint : DataPoint, datapointValue : Double) async throws {
         let val = datapoint.value
         if datapointValue == val {
             return
@@ -51,7 +51,7 @@ public class DataPointManager {
         let response = try await requestManager.get(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
         let responseJSON = JSON(response!)
 
-        return responseJSON.arrayValue.map({ DataPoint.fromJSON(context: goal.managedObjectContext!, goal: goal, json: $0) })
+        return responseJSON.arrayValue.map({ DataPoint.fromJSON(goal: goal, json: $0) })
     }
 
     /// Retrieve all data points on or after the daystamp provided
@@ -124,7 +124,7 @@ public class DataPointManager {
                 try await deleteDatapoint(goal: goal, datapoint: datapoint)
             }
 
-            if !isApproximatelyEqual(firstDatapoint.value.doubleValue, newDataPoint.value.doubleValue) {
+            if !isApproximatelyEqual(firstDatapoint.value, newDataPoint.value) {
                 logger.notice("Updating datapoint for \(goal.id) on \(firstDatapoint.daystamp, privacy: .public) from \(firstDatapoint.value) to \(newDataPoint.value)")
 
                 try await updateDatapoint(goal: goal, datapoint: firstDatapoint, datapointValue: newDataPoint.value)

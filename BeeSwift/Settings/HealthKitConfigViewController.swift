@@ -54,7 +54,7 @@ class HealthKitConfigViewController: UIViewController {
     }
 
     func updateGoals() {
-        let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+        let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.mainContext) ?? []
         self.goals = goals.sorted { $0.slug < $1.slug }
     }
 

@@ -88,12 +88,12 @@ class DatapointTableViewController : UIViewController, UITableViewDelegate, UITa
 
         var formattedValue: String
         if hhmmformat {
-            let value = datapoint.value.doubleValue
+            let value = datapoint.value
             let hours = Int(value)
             let minutes = Int(value.truncatingRemainder(dividingBy: 1) * 60)
             formattedValue = String(hours) + ":" + String(format: "%02d", minutes)
         } else {
-            formattedValue = datapoint.value.stringValue
+            formattedValue = String(datapoint.value)
         }
         let comment = datapoint.comment
 

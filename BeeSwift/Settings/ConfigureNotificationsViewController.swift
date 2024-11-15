@@ -95,7 +95,7 @@ class ConfigureNotificationsViewController: UIViewController {
             MBProgressHUD.showAdded(to: self.view, animated: true)
             do {
                 try await ServiceLocator.goalManager.refreshGoals()
-                self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext)?.sorted(by: { $0.slug < $1.slug }) ?? []
+                self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.mainContext)?.sorted(by: { $0.slug < $1.slug }) ?? []
                 self.lastFetched = Date()
                 MBProgressHUD.hide(for: self.view, animated: true)
             } catch {

@@ -329,7 +329,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         Task { @MainActor in
             do {
                 if self.goal.isLinkedToHealthKit {
-                    try await ServiceLocator.healthStoreManager.updateWithRecentData(goalID: self.goal.objectID, days: 7)
+                    try await ServiceLocator.healthStoreManager.updateWithRecentData(goalID: self.goal.persistentModelID, days: 7)
                 } else if goal.isDataProvidedAutomatically {
                     // Don't force a refresh for manual goals. While doing so is harmless, it queues the goal which means we show a
                     // lemniscate for a few seconds, making the refresh slower.
@@ -481,7 +481,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func updateGoalAndInterface() async throws {
-        try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
+        try await ServiceLocator.goalManager.refreshGoal(self.goal.persistentModelID)
         updateInterfaceToMatchGoal()
     }
 

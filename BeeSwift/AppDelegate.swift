@@ -10,6 +10,7 @@ import CoreSpotlight
 import HealthKit
 import OSLog
 import UIKit
+import SwiftData
 
 import IQKeyboardManagerSwift
 import AlamofireNetworkActivityIndicator
@@ -132,7 +133,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc func updateBadgeCount() {
         logger.notice("Updating badge count")
 
-        let context = ServiceLocator.persistentContainer.newBackgroundContext()
+        let context = ModelContext(ServiceLocator.persistentContainer)
         guard let goals = ServiceLocator.goalManager.staleGoals(context: context) else { return }
         let beemergencyCount = goals.count(where: { $0.safeBuf < 1})
         logger.notice("Beemergency count is \(beemergencyCount, privacy: .public)")
