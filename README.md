@@ -8,7 +8,7 @@ Official Beeminder for iOS app
 ## Features
  - native iOS app
  - [Apple Health integration](#apple-health-integration)
- - today widget, displaying up to three goals and allowing quick data entry
+ - widgets, for the home screen
  - gallery view of all of a user's active goals
  - facilitates viewing one's goals and their status
  - provides notifications of pending goal deadlines
