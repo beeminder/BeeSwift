@@ -19,7 +19,7 @@ struct BeeminderGoalListProvider: TimelineProvider {
             : BeeminderGoalListEntryGoalDTO.goalDTOs.shuffled()
 
         return .init(date: Date(),
-                     username: username,
+                     username: username ?? "Player1",
                      goals: goals.prefix(numGoals).map { $0 })
     }
 
