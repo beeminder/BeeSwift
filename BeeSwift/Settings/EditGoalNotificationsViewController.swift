@@ -126,7 +126,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     }
 
                     do {
-                        try await ServiceLocator.currentUserManager.syncNotificationDefaults()
+                        try await ServiceLocator.currentUserManager.refreshUser()
                     } catch {
                         self.logger.error("Error syncing notification defaults")
                         // TODO: Show UI failure

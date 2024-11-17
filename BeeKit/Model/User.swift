@@ -1,6 +1,8 @@
 import Foundation
 import CoreData
 
+import SwiftyJSON
+
 @objc(User)
 public class User: NSManagedObject {
     @NSManaged public var username: String
@@ -35,6 +37,24 @@ public class User: NSManagedObject {
         self.defaultAlertStart = defaultAlertStart
         self.defaultDeadline = defaultDeadline
         self.defaultLeadTime = defaultLeadTime
+
+        lastModifiedLocal = Date()
+    }
+
+    public init(context: NSManagedObjectContext, json: JSON) {
+        let entity = NSEntityDescription.entity(forEntityName: "User", in: context)!
+        super.init(entity: entity, insertInto: context)
+
+        self.updateToMatch(json: json)
+    }
+
+    public func updateToMatch(json: JSON) {
+        self.username = json["username"].string!
+        self.deadbeat = json["deadbeat"].bool!
+        self.timezone = json["timezone"].string!
+        self.defaultAlertStart = json["default_alertstart"].int!
+        self.defaultDeadline = json["default_deadline"].int!
+        self.defaultLeadTime = json["default_leadtime"].int!
 
         lastModifiedLocal = Date()
     }
