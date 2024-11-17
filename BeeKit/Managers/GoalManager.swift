@@ -8,11 +8,13 @@
 
 import Foundation
 import CoreData
+import CoreDataEvolution
 import SwiftyJSON
 import OSLog
 import OrderedCollections
 
 
+@NSModelActor(disableGenerateInit: true)
 public actor GoalManager {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalManager")
 
@@ -21,16 +23,18 @@ public actor GoalManager {
 
     private let requestManager: RequestManager
     private nonisolated let currentUserManager: CurrentUserManager
-    private let container: BeeminderPersistentContainer
 
     public var goalsFetchedAt : Date? = nil
 
     private var queuedGoalsBackgroundTaskRunning : Bool = false
 
     init(requestManager: RequestManager, currentUserManager: CurrentUserManager, container: BeeminderPersistentContainer) {
+        modelContainer = container
+        let context = container.newBackgroundContext()
+        modelExecutor = .init(context: context)
+
         self.requestManager = requestManager
         self.currentUserManager = currentUserManager
-        self.container = container
 
         // Actor setup complete. After this point
         // 1) The constructor is complete, so other methods may be called (which means observers can be added)
@@ -65,17 +69,16 @@ public actor GoalManager {
     }
 
     public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
-        let context = container.newBackgroundContext()
-        let goal = try context.existingObject(with: goalID) as! Goal
+        let goal = try modelContext.existingObject(with: goalID) as! Goal
 
         let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
         let goalJSON = JSON(responseObject!)
 
         // The goal may have changed during the network operation, reload latest version
-        context.refresh(goal, mergeChanges: false)
+        modelContext.refresh(goal, mergeChanges: false)
         goal.updateToMatch(json: goalJSON)
 
-        try context.save()
+        try modelContext.save()
         await performPostGoalUpdateBookkeeping()
     }
 
@@ -89,20 +92,19 @@ public actor GoalManager {
         }
 
         //  Update CoreData representation
-        let context = container.newBackgroundContext()
         // The user may have logged out while waiting for the data, so ignore if so
-        if let user = self.currentUserManager.user(context: context) {
-
+        modelContext.refreshAllObjects()
+        if let user = self.currentUserManager.user(context: modelContext) {
             // Create and update existing goals
             for goalJSON in responseGoals {
                 let goalId = goalJSON["id"].stringValue
                 let request = NSFetchRequest<Goal>(entityName: "Goal")
                 request.predicate = NSPredicate(format: "id == %@", goalId)
                 // TODO: Better error handling of failure here?
-                if let existingGoal = try! context.fetch(request).first {
+                if let existingGoal = try! modelContext.fetch(request).first {
                     existingGoal.updateToMatch(json: goalJSON)
                 } else {
-                    let _ = Goal(context: context, owner: user, json: goalJSON)
+                    let _ = Goal(context: modelContext, owner: user, json: goalJSON)
                 }
             }
 
@@ -110,11 +112,11 @@ public actor GoalManager {
             let allGoalIds = Set(responseGoals.map { $0["id"].stringValue })
             let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
             for goal in goalsToDelete {
-                context.delete(goal)
+                modelContext.delete(goal)
             }
 
             // Crash on save failure so we can learn about issues via testflight
-            try! context.save()
+            try! modelContext.save()
         }
     }
 
@@ -127,7 +129,7 @@ public actor GoalManager {
 
         // Notify all listeners of the update
         await Task { @MainActor in
-            container.viewContext.refreshAllObjects()
+            modelContainer.viewContext.refreshAllObjects()
             NotificationCenter.default.post(name: Notification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: self)
         }.value
     }
@@ -147,8 +149,8 @@ public actor GoalManager {
         do {
             while true {
                 // If there are no queued goals then we are complete and can stop checking
-                let context = container.newBackgroundContext()
-                guard let user = currentUserManager.user(context: context) else { break }
+                guard let user = currentUserManager.user(context: modelContext) else { break }
+                modelContext.refresh(user, mergeChanges: false)
                 let queuedGoals = user.goals.filter { $0.queued }
                 if queuedGoals.isEmpty {
                     break
