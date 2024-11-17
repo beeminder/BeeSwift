@@ -43,15 +43,11 @@ platform :ios do
         include_simulator_logs: true,
         buildlog_path: "fastlane/test_output",
         xcodebuild_formatter: "xcpretty",
-        xcargs: "-skipPackagePluginValidation",
         ensure_devices_found: true,
     )
   end
   lane :build do
-    build_app(
-        scheme: "BeeSwift",
-        xcargs: "-skipPackagePluginValidation",
-    )
+    build_app(scheme: "BeeSwift")
   end
   lane :beta do
     # Ensure that your git status is not dirty
