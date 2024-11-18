@@ -119,7 +119,6 @@ public class CurrentUserManager {
         userDefaults.removeObject(forKey: key)
     }
 
-    
     public var accessToken :String? {
         return keychain.get(CurrentUserManager.accessTokenKey)
     }
@@ -128,37 +127,12 @@ public class CurrentUserManager {
         return user()?.username
     }
 
-    public func defaultLeadTime() -> NSNumber {
-        return (user()?.defaultLeadTime ?? 0) as NSNumber
-    }
-    
-    public func defaultAlertstart() -> Int {
-        return (user()?.defaultAlertStart ?? 0) as Int
-    }
-    
-    public func defaultDeadline() -> Int {
-        return (user()?.defaultDeadline ?? 0) as Int
-    }
-    
     public func signedIn() -> Bool {
         return self.accessToken != nil && self.username != nil
     }
     
     public func isDeadbeat() -> Bool {
         return user()?.deadbeat ?? false
-    }
-    
-    public func timezone() -> String {
-        return user()?.timezone ?? "Unknown"
-    }
-    
-    public func setDeadbeat(_ deadbeat: Bool) {
-        try! modifyUser { $0.deadbeat = deadbeat }
-        if deadbeat {
-            self.set(true, forKey: CurrentUserManager.deadbeatKey)
-        } else {
-            self.removeObject(forKey: CurrentUserManager.deadbeatKey)
-        }
     }
     
     func setAccessToken(_ accessToken: String) {
@@ -182,7 +156,9 @@ public class CurrentUserManager {
         try context.save()
 
         if responseJSON["deadbeat"].boolValue {
-            self.setDeadbeat(true)
+            self.set(true, forKey: CurrentUserManager.deadbeatKey)
+        } else {
+            self.removeObject(forKey: CurrentUserManager.deadbeatKey)
         }
         self.setAccessToken(responseJSON[CurrentUserManager.accessTokenKey].string!)
         self.set(responseJSON[CurrentUserManager.usernameKey].string!, forKey: CurrentUserManager.usernameKey)
