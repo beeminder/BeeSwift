@@ -204,6 +204,6 @@ public actor HealthStoreManager {
         // TODO: In the future we should gain confidence this code is correct and remove the filter so we handle deleted data better
         let nonZeroDataPoints = newDataPoints.filter { dataPoint in dataPoint.value != 0 }
         logger.notice("Updating \(metric.databaseString, privacy: .public) goal with \(nonZeroDataPoints.count, privacy: .public) datapoints. Skipped \(newDataPoints.count - nonZeroDataPoints.count, privacy: .public) empty points.")
-        try await ServiceLocator.dataPointManager.updateToMatchDataPoints(goal: goal, healthKitDataPoints: nonZeroDataPoints)
+        try await ServiceLocator.dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: nonZeroDataPoints)
     }
 }
