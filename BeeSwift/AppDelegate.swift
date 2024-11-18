@@ -38,7 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if HKHealthStore.isHealthDataAvailable() {
                 // We must register queries for all our healthkit metrics before this method completes
                 // in order to successfully be delivered background updates.
-                ServiceLocator.healthStoreManager.silentlyInstallObservers()
+            ServiceLocator.healthStoreManager.silentlyInstallObservers(context: ServiceLocator.persistentContainer.viewContext)
         }
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
