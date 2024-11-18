@@ -131,8 +131,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     @objc func updateBadgeCount() {
         logger.notice("Updating badge count")
+        assert(Thread.isMainThread, "This code must be run on the main thread")
 
-        let context = ServiceLocator.persistentContainer.newBackgroundContext()
+        let context = ServiceLocator.persistentContainer.viewContext
         guard let goals = ServiceLocator.goalManager.staleGoals(context: context) else { return }
         let beemergencyCount = goals.count(where: { $0.safeBuf < 1})
         logger.notice("Beemergency count is \(beemergencyCount, privacy: .public)")
