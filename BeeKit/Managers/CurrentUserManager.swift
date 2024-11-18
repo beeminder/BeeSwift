@@ -185,7 +185,6 @@ public class CurrentUserManager {
         self.set(responseJSON[CurrentUserManager.defaultLeadtimeKey].number!, forKey: CurrentUserManager.defaultLeadtimeKey)
         self.set(responseJSON[CurrentUserManager.beemTZKey].string!, forKey: CurrentUserManager.beemTZKey)
 
-        // TODO: Refresh the user in mpain thread
         await Task { @MainActor in
             guard let user = self.user(context: container.viewContext) else { return }
             container.viewContext.refresh(user, mergeChanges: false)
