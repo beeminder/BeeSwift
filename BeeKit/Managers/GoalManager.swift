@@ -31,6 +31,7 @@ public actor GoalManager {
     init(requestManager: RequestManager, currentUserManager: CurrentUserManager, container: BeeminderPersistentContainer) {
         modelContainer = container
         let context = container.newBackgroundContext()
+        context.name = "GoalManager"
         modelExecutor = .init(context: context)
 
         self.requestManager = requestManager

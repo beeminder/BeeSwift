@@ -38,7 +38,9 @@ public actor HealthStoreManager {
     init(goalManager: GoalManager, container: NSPersistentContainer) {
         self.goalManager = goalManager
         self.modelContainer = container
-        self.modelExecutor = .init(context: container.newBackgroundContext())
+        let context = container.newBackgroundContext()
+        context.name = "HealthStoreManager"
+        self.modelExecutor = .init(context: context)
     }
 
     /// Request acess to HealthKit data for the supplied metric
