@@ -7,11 +7,13 @@
 //
 
 import CoreData
+import CoreDataEvolution
 import Foundation
 import HealthKit
 import OSLog
 
-public class HealthStoreManager {
+@NSModelActor(disableGenerateInit: true)
+public actor HealthStoreManager {
     /// The number of days to update when we are informed of a change. We are only called when the device is unlocked, so we must look
     /// at the previous day in case data was added after the last time the device was locked. There may also be other integrations which report
     /// data with some lag, so we look a bit further back for safety
@@ -22,21 +24,21 @@ public class HealthStoreManager {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
 
     private let goalManager: GoalManager
-    private let container: NSPersistentContainer
 
     // TODO: Public for now to use from config
     public let healthStore = HKHealthStore()
 
     /// The Connection objects responsible for updating goals based on their healthkit metrics
     /// Dictionary key is the goal id, as this is stable across goal renames
-    private var monitors: [String: HealthKitMetricMonitor] = [:]
+    private nonisolated(unsafe) var monitors: [String: HealthKitMetricMonitor] = [:]
 
     /// Protect concurrent modifications to the connections dictionary
-    private let monitorsSemaphore = DispatchSemaphore(value: 1)
+    private nonisolated let monitorsSemaphore = DispatchSemaphore(value: 1)
 
     init(goalManager: GoalManager, container: NSPersistentContainer) {
         self.goalManager = goalManager
-        self.container = container
+        self.modelContainer = container
+        self.modelExecutor = .init(context: container.newBackgroundContext())
     }
 
     /// Request acess to HealthKit data for the supplied metric
@@ -51,8 +53,8 @@ public class HealthStoreManager {
 
     /// Start listening for background updates to the supplied goal if we are not already doing so
     public func ensureUpdatesRegularly(goalID: NSManagedObjectID) async throws {
-        let context = container.newBackgroundContext()
-        let goal = try context.existingObject(with: goalID) as! Goal
+        let goal = try modelContext.existingObject(with: goalID) as! Goal
+        modelContext.refresh(goal, mergeChanges: false)
         guard let metricName = goal.healthKitMetric else { return }
         try await self.ensureUpdatesRegularly(metricNames: [metricName], removeMissing: false)
     }
@@ -60,8 +62,8 @@ public class HealthStoreManager {
     /// Ensure we have background update listeners for all known goals such that they
     /// will be updated any time the health data changes.
     public func ensureGoalsUpdateRegularly() async throws {
-        let context = container.newBackgroundContext()
-        guard let goals = goalManager.staleGoals(context: context) else { return }
+        modelContext.refreshAllObjects()
+        guard let goals = goalManager.staleGoals(context: modelContext) else { return }
         let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
         return try await ensureUpdatesRegularly(metricNames: metrics, removeMissing: true)
     }
@@ -70,10 +72,9 @@ public class HealthStoreManager {
     ///
     /// This function will never show a permissions dialog - instead it will not update for
     /// metrics where we do not have permission.
-    public func silentlyInstallObservers() {
+    public nonisolated func silentlyInstallObservers(context: NSManagedObjectContext) {
         logger.notice("Silently installing observer queries")
 
-        let context = container.newBackgroundContext()
         guard let goals = goalManager.staleGoals(context: context) else { return }
         let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
         let monitors = updateKnownMonitors(metricNames: metrics, removeMissing: true)
@@ -90,35 +91,33 @@ public class HealthStoreManager {
     ///   - goal: The healthkit-connected goal to be updated
     ///   - days: How many days of history to update. Supplying 1 will update the current day.
     public func updateWithRecentData(goalID: NSManagedObjectID, days: Int) async throws {
-        let context = container.newBackgroundContext()
-        let goal = try context.existingObject(with: goalID) as! Goal
+        let goal = try modelContext.existingObject(with: goalID) as! Goal
+        modelContext.refresh(goal, mergeChanges: false)
         try await updateWithRecentData(goal: goal, days: days)
         try await goalManager.refreshGoal(goalID)
     }
 
     /// Immediately update all known goals based on HealthKit's data record
     public func updateAllGoalsWithRecentData(days: Int) async throws {
-        try await Task {
-            logger.notice("Updating all goals with recent day for last \(days, privacy: .public) days")
+        logger.notice("Updating all goals with recent day for last \(days, privacy: .public) days")
 
-            // We must create this context in a backgrounfd thread as it will be used in background threads
-            let context = container.newBackgroundContext()
-            guard let goals = goalManager.staleGoals(context: context) else { return }
-            let goalsWithHealthData = goals.filter { $0.healthKitMetric != nil && $0.healthKitMetric != "" }
+        // We must create this context in a backgrounfd thread as it will be used in background threads
+        modelContext.refreshAllObjects()
+        guard let goals = goalManager.staleGoals(context: modelContext) else { return }
+        let goalsWithHealthData = goals.filter { $0.healthKitMetric != nil && $0.healthKitMetric != "" }
 
-            try await withThrowingTaskGroup(of: Void.self) { group in
-                for goal in goalsWithHealthData {
-                    let goalID = goal.objectID
-                    group.addTask {
-                        // This is a new thread, so we are not allowed to use the goal object from CoreData
-                        // TODO: This will generate lots of unneccesary reloads
-                        try await self.updateWithRecentData(goalID: goalID, days: days)
-                    }
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for goal in goalsWithHealthData {
+                let goalID = goal.objectID
+                group.addTask {
+                    // This is a new thread, so we are not allowed to use the goal object from CoreData
+                    // TODO: This will generate lots of unneccesary reloads
+                    try await self.updateWithRecentData(goalID: goalID, days: days)
                 }
-                try await group.waitForAll()
             }
-            try await goalManager.refreshGoals()
-        }.value
+            try await group.waitForAll()
+        }
+        try await goalManager.refreshGoals()
     }
 
     private func ensureUpdatesRegularly(metricNames: any Sequence<String>, removeMissing: Bool) async throws {
@@ -143,7 +142,7 @@ public class HealthStoreManager {
         }
     }
 
-    private func updateKnownMonitors(metricNames: any Sequence<String>, removeMissing: Bool) -> [HealthKitMetricMonitor] {
+    private nonisolated func updateKnownMonitors(metricNames: any Sequence<String>, removeMissing: Bool) -> [HealthKitMetricMonitor] {
         monitorsSemaphore.wait()
 
         for metricName in metricNames {
@@ -177,8 +176,8 @@ public class HealthStoreManager {
 
     private func updateGoalsForMetricChange(metricName: String, metric: HealthKitMetric) async {
         do {
-            let context = container.newBackgroundContext()
-            guard let allGoals = goalManager.staleGoals(context: context) else { return }
+            modelContext.refreshAllObjects()
+            guard let allGoals = goalManager.staleGoals(context: modelContext) else { return }
             let goalsForMetric = allGoals.filter { $0.healthKitMetric == metricName }
             if goalsForMetric.count == 0 {
                 logger.notice("Received an update for metric \(metricName, privacy: .public) but no goals using it")
