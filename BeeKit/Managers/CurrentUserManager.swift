@@ -193,14 +193,7 @@ public class CurrentUserManager {
         try deleteUser()
 
         let context = container.newBackgroundContext()
-
-        let _ = User(context: context,
-             username: responseJSON[CurrentUserManager.usernameKey].string!,
-             deadbeat: responseJSON["deadbeat"].boolValue,
-             timezone: responseJSON[CurrentUserManager.beemTZKey].string!,
-             defaultAlertStart: responseJSON[CurrentUserManager.defaultAlertstartKey].intValue,
-             defaultDeadline: responseJSON[CurrentUserManager.defaultDeadlineKey].intValue,
-             defaultLeadTime: responseJSON[CurrentUserManager.defaultLeadtimeKey].intValue)
+        let _ = User(context: context, json: responseJSON)
         try context.save()
 
         if responseJSON["deadbeat"].boolValue {
@@ -217,19 +210,19 @@ public class CurrentUserManager {
         }.value
     }
     
-    public func syncNotificationDefaults() async throws {
+    public func refreshUser() async throws {
         let response = try await requestManager.get(url: "api/v1/users/\(username!).json", parameters: [:])
         let responseJSON = JSON(response!)
 
         try! modifyUser { user in
-            user.defaultAlertStart = responseJSON["default_alertstart"].intValue
-            user.defaultDeadline = responseJSON["default_deadline"].intValue
-            user.defaultLeadTime = responseJSON["default_leadtime"].intValue
+            user.updateToMatch(json: responseJSON)
         }
 
-        self.set(responseJSON["default_alertstart"].number!, forKey: "default_alertstart")
-        self.set(responseJSON["default_deadline"].number!, forKey: "default_deadline")
-        self.set(responseJSON["default_leadtime"].number!, forKey: "default_leadtime")
+        self.set(responseJSON[CurrentUserManager.usernameKey].string!, forKey: CurrentUserManager.usernameKey)
+        self.set(responseJSON[CurrentUserManager.defaultAlertstartKey].number!, forKey: CurrentUserManager.defaultAlertstartKey)
+        self.set(responseJSON[CurrentUserManager.defaultDeadlineKey].number!, forKey: CurrentUserManager.defaultDeadlineKey)
+        self.set(responseJSON[CurrentUserManager.defaultLeadtimeKey].number!, forKey: CurrentUserManager.defaultLeadtimeKey)
+        self.set(responseJSON[CurrentUserManager.beemTZKey].string!, forKey: CurrentUserManager.beemTZKey)
     }
     
     func handleFailedSignin(_ responseError: Error, errorMessage : String?) async throws {
