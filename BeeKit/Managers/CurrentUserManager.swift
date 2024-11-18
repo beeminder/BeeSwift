@@ -132,27 +132,12 @@ public class CurrentUserManager {
         return (user()?.defaultLeadTime ?? 0) as NSNumber
     }
     
-    public func setDefaultLeadTime(_ leadtime : NSNumber) {
-        try! modifyUser { $0.defaultLeadTime = leadtime as! Int }
-        self.set(leadtime, forKey: CurrentUserManager.defaultLeadtimeKey)
-    }
-
     public func defaultAlertstart() -> Int {
         return (user()?.defaultAlertStart ?? 0) as Int
     }
     
-    public func setDefaultAlertstart(_ alertstart : Int) {
-        try! modifyUser { $0.defaultAlertStart = alertstart }
-        self.set(alertstart, forKey: CurrentUserManager.defaultAlertstartKey)
-    }
-    
     public func defaultDeadline() -> Int {
         return (user()?.defaultDeadline ?? 0) as Int
-    }
-    
-    public func setDefaultDeadline(_ deadline : Int) {
-        try! modifyUser { $0.defaultDeadline = deadline }
-        self.set(deadline, forKey: CurrentUserManager.defaultDeadlineKey)
     }
     
     public func signedIn() -> Bool {
