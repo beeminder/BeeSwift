@@ -139,7 +139,9 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             cell.imageName = "Notifications"
             cell.accessoryType = .disclosureIndicator
         case 2:
-            cell.title = "Time zone: \(ServiceLocator.currentUserManager.timezone())"
+            let user = ServiceLocator.currentUserManager.user(context: ServiceLocator.persistentContainer.viewContext)
+            let timezone = user?.timezone ?? "Unknown"
+            cell.title = "Time zone: \(timezone)"
             cell.imageName = "Clock"
             cell.accessoryType = .none
         case 3:

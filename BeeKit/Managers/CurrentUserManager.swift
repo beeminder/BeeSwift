@@ -119,7 +119,6 @@ public class CurrentUserManager {
         userDefaults.removeObject(forKey: key)
     }
 
-    
     public var accessToken :String? {
         return keychain.get(CurrentUserManager.accessTokenKey)
     }
@@ -128,52 +127,12 @@ public class CurrentUserManager {
         return user()?.username
     }
 
-    public func defaultLeadTime() -> NSNumber {
-        return (user()?.defaultLeadTime ?? 0) as NSNumber
-    }
-    
-    public func setDefaultLeadTime(_ leadtime : NSNumber) {
-        try! modifyUser { $0.defaultLeadTime = leadtime as! Int }
-        self.set(leadtime, forKey: CurrentUserManager.defaultLeadtimeKey)
-    }
-
-    public func defaultAlertstart() -> Int {
-        return (user()?.defaultAlertStart ?? 0) as Int
-    }
-    
-    public func setDefaultAlertstart(_ alertstart : Int) {
-        try! modifyUser { $0.defaultAlertStart = alertstart }
-        self.set(alertstart, forKey: CurrentUserManager.defaultAlertstartKey)
-    }
-    
-    public func defaultDeadline() -> Int {
-        return (user()?.defaultDeadline ?? 0) as Int
-    }
-    
-    public func setDefaultDeadline(_ deadline : Int) {
-        try! modifyUser { $0.defaultDeadline = deadline }
-        self.set(deadline, forKey: CurrentUserManager.defaultDeadlineKey)
-    }
-    
     public func signedIn() -> Bool {
         return self.accessToken != nil && self.username != nil
     }
     
     public func isDeadbeat() -> Bool {
         return user()?.deadbeat ?? false
-    }
-    
-    public func timezone() -> String {
-        return user()?.timezone ?? "Unknown"
-    }
-    
-    public func setDeadbeat(_ deadbeat: Bool) {
-        try! modifyUser { $0.deadbeat = deadbeat }
-        if deadbeat {
-            self.set(true, forKey: CurrentUserManager.deadbeatKey)
-        } else {
-            self.removeObject(forKey: CurrentUserManager.deadbeatKey)
-        }
     }
     
     func setAccessToken(_ accessToken: String) {
@@ -197,7 +156,9 @@ public class CurrentUserManager {
         try context.save()
 
         if responseJSON["deadbeat"].boolValue {
-            self.setDeadbeat(true)
+            self.set(true, forKey: CurrentUserManager.deadbeatKey)
+        } else {
+            self.removeObject(forKey: CurrentUserManager.deadbeatKey)
         }
         self.setAccessToken(responseJSON[CurrentUserManager.accessTokenKey].string!)
         self.set(responseJSON[CurrentUserManager.usernameKey].string!, forKey: CurrentUserManager.usernameKey)
@@ -223,6 +184,11 @@ public class CurrentUserManager {
         self.set(responseJSON[CurrentUserManager.defaultDeadlineKey].number!, forKey: CurrentUserManager.defaultDeadlineKey)
         self.set(responseJSON[CurrentUserManager.defaultLeadtimeKey].number!, forKey: CurrentUserManager.defaultLeadtimeKey)
         self.set(responseJSON[CurrentUserManager.beemTZKey].string!, forKey: CurrentUserManager.beemTZKey)
+
+        await Task { @MainActor in
+            guard let user = self.user(context: container.viewContext) else { return }
+            container.viewContext.refresh(user, mergeChanges: false)
+        }.value
     }
     
     func handleFailedSignin(_ responseError: Error, errorMessage : String?) async throws {
