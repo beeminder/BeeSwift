@@ -83,7 +83,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !ServiceLocator.currentUserManager.isDeadbeat() {
+            if !ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
                 make.height.equalTo(0)
             }
         }
@@ -299,7 +299,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !ServiceLocator.currentUserManager.isDeadbeat() {
+            if !ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
                 make.height.equalTo(0)
             }
         }
