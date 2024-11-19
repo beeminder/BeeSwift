@@ -50,6 +50,7 @@ public actor CurrentUserManager {
         self.requestManager = requestManager
         modelContainer = container
         let context = container.newBackgroundContext()
+        context.name = "CurrentUserManager"
         modelExecutor = .init(context: context)
         migrateValuesToCoreData()
     }
@@ -129,15 +130,15 @@ public actor CurrentUserManager {
         return user(context: modelContext)?.username
     }
 
-    public func signedIn() -> Bool {
-        return self.accessToken != nil && self.username != nil
+    public nonisolated func signedIn(context: NSManagedObjectContext) -> Bool {
+        return self.accessToken != nil && self.user(context: context)?.username != nil
     }
     
     public nonisolated func isDeadbeat(context: NSManagedObjectContext) -> Bool {
         return user(context: context)?.deadbeat ?? false
     }
     
-    func setAccessToken(_ accessToken: String) {
+    nonisolated func setAccessToken(_ accessToken: String) {
         keychain.set(accessToken, forKey: CurrentUserManager.accessTokenKey, withAccess: .accessibleAfterFirstUnlock)
     }
     

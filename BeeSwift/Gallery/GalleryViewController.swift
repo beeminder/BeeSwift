@@ -162,7 +162,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.updateGoals()
         self.fetchGoals()
 
-        if ServiceLocator.currentUserManager.signedIn() {
+        if ServiceLocator.currentUserManager.signedIn(context: ServiceLocator.persistentContainer.viewContext) {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
                 if success {
@@ -208,7 +208,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !ServiceLocator.currentUserManager.signedIn() {
+        if !ServiceLocator.currentUserManager.signedIn(context: ServiceLocator.persistentContainer.viewContext) {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
