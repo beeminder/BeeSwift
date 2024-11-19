@@ -7,12 +7,14 @@
 //
 
 import CoreData
+import CoreDataEvolution
 import Foundation
 import KeychainSwift
 import OSLog
 import SwiftyJSON
 
-public class CurrentUserManager {
+@NSModelActor(disableGenerateInit: true)
+public actor CurrentUserManager {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CurrentUserManager")
 
     public static let signedInNotificationName     = "com.beeminder.signedInNotification"
@@ -37,24 +39,28 @@ public class CurrentUserManager {
 
     private let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
     private let requestManager: RequestManager
-    private let container: BeeminderPersistentContainer
 
     fileprivate static var allKeys: [String] {
         [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
     }
     
-    let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
-    
+    nonisolated let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
+
     init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
         self.requestManager = requestManager
-        self.container = container
+        modelContainer = container
+        let context = container.newBackgroundContext()
+        context.name = "CurrentUserManager"
+        modelExecutor = .init(context: context)
         migrateValuesToCoreData()
     }
 
     // If there is an existing session based on UserDefaults, create a new User object
-    private func migrateValuesToCoreData() {
+    private nonisolated func migrateValuesToCoreData() {
+        let context = modelContainer.newBackgroundContext()
+
         // If there is already a session do nothing
-        if user() != nil {
+        if user(context: context) != nil {
             return
         }
 
@@ -63,7 +69,6 @@ public class CurrentUserManager {
             return
         }
 
-        let context = container.newBackgroundContext()
 
         // Create a new user
         let _ = User(context: context,
@@ -78,11 +83,10 @@ public class CurrentUserManager {
     }
 
 
-    public func user(context: NSManagedObjectContext? = nil) -> User? {
+    public nonisolated func user(context: NSManagedObjectContext) -> User? {
         do {
             let request = NSFetchRequest<User>(entityName: "User")
-            let requestContext = context ?? container.newBackgroundContext()
-            let users = try requestContext.fetch(request)
+            let users = try context.fetch(request)
             return users.first
         } catch {
             logger.error("Unable to fetch users \(error)")
@@ -91,20 +95,19 @@ public class CurrentUserManager {
     }
 
     private func modifyUser(_ callback: (User)->()) throws {
-        let context = container.newBackgroundContext()
-        guard let user = self.user(context: context) else { return }
+        guard let user = self.user(context: modelContext) else { return }
+        modelContext.refresh(user, mergeChanges: false)
         callback(user)
-        try context.save()
+        try modelContext.save()
     }
 
     private func deleteUser() throws {
-        let context = container.newBackgroundContext()
-
         // Delete any existing users. We expect at most one, but delete all to be safe.
-        while let user = self.user(context: context) {
-            context.delete(user)
+        modelContext.refreshAllObjects()
+        while let user = self.user(context: modelContext) {
+            modelContext.delete(user)
         }
-        try context.save()
+        try modelContext.save()
     }
 
     /// Write a value to the UserDefaults store
@@ -119,23 +122,23 @@ public class CurrentUserManager {
         userDefaults.removeObject(forKey: key)
     }
 
-    public var accessToken :String? {
+    public nonisolated var accessToken :String? {
         return keychain.get(CurrentUserManager.accessTokenKey)
     }
     
     public var username :String? {
-        return user()?.username
+        return user(context: modelContext)?.username
     }
 
-    public func signedIn() -> Bool {
-        return self.accessToken != nil && self.username != nil
+    public nonisolated func signedIn(context: NSManagedObjectContext) -> Bool {
+        return self.accessToken != nil && self.user(context: context)?.username != nil
     }
     
-    public func isDeadbeat() -> Bool {
-        return user()?.deadbeat ?? false
+    public nonisolated func isDeadbeat(context: NSManagedObjectContext) -> Bool {
+        return user(context: context)?.deadbeat ?? false
     }
     
-    func setAccessToken(_ accessToken: String) {
+    nonisolated func setAccessToken(_ accessToken: String) {
         keychain.set(accessToken, forKey: CurrentUserManager.accessTokenKey, withAccess: .accessibleAfterFirstUnlock)
     }
     
@@ -151,9 +154,8 @@ public class CurrentUserManager {
     func handleSuccessfulSignin(_ responseJSON: JSON) async throws {
         try deleteUser()
 
-        let context = container.newBackgroundContext()
-        let _ = User(context: context, json: responseJSON)
-        try context.save()
+        let _ = User(context: modelContext, json: responseJSON)
+        try modelContext.save()
 
         if responseJSON["deadbeat"].boolValue {
             self.set(true, forKey: CurrentUserManager.deadbeatKey)
@@ -186,8 +188,8 @@ public class CurrentUserManager {
         self.set(responseJSON[CurrentUserManager.beemTZKey].string!, forKey: CurrentUserManager.beemTZKey)
 
         await Task { @MainActor in
-            guard let user = self.user(context: container.viewContext) else { return }
-            container.viewContext.refresh(user, mergeChanges: false)
+            guard let user = self.user(context: modelContainer.viewContext) else { return }
+            modelContainer.viewContext.refresh(user, mergeChanges: false)
         }.value
     }
     

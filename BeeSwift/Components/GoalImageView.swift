@@ -91,7 +91,7 @@ class GoalImageView : UIView {
         }
 
         //  - Deadbeat: Placeholder, no animation
-        if ServiceLocator.currentUserManager.isDeadbeat() {
+        if ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
             clearGoalGraph()
             return
         }
