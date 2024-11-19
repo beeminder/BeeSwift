@@ -316,8 +316,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     @objc func actionButtonPressed() {
-        guard let username = goal.owner.username,
-            let accessToken = ServiceLocator.currentUserManager.accessToken,
+        let username = goal.owner.username
+        guard let accessToken = ServiceLocator.currentUserManager.accessToken,
             let viewGoalUrl = URL(string: "\(ServiceLocator.requestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(ServiceLocator.requestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
 
         let safariVC = SFSafariViewController(url: viewGoalUrl)
