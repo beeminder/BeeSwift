@@ -149,7 +149,7 @@ public actor HealthStoreManager {
 
         for metricName in metricNames {
             if monitors[metricName] == nil {
-                guard let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
+                guard let metric = HealthKitConfig.metrics.first(where: { (metric) -> Bool in
                     metric.databaseString == metricName
                 }) else {
                     logger.error("No metric found for \(metricName, privacy: .public)")
@@ -195,7 +195,7 @@ public actor HealthStoreManager {
     }
 
     private func updateWithRecentData(goal: Goal, days: Int) async throws {
-        guard let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
+        guard let metric = HealthKitConfig.metrics.first(where: { (metric) -> Bool in
             metric.databaseString == goal.healthKitMetric
         }) else {
             throw HealthKitError("No metric found for goal \(goal.slug) with metric \(goal.healthKitMetric ?? "nil")")

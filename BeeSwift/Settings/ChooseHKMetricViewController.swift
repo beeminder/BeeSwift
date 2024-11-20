@@ -86,7 +86,7 @@ class ChooseHKMetricViewController: UIViewController {
 
 extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSource {
     var sortedHKMetrics: [HealthKitMetric] {
-        HealthKitConfig.shared.metrics.sorted { (lhs, rhs) -> Bool in
+        HealthKitConfig.metrics.sorted { (lhs, rhs) -> Bool in
             lhs.humanText < rhs.humanText
         }
     }
