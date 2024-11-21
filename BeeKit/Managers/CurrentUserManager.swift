@@ -128,8 +128,10 @@ public actor CurrentUserManager {
         return keychain.get(CurrentUserManager.accessTokenKey)
     }
     
-    public var username :String? {
-        return user(context: modelContext)?.username
+    public var username: String? {
+        get async {
+            user(context: modelContext)?.username
+        }
     }
 
     public nonisolated func signedIn(context: NSManagedObjectContext) -> Bool {

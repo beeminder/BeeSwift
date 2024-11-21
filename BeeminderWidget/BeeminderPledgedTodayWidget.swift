@@ -38,7 +38,9 @@ struct BeeminderPledgedTodayWidgetProvider: AppIntentTimelineProvider {
 
 private extension BeeminderPledgedTodayWidgetProvider {
     private var username: String? {
-        ServiceLocator.currentUserManager.username
+        get async {
+            await ServiceLocator.currentUserManager.username
+        }
     }
 
     private var usersGoals: [Goal] {

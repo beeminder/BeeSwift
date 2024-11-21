@@ -19,7 +19,7 @@ struct BeeminderGoalListProvider: TimelineProvider {
             : BeeminderGoalListEntryGoalDTO.goalDTOs.shuffled()
 
         return .init(date: Date(),
-                     username: username ?? "Player1",
+                     username: "Player1",
                      goals: goals.prefix(numGoals).map { $0 })
     }
 
@@ -28,21 +28,26 @@ struct BeeminderGoalListProvider: TimelineProvider {
     }
 
     func getTimeline(in _: Context, completion: @escaping @Sendable (Timeline<BeeminderGoalListEntry>) -> Void) {
-        let entries: [BeeminderGoalListEntry] = [
-            .init(date: Date(),
-                  username: username,
-                  goals: usersGoals),
-        ]
+        Task {
+            let entries: [BeeminderGoalListEntry] = await [
+                .init(date: Date(),
+                      username: username,
+                      goals: usersGoals),
+            ]
 
-        let timeline = Timeline(entries: entries, policy: .atEnd)
+            let timeline = Timeline(entries: entries, policy: .atEnd)
 
-        completion(timeline)
+            completion(timeline)
+        }
+        
     }
 }
 
 private extension BeeminderGoalListProvider {
     private var username: String? {
-        ServiceLocator.currentUserManager.username
+        get async {
+            await ServiceLocator.currentUserManager.username
+        }
     }
 
     private var usersGoals: [BeeminderGoalListEntryGoalDTO] {
