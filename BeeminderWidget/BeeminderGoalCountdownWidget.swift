@@ -11,13 +11,14 @@ import WidgetKit
 
 struct BeeminderGoalCountdownWidgetProvider: AppIntentTimelineProvider {
     func placeholder(in _: Context) -> BeeminderGoalCountdownWidgetEntry {
-        let goalDTO = usersGoals.randomElement()
-
-        return .init(date: Date(),
-                     configuration: GoalCountdownConfigurationAppIntent(),
-                     updatedAt: Date().addingTimeInterval(-60 * 1000).timeIntervalSince1970,
-                     username: username,
-                     goalDTO: goalDTO)
+        .init(date: Date(),
+              configuration: GoalCountdownConfigurationAppIntent(),
+              updatedAt: Date().addingTimeInterval(-60 * 1000).timeIntervalSince1970,
+              username: "username",
+              goalDTO: BeeminderGoalCountdownGoalDTO(name: "goal1",
+                                                     limSum: "+3 in 3 days",
+                                                     countdownColor: Color.cyan,
+                                                     lastTouch: ""))
     }
 
     func snapshot(for _: GoalCountdownConfigurationAppIntent, in context: Context) async -> BeeminderGoalCountdownWidgetEntry {
@@ -25,7 +26,10 @@ struct BeeminderGoalCountdownWidgetProvider: AppIntentTimelineProvider {
     }
 
     func timeline(for configuration: GoalCountdownConfigurationAppIntent, in _: Context) async -> Timeline<BeeminderGoalCountdownWidgetEntry> {
-        let goal = usersGoals.first { $0.name.caseInsensitiveCompare(configuration.goalName) == .orderedSame }
+        var goal: BeeminderGoalCountdownGoalDTO? {
+            guard let goalName = configuration.goalName else { return nil }
+            return usersGoals.first { $0.name.caseInsensitiveCompare(goalName) == .orderedSame }
+        }
 
         let updatedAt: TimeInterval? = {
             guard let lastTouch = goal?.lastTouch else { return nil }
@@ -38,7 +42,7 @@ struct BeeminderGoalCountdownWidgetProvider: AppIntentTimelineProvider {
             return date?.timeIntervalSince1970
         }()
 
-        let entries: [BeeminderGoalCountdownWidgetEntry] = [
+        let entries: [BeeminderGoalCountdownWidgetEntry] = await [
             BeeminderGoalCountdownWidgetEntry(date: Date(),
                                               configuration: configuration,
                                               updatedAt: updatedAt,
@@ -52,10 +56,12 @@ struct BeeminderGoalCountdownWidgetProvider: AppIntentTimelineProvider {
 
 private extension BeeminderGoalCountdownWidgetProvider {
     private var username: String? {
-        ServiceLocator.currentUserManager.username
+        get async {
+            await ServiceLocator.currentUserManager.username
+        }
     }
 
-    private var usersGoals: [BeeminderGoalCountdownGoalDTO] {
+    var usersGoals: [BeeminderGoalCountdownGoalDTO] {
         ServiceLocator.goalManager
             .staleGoals(context: ServiceLocator.persistentContainer.viewContext)?
             .sorted(using: SortDescriptor(\.urgencyKey))
@@ -99,7 +105,7 @@ struct BeeminderGoalCountdownWidgetEntry: TimelineEntry {
     // let goal: Goal?
     let goalDTO: BeeminderGoalCountdownGoalDTO?
 
-    var userProvidedGoalName: String {
+    var userProvidedGoalName: String? {
         configuration.goalName
     }
 
@@ -148,7 +154,7 @@ struct BeeminderGoalCountdownWidgetEntryView: View {
                     Spacer()
                     Spacer()
 
-                    Text(entry.userProvidedGoalName)
+                    Text(entry.userProvidedGoalName ?? "Edit Widget")
                         .font(.title)
                         .frame(width: .infinity)
                         .minimumScaleFactor(0.2)
@@ -177,7 +183,7 @@ struct BeeminderGoalCountdownWidgetEntryView: View {
 
                     Spacer()
 
-                    Text(entry.userProvidedGoalName)
+                    Text(entry.userProvidedGoalName ?? "Edit Widget")
                         .font(.title)
                         .frame(width: .infinity)
                         .minimumScaleFactor(0.2)

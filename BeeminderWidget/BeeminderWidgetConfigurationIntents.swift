@@ -37,15 +37,27 @@ struct PledgedConfigurationAppIntent: WidgetConfigurationIntent {
     var denomination: BeeminderPledgeDenomination
 }
 
-struct GoalCountdownConfigurationAppIntent: WidgetConfigurationIntent {
+struct GoalCountdownConfigurationAppIntent: AppIntent, WidgetConfigurationIntent {
     static let title: LocalizedStringResource = "Colored Goal"
     static let description = IntentDescription("Shows a goal in its countdown color!")
 
     @Parameter(title: "Goal Name (aka slug)",
-               default: "dial",
-               inputOptions: String.IntentInputOptions(keyboardType: .default, capitalizationType: .none, autocorrect: false))
-    var goalName: String
+               optionsProvider: BeeminderGoalCountdownWidgetProvider.GoalNameProvider())
+    var goalName: String?
 
     @Parameter(title: "Show Summary of what you need to do to eke by, e.g., \"+2 within 1 day\".", default: true)
     var showLimSum: Bool
+}
+
+// namespace?
+extension BeeminderGoalCountdownWidgetProvider {
+    struct GoalNameProvider: DynamicOptionsProvider {
+        func results() async throws -> [String] {
+            ServiceLocator.goalManager
+                .staleGoals(context: ServiceLocator.persistentContainer.viewContext)?
+                .sorted(using: SortDescriptor(\.slug))
+                .map { $0.slug }
+                ?? []
+        }
+    }
 }
