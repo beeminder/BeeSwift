@@ -502,7 +502,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         let daystampAssumingMidnightDeadline = Daystamp(fromDate: date,
                                                         deadline: 0)
         
-        return Double(daystampAccountingForTheGoalsDeadline.distance(to: daystampAssumingMidnightDeadline))
+        return Double(daystampAssumingMidnightDeadline.distance(to: daystampAccountingForTheGoalsDeadline))
     }
 
     // MARK: - SFSafariViewControllerDelegate
