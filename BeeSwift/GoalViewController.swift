@@ -22,7 +22,11 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
 
-    let goal: Goal
+    var goal: Goal {
+        viewModel.goal
+    }
+    
+    private let viewModel: GoalViewModel
 
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
     fileprivate var datapointTableController = DatapointTableViewController()
@@ -43,8 +47,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     // date corresponding to the datapoint to be created
     private var date: Date = Date()
     
-    init(goal: Goal) {
-        self.goal = goal
+    init(viewModel: GoalViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -212,7 +216,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.dateStepper.tintColor = UIColor.Beeminder.gray
         dataEntryView.addSubview(self.dateStepper)
         self.dateStepper.addTarget(self, action: #selector(GoalViewController.dateStepperValueChanged), for: .valueChanged)
-        self.dateStepper.value = Self.makeInitialDateStepperValue(for: goal)
+        self.dateStepper.value = viewModel.initialDateStepperValue()
 
         self.dateStepper.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.dateTextField.snp.bottom).offset(elementSpacing)
@@ -494,15 +498,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.goalImageView
-    }
-    
-    private static func makeInitialDateStepperValue(date: Date = Date(), for goal: Goal) -> Double {
-        let daystampAccountingForTheGoalsDeadline = Daystamp(fromDate: date,
-                                                             deadline: goal.deadline)
-        let daystampAssumingMidnightDeadline = Daystamp(fromDate: date,
-                                                        deadline: 0)
-        
-        return Double(daystampAssumingMidnightDeadline.distance(to: daystampAccountingForTheGoalsDeadline))
     }
 
     // MARK: - SFSafariViewControllerDelegate
