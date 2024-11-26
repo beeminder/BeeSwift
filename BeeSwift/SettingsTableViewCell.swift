@@ -51,7 +51,7 @@ class SettingsTableViewCell: UITableViewCell {
         self.contentView.addSubview(self.settingsImage)
         
         self.selectionStyle = .none
-        self.backgroundColor = .secondarySystemBackground
+        self.backgroundColor = .secondarySystemBackground.withAlphaComponent(0.4)
 
         self.titleLabel.textColor = .label
         self.titleLabel.snp.remakeConstraints { (make) -> Void in
