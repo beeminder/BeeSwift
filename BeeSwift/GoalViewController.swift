@@ -47,8 +47,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     // date corresponding to the datapoint to be created
     private var date: Date = Date()
     
-    init(viewModel: GoalViewModel) {
-        self.viewModel = viewModel
+    init(goal: Goal) {
+        self.viewModel = .init(goal: goal)
         super.init(nibName: nil, bundle: nil)
     }
 
