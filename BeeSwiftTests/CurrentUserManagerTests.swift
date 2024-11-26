@@ -1,17 +1,17 @@
-import XCTest
+import Testing
 import KeychainSwift
 @testable import BeeKit
 
-final class CurrentUserManagerTests: XCTestCase {
+final class CurrentUserManagerTests {
 
-    override func setUpWithError() throws {
+    init() throws {
         let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
         keychain.delete(CurrentUserManager.accessTokenKey)
     }
 
-    func testCanSetAndRetrieveAccessToken() throws {
+    @Test func testCanSetAndRetrieveAccessToken() async throws {
         let currentUserManager = CurrentUserManager(requestManager: ServiceLocator.requestManager, container: ServiceLocator.persistentContainer)
         currentUserManager.setAccessToken("test_access_token")
-        XCTAssertEqual(currentUserManager.accessToken, "test_access_token")
+        #expect(currentUserManager.accessToken == "test_access_token")
     }
 }

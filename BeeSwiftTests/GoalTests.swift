@@ -7,21 +7,20 @@
 //
 
 import CoreData
-import XCTest
+import Testing
 import SwiftyJSON
 @testable import BeeKit
 
-final class GoalTests: XCTestCase {
+final class GoalTests {
     var container: BeeminderPersistentContainer!
     var user: User!
-
-    override func setUp() {
-        super.setUp()
+    
+    init() {
         container = BeeminderPersistentContainer.createMemoryBackedForTests()
         user = createTestUser(context: container.viewContext)
     }
 
-    func testCreateGoalFromJSON() throws {
+    @Test func testCreateGoalFromJSON() throws {
         // This is a partial copy of the beeminder api response, reduced to
         // only fields which are used by the app
         let testJSON = JSON(parseJSON: """
@@ -84,33 +83,33 @@ final class GoalTests: XCTestCase {
 
         let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
 
-        XCTAssertEqual(goal.slug, "test-goal")
-        XCTAssertEqual(goal.title, "Goal for Testing Purposes")
-        XCTAssertEqual(goal.graphUrl, "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.png")
-        XCTAssertEqual(goal.thumbUrl, "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc-thumb.png")
-        XCTAssertEqual(goal.deadline, 0)
-        XCTAssertEqual(goal.leadTime, 0)
-        XCTAssertEqual(goal.alertStart, 34200)
-        XCTAssertEqual(goal.useDefaults, true)
-        XCTAssertEqual(goal.id, "737aaa34f0118a330852e4bd")
-        XCTAssertEqual(goal.queued, false)
-        XCTAssertEqual(goal.limSum, "100 in 200 days")
-        XCTAssertEqual(goal.won, false)
-        XCTAssertEqual(goal.safeSum, "safe for 200 days")
-        XCTAssertEqual(goal.lastTouch, "2022-12-07T03:21:40.000Z")
-        XCTAssertEqual(goal.safeBuf, 3583)
-        XCTAssertEqual(goal.todayta, false)
-        XCTAssertEqual(goal.urgencyKey, "FROx;PPRx;DL4102469999;P1000000000;test-goal")
-        XCTAssertEqual(goal.hhmmFormat, false)
-        XCTAssertEqual(goal.yAxis, "cumulative total test-goal")
-        XCTAssertEqual(goal.initDay, 1668963600)
-        XCTAssertEqual(goal.pledge, 0)
-        XCTAssertEqual(goal.recentData.count, 5)
+        #expect(goal.slug == "test-goal")
+        #expect(goal.title == "Goal for Testing Purposes")
+        #expect(goal.graphUrl == "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.png")
+        #expect(goal.thumbUrl == "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc-thumb.png")
+        #expect(goal.deadline == 0)
+        #expect(goal.leadTime == 0)
+        #expect(goal.alertStart == 34200)
+        #expect(goal.useDefaults == true)
+        #expect(goal.id == "737aaa34f0118a330852e4bd")
+        #expect(goal.queued == false)
+        #expect(goal.limSum == "100 in 200 days")
+        #expect(goal.won == false)
+        #expect(goal.safeSum == "safe for 200 days")
+        #expect(goal.lastTouch == "2022-12-07T03:21:40.000Z")
+        #expect(goal.safeBuf == 3583)
+        #expect(goal.todayta == false)
+        #expect(goal.urgencyKey == "FROx;PPRx;DL4102469999;P1000000000;test-goal")
+        #expect(goal.hhmmFormat == false)
+        #expect(goal.yAxis == "cumulative total test-goal")
+        #expect(goal.initDay == 1668963600)
+        #expect(goal.pledge == 0)
+        #expect(goal.recentData.count == 5)
 
     }
 
-    func testSuggestedNextValueBasedOnLastValue() throws {
-        var testJSON = requiredGoalJson()
+    @Test func testSuggestedNextValueBasedOnLastValue() throws {
+        var testJSON = requiredGoalJson
         testJSON["recent_data"] = [
             ["id": "101", "value": 1, "daystamp": "20221130", "updated_at": 300],
             ["id": "102", "value": 2, "daystamp": "20221126", "updated_at": 200],
@@ -119,20 +118,20 @@ final class GoalTests: XCTestCase {
 
         let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
 
-        XCTAssertEqual(goal.suggestedNextValue, 1)
+        #expect(goal.suggestedNextValue == 1)
     }
 
-    func testSuggestedNextValueEmptyIfNoData() throws {
-        var testJSON = requiredGoalJson()
+    @Test func testSuggestedNextValueEmptyIfNoData() throws {
+        var testJSON = requiredGoalJson
         testJSON["recent_data"] = []
 
         let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
 
-        XCTAssertEqual(goal.suggestedNextValue, nil)
+        #expect(goal.suggestedNextValue == nil)
     }
 
-    func testSuggestedNextValueIgnoresDerailsAndSelfDestructs() throws {
-        var testJSON = requiredGoalJson()
+    @Test func testSuggestedNextValueIgnoresDerailsAndSelfDestructs() throws {
+        var testJSON = requiredGoalJson
         testJSON["recent_data"] = [
             ["id": "101", "value": 0, "daystamp": "20221131", "updated_at": 600, "comment": "Goal #RESTART Point"],
             ["id": "102", "value": 0, "daystamp": "20221131", "updated_at": 500, "comment": "This will #SELFDESTRUCT"],
@@ -144,17 +143,18 @@ final class GoalTests: XCTestCase {
 
         let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
 
-        XCTAssertEqual(goal.suggestedNextValue, 2)
+        #expect(goal.suggestedNextValue == 2)
     }
 
     func createTestUser(context: NSManagedObjectContext) -> User {
-        return User(context: context, username: "test-user", deadbeat: false, timezone: "Etc/UTC", defaultAlertStart: 0, defaultDeadline: 0, defaultLeadTime: 0)
+        context.performAndWait {
+            return User(context: context, username: "test-user", deadbeat: false, timezone: "Etc/UTC", defaultAlertStart: 0, defaultDeadline: 0, defaultLeadTime: 0)
+        }
     }
 
 
     /// Return the minimum set of required attributes for creating a goal
-    func requiredGoalJson() -> JSON {
-        return JSON(parseJSON: """
+    var requiredGoalJson = JSON(parseJSON: """
         {
             "id": "737aaa34f0118a330852e4bd",
             "title": "Goal for Testing Purposes",
@@ -175,5 +175,4 @@ final class GoalTests: XCTestCase {
         }
         """)
 
-    }
 }
