@@ -1,27 +1,10 @@
-//
-//  GoalViewModel.swift
-//  BeeSwift
-//
-//  Created by krugerk on 2024-11-25.
-//
-
 import Foundation
-import Intents
 
 import CoreData
 import BeeKit
 
 struct GoalViewModel {
     let goal: Goal
-    
-    public func initialDateStepperValue(date: Date = Date()) -> Double {
-        let daystampAccountingForTheGoalsDeadline = Daystamp(fromDate: date,
-                                                             deadline: goal.deadline)
-        let daystampAssumingMidnightDeadline = Daystamp(fromDate: date,
-                                                        deadline: 0)
-        
-        return Double(daystampAssumingMidnightDeadline.distance(to: daystampAccountingForTheGoalsDeadline))
-    }
     
     var title: String {
         goal.slug
@@ -83,5 +66,14 @@ struct GoalViewModel {
     
     var showTimerButton: Bool {
         !goal.hideDataEntry
+    }
+    
+    func initialDateStepperValue(submissionDate date: Date = Date()) -> Double {
+        let daystampAccountingForTheGoalsDeadline = Daystamp(fromDate: date,
+                                                             deadline: goal.deadline)
+        let daystampAssumingMidnightDeadline = Daystamp(fromDate: date,
+                                                        deadline: 0)
+        
+        return Double(daystampAssumingMidnightDeadline.distance(to: daystampAccountingForTheGoalsDeadline))
     }
 }
