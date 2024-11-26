@@ -1,43 +1,39 @@
-//
-//  GoalViewModelTests.swift
-//  BeeSwiftTests
-//
-//  Created by krugerk on 2024-11-25.
-//
-
 import Testing
 
 @testable import BeeSwift
 @testable import BeeKit
 
 struct GoalViewModelTests {
+    private enum DayStep: Double {
+        case yesterday = -1
+        case today = 0
+        case tomorrow = 1
+    }
     
-    @Test func initialStepperIsMinusOneWhenSubmissionDateIsAfterMidnightAndBeforeDeadline() async throws {
+    @Test func initialStepperIsYesterdayWhenSubmissionDateIsAfterMidnightAndBeforeDeadline() async throws {
         let goal = Self.makeGoalWithDeadline(3600 * 3)
         let viewModel = GoalViewModel(goal: goal)
         let submissionDate = Calendar.current.date(bySettingHour: 1, minute: 30, second: 0, of: Date())!
         let actual = viewModel.initialDateStepperValue(date: submissionDate)
-        #expect(actual == -1)
+        #expect(actual == DayStep.yesterday.rawValue)
     }
     
-    @Test func initialStepperIsZeroWhenSubmissionDateIsBeforeMidnightAndBeforeDeadline() async throws {
+    @Test func initialStepperIsTodayWhenSubmissionDateIsBeforeMidnightAndBeforeDeadline() async throws {
         let goal = Self.makeGoalWithDeadline(0)
         let viewModel = GoalViewModel(goal: goal)
         let submissionDate = Calendar.current.date(bySettingHour: 20, minute: 30, second: 0, of: Date())!
         let actual = viewModel.initialDateStepperValue(date: submissionDate)
-        #expect(actual == 0)
+        #expect(actual == DayStep.today.rawValue)
     }
 
-    @Test func initialStepperIsPlusOneWhenSubmissionDateIsAfterDeadline() async throws {
+    @Test func initialStepperIsTomorrowWhenSubmissionDateIsAfterDeadline() async throws {
         let goal = Self.makeGoalWithDeadline(3600 * -3)
         let viewModel = GoalViewModel(goal: goal)
         let submissionDate = Calendar.current.date(bySettingHour: 22, minute: 30, second: 0, of: Date())!
         let actual = viewModel.initialDateStepperValue(date: submissionDate)
-        #expect(actual == 1)
+        #expect(actual == DayStep.tomorrow.rawValue)
     }
 }
-
-
 
 private extension GoalViewModelTests {
     static func makeGoalWithDeadline(_ deadline: Int) -> Goal {

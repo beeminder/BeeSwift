@@ -21,10 +21,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     let buttonHeight = 42
 
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
-
-    var goal: Goal {
-        viewModel.goal
-    }
     
     private let viewModel: GoalViewModel
 
@@ -58,7 +54,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.systemBackground
-        self.title = self.goal.slug
+        self.title = viewModel.title
 
         // have to set these before the datapoints since setting the most recent datapoint updates the text field,
         // which in turn updates the stepper
@@ -128,7 +124,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.left.equalTo(self.goalImageScrollView)
             make.right.equalTo(self.goalImageScrollView)
         }
-        self.goalImageView.goal = self.goal
+        self.goalImageView.goal = self.viewModel.goal
 
         self.addChild(self.datapointTableController)
         self.scrollView.addSubview(self.datapointTableController.view)
@@ -140,7 +136,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
 
         let dataEntryView = UIView()
-        dataEntryView.isHidden = self.goal.hideDataEntry
+        dataEntryView.isHidden = viewModel.isDataEntryHidden
 
         self.scrollView.addSubview(dataEntryView)
         dataEntryView.snp.makeConstraints { (make) -> Void in
@@ -261,15 +257,11 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.bottom.equalTo(self.submitButton)
         }
 
-        if self.goal.isDataProvidedAutomatically {
+        if viewModel.showPullToRefreshHint {
             let pullToRefreshView = PullToRefreshView()
             scrollView.addSubview(pullToRefreshView)
 
-            if self.goal.isLinkedToHealthKit {
-                pullToRefreshView.message = "Pull down to synchronize with Apple Health"
-            } else {
-                pullToRefreshView.message = "Pull down to update"
-            }
+            pullToRefreshView.message = viewModel.pullToRefreshHint
 
             pullToRefreshView.snp.makeConstraints { (make) in
                 make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(elementSpacing)
@@ -279,7 +271,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
 
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
-        if !self.goal.hideDataEntry {
+        if viewModel.showTimerButton {
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage(systemName: "stopwatch"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
 
@@ -308,21 +300,21 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             do {
                 try await self.updateGoalAndInterface()
             } catch {
-                logger.error("Error refreshing details for goal \(self.goal.slug): \(error)")
+                logger.error("Error refreshing details for goal \(self.viewModel.goalName): \(error)")
             }
         }
     }
 
     @objc func timerButtonPressed() {
-        let controller = TimerViewController(goal: self.goal)
+        let controller = TimerViewController(goal: viewModel.goal)
         controller.modalPresentationStyle = .fullScreen
         self.present(controller, animated: true, completion: nil)
     }
 
     @objc func actionButtonPressed() {
-        let username = goal.owner.username
+        let username = viewModel.username
         guard let accessToken = ServiceLocator.currentUserManager.accessToken,
-            let viewGoalUrl = URL(string: "\(ServiceLocator.requestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(ServiceLocator.requestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
+              let viewGoalUrl = URL(string: "\(ServiceLocator.requestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(ServiceLocator.requestManager.baseURLString)/\(username)/\(viewModel.goalName)") else { return }
 
         let safariVC = SFSafariViewController(url: viewGoalUrl)
         safariVC.delegate = self
@@ -332,12 +324,12 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     @objc func refreshButtonPressed() {
         Task { @MainActor in
             do {
-                if self.goal.isLinkedToHealthKit {
-                    try await ServiceLocator.healthStoreManager.updateWithRecentData(goalID: self.goal.objectID, days: 7)
-                } else if goal.isDataProvidedAutomatically {
+                if viewModel.isLinkedWithHealthKit {
+                    try await ServiceLocator.healthStoreManager.updateWithRecentData(goalID: self.viewModel.goalObjectId, days: 7)
+                } else if !viewModel.usesManualDataEntry {
                     // Don't force a refresh for manual goals. While doing so is harmless, it queues the goal which means we show a
                     // lemniscate for a few seconds, making the refresh slower.
-                    try await ServiceLocator.goalManager.forceAutodataRefresh(self.goal)
+                    try await ServiceLocator.goalManager.forceAutodataRefresh(self.viewModel.goal)
                 }
                 try await self.updateGoalAndInterface()
             } catch {
@@ -352,8 +344,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     @objc func refreshCountdown() {
-        self.countdownLabel.textColor = self.goal.countdownColor
-        self.countdownLabel.text = self.goal.capitalSafesum()
+        self.countdownLabel.textColor = viewModel.countdownLabelTextColor
+        self.countdownLabel.text = viewModel.countdownLabelText
     }
 
     @objc func goalImageTapped() {
@@ -361,10 +353,10 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: BeeDataPoint) {
-        guard !self.goal.hideDataEntry else { return }
+        guard !viewModel.isDataEntryHidden else { return }
         guard let existingDatapoint = datapoint as? DataPoint else { return }
 
-        let editDatapointViewController = EditDatapointViewController(goal: goal, datapoint: existingDatapoint)
+        let editDatapointViewController = EditDatapointViewController(goal: viewModel.goal, datapoint: existingDatapoint)
         let navigationController = UINavigationController(rootViewController: editDatapointViewController)
         navigationController.modalPresentationStyle = .formSheet
         self.present(navigationController, animated: true, completion: nil)
@@ -386,8 +378,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func setValueTextField() {
-        let suggestedNextValue = goal.suggestedNextValue ?? 1
-        valueTextField.text = "\(String(describing: suggestedNextValue))"
+        valueTextField.text = "\(viewModel.suggestedNextValue)"
         valueTextFieldValueChanged()
     }
 
@@ -459,7 +450,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
 
             do {
-                let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: self.urtext, slug: self.goal.slug)
+                let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: self.urtext, slug: viewModel.goalName)
                 self.commentTextField.text = ""
 
                 try await updateGoalAndInterface()
@@ -485,13 +476,13 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func updateGoalAndInterface() async throws {
-        try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
+        try await ServiceLocator.goalManager.refreshGoal(self.viewModel.goalObjectId)
         updateInterfaceToMatchGoal()
     }
 
     func updateInterfaceToMatchGoal() {
-        self.datapointTableController.hhmmformat = goal.hhmmFormat
-        self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
+        self.datapointTableController.hhmmformat = viewModel.isHhmmFormat
+        self.datapointTableController.datapoints = viewModel.recentDatapoints
 
         self.refreshCountdown()
     }
