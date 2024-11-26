@@ -5,33 +5,33 @@ import Testing
 
 struct GoalViewModelTests {
     private enum DayStep: Double {
-        case yesterday = -1
-        case today = 0
-        case tomorrow = 1
+        case previousDay = -1
+        case sameDay = 0
+        case nextDay = 1
     }
     
     @Test func initialStepperIsYesterdayWhenSubmissionDateIsAfterMidnightAndBeforeDeadline() async throws {
-        let goal = Self.makeGoalWithDeadline(3600 * 3)
-        let viewModel = GoalViewModel(goal: goal)
-        let submissionDate = Calendar.current.date(bySettingHour: 1, minute: 30, second: 0, of: Date())!
-        let actual = viewModel.initialDateStepperValue(date: submissionDate)
-        #expect(actual == DayStep.yesterday.rawValue)
+        let goalWithAfterMidnightDeadline = Self.makeGoalWithDeadline(3600 * 3)
+        let viewModel = GoalViewModel(goal: goalWithAfterMidnightDeadline)
+        let submissionDateBeforeGoalsDeadline = Calendar.current.date(bySettingHour: 1, minute: 30, second: 0, of: Date())!
+        let actual = viewModel.initialDateStepperValue(date: submissionDateBeforeGoalsDeadline)
+        #expect(actual == DayStep.previousDay.rawValue)
     }
     
     @Test func initialStepperIsTodayWhenSubmissionDateIsBeforeMidnightAndBeforeDeadline() async throws {
-        let goal = Self.makeGoalWithDeadline(0)
-        let viewModel = GoalViewModel(goal: goal)
-        let submissionDate = Calendar.current.date(bySettingHour: 20, minute: 30, second: 0, of: Date())!
-        let actual = viewModel.initialDateStepperValue(date: submissionDate)
-        #expect(actual == DayStep.today.rawValue)
+        let goalWithMidnightDeadline = Self.makeGoalWithDeadline(0)
+        let viewModel = GoalViewModel(goal: goalWithMidnightDeadline)
+        let submissionDateBeforeMidnight = Calendar.current.date(bySettingHour: 20, minute: 30, second: 0, of: Date())!
+        let actual = viewModel.initialDateStepperValue(date: submissionDateBeforeMidnight)
+        #expect(actual == DayStep.sameDay.rawValue)
     }
 
     @Test func initialStepperIsTomorrowWhenSubmissionDateIsAfterDeadline() async throws {
-        let goal = Self.makeGoalWithDeadline(3600 * -3)
-        let viewModel = GoalViewModel(goal: goal)
-        let submissionDate = Calendar.current.date(bySettingHour: 22, minute: 30, second: 0, of: Date())!
-        let actual = viewModel.initialDateStepperValue(date: submissionDate)
-        #expect(actual == DayStep.tomorrow.rawValue)
+        let goalWithBeforeMidnightDeadline = Self.makeGoalWithDeadline(3600 * -3)
+        let viewModel = GoalViewModel(goal: goalWithBeforeMidnightDeadline)
+        let submissionDateBetweenDeadlineAndMidnight = Calendar.current.date(bySettingHour: 22, minute: 30, second: 0, of: Date())!
+        let actual = viewModel.initialDateStepperValue(date: submissionDateBetweenDeadlineAndMidnight)
+        #expect(actual == DayStep.nextDay.rawValue)
     }
 }
 
