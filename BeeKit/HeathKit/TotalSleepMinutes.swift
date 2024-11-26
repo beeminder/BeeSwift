@@ -18,9 +18,7 @@ enum SleepResolution {
 }
 
 func isRelevantToSleep(_ sample: HKCategorySample) -> Bool {
-    var relevantValues: [HKCategoryValueSleepAnalysis]
-    if #available(iOS 16.0, *) {
-        relevantValues = [
+    let relevantValues: [HKCategoryValueSleepAnalysis] = [
             HKCategoryValueSleepAnalysis.awake,
             HKCategoryValueSleepAnalysis.asleepUnspecified,
             HKCategoryValueSleepAnalysis.asleepREM,
@@ -28,13 +26,6 @@ func isRelevantToSleep(_ sample: HKCategorySample) -> Bool {
             HKCategoryValueSleepAnalysis.asleepCore,
             HKCategoryValueSleepAnalysis.asleepUnspecified
         ]
-    } else {
-        // Fallback on earlier versions
-        relevantValues = [
-            HKCategoryValueSleepAnalysis.awake,
-            HKCategoryValueSleepAnalysis.asleep
-        ]
-    }
 
     return relevantValues.contains(HKCategoryValueSleepAnalysis(rawValue: sample.value)!)
 }

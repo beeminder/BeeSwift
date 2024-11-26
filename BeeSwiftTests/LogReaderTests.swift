@@ -11,7 +11,6 @@ import OSLog
 
 @testable import BeeSwift
 
-@available(iOS 15.0, *)
 final class LogReaderTests: XCTestCase {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "LogReaderTests")
 
