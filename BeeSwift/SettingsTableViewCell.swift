@@ -16,9 +16,16 @@ class SettingsTableViewCell: UITableViewCell {
             self.titleLabel.text = self.title
         }
     }
+    
+    // the name of the image to use, with preference of system image of that name followed by an app-bundled asset catalog image
     var imageName : String? {
         didSet {
-            self.settingsImage.image = UIImage(named: self.imageName!)
+            guard let imageName else {
+                self.settingsImage.image = nil
+                return
+            }
+            
+            self.settingsImage.image = UIImage(systemName: imageName) ?? UIImage(named: imageName)
         }
     }
     
@@ -57,6 +64,19 @@ class SettingsTableViewCell: UITableViewCell {
             make.left.equalTo(10)
             make.height.width.equalTo(26)
         })
-
+        
+        self.settingsImage.tintColor = dynamicImageTintColor
+    }
+    
+    private let dynamicImageTintColor = UIColor { traitCollection in
+        switch traitCollection.userInterfaceStyle {
+        case .light:
+            return UIColor.black
+        default:
+            return UIColor(red: 235.0/255.0,
+                           green: 235.0/255.0,
+                           blue: 235.0/255.0,
+                           alpha: 1.0)
+        }
     }
 }

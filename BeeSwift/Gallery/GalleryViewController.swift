@@ -53,7 +53,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.view.backgroundColor = .systemBackground
         self.title = "Goals"
         
-        let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
+        let item = UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
         self.navigationItem.rightBarButtonItem = item
         
         self.view.addSubview(self.lastUpdatedView)
