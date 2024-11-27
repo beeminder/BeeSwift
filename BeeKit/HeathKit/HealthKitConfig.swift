@@ -58,6 +58,7 @@ public class HealthKitConfig : NSObject {
             TimeInBedHealthKitMetric(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep),
             TimeAsleepHealthKitMetric(humanText: "Time asleep", databaseString: "timeAsleep", category: .Sleep),
             
+            // Other
             QuantityHealthKitMetric(humanText: "Time in Daylight", databaseString: "timeInDaylight", category: .Other, hkQuantityTypeIdentifier: .timeInDaylight),
         ]
         
