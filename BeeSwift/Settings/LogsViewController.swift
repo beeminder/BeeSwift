@@ -7,8 +7,6 @@ import Foundation
 import OSLog
 import OrderedCollections
 
-
-@available(iOS 15.0, *)
 class LogsViewController: UIViewController {
 
     let logTextView = UITextView()

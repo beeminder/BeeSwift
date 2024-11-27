@@ -53,18 +53,15 @@ public class HealthKitConfig : NSObject {
             QuantityHealthKitMetric(humanText: "Vitamin E", databaseString: "dietaryVitaminE", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminE),
             QuantityHealthKitMetric(humanText: "Vitamin K", databaseString: "dietaryVitaminK", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminK),
             QuantityHealthKitMetric(humanText: "Water", databaseString: "water", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryWater),
-
+            
             // Sleep
             TimeInBedHealthKitMetric(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep),
             TimeAsleepHealthKitMetric(humanText: "Time asleep", databaseString: "timeAsleep", category: .Sleep),
-
-        ]
-
-        if #available(iOS 17, *) {
+            
             // Other
-            allMetrics.append(QuantityHealthKitMetric(humanText: "Time in Daylight", databaseString: "timeInDaylight", category: .Other, hkQuantityTypeIdentifier: .timeInDaylight))
-        }
-
+            QuantityHealthKitMetric(humanText: "Time in Daylight", databaseString: "timeInDaylight", category: .Other, hkQuantityTypeIdentifier: .timeInDaylight),
+        ]
+        
         return allMetrics
     }()
 }
