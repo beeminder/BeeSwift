@@ -216,7 +216,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
 
                 hud.mode = .customView
-                hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
+                hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))
                 hud.hide(animated: true, afterDelay: 0.5)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.dismiss(animated: true)
@@ -238,7 +238,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
 
                 hud.mode = .customView
-                hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
+                hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))
                 hud.hide(animated: true, afterDelay: 0.5)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.dismiss(animated: true)

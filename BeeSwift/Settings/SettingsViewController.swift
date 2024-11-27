@@ -128,7 +128,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         case 0:
             let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String
             cell.title = "Sort goals by: \(selectedGoalSort ?? "")"
-            cell.imageName = "Sort"
+            cell.imageName = "arrow.up.arrow.down"
             cell.accessoryType = .disclosureIndicator
         case 1:
             UNUserNotificationCenter.current().getNotificationSettings { (settings) in
@@ -136,17 +136,17 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
                     cell.title = "Emergency notifications: \(settings.authorizationStatus == .authorized ? "on" : "off")"
                 }
             }
-            cell.imageName = "Notifications"
+            cell.imageName = "app.badge"
             cell.accessoryType = .disclosureIndicator
         case 2:
             let user = ServiceLocator.currentUserManager.user(context: ServiceLocator.persistentContainer.viewContext)
             let timezone = user?.timezone ?? "Unknown"
             cell.title = "Time zone: \(timezone)"
-            cell.imageName = "Clock"
+            cell.imageName = "clock"
             cell.accessoryType = .none
         case 3:
             cell.title = "Sign out"
-            cell.imageName = "SignOut"
+            cell.imageName = "rectangle.portrait.and.arrow.right"
             cell.accessoryType = .none
         default:
             break

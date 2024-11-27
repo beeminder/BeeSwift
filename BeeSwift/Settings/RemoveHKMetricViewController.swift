@@ -87,7 +87,7 @@ class RemoveHKMetricViewController: UIViewController {
                 try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
 
                 hud.mode = .customView
-                hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
+                hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))
 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: self, userInfo: ["goal": self.goal as Any])
                 
