@@ -55,20 +55,16 @@ extension Goal {
     }
 
     public var countdownColor :UIColor {
-        let buf = self.safeBuf
-        if buf < 1 {
+        switch self.safeBuf {
+        case ..<1:
             return UIColor.Beeminder.SafetyBuffer.red
-        }
-        else if buf < 2 {
+        case ..<2:
             return UIColor.Beeminder.SafetyBuffer.orange
-        }
-        else if buf < 3 {
+        case ..<3:
             return UIColor.Beeminder.SafetyBuffer.blue
-        }
-        else if buf < 7 {
+        case ..<7:
             return UIColor.Beeminder.SafetyBuffer.green
-        }
-        else {
+        default:
             return UIColor.Beeminder.SafetyBuffer.forestGreen
         }
     }
