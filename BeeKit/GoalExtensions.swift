@@ -57,15 +57,20 @@ extension Goal {
     public var countdownColor :UIColor {
         let buf = self.safeBuf
         if buf < 1 {
-            return UIColor.Beeminder.red
+            return UIColor.Beeminder.SafetyBuffer.red
         }
         else if buf < 2 {
-            return UIColor.Beeminder.orange
+            return UIColor.Beeminder.SafetyBuffer.orange
         }
         else if buf < 3 {
-            return UIColor.Beeminder.blue
+            return UIColor.Beeminder.SafetyBuffer.blue
         }
-        return UIColor.Beeminder.green
+        else if buf < 7 {
+            return UIColor.Beeminder.SafetyBuffer.green
+        }
+        else {
+            return UIColor.Beeminder.SafetyBuffer.forestGreen
+        }
     }
 
     public var hideDataEntry: Bool {
