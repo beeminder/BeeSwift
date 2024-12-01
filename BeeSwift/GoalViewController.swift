@@ -110,7 +110,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.goalImageScrollView.showsHorizontalScrollIndicator = false
         self.goalImageScrollView.showsVerticalScrollIndicator = false
         self.goalImageScrollView.minimumZoomScale = 1.0
-        self.goalImageScrollView.maximumZoomScale = 3.0
+        self.goalImageScrollView.maximumZoomScale = 7.0
         self.goalImageScrollView.delegate = self
         self.goalImageScrollView.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.view)
@@ -362,7 +362,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     @objc func goalImageTapped() {
-        self.goalImageScrollView.setZoomScale(self.goalImageScrollView.zoomScale == 1.0 ? 2.0 : 1.0, animated: true)
+        let possibleNextStepUp = self.goalImageScrollView.zoomScale + 2.0
+        let nextZoomLevel: Double = possibleNextStepUp <= 7.0 ? possibleNextStepUp : 1.0
+        self.goalImageScrollView.setZoomScale(nextZoomLevel, animated: true)
     }
 
     func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: BeeDataPoint) {
