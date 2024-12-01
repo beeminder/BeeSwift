@@ -6,9 +6,7 @@ extension Goal {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
         if self.autodata == "apple" {
-            let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
-                metric.databaseString == self.healthKitMetric
-            })
+            let metric = HealthKitConfig.metrics.first(where: { $0.databaseString == self.healthKitMetric })
             return self.healthKitMetric == nil ? "Apple" : metric?.humanText
         }
         if let autodata = self.autodata, autodata.count > 0 { return autodata.capitalized }
