@@ -15,7 +15,7 @@ import Intents
 import BeeKit
 import OSLog
 
-class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTableViewControllerDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+class GoalViewController: UIViewController, DatapointTableViewControllerDelegate, UITextFieldDelegate {
     let elementSpacing = 10
     let sideMargin = 10
     let buttonHeight = 42
@@ -503,10 +503,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.refreshCountdown()
         self.updateLastUpdatedLabel()
     }
-
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return self.goalImageView
-    }
     
     private static func makeInitialDateStepperValue(date: Date = Date(), for goal: Goal) -> Double {
         let daystampAccountingForTheGoalsDeadline = Daystamp(fromDate: date,
@@ -525,6 +521,15 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     // MARK: - SFSafariViewControllerDelegate
 
+}
+
+extension GoalViewController: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return self.goalImageView
+    }
+}
+
+extension GoalViewController: SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
     }
