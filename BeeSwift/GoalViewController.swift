@@ -363,7 +363,8 @@ class GoalViewController: UIViewController, DatapointTableViewControllerDelegate
 
     @objc func goalImageTapped() {
         let possibleNextStepUp = self.goalImageScrollView.zoomScale + 2.0
-        let nextZoomLevel: Double = possibleNextStepUp <= 7.0 ? possibleNextStepUp : 1.0
+        let nextZoomLevel = possibleNextStepUp <= self.goalImageScrollView.maximumZoomScale ? possibleNextStepUp : self.goalImageScrollView.minimumZoomScale
+        
         self.goalImageScrollView.setZoomScale(nextZoomLevel, animated: true)
     }
 
