@@ -8,7 +8,6 @@ class FreshnessIndicatorView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .preferredFont(forTextStyle: .subheadline)
-        label.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
         label.textAlignment = .center
         return label
     }()
