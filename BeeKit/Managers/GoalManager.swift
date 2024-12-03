@@ -25,6 +25,9 @@ public actor GoalManager {
     private nonisolated let currentUserManager: CurrentUserManager
 
     public var goalsFetchedAt : Date? = nil
+    
+    // id, not goalname (slug)
+    public private(set) var lastFetchedByGoalId: [String: Date?] = [:]
 
     private var queuedGoalsBackgroundTaskRunning : Bool = false
 
@@ -65,6 +68,9 @@ public actor GoalManager {
         self.updateGoalsFromJson(response) // TODO: Return failure info
 
         self.goalsFetchedAt = Date()
+        staleGoals(context: modelContext)?.map(\.id).forEach { goalId in
+            lastFetchedByGoalId.updateValue(self.goalsFetchedAt, forKey: goalId)
+        }
 
         await performPostGoalUpdateBookkeeping()
     }
@@ -80,6 +86,9 @@ public actor GoalManager {
         goal.updateToMatch(json: goalJSON)
 
         try modelContext.save()
+        
+        lastFetchedByGoalId.updateValue(Date(), forKey: goal.id)
+
         await performPostGoalUpdateBookkeeping()
     }
 
@@ -191,6 +200,7 @@ public actor GoalManager {
 
     private func resetStateForSignOut() {
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
+        self.lastFetchedByGoalId = [:]
 
         // TODO: Delete from CoreData
     }
