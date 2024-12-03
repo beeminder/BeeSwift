@@ -24,6 +24,15 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     let goal: Goal
 
+
+    private var lastFetched: Date? {
+        didSet {
+            updateLastUpdatedLabel()
+        }
+    }
+    private let lastUpdatedView = UIView()
+    private let lastUpdatedLabel = BSLabel()
+    
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
     fileprivate var datapointTableController = DatapointTableViewController()
     fileprivate var dateTextField = UITextField()
@@ -45,6 +54,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     
     init(goal: Goal) {
         self.goal = goal
+        self.lastFetched = goal.lastModifiedLocal
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -63,9 +73,31 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.dateStepper.minimumValue = -365
         self.dateStepper.maximumValue = 365
 
+        self.view.addSubview(self.lastUpdatedView)
+        self.lastUpdatedView.backgroundColor = UIColor.Beeminder.gray
+        self.lastUpdatedView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+        }
+        
+        self.lastUpdatedView.addSubview(self.lastUpdatedLabel)
+        self.lastUpdatedLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
+        self.lastUpdatedLabel.textAlignment = NSTextAlignment.center
+        self.lastUpdatedLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(3)
+            make.bottom.equalTo(-3)
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+        }
+        
+        self.updateLastUpdatedLabel()
+        Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GoalViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
+        
+        
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
+            make.top.equalTo(lastUpdatedView.snp.bottom)
             make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
@@ -475,6 +507,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func updateGoalAndInterface() async throws {
         try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
+        self.lastFetched = ServiceLocator.goalManager.lastFetchedByGoalId[self.goal.id] ?? nil
         updateInterfaceToMatchGoal()
     }
 
@@ -496,6 +529,19 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
                                                         deadline: 0)
         
         return Double(daystampAssumingMidnightDeadline.distance(to: daystampAccountingForTheGoalsDeadline))
+    }
+    
+    private let lastUpdatedDateFormatter: RelativeDateTimeFormatter = {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.dateTimeStyle = .named
+        return formatter
+    }()
+    
+    @objc func updateLastUpdatedLabel() {
+        let lastUpdated = self.lastFetched ?? .distantPast
+        
+        self.lastUpdatedView.backgroundColor = lastUpdated.timeIntervalSinceNow < -3600 ? UIColor.Beeminder.red : UIColor.Beeminder.gray
+        self.lastUpdatedLabel.text = "Last updated: " + lastUpdatedDateFormatter.localizedString(for: lastUpdated, relativeTo: Date())
     }
 
     // MARK: - SFSafariViewControllerDelegate
