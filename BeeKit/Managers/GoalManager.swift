@@ -27,7 +27,7 @@ public actor GoalManager {
     public var goalsFetchedAt : Date? = nil
     
     // id, not goalname (slug)
-    public private(set) var lastFetchedByGoalId: [String: Date?] = [:]
+    private var lastFetchedByGoalId: [String: Date?] = [:]
 
     private var queuedGoalsBackgroundTaskRunning : Bool = false
 
@@ -94,6 +94,14 @@ public actor GoalManager {
 
     public func forceAutodataRefresh(_ goal: Goal) async throws {
         let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
+    }
+    
+    
+    /// when a goal was last fetched
+    /// - Parameter goalId: goal.id of interest
+    /// - Returns: Date a goal was last fetched or nil
+    public func getDateLastFetchedForGoalWithId(_ goalId: String) -> Date? {
+        lastFetchedByGoalId[goalId]?.map { $0 }
     }
 
     private func updateGoalsFromJson(_ responseJSON: JSON) {
