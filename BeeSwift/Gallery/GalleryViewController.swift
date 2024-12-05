@@ -87,8 +87,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         deadbeatLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(13)
         deadbeatLabel.text = "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
         deadbeatLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(4)
-            make.bottom.equalTo(-4)
+            make.top.equalTo(3)
+            make.bottom.equalTo(-3)
             make.left.equalTo(10)
             make.right.equalTo(-10)
         }
@@ -105,8 +105,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
         self.outofdateLabel.textAlignment = .center
         self.outofdateLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(6)
-            make.bottom.equalTo(-6)
+            make.top.equalTo(3)
+            make.bottom.equalTo(-3)
             make.left.equalTo(10)
             make.right.equalTo(-10)
         }
