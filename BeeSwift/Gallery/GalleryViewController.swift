@@ -154,7 +154,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.top.equalTo(self.searchBar.snp.bottom)
             make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
-            make.bottom.equalTo(0)
+            make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
         }
 
         self.updateGoals()
