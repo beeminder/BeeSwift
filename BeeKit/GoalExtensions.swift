@@ -6,9 +6,7 @@ extension Goal {
         if self.autodata == "ifttt" { return "IFTTT" }
         if self.autodata == "api" { return "API" }
         if self.autodata == "apple" {
-            let metric = HealthKitConfig.shared.metrics.first(where: { (metric) -> Bool in
-                metric.databaseString == self.healthKitMetric
-            })
+            let metric = HealthKitConfig.metrics.first(where: { $0.databaseString == self.healthKitMetric })
             return self.healthKitMetric == nil ? "Apple" : metric?.humanText
         }
         if let autodata = self.autodata, autodata.count > 0 { return autodata.capitalized }
@@ -57,17 +55,18 @@ extension Goal {
     }
 
     public var countdownColor :UIColor {
-        let buf = self.safeBuf
-        if buf < 1 {
-            return UIColor.Beeminder.red
+        switch self.safeBuf {
+        case ..<1:
+            return UIColor.Beeminder.SafetyBuffer.red
+        case ..<2:
+            return UIColor.Beeminder.SafetyBuffer.orange
+        case ..<3:
+            return UIColor.Beeminder.SafetyBuffer.blue
+        case ..<7:
+            return UIColor.Beeminder.SafetyBuffer.green
+        default:
+            return UIColor.Beeminder.SafetyBuffer.forestGreen
         }
-        else if buf < 2 {
-            return UIColor.Beeminder.orange
-        }
-        else if buf < 3 {
-            return UIColor.Beeminder.blue
-        }
-        return UIColor.Beeminder.green
     }
 
     public var hideDataEntry: Bool {

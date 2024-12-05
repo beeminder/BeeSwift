@@ -6,8 +6,6 @@
 import Foundation
 import OSLog
 
-
-@available(iOS 15.0, *)
 class LogReader {
     private var allMessagesTask: Task<[OSLogEntryLog], Never>!
 
