@@ -75,9 +75,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         stackView.addArrangedSubview(self.deadbeatView)
         self.deadbeatView.accessibilityIdentifier = "deadbeatView"
         self.deadbeatView.backgroundColor = UIColor.Beeminder.gray
-        if !ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
-            self.deadbeatView.isHidden = true
-        }
+        updateDeadbeatVisibility()
 
         let deadbeatLabel = BSLabel()
         self.deadbeatView.addSubview(deadbeatLabel)
@@ -259,7 +257,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
 
-    func updateDeadbeatHeight() {
+    func updateDeadbeatVisibility() {
         let isDeadbeat = ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext)
         self.deadbeatView.isHidden = !isDeadbeat
     }
@@ -352,7 +350,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.collectionView!.reloadData()
-        self.updateDeadbeatHeight()
+        self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
         if self.goals.count == 0 {
