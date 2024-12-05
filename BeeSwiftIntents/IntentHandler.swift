@@ -8,7 +8,6 @@
 import Foundation
 import Intents
 
-@available(iOS 14.0, *)
 class IntentHandler : INExtension {
     override func handler(for intent: INIntent) -> Any? {
         AddDataIntentHandler()

@@ -15,10 +15,12 @@ import BeeKit
 class EditGoalNotificationsViewController : EditNotificationsViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditGoalNotificationsViewController")
 
+    let user: User
     let goal: Goal
     fileprivate var useDefaultsSwitch = UISwitch()
     
     init(goal : Goal) {
+        self.user = ServiceLocator.currentUserManager.user(context: ServiceLocator.persistentContainer.viewContext)!
         self.goal = goal
         
         super.init()
@@ -126,17 +128,17 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     }
 
                     do {
-                        try await ServiceLocator.currentUserManager.syncNotificationDefaults()
+                        try await ServiceLocator.currentUserManager.refreshUser()
                     } catch {
                         self.logger.error("Error syncing notification defaults")
                         // TODO: Show UI failure
                         return
                     }
 
-                    self.leadTimeStepper.value = ServiceLocator.currentUserManager.defaultLeadTime().doubleValue
+                    self.leadTimeStepper.value = Double(self.user.defaultLeadTime)
                     self.updateLeadTimeLabel()
-                    self.alertstart = ServiceLocator.currentUserManager.defaultAlertstart()
-                    self.deadline   = ServiceLocator.currentUserManager.defaultDeadline()
+                    self.alertstart = self.user.defaultAlertStart
+                    self.deadline   = self.user.defaultDeadline
                     self.timePickerEditingMode = self.timePickerEditingMode // trigger the setter which updates the timePicker components
                 }
             }))

@@ -1,10 +1,13 @@
+import CoreData
+import CoreDataEvolution
 import Foundation
 import OSLog
 
 import SwiftyJSON
 
 /// Read and update datapoints from the beeminder server
-public class DataPointManager {
+@NSModelActor(disableGenerateInit: true)
+public actor DataPointManager {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "DataPointManager")
 
     // Ignore automatic datapoint updates where the difference is a smaller fraction than this. This
@@ -12,11 +15,13 @@ public class DataPointManager {
     private let datapointValueEpsilon = 0.00000001
 
     let requestManager: RequestManager
-    let container: BeeminderPersistentContainer
 
     init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
         self.requestManager = requestManager
-        self.container = container
+        self.modelContainer = container
+        let context = container.newBackgroundContext()
+        context.name = "DataPointManager"
+        modelExecutor = .init(context: context)
     }
 
     private func datapointsMatchingDaystamp(datapoints : [DataPoint], daystamp : Daystamp) -> [DataPoint] {
@@ -50,7 +55,7 @@ public class DataPointManager {
         let response = try await requestManager.get(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
         let responseJSON = JSON(response!)
 
-        return responseJSON.arrayValue.map({ DataPoint.fromJSON(context: goal.managedObjectContext!, goal: goal, json: $0) })
+        return responseJSON.arrayValue.map({ DataPoint.fromJSON(context: modelContext, goal: goal, json: $0) })
     }
 
     /// Retrieve all data points on or after the daystamp provided
@@ -91,7 +96,8 @@ public class DataPointManager {
         return fetchedDatapoints.filter { point in point.daystamp >= daystamp }
     }
 
-    func updateToMatchDataPoints(goal: Goal, healthKitDataPoints : [BeeDataPoint]) async throws {
+    public func updateToMatchDataPoints(goalID: NSManagedObjectID, healthKitDataPoints : [BeeDataPoint]) async throws {
+        let goal = try modelContext.existingObject(with: goalID) as! Goal
         guard let firstDaystamp = healthKitDataPoints.map({ point in point.daystamp }).min() else { return }
 
         let datapoints = try await datapointsSince(goal: goal, daystamp: try! Daystamp(fromString: firstDaystamp.description))

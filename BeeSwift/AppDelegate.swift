@@ -38,7 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if HKHealthStore.isHealthDataAvailable() {
                 // We must register queries for all our healthkit metrics before this method completes
                 // in order to successfully be delivered background updates.
-                ServiceLocator.healthStoreManager.silentlyInstallObservers()
+            ServiceLocator.healthStoreManager.silentlyInstallObservers(context: ServiceLocator.persistentContainer.viewContext)
         }
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
@@ -130,12 +130,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     @objc func updateBadgeCount() {
-        logger.notice("Updating badge count")
+        assert(Thread.isMainThread, "updateBadgeCount must be run on the main thread")
 
-        let context = ServiceLocator.persistentContainer.newBackgroundContext()
+        let context = ServiceLocator.persistentContainer.viewContext
         guard let goals = ServiceLocator.goalManager.staleGoals(context: context) else { return }
         let beemergencyCount = goals.count(where: { $0.safeBuf < 1})
-        logger.notice("Beemergency count is \(beemergencyCount, privacy: .public)")
+        logger.notice("Updating Beemergency badge count to \(beemergencyCount, privacy: .public)")
 
         UNUserNotificationCenter.current().setBadgeCount(beemergencyCount)
     }

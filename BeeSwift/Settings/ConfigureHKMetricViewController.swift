@@ -159,7 +159,7 @@ class ConfigureHKMetricViewController : UIViewController {
             do {
                 let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
                 hud.mode = .customView
-                hud.customView = UIImageView(image: UIImage(named: "BasicCheckmark"))
+                hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))
                 hud.hide(animated: true, afterDelay: 2)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     guard let healthKitConfigController = self.navigationController?.viewControllers.first(where: { vc in vc is HealthKitConfigViewController }) else {

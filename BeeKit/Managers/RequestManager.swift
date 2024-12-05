@@ -33,7 +33,7 @@ public class RequestManager {
 
         var urlWithSubstitutions = url
         if url.contains("{username}") {
-            guard let username = ServiceLocator.currentUserManager.username else {
+            guard let username = await ServiceLocator.currentUserManager.username else {
                 throw ServerError("Attempted to make request to username-based URL \(url) while logged out", requestError: nil)
             }
             urlWithSubstitutions = urlWithSubstitutions.replacingOccurrences(of: "{username}", with: username)

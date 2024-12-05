@@ -23,6 +23,8 @@ jobs:
       with:
         ruby-version: '3.3.5'
         bundler-cache: true
+    - name: Enable Macros
+      run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
     - name: Run tests
       run: bundle exec fastlane ci
     - name: Upload report

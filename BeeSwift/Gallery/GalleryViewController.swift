@@ -53,7 +53,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.view.backgroundColor = .systemBackground
         self.title = "Goals"
         
-        let item = UIBarButtonItem(image: UIImage(named: "Settings"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
+        let item = UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
         self.navigationItem.rightBarButtonItem = item
         
         self.view.addSubview(self.lastUpdatedView)
@@ -83,7 +83,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !ServiceLocator.currentUserManager.isDeadbeat() {
+            if !ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
                 make.height.equalTo(0)
             }
         }
@@ -147,7 +147,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.top.equalTo(self.searchBar.snp.bottom)
             make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
-            make.bottom.equalTo(0)
+            make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
         }
         
         self.view.addSubview(self.noGoalsLabel)
@@ -162,7 +162,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.updateGoals()
         self.fetchGoals()
 
-        if ServiceLocator.currentUserManager.signedIn() {
+        if ServiceLocator.currentUserManager.signedIn(context: ServiceLocator.persistentContainer.viewContext) {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
                 if success {
@@ -208,7 +208,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !ServiceLocator.currentUserManager.signedIn() {
+        if !ServiceLocator.currentUserManager.signedIn(context: ServiceLocator.persistentContainer.viewContext) {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
@@ -299,7 +299,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(0)
             make.right.equalTo(0)
             make.top.equalTo(self.lastUpdatedView.snp.bottom)
-            if !ServiceLocator.currentUserManager.isDeadbeat() {
+            if !ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
                 make.height.equalTo(0)
             }
         }

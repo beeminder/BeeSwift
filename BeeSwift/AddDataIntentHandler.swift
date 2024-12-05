@@ -10,7 +10,6 @@ import Foundation
 import Intents
 import BeeKit
 
-@available(iOS 14.0, *)
 class AddDataIntentHandler: NSObject, AddDataIntentHandling {
     func resolveValue(for intent: AddDataIntent) async -> AddDataValueResolutionResult {
         if let value = intent.value {

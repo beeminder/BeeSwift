@@ -8,23 +8,30 @@ Changes to be released in next version
 
 🙌 Improvements
  * Support dark mode and tint for app icon (#478)
+ * Changes to the styling of some buttons and UI elements (#483, #488, #489, #492)
  * Support webcredentials for password manager login (#449)
  * Sort by urgency instead of deadline (#451)
+ * Timer screen now shows goal name (#481)
+ * Disambiguate date picker when month or year differs (#496)
 
 🐛 Bugfix
  * Fix calculation for meditation minutes (#453)
  * HealthKit should not delete derailment metadata points (#474)
  * Add #THISWILLSELFDESTRUCT to list of points ignored for value suggestion (#457)
+ * UI Elements no longer overlap with notch/dyanmic island (#495)
+ * Fix issues with choosing wrong day shortly after midnight (#510)
 
 ⚠️  API Changes
  * 
 
 🧱 Build
- * Update RubyGem versions (#476)
+ * Update RubyGem versions (#476, #509)
 
 Others
  * Rewrite the app's representation to use CoreData
+ * Remove the today view extension (#500)
  * Remove the "delta text" UI section (#455)
+ * The app now requires iOS 17 (#484)
 
 6.6 (2024-03-07)
 =================================================

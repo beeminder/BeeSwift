@@ -276,7 +276,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
         if !self.goal.hideDataEntry {
-            self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage(named: "Timer"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
+            self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage(systemName: "stopwatch"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(onGoalsUpdatedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
@@ -316,8 +316,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     @objc func actionButtonPressed() {
-        guard let username = ServiceLocator.currentUserManager.username,
-            let accessToken = ServiceLocator.currentUserManager.accessToken,
+        let username = goal.owner.username
+        guard let accessToken = ServiceLocator.currentUserManager.accessToken,
             let viewGoalUrl = URL(string: "\(ServiceLocator.requestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(ServiceLocator.requestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
 
         let safariVC = SFSafariViewController(url: viewGoalUrl)
@@ -502,7 +502,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         let daystampAssumingMidnightDeadline = Daystamp(fromDate: date,
                                                         deadline: 0)
         
-        return Double(daystampAccountingForTheGoalsDeadline.distance(to: daystampAssumingMidnightDeadline))
+        return Double(daystampAssumingMidnightDeadline.distance(to: daystampAccountingForTheGoalsDeadline))
     }
 
     // MARK: - SFSafariViewControllerDelegate

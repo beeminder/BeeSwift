@@ -9,12 +9,9 @@
 import Foundation
 import HealthKit
 
-
-public class HealthKitConfig : NSObject {
-    public static let shared = HealthKitConfig()
-
-    public let metrics : [HealthKitMetric] = {
-        var allMetrics : [HealthKitMetric] = [
+public enum HealthKitConfig {
+    public static var metrics: [HealthKitMetric] {
+        [
             // Activity
             QuantityHealthKitMetric(humanText: "Active energy", databaseString: "activeEnergy", category: .Activity, hkQuantityTypeIdentifier: .activeEnergyBurned, precision: [HKUnit.largeCalorie(): 0]),
             QuantityHealthKitMetric(humanText: "Cycling distance", databaseString: "cyclingDistance", category: .Activity, hkQuantityTypeIdentifier: .distanceCycling),
@@ -53,18 +50,13 @@ public class HealthKitConfig : NSObject {
             QuantityHealthKitMetric(humanText: "Vitamin E", databaseString: "dietaryVitaminE", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminE),
             QuantityHealthKitMetric(humanText: "Vitamin K", databaseString: "dietaryVitaminK", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminK),
             QuantityHealthKitMetric(humanText: "Water", databaseString: "water", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryWater),
-
+            
             // Sleep
             TimeInBedHealthKitMetric(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep),
             TimeAsleepHealthKitMetric(humanText: "Time asleep", databaseString: "timeAsleep", category: .Sleep),
 
-        ]
-
-        if #available(iOS 17, *) {
             // Other
-            allMetrics.append(QuantityHealthKitMetric(humanText: "Time in Daylight", databaseString: "timeInDaylight", category: .Other, hkQuantityTypeIdentifier: .timeInDaylight))
-        }
-
-        return allMetrics
-    }()
+            QuantityHealthKitMetric(humanText: "Time in Daylight", databaseString: "timeInDaylight", category: .Other, hkQuantityTypeIdentifier: .timeInDaylight),
+        ]
+    }
 }
