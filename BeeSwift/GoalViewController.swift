@@ -304,19 +304,14 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             
             switch self {
             case .goalCommitment:
-                print("goal commitment")
                 destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalCommitment(username: username, goalName: goalName)
             case .goalStop:
-                print("goal stop/pause")
                 destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalStop(username: username, goalName: goalName)
             case .goalData:
-                print("goal data")
                 destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalData(username: username, goalName: goalName)
             case .goalStatistics:
-                print("goal stats")
                 destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalStatistics(username: username, goalName: goalName)
             case .goalSettings:
-                print("goal settings")
                 destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalSettings(username: username, goalName: goalName)
             }
             
