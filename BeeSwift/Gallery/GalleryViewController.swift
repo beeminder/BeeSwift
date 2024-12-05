@@ -21,6 +21,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
 
     var stackView = UIStackView()
+    var collectionContainer = UIView()
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewFlowLayout?
     private let freshnessIndicator = FreshnessIndicatorView()
@@ -49,11 +50,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         stackView.alignment = .fill
         stackView.distribution = .fill
         stackView.spacing = 0
+        stackView.insetsLayoutMarginsFromSafeArea = true
         stackView.snp.makeConstraints { (make) -> Void in
-            make.top.left.right.equalTo(self.view.safeAreaLayoutGuide)
-            // We are happy for the bottom of the scrollview to be partially obscured by the
-            // home indicator. This looks better than a bit white area at the bottom.
-            make.bottom.equalTo(self.view)
+            make.top.left.right.equalToSuperview()
+            make.bottom.equalTo(stackView.keyboardLayoutGuide.snp.top)
         }
 
         self.collectionViewLayout = UICollectionViewFlowLayout()
@@ -116,10 +116,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.searchBar.isHidden = true
         self.searchBar.showsCancelButton = true
 
+        stackView.addArrangedSubview(self.collectionContainer)
+
+        self.collectionContainer.addSubview(self.collectionView!)
         self.collectionView!.delegate = self
         self.collectionView!.dataSource = self
         self.collectionView!.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
-        stackView.addArrangedSubview(self.collectionView!)
+        self.collectionView?.snp.makeConstraints { (make) in
+            make.top.bottom.equalTo(collectionContainer)
+            make.left.right.equalTo(collectionContainer.safeAreaLayoutGuide)
+        }
 
         self.collectionView?.refreshControl = {
             let refreshControl = UIRefreshControl()
