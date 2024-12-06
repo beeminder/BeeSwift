@@ -168,13 +168,6 @@
 			remoteGlobalIDString = A196CB131AE4142E00B90A3E;
 			remoteInfo = BeeSwift;
 		};
-		E57BE6F32655EBE000BA540B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E57BE6DF2655EBD900BA540B;
-			remoteInfo = BeeKit;
-		};
 		E57BE7122655F00200BA540B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
@@ -732,7 +725,6 @@
 			);
 			dependencies = (
 				E5F7C4A9260FC5300095684F /* PBXTargetDependency */,
-				E57BE6F42655EBE000BA540B /* PBXTargetDependency */,
 				E57BE7132655F00200BA540B /* PBXTargetDependency */,
 			);
 			name = BeeSwift;
@@ -1167,11 +1159,6 @@
 			isa = PBXTargetDependency;
 			target = A196CB131AE4142E00B90A3E /* BeeSwift */;
 			targetProxy = E57BE6EC2655EBE000BA540B /* PBXContainerItemProxy */;
-		};
-		E57BE6F42655EBE000BA540B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E57BE6DF2655EBD900BA540B /* BeeKit */;
-			targetProxy = E57BE6F32655EBE000BA540B /* PBXContainerItemProxy */;
 		};
 		E57BE7132655F00200BA540B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
