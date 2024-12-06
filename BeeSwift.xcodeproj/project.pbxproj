@@ -15,7 +15,6 @@
 		A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */; };
 		A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */; };
 		A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */; };
-		A1453B3F1AEDFCC8006F48DA /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */; };
 		A149147B1BE79FD50060600A /* EditNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149147A1BE79FD40060600A /* EditNotificationsViewController.swift */; };
 		A149147F1BE7A5670060600A /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */; };
 		A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */; };
@@ -235,7 +234,6 @@
 		A1453B341AED9184006F48DA /* UIColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		A1453B381AEDA71D006F48DA /* BSLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSLabel.swift; sourceTree = "<group>"; };
 		A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentUserManager.swift; sourceTree = "<group>"; };
-		A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		A149147A1BE79FD40060600A /* EditNotificationsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditNotificationsViewController.swift; sourceTree = "<group>"; };
 		A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -495,7 +493,6 @@
 				A196CB231AE4142F00B90A3E /* Images.xcassets */,
 				9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */,
 				E43BEA832A036A9C00FC3A38 /* LogReader.swift */,
-				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
 				E4015D9E2D10DC4D00F58D94 /* SceneDelegate.swift */,
 				9B2488412D030E5100E610E0 /* SignInView.swift */,
 			);
@@ -1015,7 +1012,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1453B3F1AEDFCC8006F48DA /* SignInViewController.swift in Sources */,
 				A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */,
 				E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */,
 				E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */,

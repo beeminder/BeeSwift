@@ -47,7 +47,7 @@ struct SignInView: View {
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 44)
                         }
-                        .background(Color("BeeminderGray"))
+                        .background(Color.gray)
                         .cornerRadius(8)
                         .disabled(viewModel.isLoading)
                     }
