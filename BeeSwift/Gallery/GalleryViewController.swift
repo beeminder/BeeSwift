@@ -13,7 +13,7 @@ import SwiftyJSON
 import HealthKit
 import SafariServices
 import OSLog
-
+import SwiftUI
 import BeeKit
 
 
@@ -534,6 +534,3 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.fetchGoals()
     }
 }
-
-
-import SwiftUI
