@@ -23,7 +23,7 @@ struct SignInView: View {
                     Image("website_logo_mid")
                         .resizable()
                         .scaledToFit()
-                        .frame(maxWidth: 200)
+                        .frame(maxWidth: 400)
                         .padding(.bottom)
                     
                     VStack(spacing: 15) {
