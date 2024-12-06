@@ -112,7 +112,6 @@ class SignInViewModel: ObservableObject {
     func signIn() async {
         isLoading = true
         
-        // Delay the task by 3 seconds:
         do {
             try await Task.sleep(nanoseconds: 3_000_000_000)
         } catch {
