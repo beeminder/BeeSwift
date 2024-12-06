@@ -613,6 +613,6 @@ private extension GoalViewController {
             })
         }
         
-        return UIMenu(title: "Goal Links", children: actions)
+        return UIMenu(title: "bmndr.com/\(goal.owner.username)/\(goal.slug)", children: actions)
     }
 }
