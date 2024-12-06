@@ -216,13 +216,17 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
         }
+        
+        if !ServiceLocator.currentUserManager.signedIn(context: ServiceLocator.persistentContainer.viewContext) {
+            presentSignInScreen()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
         if !ServiceLocator.currentUserManager.signedIn(context: ServiceLocator.persistentContainer.viewContext) {
-            let signInVC = SignInViewController()
-            signInVC.modalPresentationStyle = .fullScreen
-            self.present(signInVC, animated: true, completion: nil)
+            presentSignInScreen()
         } else {
             self.updateGoals()
             self.fetchGoals()
@@ -280,15 +284,34 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleSignOut() {
+        logger.debug("\(#function)")
+        
         self.goals = []
         self.filteredGoals = []
         self.collectionView?.reloadData()
-        if self.presentedViewController != nil {
-            if type(of: self.presentedViewController!) == SignInViewController.self { return }
+        
+        presentSignInScreen()
+    }
+    
+    
+    private var isSignInViewBeingPresented: Bool {
+        guard let presentedViewController else { return false }
+        
+        return type(of: presentedViewController) == UIHostingController<SignInView>.self
+    }
+    
+    
+    private func presentSignInScreen() {
+        let shallPresentSignIn = presentedViewController == nil || !isSignInViewBeingPresented
+        
+        guard shallPresentSignIn else {
+            logger.debug("\(#function) - already presenting sign in; not presenting it yet again")
+            return
         }
-        let signInVC = SignInViewController()
-        signInVC.modalPresentationStyle = .fullScreen
-        self.present(signInVC, animated: true, completion: nil)
+        
+        let hostingVC = UIHostingController(rootView: SignInView())
+        hostingVC.modalPresentationStyle = .fullScreen
+        self.present(hostingVC, animated: true)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -512,3 +535,5 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 }
 
+
+import SwiftUI
