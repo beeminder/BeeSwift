@@ -13,6 +13,8 @@ import KeychainSwift
 import OSLog
 import SwiftyJSON
 
+import WidgetKit
+
 @NSModelActor(disableGenerateInit: true)
 public actor CurrentUserManager {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CurrentUserManager")
@@ -126,8 +128,10 @@ public actor CurrentUserManager {
         return keychain.get(CurrentUserManager.accessTokenKey)
     }
     
-    public var username :String? {
-        return user(context: modelContext)?.username
+    public var username: String? {
+        get async {
+            user(context: modelContext)?.username
+        }
     }
 
     public nonisolated func signedIn(context: NSManagedObjectContext) -> Bool {
@@ -170,6 +174,7 @@ public actor CurrentUserManager {
         self.set(responseJSON[CurrentUserManager.beemTZKey].string!, forKey: CurrentUserManager.beemTZKey)
         await Task { @MainActor in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
+            WidgetCenter.shared.reloadAllTimelines()
         }.value
     }
     
@@ -213,6 +218,9 @@ public actor CurrentUserManager {
 
         await Task { @MainActor in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
+            
+            WidgetCenter.shared.reloadAllTimelines()
+
         }.value
     }
 }

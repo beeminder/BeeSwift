@@ -12,7 +12,7 @@ import CoreDataEvolution
 import SwiftyJSON
 import OSLog
 import OrderedCollections
-
+import WidgetKit
 
 @NSModelActor(disableGenerateInit: true)
 public actor GoalManager {
@@ -24,7 +24,11 @@ public actor GoalManager {
     private let requestManager: RequestManager
     private nonisolated let currentUserManager: CurrentUserManager
 
-    public var goalsFetchedAt : Date? = nil
+    public var goalsFetchedAt : Date? = nil {
+        didSet {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+    }
 
     private var queuedGoalsBackgroundTaskRunning : Bool = false
 
@@ -132,6 +136,8 @@ public actor GoalManager {
         await Task { @MainActor in
             modelContainer.viewContext.refreshAllObjects()
             NotificationCenter.default.post(name: Notification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: self)
+            
+            WidgetCenter.shared.reloadAllTimelines()
         }.value
     }
 
@@ -188,10 +194,10 @@ public actor GoalManager {
             await self.resetStateForSignOut()
         }
     }
-
+    
     private func resetStateForSignOut() {
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
-
+        
         // TODO: Delete from CoreData
     }
 }
