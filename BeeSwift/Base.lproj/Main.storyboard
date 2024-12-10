@@ -8,10 +8,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Gallery Navigation Controller-->
+        <!--Navigation Controller-->
         <scene sceneID="qqJ-th-mte">
             <objects>
-                <navigationController id="E0t-UY-3pO" customClass="GalleryNavigationController" customModule="BeeSwift" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController id="E0t-UY-3pO" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" translucent="NO" id="Pjd-c5-Ja5">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
