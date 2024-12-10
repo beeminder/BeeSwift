@@ -62,6 +62,14 @@ public class Goal: NSManagedObject {
     @NSManaged public func addToRecentData(_ values: Set<DataPoint>)
     @objc(removeRecentData:)
     @NSManaged public func removeFromRecentData(_ values: Set<DataPoint>)
+    
+    @NSManaged public var dueByTableData: String?
+    
+    public var dueBy: [String: BeeminderDueByEntry] {
+        self.loadDueByTable() ?? [:]
+    }
+    
+    
 
     /// The last time this record in the CoreData store was updated
     @NSManaged public var lastModifiedLocal: Date
@@ -91,7 +99,8 @@ public class Goal: NSManagedObject {
         urgencyKey: String,
         useDefaults: Bool,
         won: Bool,
-        yAxis: String
+        yAxis: String,
+        dueBy: String?
     ) {
         let entity = NSEntityDescription.entity(forEntityName: "Goal", in: context)!
         super.init(entity: entity, insertInto: context)
@@ -119,6 +128,7 @@ public class Goal: NSManagedObject {
         self.useDefaults = useDefaults
         self.won = won
         self.yAxis = yAxis
+        self.dueByTableData = dueByTableData
 
         lastModifiedLocal = Date()
     }
@@ -171,6 +181,13 @@ public class Goal: NSManagedObject {
         self.useDefaults = json["use_defaults"].boolValue
         self.won = json["won"].boolValue
         self.yAxis = json["yaxis"].stringValue
+        self.dueByTableData = {
+            let entries = json.dictionaryValue["dueby"]?.dictionary?.compactMapValues(BeeminderDueByEntry.init)
+            ?? json.dictionary?.mapValues(BeeminderDueByEntry.init)
+            ?? [:]
+            return Goal.createDueByTableData(entries)
+        }()
+
 
         // Replace recent data with results from server
         // Note at present this leaks data points in the main db. This is probably fine for now
@@ -182,5 +199,115 @@ public class Goal: NSManagedObject {
         addToRecentData(newRecentData)
 
         lastModifiedLocal = Date()
+    }
+}
+
+// Helper methods for conversion
+extension Goal {
+    func saveDueByTable(_ dictionary: [String: BeeminderDueByEntry]) {
+        do {
+            let data = try JSONEncoder().encode(dictionary)
+            if let jsonString = String(data: data, encoding: .utf8) {
+                self.dueByTableData = jsonString
+            }
+        } catch {
+            print("Error encoding dictionary: \(error)")
+        }
+    }
+    
+    static func createDueByTableData(_ dictionary: [String: BeeminderDueByEntry]) -> String? {
+        do {
+            let data = try JSONEncoder().encode(dictionary)
+            return String(data: data, encoding: .utf8)
+        } catch {
+            print("Error encoding dictionary: \(error)")
+        }
+        return nil
+    }
+    
+    func loadDueByTable() -> [String: BeeminderDueByEntry]? {
+        guard let data = dueByTableData?.data(using: .utf8) else { return nil }
+        
+        do {
+            let dictionary = try JSONDecoder().decode([String: BeeminderDueByEntry].self, from: data)
+            return dictionary
+        } catch {
+            print("Error decoding dictionary: \(error)")
+            return nil
+        }
+    }
+}
+
+public class DueByTable: NSObject, NSCoding, Codable {
+    public private(set) var entries: [String: BeeminderDueByEntry]
+    
+    private enum Key: String {
+        case entries
+    }
+    
+    public init(entries: [String: BeeminderDueByEntry]) {
+        self.entries = entries
+    }
+    
+    public func encode(with coder: NSCoder) {
+        coder.encode(entries, forKey: Key.entries.rawValue)
+    }
+    
+    public required convenience init?(coder: NSCoder) {
+        let entries = coder.decodeObject(forKey: Key.entries.rawValue) as? [String: BeeminderDueByEntry] ?? [:]
+        
+        self.init(entries: entries)
+    }
+    
+}
+
+public class BeeminderDueByEntry: NSObject, NSCoding, Codable {
+    public let total: Double
+    public let delta: Double
+    public let formatted_total_for_beedroid: String
+    public let formatted_delta_for_beedroid: String
+    
+    public init(json: JSON) {
+        self.delta = json["delta"].doubleValue
+        self.total = json["total"].doubleValue
+        
+        self.formatted_delta_for_beedroid = json["formatted_delta_for_beedroid"].stringValue
+        self.formatted_total_for_beedroid = json["formatted_total_for_beedroid"].stringValue
+    }
+    
+    init(total: Double, delta: Double, formatted_total_for_beedroid: String, formatted_delta_for_beedroid: String) {
+        self.total = total
+        self.delta = delta
+        self.formatted_total_for_beedroid = formatted_total_for_beedroid
+        self.formatted_delta_for_beedroid = formatted_delta_for_beedroid
+    }
+
+    private enum Key: String {
+        case total
+        case delta
+        case formattedTotalForBeedroid
+        case formattedDeltaForBeedroid
+    }
+    
+    public func encode(with coder: NSCoder) {
+        coder.encode(total, forKey: Key.total.rawValue)
+        coder.encode(delta, forKey: Key.delta.rawValue)
+        coder.encode(formatted_total_for_beedroid, forKey: Key.formattedTotalForBeedroid.rawValue)
+        coder.encode(formatted_delta_for_beedroid, forKey: Key.formattedDeltaForBeedroid.rawValue)
+    }
+    
+    public required convenience init?(coder: NSCoder) {
+        let total = coder.decodeDouble(forKey: Key.total.rawValue)
+        let delta = coder.decodeDouble(forKey: Key.delta.rawValue)
+        
+        guard
+            let formatted_total_for_beedroid = coder.decodeObject(forKey: Key.formattedTotalForBeedroid.rawValue) as? String,
+            let formatted_delta_for_beedroid = coder.decodeObject(forKey: Key.formattedDeltaForBeedroid.rawValue) as? String
+        else { return nil }
+        
+        self.init(total: total,
+                  delta: delta,
+                  formatted_total_for_beedroid: formatted_total_for_beedroid,
+                  formatted_delta_for_beedroid: formatted_delta_for_beedroid)
     }
 }
