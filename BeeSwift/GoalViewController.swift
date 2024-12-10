@@ -529,13 +529,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.datapointTableController.hhmmformat = goal.hhmmFormat
         self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
         
-        self.dueByLabel.text = goal.dueBy
-            .sorted(using: SortDescriptor(\.key))
-            .compactMap { $0.value.formatted_delta_for_beedroid }
-            .map { $0 == "✔" ? "✓" : $0 }
-            .joined(separator: "  ")
         self.dueByLabel.isHidden = goal.dueBy.isEmpty
-
+        self.dueByLabel.attributedText = self.dueByTableAttributedString
         
         self.refreshCountdown()
         self.updateLastUpdatedLabel()
@@ -675,5 +670,44 @@ private extension GoalViewController {
         }
         
         return UIMenu(title: "bmndr.com/\(goal.owner.username)/\(goal.slug)", children: actions)
+    }
+}
+
+
+private extension GoalViewController {
+    var dueByContainsSpecificAmounts: Bool {
+        goal.dueBy
+            .compactMap { $0.value.formatted_delta_for_beedroid }
+            .joined(separator: " ")
+            .contains(where: { $0.isNumber })
+    }
+    
+    var dueByTableAttributedString: NSAttributedString {
+        let textAndColor: [(text: String, color: UIColor)] = goal.dueBy
+            .sorted(using: SortDescriptor(\.key))
+            .compactMap { $0.value.formatted_delta_for_beedroid }
+            .map { $0 == "✔" ? "✓" : $0 }
+            .enumerated()
+            .map { offset, element in
+                var color: UIColor {
+                    switch offset {
+                    case 0: return .systemOrange
+                    case 1: return .systemBlue
+                    case 2: return .systemGreen
+                    default: return .label.withAlphaComponent(0.8)
+                    }
+                }
+                return (text: element, color: color)
+            }
+        
+        let attrStr = NSMutableAttributedString()
+        
+        textAndColor
+            .map { (text: String, color: UIColor) in
+                NSAttributedString(string: text + " ", attributes: [.foregroundColor: color])
+            }
+            .forEach { attrStr.append($0) }
+        
+        return attrStr
     }
 }
