@@ -16,6 +16,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let todaytaLabel :BSLabel = BSLabel()
     let thumbnailImageView = GoalImageView(isThumbnail: true)
     let safesumLabel :BSLabel = BSLabel()
+    let dueByDeltasLabel = BSLabel()
     let margin = 8
     
     var goal: Goal? {
@@ -27,6 +28,12 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
             self.safesumLabel.text = goal?.capitalSafesum()
             self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
+            self.dueByDeltasLabel.text = goal?.dueBy
+                .sorted(using: SortDescriptor(\.key))
+                .compactMap { $0.value.formatted_delta_for_beedroid }
+                .map { $0 == "✔" ? "✓" : $0 }
+                .joined(separator: "  ")
+            self.dueByDeltasLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
         }
     }
     
@@ -38,6 +45,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(self.todaytaLabel)
         self.contentView.addSubview(self.thumbnailImageView)
         self.contentView.addSubview(self.safesumLabel)
+        self.contentView.addSubview(self.dueByDeltasLabel)
         self.contentView.backgroundColor = .systemBackground
 
         self.slugLabel.font = UIFont.beeminder.defaultFontHeavy
@@ -81,9 +89,62 @@ class GoalCollectionViewCell: UICollectionViewCell {
             make.centerY.equalTo(self.thumbnailImageView.snp.centerY)
             make.right.equalTo(-self.margin)
         }
+        
+        self.dueByDeltasLabel.textAlignment = NSTextAlignment.center
+        self.dueByDeltasLabel.font = UIFont.beeminder.defaultBoldFont.withSize(13)
+        self.dueByDeltasLabel.numberOfLines = 0
+        self.dueByDeltasLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
+            make.top.equalTo(self.safesumLabel.snp.bottom).offset(6)
+            make.right.equalTo(-self.margin)
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 }
+
+
+private extension GoalCollectionViewCell {
+    var dueByContainsSpecificAmounts: Bool {
+        guard let goal else { return false }
+        
+        return goal.dueBy
+            .compactMap { $0.value.formatted_delta_for_beedroid }
+            .joined(separator: " ")
+            .contains(where: { $0.isNumber })
+    }
+    
+    var dueByTableAttributedString: NSAttributedString? {
+        guard let goal else { return nil }
+        
+        let textAndColor: [(text: String, color: UIColor)] = goal.dueBy
+            .sorted(using: SortDescriptor(\.key))
+            .compactMap { $0.value.formatted_delta_for_beedroid }
+            .map { $0 == "✔" ? "✓" : $0 }
+            .enumerated()
+            .map { offset, element in
+                var color: UIColor {
+                    switch offset {
+                    case 0: return .systemOrange
+                    case 1: return .systemBlue
+                    case 2: return .systemGreen
+                    default: return .label.withAlphaComponent(0.8)
+                    }
+                }
+                return (text: element, color: color)
+            }
+        
+        let attrStr = NSMutableAttributedString()
+        
+        textAndColor
+            .map { (text: String, color: UIColor) in
+                NSAttributedString(string: text + " ", attributes: [.foregroundColor: color])
+            }
+            .forEach { attrStr.append($0) }
+        
+        return attrStr
+    }
+}
+
