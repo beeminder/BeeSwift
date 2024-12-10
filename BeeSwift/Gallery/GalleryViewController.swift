@@ -207,6 +207,17 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.collectionView!.snp.remakeConstraints { make in
+            make.top.equalTo(self.searchBar.snp.bottom)
+            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
+            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
+            make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         if !ServiceLocator.currentUserManager.signedIn(context: ServiceLocator.persistentContainer.viewContext) {
             let signInVC = SignInViewController()
