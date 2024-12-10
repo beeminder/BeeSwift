@@ -25,6 +25,9 @@ public actor GoalManager {
     private nonisolated let currentUserManager: CurrentUserManager
 
     public var goalsFetchedAt : Date? = nil
+    
+    // id, not goalname (slug)
+    private var lastFetchedByGoalId: [String: Date?] = [:]
 
     private var queuedGoalsBackgroundTaskRunning : Bool = false
 
@@ -65,6 +68,9 @@ public actor GoalManager {
         self.updateGoalsFromJson(response) // TODO: Return failure info
 
         self.goalsFetchedAt = Date()
+        staleGoals(context: modelContext)?.map(\.id).forEach { goalId in
+            lastFetchedByGoalId.updateValue(self.goalsFetchedAt, forKey: goalId)
+        }
 
         await performPostGoalUpdateBookkeeping()
     }
@@ -80,11 +86,22 @@ public actor GoalManager {
         goal.updateToMatch(json: goalJSON)
 
         try modelContext.save()
+        
+        lastFetchedByGoalId.updateValue(Date(), forKey: goal.id)
+
         await performPostGoalUpdateBookkeeping()
     }
 
     public func forceAutodataRefresh(_ goal: Goal) async throws {
         let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
+    }
+    
+    
+    /// when a goal was last fetched
+    /// - Parameter goalId: goal.id of interest
+    /// - Returns: Date a goal was last fetched or nil
+    public func getDateLastFetchedForGoalWithId(_ goalId: String) -> Date? {
+        lastFetchedByGoalId[goalId]?.map { $0 }
     }
 
     private func updateGoalsFromJson(_ responseJSON: JSON) {
@@ -191,6 +208,7 @@ public actor GoalManager {
 
     private func resetStateForSignOut() {
         self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
+        self.lastFetchedByGoalId = [:]
 
         // TODO: Delete from CoreData
     }
