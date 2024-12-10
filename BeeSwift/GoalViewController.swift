@@ -44,6 +44,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var goalImageScrollView = UIScrollView()
     fileprivate var lastUpdatedTimer: Timer?
     fileprivate var countdownLabel = BSLabel()
+    fileprivate let dueByLabel = BSLabel()
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
@@ -153,12 +154,24 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.right.equalTo(self.goalImageScrollView)
         }
         self.goalImageView.goal = self.goal
+        
+        
+        self.scrollView.addSubview(dueByLabel)
+        self.dueByLabel.snp.makeConstraints { make in
+            make.top.equalTo(self.goalImageScrollView.snp.bottom).offset(elementSpacing)
+            make.height.equalTo(Constants.defaultFontSize)
+            make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
+            make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
+        }
+        self.dueByLabel.textAlignment = .center
+        self.dueByLabel.font = UIFont.preferredFont(forTextStyle: .headline)
+        self.dueByLabel.textColor = .label.withAlphaComponent(0.8)
 
         self.addChild(self.datapointTableController)
         self.scrollView.addSubview(self.datapointTableController.view)
         self.datapointTableController.delegate = self
         self.datapointTableController.view.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.goalImageScrollView.snp.bottom).offset(elementSpacing)
+            make.top.equalTo(self.dueByLabel.snp.bottom).offset(elementSpacing)
             make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
             make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
         }
@@ -515,7 +528,15 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     func updateInterfaceToMatchGoal() {
         self.datapointTableController.hhmmformat = goal.hhmmFormat
         self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
+        
+        self.dueByLabel.text = goal.dueBy
+            .sorted(using: SortDescriptor(\.key))
+            .compactMap { $0.value.formatted_delta_for_beedroid }
+            .map { $0 == "✔" ? "✓" : $0 }
+            .joined(separator: "  ")
+        self.dueByLabel.isHidden = goal.dueBy.isEmpty
 
+        
         self.refreshCountdown()
         self.updateLastUpdatedLabel()
     }
