@@ -15,6 +15,13 @@ class GoalCollectionViewCell: UICollectionViewCell {
   let todaytaLabel: BSLabel = BSLabel()
   let thumbnailImageView = GoalImageView(isThumbnail: true)
   let safesumLabel: BSLabel = BSLabel()
+  lazy var dueByDeltasLabel: BSLabel = {
+    let label = BSLabel()
+    label.textAlignment = NSTextAlignment.center
+    label.font = UIFont.beeminder.defaultBoldFont.withSize(13)
+    label.numberOfLines = 0
+    return label
+  }()
   let margin = 8
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -23,6 +30,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     self.contentView.addSubview(self.todaytaLabel)
     self.contentView.addSubview(self.thumbnailImageView)
     self.contentView.addSubview(self.safesumLabel)
+    self.contentView.addSubview(self.dueByDeltasLabel)
     self.contentView.backgroundColor = .systemBackground
 
     self.slugLabel.font = UIFont.beeminder.defaultFontHeavy
@@ -64,6 +72,11 @@ class GoalCollectionViewCell: UICollectionViewCell {
       make.centerY.equalTo(self.thumbnailImageView.snp.centerY)
       make.right.equalTo(-self.margin)
     }
+    self.dueByDeltasLabel.snp.makeConstraints { make in
+      make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
+      make.top.equalTo(self.safesumLabel.snp.bottom).offset(6)
+      make.right.equalTo(-self.margin)
+    }
   }
   required init?(coder aDecoder: NSCoder) { super.init(coder: aDecoder) }
   override func prepareForReuse() {
@@ -78,5 +91,33 @@ class GoalCollectionViewCell: UICollectionViewCell {
     self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
     self.safesumLabel.text = goal?.capitalSafesum()
     self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
+    self.dueByDeltasLabel.attributedText = goal?.dueByTableAttributedString
+    self.dueByDeltasLabel.isHidden = goal == nil || goal?.dueByContainsSpecificAmounts == false
+  }
+}
+
+extension Goal {
+  fileprivate var dueByContainsSpecificAmounts: Bool {
+    self.dueBy.values.map { $0.formattedDelta }.joined(separator: " ").contains(where: { $0.isNumber })
+  }
+  fileprivate var dueByTableAttributedString: NSAttributedString {
+    let textAndColor: [(text: String, color: UIColor)] = dueBy.sorted(using: SortDescriptor(\.key)).compactMap({
+      $0.value.formattedDelta
+    }).map { $0 == "✔" ? "✓" : $0 }.enumerated().map { offset, element in
+      var color: UIColor {
+        switch offset {
+        case 0: return UIColor.Beeminder.SafetyBuffer.orange
+        case 1: return UIColor.Beeminder.SafetyBuffer.blue
+        case 2: return UIColor.Beeminder.SafetyBuffer.green
+        default: return .label.withAlphaComponent(0.8)
+        }
+      }
+      return (text: element, color: color)
+    }
+    let attrStr = NSMutableAttributedString()
+    textAndColor.map { (text: String, color: UIColor) in
+      NSAttributedString(string: text + " ", attributes: [.foregroundColor: color])
+    }.forEach { attrStr.append($0) }
+    return attrStr
   }
 }
