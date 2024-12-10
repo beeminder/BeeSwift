@@ -202,19 +202,8 @@ public class Goal: NSManagedObject {
     }
 }
 
-// Helper methods for conversion
+// Helper methods for conversion of due by table
 extension Goal {
-    func saveDueByTable(_ dictionary: [String: BeeminderDueByEntry]) {
-        do {
-            let data = try JSONEncoder().encode(dictionary)
-            if let jsonString = String(data: data, encoding: .utf8) {
-                self.dueByTableData = jsonString
-            }
-        } catch {
-            print("Error encoding dictionary: \(error)")
-        }
-    }
-    
     static func createDueByTableData(_ dictionary: [String: BeeminderDueByEntry]) -> String? {
         do {
             let data = try JSONEncoder().encode(dictionary)
