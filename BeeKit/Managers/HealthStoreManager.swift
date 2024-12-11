@@ -205,5 +205,10 @@ public actor HealthStoreManager {
         let nonZeroDataPoints = newDataPoints.filter { dataPoint in dataPoint.value != 0 }
         logger.notice("Updating \(metric.databaseString, privacy: .public) goal with \(nonZeroDataPoints.count, privacy: .public) datapoints. Skipped \(newDataPoints.count - nonZeroDataPoints.count, privacy: .public) empty points.")
         try await ServiceLocator.dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: nonZeroDataPoints)
+        
+        try await modelContext.perform {
+            goal.lastSyncedWithHealthKit = Date()
+            try self.modelContext.save()
+        }
     }
 }
