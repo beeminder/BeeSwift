@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */; };
+		9BEB2D2B2CF3ED9A00D36ED1 /* GoalViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB2D2A2CF3ED9A00D36ED1 /* GoalViewModelTests.swift */; };
+		9BEB2D2D2CF3EF7E00D36ED1 /* GoalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB2D2C2CF3EF7E00D36ED1 /* GoalViewModel.swift */; };
 		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
 		A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */; };
 		A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */; };
@@ -218,6 +220,8 @@
 
 /* Begin PBXFileReference section */
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9BEB2D2A2CF3ED9A00D36ED1 /* GoalViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalViewModelTests.swift; sourceTree = "<group>"; };
+		9BEB2D2C2CF3EF7E00D36ED1 /* GoalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalViewModel.swift; sourceTree = "<group>"; };
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
 		A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveHKMetricViewController.swift; sourceTree = "<group>"; };
 		A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseGoalSortViewController.swift; sourceTree = "<group>"; };
@@ -514,6 +518,7 @@
 				E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */,
 				E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */,
 				E4B6FEC52A776A2900690376 /* GoalTests.swift */,
+				9BEB2D2A2CF3ED9A00D36ED1 /* GoalViewModelTests.swift */,
 			);
 			path = BeeSwiftTests;
 			sourceTree = "<group>";
@@ -605,6 +610,7 @@
 			children = (
 				A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */,
 				A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */,
+				9BEB2D2C2CF3EF7E00D36ED1 /* GoalViewModel.swift */,
 				A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */,
 			);
 			name = GoalView;
@@ -1013,6 +1019,7 @@
 				A1453B3F1AEDFCC8006F48DA /* SignInViewController.swift in Sources */,
 				A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */,
 				E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */,
+				9BEB2D2D2CF3EF7E00D36ED1 /* GoalViewModel.swift in Sources */,
 				E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */,
 				A196CB1F1AE4142F00B90A3E /* GalleryViewController.swift in Sources */,
 				A1BE73AA1E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift in Sources */,
@@ -1054,6 +1061,7 @@
 				E4B0A32E28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */,
 				E48E2714296B75E4008013C0 /* TotalSleepMinutesTests.swift in Sources */,
 				A196CB331AE4142F00B90A3E /* BeeSwiftTests.swift in Sources */,
+				9BEB2D2B2CF3ED9A00D36ED1 /* GoalViewModelTests.swift in Sources */,
 				E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */,
 				E43BEA862A036D4300FC3A38 /* LogReaderTests.swift in Sources */,
 			);
