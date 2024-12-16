@@ -39,6 +39,8 @@ public class RequestManager {
             urlWithSubstitutions = urlWithSubstitutions.replacingOccurrences(of: "{username}", with: username)
         }
 
+        logger.debug("\(#function) | \(method.rawValue) | \(urlWithSubstitutions)")
+        
         let encoding: ParameterEncoding = if method == .get { URLEncoding.default } else { JSONEncoding.default }// TODO
         let response = await AF.request(
             "\(baseURLString)/\(urlWithSubstitutions)",
