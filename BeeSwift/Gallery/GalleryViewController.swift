@@ -27,14 +27,21 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let cellReuseIdentifier = "Cell"
     var deadbeatView = UIView()
     var outofdateView = UIView()
-    let noGoalsLabel = BSLabel()
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var goals : [Goal] = []
-    var filteredGoals : [Goal] = []
+    var goals : [Goal] = [] {
+        didSet {
+            setBackgroundView(filteredGoals: filteredGoals, goals: goals)
+        }
+    }
+    var filteredGoals : [Goal] = [] {
+        didSet {
+            setBackgroundView(filteredGoals: filteredGoals, goals: goals)
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -149,16 +156,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
         }
-        
-        self.view.addSubview(self.noGoalsLabel)
-        self.noGoalsLabel.snp.makeConstraints { (make) in
-            make.top.left.right.equalTo(self.collectionView!)
-        }
-        self.noGoalsLabel.text = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
-        self.noGoalsLabel.textAlignment = .center
-        self.noGoalsLabel.numberOfLines = 0
-        self.noGoalsLabel.isHidden = true
-        
+
         self.updateGoals()
         self.fetchGoals()
 
@@ -408,15 +406,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.updateDeadbeatHeight()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
-        if self.goals.count == 0 {
-            self.noGoalsLabel.isHidden = false
-            self.collectionView?.isHidden = true
-        } else {
-            self.noGoalsLabel.isHidden = true
-            self.collectionView?.isHidden = false
-        }
-        let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
-        self.navigationItem.leftBarButtonItem = searchItem
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -424,9 +414,23 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        [filteredGoals.isEmpty, goals.isEmpty].contains(true) ? 0 : 1
     }
     
+    private func setBackgroundView(filteredGoals: [Goal], goals: [Goal]) {
+        var view: UIView? {
+            switch (filteredGoals.isEmpty, goals.isEmpty) {
+            case (true, false):
+                return self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
+            case (true, true):
+                return self.makeViewForEmptyCollection(when: .noActiveGoals)
+            default:
+                return nil
+            }
+        }
+        collectionView?.backgroundView = view
+    }
+        
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let minimumWidth: CGFloat = 320
 
@@ -512,3 +516,57 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 }
 
+private extension GalleryViewController {
+    enum NoGoalReason: CaseIterable {
+        case noActiveGoals
+        case noGoalsMatchingFilter
+    }
+    
+    func makeViewForEmptyCollection(when reason: NoGoalReason) -> UIView {
+        let container = UIView()
+        
+        let viewCorrespondingToReason: UIView = {
+            switch reason {
+            case .noActiveGoals:
+                return noGoalsView
+            case .noGoalsMatchingFilter:
+                return noGoalsMatchingFilterView
+            }
+        }()
+        container.addSubview(viewCorrespondingToReason)
+        container.addSubview(UIView())
+
+        viewCorrespondingToReason.snp.makeConstraints { make in
+            make.top.lessThanOrEqualTo(100)
+            make.horizontalEdges.equalTo(container)
+        }
+
+        return container
+    }
+
+    private var noGoalsView: UIView {
+        let label = BSLabel()
+        label.text = """
+        You have no Beeminder goals!
+
+        You'll need to create one before this app will be any use.
+        """
+        label.textAlignment = .center
+        label.numberOfLines = 0
+
+        return label
+    }
+
+    private var noGoalsMatchingFilterView: UIView {
+        let label = BSLabel()
+        label.text = """
+        You have Beeminder goals!
+
+        None match the current filter.
+        """
+        label.textAlignment = .center
+        label.numberOfLines = 0
+
+        return label
+    }
+}
