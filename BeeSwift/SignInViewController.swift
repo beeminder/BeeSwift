@@ -99,7 +99,6 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         scrollView.addSubview(self.signInButton)
         self.signInButton.isHidden = true
         self.signInButton.setTitle("Sign In", for: UIControl.State())
-        self.signInButton.backgroundColor = UIColor.Beeminder.gray
         self.signInButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
         self.signInButton.titleLabel?.textColor = UIColor.white
         self.signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControl.Event.touchUpInside)
