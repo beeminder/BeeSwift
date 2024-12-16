@@ -4,10 +4,32 @@ Changes to be released in next version
 =================================================
 
 ✨ Features
+ * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * 
+
+⚠️  API Changes
+ * 
+
+🧱 Build
+ * 
+
+Others
+ * 
+
+6.7 (2024-12-14)
+=================================================
+
+✨ Features
  * Goals are searchable via Spotlight (#472)
 
 🙌 Improvements
  * Support dark mode and tint for app icon (#478)
+ * Add support for dark green for goals with 7 days of safety buffer (#535)
  * Changes to the styling of some buttons and UI elements (#483, #488, #489, #492)
  * Support webcredentials for password manager login (#449)
  * Sort by urgency instead of deadline (#451)
@@ -20,9 +42,7 @@ Changes to be released in next version
  * Add #THISWILLSELFDESTRUCT to list of points ignored for value suggestion (#457)
  * UI Elements no longer overlap with notch/dyanmic island (#495)
  * Fix issues with choosing wrong day shortly after midnight (#510)
-
-⚠️  API Changes
- * 
+ * Goals are no longer hidden behind the keyboard when filtering (#536, #545)
 
 🧱 Build
  * Update RubyGem versions (#476, #509)
