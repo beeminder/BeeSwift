@@ -495,7 +495,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func updateGoalAndInterface() async throws {
         try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
-        self.lastFetched = await ServiceLocator.goalManager.getDateLastFetchedForGoalWithId(self.goal.id)
+        self.lastFetched = goal.lastModifiedLocal
         updateInterfaceToMatchGoal()
     }
 
