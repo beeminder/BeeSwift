@@ -8,6 +8,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
+        windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: .all))
 
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = UINavigationController(rootViewController: GalleryViewController())
