@@ -53,6 +53,7 @@ public enum HealthKitConfig {
             
             // Self care
             ToothbrushingHealthKitMetric.make(),
+            ToothbrushingSessionsHealthKitMetric.make(),
             
             // Sleep
             TimeInBedHealthKitMetric(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep),
