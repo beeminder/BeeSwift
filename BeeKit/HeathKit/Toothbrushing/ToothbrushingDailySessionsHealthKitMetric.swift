@@ -4,7 +4,7 @@ import Foundation
 import HealthKit
 
 /// tracks toothbrushing, in number of sessions per day (daystamp)
-class ToothbrushingSessionsHealthKitMetric: CategoryHealthKitMetric {
+class ToothbrushingDailySessionsHealthKitMetric: CategoryHealthKitMetric {
     private static let healthkitMetric =  ["toothbrushing", "sessions-per-day"].joined(separator: "|")
     
     private init(humanText: String,
@@ -20,7 +20,7 @@ class ToothbrushingSessionsHealthKitMetric: CategoryHealthKitMetric {
         .count()
     }
     
-    static func make() -> ToothbrushingSessionsHealthKitMetric {
+    static func make() -> ToothbrushingDailySessionsHealthKitMetric {
         .init(humanText: "Teethbrushing (in sessions per day)",
               databaseString: healthkitMetric,
               category: HealthKitCategory.SelfCare)

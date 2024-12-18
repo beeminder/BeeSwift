@@ -52,8 +52,8 @@ public enum HealthKitConfig {
             QuantityHealthKitMetric(humanText: "Water", databaseString: "water", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryWater),
             
             // Self care
-            ToothbrushingHealthKitMetric.make(),
-            ToothbrushingSessionsHealthKitMetric.make(),
+            ToothbrushingDailyMinutesHealthKitMetric.make(),
+            ToothbrushingDailySessionsHealthKitMetric.make(),
             
             // Sleep
             TimeInBedHealthKitMetric(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep),
