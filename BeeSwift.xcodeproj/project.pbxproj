@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		9B65F2322CFA6427009674A7 /* DeeplinkGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */; };
 		9B1DCA5B2D10EA76006A64D9 /* ToothbrushingHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1DCA5A2D10EA76006A64D9 /* ToothbrushingHealthKitMetric.swift */; };
+		9B7D44662D12C304003B62B1 /* ToothbrushingSessionsHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B7D44652D12C304003B62B1 /* ToothbrushingSessionsHealthKitMetric.swift */; };
 		9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */; };
 		9BFB27E92CFE770F0056D10D /* FreshnessIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */; };
 		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
@@ -219,6 +220,7 @@
 /* Begin PBXFileReference section */
 		9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkGenerator.swift; sourceTree = "<group>"; };
 		9B1DCA5A2D10EA76006A64D9 /* ToothbrushingHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToothbrushingHealthKitMetric.swift; sourceTree = "<group>"; };
+		9B7D44652D12C304003B62B1 /* ToothbrushingSessionsHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToothbrushingSessionsHealthKitMetric.swift; sourceTree = "<group>"; };
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshnessIndicatorView.swift; sourceTree = "<group>"; };
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
@@ -409,6 +411,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9B7D44642D12C2F3003B62B1 /* Toothbrushing */ = {
+			isa = PBXGroup;
+			children = (
+				9B7D44652D12C304003B62B1 /* ToothbrushingSessionsHealthKitMetric.swift */,
+				9B1DCA5A2D10EA76006A64D9 /* ToothbrushingHealthKitMetric.swift */,
+			);
+			path = Toothbrushing;
+			sourceTree = "<group>";
+		};
 		A106AD8B1AF1F62800C434E8 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -623,7 +634,7 @@
 		E4E6426E290E27CB004F3EA9 /* HeathKit */ = {
 			isa = PBXGroup;
 			children = (
-				9B1DCA5A2D10EA76006A64D9 /* ToothbrushingHealthKitMetric.swift */,
+				9B7D44642D12C2F3003B62B1 /* Toothbrushing */,
 				A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */,
 				E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */,
 				E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */,
@@ -1105,6 +1116,7 @@
 				E46071012B451FA400305DB4 /* BeeminderModel.xcdatamodeld in Sources */,
 				E458C80D2AD11C64000DCA5C /* Crypto.swift in Sources */,
 				E458C8012AD11BB3000DCA5C /* RequestManager.swift in Sources */,
+				9B7D44662D12C304003B62B1 /* ToothbrushingSessionsHealthKitMetric.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
