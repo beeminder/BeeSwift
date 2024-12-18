@@ -1,9 +1,9 @@
 import Foundation
 import HealthKit
 
-/// tracks toothbrushing, in number of seconds per day (daystamp)
-class ToothbrushingHealthKitMetric: CategoryHealthKitMetric {
-    private static let healthkitMetric = ["toothbrushing", "seconds-per-day"].joined(separator: "|")
+/// tracks toothbrushing, in number of (decimal) minutes per day (daystamp)
+class ToothbrushingDailyMinutesHealthKitMetric: CategoryHealthKitMetric {
+    private static let healthkitMetric = ["toothbrushing", "minutes-per-day"].joined(separator: "|")
     
     private init(humanText: String,
                  databaseString: String,
@@ -18,7 +18,7 @@ class ToothbrushingHealthKitMetric: CategoryHealthKitMetric {
         HKUnit.second()
     }
     
-    static func make() -> ToothbrushingHealthKitMetric {
+    static func make() -> ToothbrushingDailyMinutesHealthKitMetric {
         .init(humanText: "Teethbrushing (in seconds per day)",
               databaseString: healthkitMetric,
               category: HealthKitCategory.SelfCare)
@@ -29,7 +29,7 @@ class ToothbrushingHealthKitMetric: CategoryHealthKitMetric {
             .map {
                 NewDataPoint(requestid: $0.requestid,
                              daystamp: $0.daystamp,
-                             value: $0.value,
+                             value: NSNumber(value: $0.value.doubleValue / 60),
                              comment: "Auto-entered via Apple Health (\(Self.healthkitMetric))")
             }
     }
