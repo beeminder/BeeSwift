@@ -24,7 +24,6 @@
 		A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17E930B1B09032F0098FCA0 /* QuartzCore.framework */; };
 		A196CB1A1AE4142E00B90A3E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB191AE4142E00B90A3E /* AppDelegate.swift */; };
 		A196CB1F1AE4142F00B90A3E /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */; };
-		A196CB221AE4142F00B90A3E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A196CB201AE4142F00B90A3E /* Main.storyboard */; };
 		A196CB241AE4142F00B90A3E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A196CB231AE4142F00B90A3E /* Images.xcassets */; };
 		A196CB331AE4142F00B90A3E /* BeeSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB321AE4142F00B90A3E /* BeeSwiftTests.swift */; };
 		A1A8BDE61FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */; };
@@ -38,6 +37,7 @@
 		A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */; };
 		A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
+		E4015D9F2D10DC4D00F58D94 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4015D9E2D10DC4D00F58D94 /* SceneDelegate.swift */; };
 		E41286F12A62E6840093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F02A62E6840093D598 /* KeychainSwift */; };
 		E41286F32A62E97B0093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F22A62E97B0093D598 /* KeychainSwift */; };
 		E412DADF2B869E1E0099E483 /* BeeLemniscateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E412DADE2B869E1E0099E483 /* BeeLemniscateView.swift */; };
@@ -246,7 +246,6 @@
 		A196CB181AE4142E00B90A3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A196CB191AE4142E00B90A3E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
-		A196CB211AE4142F00B90A3E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A196CB231AE4142F00B90A3E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		A196CB2C1AE4142F00B90A3E /* BeeSwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeeSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A196CB311AE4142F00B90A3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -268,6 +267,7 @@
 		A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfig.swift; sourceTree = "<group>"; };
 		A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCell.swift; sourceTree = "<group>"; };
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
+		E4015D9E2D10DC4D00F58D94 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMinutesHealthKitMetric.swift; sourceTree = "<group>"; };
 		E41286ED2A62DF330093D598 /* BeeminderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel.xcdatamodel; sourceTree = "<group>"; };
 		E412DADE2B869E1E0099E483 /* BeeLemniscateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeLemniscateView.swift; sourceTree = "<group>"; };
@@ -490,8 +490,8 @@
 				A196CB231AE4142F00B90A3E /* Images.xcassets */,
 				9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */,
 				E43BEA832A036A9C00FC3A38 /* LogReader.swift */,
-				A196CB201AE4142F00B90A3E /* Main.storyboard */,
 				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
+				E4015D9E2D10DC4D00F58D94 /* SceneDelegate.swift */,
 			);
 			path = BeeSwift;
 			sourceTree = "<group>";
@@ -959,7 +959,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E5DF493724DC69A200260560 /* Config.swift.sample in Resources */,
-				A196CB221AE4142F00B90A3E /* Main.storyboard in Resources */,
 				9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */,
 				A196CB241AE4142F00B90A3E /* Images.xcassets in Resources */,
 			);
@@ -1017,6 +1016,7 @@
 				A196CB1F1AE4142F00B90A3E /* GalleryViewController.swift in Sources */,
 				A1BE73AA1E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift in Sources */,
 				A149147B1BE79FD50060600A /* EditNotificationsViewController.swift in Sources */,
+				E4015D9F2D10DC4D00F58D94 /* SceneDelegate.swift in Sources */,
 				A1BE73AC1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift in Sources */,
 				E43833942AC1473E0098A38F /* InlineDatePicker.swift in Sources */,
 				E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */,
@@ -1176,17 +1176,6 @@
 			targetProxy = E5FEFB3A24E6FAC800A076BB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		A196CB201AE4142F00B90A3E /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A196CB211AE4142F00B90A3E /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		A196CB341AE4142F00B90A3E /* Debug */ = {
