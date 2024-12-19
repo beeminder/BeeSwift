@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B65F2322CFA6427009674A7 /* DeeplinkGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */; };
 		9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */; };
 		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
 		A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */; };
@@ -217,6 +218,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkGenerator.swift; sourceTree = "<group>"; };
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
 		A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveHKMetricViewController.swift; sourceTree = "<group>"; };
@@ -476,6 +478,7 @@
 		A196CB161AE4142E00B90A3E /* BeeSwift */ = {
 			isa = PBXGroup;
 			children = (
+				9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */,
 				A1E618E51E79E01900D8ED93 /* Cells */,
 				E46071002B43DA7100305DB4 /* Gallery */,
 				E46070FF2B43DA3D00305DB4 /* GoalView */,
@@ -1013,6 +1016,7 @@
 				A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */,
 				E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */,
 				E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */,
+				9B65F2322CFA6427009674A7 /* DeeplinkGenerator.swift in Sources */,
 				A196CB1F1AE4142F00B90A3E /* GalleryViewController.swift in Sources */,
 				A1BE73AA1E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift in Sources */,
 				A149147B1BE79FD50060600A /* EditNotificationsViewController.swift in Sources */,

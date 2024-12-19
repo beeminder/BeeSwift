@@ -273,8 +273,11 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
                 make.right.equalTo(-sideMargin)
             }
         }
-
-        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(self.actionButtonPressed))]
+        
+        let menuBarItem = UIBarButtonItem(barButtonSystemItem: .action, target: nil, action: nil)
+        menuBarItem.menu = createGoalMenu()
+        
+        self.navigationItem.rightBarButtonItems = [menuBarItem]
         if !self.goal.hideDataEntry {
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage(systemName: "stopwatch"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
@@ -284,7 +287,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         setValueTextField()
         updateInterfaceToMatchGoal()
     }
-
+    
     override func viewDidLayoutSubviews() {
         // Ensure the submit button is always visible below the keyboard when interacting with
         // the submit datapoint controls
@@ -308,23 +311,13 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             }
         }
     }
-
+    
     @objc func timerButtonPressed() {
         let controller = TimerViewController(goal: self.goal)
         controller.modalPresentationStyle = .fullScreen
         self.present(controller, animated: true, completion: nil)
     }
-
-    @objc func actionButtonPressed() {
-        let username = goal.owner.username
-        guard let accessToken = ServiceLocator.currentUserManager.accessToken,
-            let viewGoalUrl = URL(string: "\(ServiceLocator.requestManager.baseURLString)/api/v1/users/\(username).json?access_token=\(accessToken)&redirect_to_url=\(ServiceLocator.requestManager.baseURLString)/\(username)/\(self.goal.slug)") else { return }
-
-        let safariVC = SFSafariViewController(url: viewGoalUrl)
-        safariVC.delegate = self
-        self.showDetailViewController(safariVC, sender: self)
-    }
-
+    
     @objc func refreshButtonPressed() {
         Task { @MainActor in
             do {
@@ -556,5 +549,70 @@ private extension DateFormatter {
         } else {
             return newDatapointDateWithinSameMonthDateFormatter.string(from: date)
         }
+    }
+}
+
+private extension GoalViewController {
+    enum MenuAction {
+        case goalCommitment
+        case goalStop
+        case goalData
+        case goalStatistics
+        case goalSettings
+        
+        func makeLink(username: String, goalName: String) -> URL? {
+            guard
+                let accessToken = ServiceLocator.currentUserManager.accessToken
+            else { return nil }
+            
+            let destinationUrl: URL
+            
+            switch self {
+            case .goalCommitment:
+                destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalCommitment(username: username, goalName: goalName)
+            case .goalStop:
+                destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalStop(username: username, goalName: goalName)
+            case .goalData:
+                destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalData(username: username, goalName: goalName)
+            case .goalStatistics:
+                destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalStatistics(username: username, goalName: goalName)
+            case .goalSettings:
+                destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalSettings(username: username, goalName: goalName)
+            }
+            
+            return DeeplinkGenerator.generateDeepLinkToUrl(accessToken: accessToken, username: username, url: destinationUrl)
+        }
+    }
+    
+    struct MenuOption {
+        let title: String
+        let action: MenuAction
+        let imageSystemName: String
+    }
+    
+    private func getMenuOptions() -> [MenuOption] {
+        [
+            MenuOption(title: "Commitment", action: .goalCommitment, imageSystemName: "signature"),
+            MenuOption(title: "Stop/Pause", action: .goalStop, imageSystemName: "pause.fill"),
+            MenuOption(title: "Data", action: .goalData, imageSystemName: "tablecells"),
+            MenuOption(title: "Statistics", action: .goalStatistics, imageSystemName: "chart.bar.fill"),
+            MenuOption(title: "Settings", action: .goalSettings, imageSystemName: "gearshape.2"),
+        ]
+    }
+    
+    private func createGoalMenu() -> UIMenu {
+        let options = getMenuOptions()
+        let actions = options.map { option in
+            UIAction(title: option.title, image: UIImage(systemName: option.imageSystemName), handler: { [weak self] _ in
+                guard let self else { return }
+                guard let link = option.action.makeLink(username: self.goal.owner.username, goalName: self.goal.slug) else { return }
+            
+                let safariVC = SFSafariViewController(url: link)
+                safariVC.delegate = self
+                self.showDetailViewController(safariVC, sender: self)
+            })
+        }
+        
+        return UIMenu(title: "bmndr.com/\(goal.owner.username)/\(goal.slug)", children: actions)
     }
 }
