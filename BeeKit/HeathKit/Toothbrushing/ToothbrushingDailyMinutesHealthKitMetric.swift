@@ -23,13 +23,18 @@ class ToothbrushingDailyMinutesHealthKitMetric: CategoryHealthKitMetric {
               databaseString: healthkitMetric,
               category: HealthKitCategory.SelfCare)
     }
+
+    override func valueInAppropriateUnits(rawValue: Double) -> Double {
+        // raw seconds into minutes
+        rawValue / 60
+    }
     
     override func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore) async throws -> [any BeeDataPoint] {
         try await super.recentDataPoints(days: days, deadline: deadline, healthStore: healthStore)
             .map {
                 NewDataPoint(requestid: $0.requestid,
                              daystamp: $0.daystamp,
-                             value: NSNumber(value: $0.value.doubleValue / 60),
+                             value: $0.value,
                              comment: "Auto-entered via Apple Health (\(Self.healthkitMetric))")
             }
     }
