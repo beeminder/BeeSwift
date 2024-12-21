@@ -479,19 +479,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     @objc func openGoalFromNotification(_ notification: Notification) {
-        guard let notif = notification as NSNotification? else { return }
         var matchingGoal: Goal?
 
-        if let identifier = notif.userInfo?["identifier"] as? String {
+        if let identifier = notification.userInfo?["identifier"] as? String {
             let context = ServiceLocator.persistentContainer.viewContext
             if let url = URL(string: identifier), let objectID = context.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
                 matchingGoal = context.object(with: objectID) as? Goal
             }
         }
-        else if let slug = notif.userInfo?["slug"] as? String {
-            matchingGoal = self.goals.filter({ (goal) -> Bool in
-                return goal.slug == slug
-            }).last
+        else if let slug = notification.userInfo?["slug"] as? String {
+            matchingGoal = self.goals.last(where: { $0.slug.caseInsensitiveCompare(slug) == .orderedSame } )
         }
         if matchingGoal != nil {
             self.navigationController?.popToRootViewController(animated: false)
@@ -512,3 +509,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 }
 
+
+
+import WidgetKit

@@ -14,6 +14,8 @@ import UIKit
 import IQKeyboardManagerSwift
 import AlamofireNetworkActivityIndicator
 
+import WidgetKit
+
 import BeeKit
 
 @UIApplicationMain
@@ -65,12 +67,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         logger.notice("applicationDidEnterBackground")
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         logger.notice("applicationWillEnterForeground")
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
         NotificationCenter.default.post(name: UIApplication.willEnterForegroundNotification, object: nil)
+        
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -155,6 +161,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
             do {
                 try await ServiceLocator.goalManager.refreshGoals()
+                
+                WidgetCenter.shared.reloadAllTimelines()
             } catch {
                 logger.error("Error refreshing goals: \(error)")
             }
