@@ -12,7 +12,6 @@ public enum HealthKitCategory : String, CaseIterable {
     case Heart = "Heart"
     case Mindfulness = "Mindfulness"
     case Nutrition = "Nutrition"
-    case SelfCare = "Self Care"
     case Sleep = "Sleep"
     case Other = "Other Data"
 }

@@ -51,16 +51,14 @@ public enum HealthKitConfig {
             QuantityHealthKitMetric(humanText: "Vitamin K", databaseString: "dietaryVitaminK", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminK),
             QuantityHealthKitMetric(humanText: "Water", databaseString: "water", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryWater),
             
-            // Self care
-            ToothbrushingDailyMinutesHealthKitMetric.make(),
-            ToothbrushingDailySessionsHealthKitMetric.make(),
-            
             // Sleep
             TimeInBedHealthKitMetric(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep),
             TimeAsleepHealthKitMetric(humanText: "Time asleep", databaseString: "timeAsleep", category: .Sleep),
 
             // Other
             QuantityHealthKitMetric(humanText: "Time in Daylight", databaseString: "timeInDaylight", category: .Other, hkQuantityTypeIdentifier: .timeInDaylight),
+            ToothbrushingDailyMinutesHealthKitMetric(),
+            ToothbrushingDailySessionsHealthKitMetric(),
         ]
     }
 }

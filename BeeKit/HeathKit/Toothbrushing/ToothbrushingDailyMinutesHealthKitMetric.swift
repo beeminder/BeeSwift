@@ -5,9 +5,9 @@ import HealthKit
 class ToothbrushingDailyMinutesHealthKitMetric: CategoryHealthKitMetric {
     private static let healthkitMetric = ["toothbrushing", "minutes-per-day"].joined(separator: "|")
     
-    private init(humanText: String,
-                 databaseString: String,
-                 category: HealthKitCategory) {
+    init(humanText: String = "Teethbrushing (in minutes per day)",
+         databaseString: String = ToothbrushingDailyMinutesHealthKitMetric.healthkitMetric,
+         category: HealthKitCategory = .Other) {
         super.init(humanText: humanText,
                    databaseString: databaseString,
                    category: category,
@@ -18,17 +18,11 @@ class ToothbrushingDailyMinutesHealthKitMetric: CategoryHealthKitMetric {
         HKUnit.second()
     }
     
-    static func make() -> ToothbrushingDailyMinutesHealthKitMetric {
-        .init(humanText: "Teethbrushing (in seconds per day)",
-              databaseString: healthkitMetric,
-              category: HealthKitCategory.SelfCare)
-    }
-
     override func valueInAppropriateUnits(rawValue: Double) -> Double {
         // raw seconds into minutes
         rawValue / 60
     }
-    
+
     override func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore) async throws -> [any BeeDataPoint] {
         try await super.recentDataPoints(days: days, deadline: deadline, healthStore: healthStore)
             .map {

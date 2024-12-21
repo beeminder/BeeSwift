@@ -7,9 +7,9 @@ import HealthKit
 class ToothbrushingDailySessionsHealthKitMetric: CategoryHealthKitMetric {
     private static let healthkitMetric =  ["toothbrushing", "sessions-per-day"].joined(separator: "|")
     
-    private init(humanText: String,
-                 databaseString: String,
-                 category: HealthKitCategory) {
+    init(humanText: String = "Teethbrushing (in sessions per day)",
+         databaseString: String = ToothbrushingDailySessionsHealthKitMetric.healthkitMetric,
+         category: HealthKitCategory = .Other) {
         super.init(humanText: humanText,
                    databaseString: databaseString,
                    category: category,
@@ -18,12 +18,6 @@ class ToothbrushingDailySessionsHealthKitMetric: CategoryHealthKitMetric {
     
     override func units(healthStore : HKHealthStore) async throws -> HKUnit {
         .count()
-    }
-    
-    static func make() -> ToothbrushingDailySessionsHealthKitMetric {
-        .init(humanText: "Teethbrushing (in sessions per day)",
-              databaseString: healthkitMetric,
-              category: HealthKitCategory.SelfCare)
     }
     
     override func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore) async throws -> [any BeeDataPoint] {
