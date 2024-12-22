@@ -6,6 +6,7 @@ import HealthKit
 /// tracks toothbrushing, in number of sessions per day (daystamp)
 class ToothbrushingDailySessionsHealthKitMetric: CategoryHealthKitMetric {
     private static let healthkitMetric =  ["toothbrushing", "sessions-per-day"].joined(separator: "|")
+    private static let hkSampleType = HKObjectType.categoryType(forIdentifier: .toothbrushingEvent)!
     
     init(humanText: String = "Teethbrushing (in sessions per day)",
          databaseString: String = ToothbrushingDailySessionsHealthKitMetric.healthkitMetric,
@@ -13,7 +14,7 @@ class ToothbrushingDailySessionsHealthKitMetric: CategoryHealthKitMetric {
         super.init(humanText: humanText,
                    databaseString: databaseString,
                    category: category,
-                   hkSampleType: HKObjectType.categoryType(forIdentifier: .toothbrushingEvent)!)
+                   hkSampleType: Self.hkSampleType)
     }
     
     override func units(healthStore : HKHealthStore) async throws -> HKUnit {
@@ -27,7 +28,17 @@ class ToothbrushingDailySessionsHealthKitMetric: CategoryHealthKitMetric {
         let predicate = HKQuery.predicateForSamples(withStart: startDaystamp.start(deadline: deadline),
                                                     end: todayDaystamp.end(deadline: deadline))
         
-        let samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
+        let samples = try await queryHealthStore(healthStore, predicate: predicate)
+        
+        let dailyCounts = calculateDailyCounts(samples: samples)
+        
+        let datapoints = makeDatapoints(dailyCounts: dailyCounts, deadline: deadline)
+        
+        return datapoints
+    }
+    
+    func queryHealthStore(_ healthStore: HKHealthStore, predicate: NSPredicate) async throws -> [HKCategorySample] {
+        try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
             let query = HKSampleQuery(sampleType: sampleType(),
                                       predicate: predicate,
                                       limit: HKObjectQueryNoLimit,
@@ -44,7 +55,9 @@ class ToothbrushingDailySessionsHealthKitMetric: CategoryHealthKitMetric {
             healthStore.execute(query)
         })
             .compactMap { $0 as? HKCategorySample }
-        
+    }
+    
+    func calculateDailyCounts(samples: [HKCategorySample]) -> [(Date, Int)] {
         let calendar = Calendar.autoupdatingCurrent
         let groupedByDay = Dictionary(grouping: samples, by: { sample in
             calendar.startOfDay(for: sample.startDate)
@@ -54,6 +67,10 @@ class ToothbrushingDailySessionsHealthKitMetric: CategoryHealthKitMetric {
             .map { ($0, $1.count) }
             .sorted { $0.0 < $1.0 }
         
+        return dailyCounts
+    }
+    
+    func makeDatapoints(dailyCounts: [(Date, Int)], deadline: Int) -> [any BeeDataPoint] {
         let datapoints = dailyCounts.map({ (date, numberOfEntries) in
             let daystamp = Daystamp(fromDate: date, deadline: deadline)
             let requestID = "apple-heath-" + daystamp.description
