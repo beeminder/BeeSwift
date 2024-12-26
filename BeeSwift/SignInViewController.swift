@@ -12,20 +12,12 @@ import SafariServices
 
 import BeeKit
 
-class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariViewControllerDelegate {
+class SignInViewController : UIViewController, UITextFieldDelegate {
     
     var headerLabel = BSLabel()
     var emailTextField = BSTextField()
     var passwordTextField = BSTextField()
-    var newEmailTextField = BSTextField()
-    var newUsernameTextField = BSTextField()
-    var newPasswordTextField = BSTextField()
-    var chooseSignInButton = BSButton()
-    var chooseSignUpButton = BSButton()
     var beeImageView = UIImageView()
-    var signUpButton = BSButton()
-    var backToSignInButton = BSButton()
-    var backToSignUpButton = BSButton()
     var signInButton = BSButton()
     var divider = UIView()
     
@@ -56,16 +48,6 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
             make.top.equalTo(beeImageView.snp.bottom)
             make.centerX.equalToSuperview()
         }
-        
-        scrollView.addSubview(self.chooseSignInButton)
-        self.chooseSignInButton.setTitle("I have a Beeminder account", for: .normal)
-        self.chooseSignInButton.snp.makeConstraints { (make) in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(self.headerLabel.snp.bottom).offset(40)
-            make.width.equalToSuperview().multipliedBy(0.75)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-        }
-        self.chooseSignInButton.addTarget(self, action: #selector(SignInViewController.chooseSignInButtonPressed), for: .touchUpInside)
         
         scrollView.addSubview(self.emailTextField)
         self.emailTextField.isHidden = true
@@ -99,7 +81,6 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         scrollView.addSubview(self.signInButton)
         self.signInButton.isHidden = true
         self.signInButton.setTitle("Sign In", for: UIControl.State())
-        self.signInButton.backgroundColor = UIColor.Beeminder.gray
         self.signInButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
         self.signInButton.titleLabel?.textColor = UIColor.white
         self.signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControl.Event.touchUpInside)
@@ -114,87 +95,21 @@ class SignInViewController : UIViewController, UITextFieldDelegate, SFSafariView
         self.divider.isHidden = true
         self.divider.backgroundColor = UIColor.Beeminder.gray
         
-        scrollView.addSubview(self.newUsernameTextField)
-        self.newUsernameTextField.isHidden = true
-        self.newUsernameTextField.autocapitalizationType = .none
-        self.newUsernameTextField.snp.makeConstraints { (make) in
-            make.top.equalTo(self.headerLabel.snp.bottom).offset(15)
-            make.centerX.equalTo(scrollView)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-            make.width.equalTo(self.view).multipliedBy(0.75)
-        }
-        self.newUsernameTextField.placeholder = "Username"
-        
-        scrollView.addSubview(self.newEmailTextField)
-        self.newEmailTextField.isHidden = true
-        self.newEmailTextField.autocapitalizationType = .none
-        self.newEmailTextField.snp.makeConstraints { (make) in
-            make.top.equalTo(self.newUsernameTextField.snp.bottom).offset(15)
-            make.centerX.equalTo(scrollView)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-            make.width.equalTo(self.view).multipliedBy(0.75)
-        }
-        self.newEmailTextField.placeholder = "Email"
-        
-        scrollView.addSubview(self.newPasswordTextField)
-        self.newPasswordTextField.isHidden = true
-        self.newPasswordTextField.autocapitalizationType = .none
-        self.newPasswordTextField.isSecureTextEntry = true
-        self.newPasswordTextField.snp.makeConstraints { (make) in
-            make.top.equalTo(self.newEmailTextField.snp.bottom).offset(15)
-            make.centerX.equalTo(scrollView)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-            make.width.equalTo(self.view).multipliedBy(0.75)
-        }
-        
-        self.newPasswordTextField.placeholder = "Password"
-        
-        scrollView.addSubview(self.signUpButton)
-        self.signUpButton.isHidden = true
-        self.signUpButton.setTitle("Sign Up", for: .normal)
-        self.signUpButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
-        self.signUpButton.snp.makeConstraints { (make) in
-            make.top.equalTo(self.newPasswordTextField.snp.bottom).offset(15)
-            make.centerX.equalTo(self.view)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-            make.width.equalTo(self.view).multipliedBy(0.75)
-        }
-        
-        scrollView.addSubview(self.backToSignInButton)
-        self.backToSignInButton.isHidden = true
-        self.backToSignInButton.setTitle("Back to Sign In", for: .normal)
-        self.backToSignInButton.snp.makeConstraints { (make) in
-            make.top.equalTo(divider.snp.bottom).offset(15)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-            make.centerX.equalTo(self.view)
-            make.width.equalTo(self.view).multipliedBy(0.75)
-        }
-        self.backToSignInButton.addTarget(self, action: #selector(SignInViewController.chooseSignInButtonPressed), for: .touchUpInside)
         self.chooseSignInButtonPressed()
     }
     
     @objc func chooseSignInButtonPressed() {
-        //self.divider.isHidden = false
-        //self.backToSignUpButton.isHidden = false
         self.emailTextField.isHidden = false
         self.passwordTextField.isHidden = false
-        self.backToSignInButton.isHidden = true
-        self.newUsernameTextField.isHidden = true
-        self.newPasswordTextField.isHidden = true
-        self.newEmailTextField.isHidden = true
-        self.chooseSignInButton.isHidden = true
-        self.chooseSignUpButton.isHidden = true
         self.headerLabel.text = "Sign in to Beeminder"
         self.headerLabel.isHidden = false
         self.signInButton.isHidden = false
-        self.signUpButton.isHidden = true
         self.divider.snp.remakeConstraints { (make) -> Void in
             make.left.equalTo(self.signInButton)
             make.right.equalTo(self.signInButton)
             make.height.equalTo(1)
             make.top.equalTo(self.signInButton.snp.bottom).offset(15)
         }
-
     }
     
     var missingDataOnSignIn: UIAlertController {
