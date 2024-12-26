@@ -21,8 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "AppDelegate")
     let backgroundUpdates = BackgroundUpdates()
 
-    var window: UIWindow?
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         logger.notice("application:didFinishLaunchingWithOptions")
 
@@ -43,8 +41,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateBadgeCount), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsUpdated), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleUserSignedOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
 
         backgroundUpdates.startUpdatingRegularlyInBackground()
         
@@ -128,9 +126,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         logger.notice("application:didFailToRegisterForRemoteNotificationsWithError")
     }
-    
-    @objc func updateBadgeCount() {
-        assert(Thread.isMainThread, "updateBadgeCount must be run on the main thread")
+
+    @objc private func handleGoalsUpdated() {
+        assert(Thread.isMainThread, "\(#function) must be run on the main thread")
 
         let context = ServiceLocator.persistentContainer.viewContext
         guard let goals = ServiceLocator.goalManager.staleGoals(context: context) else { return }
@@ -138,6 +136,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         logger.notice("Updating Beemergency badge count to \(beemergencyCount, privacy: .public)")
 
         UNUserNotificationCenter.current().setBadgeCount(beemergencyCount)
+    }
+    
+    @objc private func handleUserSignedOut() {
+        assert(Thread.isMainThread, "\(#function) must be run on the main thread")
+
+        logger.notice("User signed out; updating Beemergency badge count to 0")
+
+        UNUserNotificationCenter.current().setBadgeCount(0)
     }
 
     private func refreshGoalsAndLogErrors() {
