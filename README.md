@@ -1,4 +1,3 @@
-[![GitHub](https://img.shields.io/badge/license-MIT-blue)](https://github.com/beeminder/BeeSwift?tab=License-1-ov-file#License-1-ov-file)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/beeminder/BeeSwift?sort=semver)](https://github.com/beeminder/BeeSwift/tags)
 ![Fastlane Tests](https://github.com/beeminder/BeeSwift/actions/workflows/fastlane-tests.yml/badge.svg)
 
