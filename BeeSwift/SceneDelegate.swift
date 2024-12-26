@@ -10,8 +10,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: .all))
 
+        let navigationController = UINavigationController(rootViewController: GalleryViewController())
+        navigationController.navigationBar.isTranslucent = false
+        navigationController.navigationBar.barStyle = .black
+        navigationController.navigationBar.tintColor = .white
+
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = UINavigationController(rootViewController: GalleryViewController())
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
 }
