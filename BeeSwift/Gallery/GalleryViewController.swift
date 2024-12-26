@@ -139,7 +139,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.noGoalsLabel.textAlignment = .center
         self.noGoalsLabel.numberOfLines = 0
         self.noGoalsLabel.isHidden = true
-        
+        self.noGoalsLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+
         self.updateGoals()
         self.fetchGoals()
 
