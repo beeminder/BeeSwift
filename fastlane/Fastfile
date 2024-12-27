@@ -66,10 +66,11 @@ platform :ios do
 
     # Add a git tag for this build. This will automatically
     # use an appropriate git tag name
+    # Note this tag will not include the uncommited version changes
     add_git_tag
 
-    # Push the new commit and tag back to your git remote
-    push_to_git_remote
+    # Push the tag to github
+    push_git_tags
 
     reset_git_repo(
       skip_clean: true,
