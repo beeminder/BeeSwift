@@ -77,6 +77,14 @@ class GoalImageView : UIView {
         imageView.image = image
         currentlyShowingGraph = true
         beeLemniscateView.isHidden = !(goal?.queued ?? false)
+        
+        if isThumbnail {
+            imageView.layer.borderColor = goal?.countdownColor.cgColor
+            imageView.layer.borderWidth = goal == nil ? 0 : 1
+        } else {
+            imageView.layer.borderColor = nil
+            imageView.layer.borderWidth = 0
+        }
     }
 
     private func refresh() {
@@ -108,12 +116,7 @@ class GoalImageView : UIView {
             beeLemniscateView.isHidden = !currentlyShowingGraph
         }
 
-        // Load the approppriate iamge for the goal
-        let urlString = if isThumbnail {
-            goal.cacheBustingThumbUrl
-        } else {
-            goal.cacheBustingGraphUrl
-        }
+        let urlString = goal.cacheBustingGraphUrl
         let request = URLRequest(url: URL(string: urlString)!)
 
         // Explicitly check the cache to see if the image is already present, and if so set it directly
