@@ -62,8 +62,7 @@ platform :ios do
     
     build_app(scheme: "BeeSwift")
 
-    # Commit the version bump
-    commit_version_bump(xcodeproj: "BeeSwift.xcodeproj")
+    upload_to_testflight
 
     # Add a git tag for this build. This will automatically
     # use an appropriate git tag name
@@ -71,8 +70,6 @@ platform :ios do
 
     # Push the new commit and tag back to your git remote
     push_to_git_remote
-    
-    upload_to_testflight
   end
   lane :increment_major_version do
     increment_version_number(
