@@ -15,7 +15,7 @@ import Intents
 import BeeKit
 import OSLog
 
-class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTableViewControllerDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+class GoalViewController: UIViewController, DatapointTableViewControllerDelegate, UITextFieldDelegate {
     let elementSpacing = 10
     let sideMargin = 10
     let buttonHeight = 42
@@ -100,7 +100,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.goalImageScrollView.showsHorizontalScrollIndicator = false
         self.goalImageScrollView.showsVerticalScrollIndicator = false
         self.goalImageScrollView.minimumZoomScale = 1.0
-        self.goalImageScrollView.maximumZoomScale = 3.0
+        self.goalImageScrollView.maximumZoomScale = 7.0
         self.goalImageScrollView.delegate = self
         self.goalImageScrollView.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.view)
@@ -346,7 +346,10 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     @objc func goalImageTapped() {
-        self.goalImageScrollView.setZoomScale(self.goalImageScrollView.zoomScale == 1.0 ? 2.0 : 1.0, animated: true)
+        let possibleNextStepUp = self.goalImageScrollView.zoomScale + 2.0
+        let nextZoomLevel = possibleNextStepUp <= self.goalImageScrollView.maximumZoomScale ? possibleNextStepUp : self.goalImageScrollView.minimumZoomScale
+        
+        self.goalImageScrollView.setZoomScale(nextZoomLevel, animated: true)
     }
 
     func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: BeeDataPoint) {
@@ -484,10 +487,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         self.refreshCountdown()
     }
-
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return self.goalImageView
-    }
     
     private static func makeInitialDateStepperValue(date: Date = Date(), for goal: Goal) -> Double {
         let daystampAccountingForTheGoalsDeadline = Daystamp(fromDate: date,
@@ -497,14 +496,19 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         
         return Double(daystampAssumingMidnightDeadline.distance(to: daystampAccountingForTheGoalsDeadline))
     }
+}
 
-    // MARK: - SFSafariViewControllerDelegate
+extension GoalViewController: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return self.goalImageView
+    }
+}
 
+extension GoalViewController: SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
     }
 }
-
 
 private extension DateFormatter {
     private static let urtextDateFormatter: DateFormatter = {
