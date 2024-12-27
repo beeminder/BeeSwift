@@ -1,5 +1,5 @@
 {
-  "originHash" : "f9dfc8ea9bd799643133227de52cd3a0abd8893024d3620e0c2b3ce774474906",
+  "originHash" : "aa72db5bf8a6483009e722818f5aa2f8c2fb23032be675b0ee51310237f6cb1f",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -31,10 +31,10 @@
     {
       "identity" : "coredataevolution",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/theospears/CoreDataEvolution",
+      "location" : "https://github.com/fatbobman/CoreDataEvolution.git",
       "state" : {
-        "revision" : "07fe6a6bafb5caa3daabdda14fe438a802269d86",
-        "version" : "0.4.1"
+        "revision" : "e0ea360c1e4cf920806d504097817f4c23e04e1e",
+        "version" : "0.4.2"
       }
     },
     {
