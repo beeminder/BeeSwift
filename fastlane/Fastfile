@@ -73,7 +73,10 @@ platform :ios do
 
     reset_git_repo(
       skip_clean: true,
-      files: ["BeeSwift.xcodeproj"]
+      files: [
+        "BeeSwift.xcodeproj",
+        "*/Info.plist"
+      ]
     )
   end
   lane :increment_major_version do
