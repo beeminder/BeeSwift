@@ -39,6 +39,7 @@
 		A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
 		E4015D9F2D10DC4D00F58D94 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4015D9E2D10DC4D00F58D94 /* SceneDelegate.swift */; };
+		E4015DA22D1E7B2D00F58D94 /* CoreDataEvolution in Frameworks */ = {isa = PBXBuildFile; productRef = E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */; };
 		E41286F12A62E6840093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F02A62E6840093D598 /* KeychainSwift */; };
 		E41286F32A62E97B0093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F22A62E97B0093D598 /* KeychainSwift */; };
 		E412DADF2B869E1E0099E483 /* BeeLemniscateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E412DADE2B869E1E0099E483 /* BeeLemniscateView.swift */; };
@@ -100,7 +101,6 @@
 		E462BA5329ADACAC00E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5229ADACAC00E80EF0 /* Alamofire */; };
 		E462BA5A29AEF02500E80EF0 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */; };
 		E46DC80F2AA58DF20059FDFE /* PullToRefreshHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */; };
-		E47445F42CEEA42D003B2DF3 /* CoreDataEvolution in Frameworks */ = {isa = PBXBuildFile; productRef = E47445F32CEEA42D003B2DF3 /* CoreDataEvolution */; };
 		E486DE2629B0403700F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2529B0403700F338B2 /* OrderedCollections */; };
 		E486DE2A29B0410A00F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2929B0410A00F338B2 /* OrderedCollections */; };
 		E48E2714296B75E4008013C0 /* TotalSleepMinutesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */; };
@@ -374,7 +374,7 @@
 				E458C8242AD11D7F000DCA5C /* KeychainSwift in Frameworks */,
 				E458C8202AD11D35000DCA5C /* SwiftyJSON in Frameworks */,
 				E458C8292AD12057000DCA5C /* OrderedCollections in Frameworks */,
-				E47445F42CEEA42D003B2DF3 /* CoreDataEvolution in Frameworks */,
+				E4015DA22D1E7B2D00F58D94 /* CoreDataEvolution in Frameworks */,
 				E458C8222AD11D40000DCA5C /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -787,7 +787,7 @@
 				E458C8212AD11D40000DCA5C /* Alamofire */,
 				E458C8232AD11D7F000DCA5C /* KeychainSwift */,
 				E458C8282AD12057000DCA5C /* OrderedCollections */,
-				E47445F32CEEA42D003B2DF3 /* CoreDataEvolution */,
+				E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */,
 			);
 			productName = BeeKit;
 			productReference = E57BE6E02655EBD900BA540B /* BeeKit.framework */;
@@ -940,7 +940,7 @@
 				E462BA5829AEF02500E80EF0 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */,
-				E47445F22CEEA42D003B2DF3 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */,
+				E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */,
 			);
 			productRefGroup = A196CB151AE4142E00B90A3E /* Products */;
 			projectDirPath = "";
@@ -1779,6 +1779,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/fatbobman/CoreDataEvolution.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.4.2;
+			};
+		};
 		E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
@@ -1843,14 +1851,6 @@
 				minimumVersion = 8.0.0;
 			};
 		};
-		E47445F22CEEA42D003B2DF3 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/theospears/CoreDataEvolution";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.4.1;
-			};
-		};
 		E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-collections.git";
@@ -1862,6 +1862,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */;
+			productName = CoreDataEvolution;
+		};
 		E41286F02A62E6840093D598 /* KeychainSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */;
@@ -1946,11 +1951,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E462BA5829AEF02500E80EF0 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
 			productName = IQKeyboardManagerSwift;
-		};
-		E47445F32CEEA42D003B2DF3 /* CoreDataEvolution */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E47445F22CEEA42D003B2DF3 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */;
-			productName = CoreDataEvolution;
 		};
 		E486DE2529B0403700F338B2 /* OrderedCollections */ = {
 			isa = XCSwiftPackageProductDependency;
