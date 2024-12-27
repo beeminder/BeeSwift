@@ -1,4 +1,3 @@
-[![GitHub](https://img.shields.io/github/license/beeminder/BeeSwift)](https://github.com/beeminder/BeeSwift/)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/beeminder/BeeSwift?sort=semver)](https://github.com/beeminder/BeeSwift/tags)
 ![Fastlane Tests](https://github.com/beeminder/BeeSwift/actions/workflows/fastlane-tests.yml/badge.svg)
 
