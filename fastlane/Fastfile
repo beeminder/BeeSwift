@@ -70,6 +70,11 @@ platform :ios do
 
     # Push the new commit and tag back to your git remote
     push_to_git_remote
+
+    reset_git_repo(
+      skip_clean: true,
+      files: ["BeeSwift.xcodeproj"]
+    )
   end
   lane :increment_major_version do
     increment_version_number(
