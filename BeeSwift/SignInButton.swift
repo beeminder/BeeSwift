@@ -1,3 +1,5 @@
+import SwiftUI
+
 struct SignInButton: View {
     @Environment(\.colorScheme) private var colorScheme
     let action: () -> Void

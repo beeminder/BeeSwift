@@ -40,16 +40,8 @@ struct SignInView: View {
                             .textInputAutocapitalization(.never)
                             .submitLabel(.done)
                         
-                        Button(action: signIn) {
-                            Text("Sign In")
-                                .font(.system(size: 20))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 44)
-                        }
-                        .background(Color.gray)
-                        .cornerRadius(8)
-                        .disabled(viewModel.isLoading)
+                        SignInButton(action: signIn,
+                                     isDisabled: viewModel.isLoading)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 40)
