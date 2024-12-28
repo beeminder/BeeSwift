@@ -3,6 +3,8 @@
 import Foundation
 import UIKit
 
+import BeeKit
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 

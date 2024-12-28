@@ -13,6 +13,7 @@ import SwiftyJSON
 import HealthKit
 import SafariServices
 import OSLog
+import CoreData
 
 import BeeKit
 
