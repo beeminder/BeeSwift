@@ -28,7 +28,6 @@ struct SignInButton: View {
                     .stroke(.clear)
             }
         }
-//        .cornerRadius(4)
         .disabled(isDisabled)
     }
 }
