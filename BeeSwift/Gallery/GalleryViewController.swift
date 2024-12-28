@@ -20,6 +20,13 @@ import BeeKit
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
 
+    // Dependencies
+    private let currentUserManager: CurrentUserManager
+    private let viewContext: NSManagedObjectContext
+    private let versionManager: VersionManager
+    private let goalManager: GoalManager
+    private let healthStoreManager: HealthStoreManager
+
     let stackView = UIStackView()
     let collectionContainer = UIView()
     var collectionView :UICollectionView?
@@ -36,6 +43,23 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     var goals : [Goal] = []
     var filteredGoals : [Goal] = []
+
+    init(currentUserManager: CurrentUserManager, 
+         viewContext: NSManagedObjectContext,
+         versionManager: VersionManager,
+         goalManager: GoalManager,
+         healthStoreManager: HealthStoreManager) {
+        self.currentUserManager = currentUserManager
+        self.viewContext = viewContext
+        self.versionManager = versionManager
+        self.goalManager = goalManager
+        self.healthStoreManager = healthStoreManager
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -145,7 +169,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.updateGoals()
         self.fetchGoals()
 
-        if ServiceLocator.currentUserManager.signedIn(context: ServiceLocator.persistentContainer.viewContext) {
+        if currentUserManager.signedIn(context: viewContext) {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
                 if success {
@@ -158,7 +182,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
         Task { @MainActor in
             do {
-                let updateState = try await ServiceLocator.versionManager.updateState()
+                let updateState = try await versionManager.updateState()
 
                 switch updateState {
                 case .UpdateRequired:
@@ -191,7 +215,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !ServiceLocator.currentUserManager.signedIn(context: ServiceLocator.persistentContainer.viewContext) {
+        if !currentUserManager.signedIn(context: viewContext) {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
@@ -203,7 +227,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc func handleGoalsFetchedNotification() {
         Task {
-            self.lastUpdated = await ServiceLocator.goalManager.goalsFetchedAt
+            self.lastUpdated = await goalManager.goalsFetchedAt
             self.updateGoals()
         }
     }
@@ -264,7 +288,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
 
     func updateDeadbeatVisibility() {
-        let isDeadbeat = ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext)
+        let isDeadbeat = currentUserManager.isDeadbeat(context: viewContext)
         self.deadbeatView.isHidden = !isDeadbeat
     }
     
@@ -284,7 +308,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func setupHealthKit() {
         Task { @MainActor in
             do {
-                try await ServiceLocator.healthStoreManager.ensureGoalsUpdateRegularly()
+                try await healthStoreManager.ensureGoalsUpdateRegularly()
             } catch {
                 // We should display an error UI
             }
@@ -298,7 +322,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
 
             do {
-                try await ServiceLocator.goalManager.refreshGoals()
+                try await goalManager.refreshGoals()
                 self.updateGoals()
             } catch {
                 if UIApplication.shared.applicationState == .active {
@@ -314,7 +338,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     func updateGoals() {
-        let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+        let goals = goalManager.staleGoals(context: viewContext) ?? []
         self.goals = sortedGoals(goals)
         self.updateFilteredGoals()
         self.didUpdateGoals()
@@ -370,7 +394,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return ServiceLocator.versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count
+        return versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -433,9 +457,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         var matchingGoal: Goal?
 
         if let identifier = notif.userInfo?["identifier"] as? String {
-            let context = ServiceLocator.persistentContainer.viewContext
-            if let url = URL(string: identifier), let objectID = context.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
-                matchingGoal = context.object(with: objectID) as? Goal
+            if let url = URL(string: identifier), let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
+                matchingGoal = viewContext.object(with: objectID) as? Goal
             }
         }
         else if let slug = notif.userInfo?["slug"] as? String {
@@ -461,4 +484,3 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.fetchGoals()
     }
 }
-
