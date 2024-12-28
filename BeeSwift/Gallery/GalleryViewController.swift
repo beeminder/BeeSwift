@@ -102,7 +102,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         
         self.view.addSubview(self.outofdateView)
-        self.outofdateView.backgroundColor = UIColor.Beeminder.gray
         self.outofdateView.snp.makeConstraints { (make) in
             make.right.left.equalTo(0)
             make.top.equalTo(self.deadbeatView.snp.bottom)
@@ -110,15 +109,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         
         self.outofdateView.addSubview(self.outofdateLabel)
-        self.outofdateLabel.textColor = UIColor.Beeminder.red
+        self.outofdateLabel.textColor = .black
+        self.outofdateLabel.backgroundColor = .Beeminder.red
         self.outofdateLabel.numberOfLines = 0
         self.outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
         self.outofdateLabel.textAlignment = .center
         self.outofdateLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(3)
-            make.bottom.equalTo(-3)
-            make.left.equalTo(10)
-            make.right.equalTo(-10)
+            make.top.bottom.equalTo(0)
+            make.left.right.equalToSuperview()
         }
         
         self.view.addSubview(self.searchBar)
