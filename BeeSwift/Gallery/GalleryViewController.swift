@@ -163,12 +163,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 switch updateState {
                 case .UpdateRequired:
                     self.outofdateView.isHidden = false
-                    self.outofdateLabel.isHidden = false
                     self.outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
                     self.collectionView?.isHidden = true
                 case .UpdateSuggested:
                     self.outofdateView.isHidden = false
-                    self.outofdateLabel.isHidden = false
                     self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
                     self.collectionView?.isHidden = false
                 case .UpToDate:
