@@ -139,6 +139,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.noGoalsLabel.textAlignment = .center
         self.noGoalsLabel.numberOfLines = 0
         self.noGoalsLabel.isHidden = true
+        // When shown this label should fill all remaining space so it is centered on the screen.
         self.noGoalsLabel.setContentHuggingPriority(UILayoutPriority(UILayoutPriority.defaultLow.rawValue - 10), for: .vertical)
 
         self.updateGoals()
