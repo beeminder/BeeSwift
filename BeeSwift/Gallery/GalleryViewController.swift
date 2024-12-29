@@ -366,7 +366,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     return goal1.lastTouch > goal2.lastTouch
                 }
                 else if selectedGoalSort == Constants.pledgeGoalSortString {
-                    return goal1.pledge > goal2.pledge
+                    return goal1.pledge == goal2.pledge
+                    ? goal1.urgencyKey < goal2.urgencyKey
+                    : goal1.pledge > goal2.pledge
                 }
             }
 
