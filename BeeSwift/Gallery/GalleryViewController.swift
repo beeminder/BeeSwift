@@ -357,24 +357,21 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     func sortedGoals(_ goals: any Sequence<Goal>) -> [Goal] {
-        return goals.sorted(by: { (goal1, goal2) -> Bool in
-            if let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String {
-                if selectedGoalSort == Constants.nameGoalSortString {
-                    return goal1.slug < goal2.slug
-                }
-                else if selectedGoalSort == Constants.recentDataGoalSortString {
-                    return goal1.lastTouch > goal2.lastTouch
-                }
-                else if selectedGoalSort == Constants.pledgeGoalSortString {
-                    return goal1.pledge == goal2.pledge
-                    ? goal1.urgencyKey < goal2.urgencyKey
-                    : goal1.pledge > goal2.pledge
-                }
-            }
-
-            // urgencykey is guaranteed to result in goals sorting into the canonical order
-            return goal1.urgencyKey < goal2.urgencyKey
-        })
+        let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String ?? Constants.urgencyGoalSortString
+        
+        switch selectedGoalSort {
+        case Constants.nameGoalSortString:
+            return goals.sorted(using: [SortDescriptor(\.slug),
+                                        SortDescriptor(\.urgencyKey)])
+        case Constants.recentDataGoalSortString:
+            return goals.sorted(using: [SortDescriptor(\.lastTouch, order: .reverse),
+                                        SortDescriptor(\.urgencyKey)])
+        case Constants.pledgeGoalSortString:
+            return goals.sorted(using: [SortDescriptor(\.pledge, order: .reverse),
+                                        SortDescriptor(\.urgencyKey)])
+        default:
+            return goals.sorted(using: SortDescriptor(\.urgencyKey))
+        }
     }
 
     func updateFilteredGoals() {
