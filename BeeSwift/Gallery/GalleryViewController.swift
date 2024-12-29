@@ -20,8 +20,8 @@ import BeeKit
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
 
-    var stackView = UIStackView()
-    var collectionContainer = UIView()
+    let stackView = UIStackView()
+    let collectionContainer = UIView()
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewFlowLayout?
     private let freshnessIndicator = FreshnessIndicatorView()
