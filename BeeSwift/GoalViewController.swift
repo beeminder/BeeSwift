@@ -23,7 +23,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
 
     let goal: Goal
-
+    
+    private let timeElapsedView = FreshnessIndicatorView()
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
     fileprivate var datapointTableController = DatapointTableViewController()
     fileprivate var dateTextField = UITextField()
@@ -63,9 +64,20 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.dateStepper.minimumValue = -365
         self.dateStepper.maximumValue = 365
 
+        self.view.addSubview(self.timeElapsedView)
+        self.timeElapsedView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
+            make.left.equalTo(0)
+            make.right.equalTo(0)
+        }
+        
+        self.updateLastUpdatedLabel()
+        Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GoalViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
+        
+        
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
+            make.top.equalTo(timeElapsedView.snp.bottom)
             make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
@@ -483,6 +495,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
 
         self.refreshCountdown()
+        self.updateLastUpdatedLabel()
     }
 
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -496,6 +509,12 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
                                                         deadline: 0)
         
         return Double(daystampAssumingMidnightDeadline.distance(to: daystampAccountingForTheGoalsDeadline))
+    }
+    
+    @objc func updateLastUpdatedLabel() {
+        let lastUpdated = self.goal.lastModifiedLocal
+        
+        self.timeElapsedView.update(with: lastUpdated)
     }
 
     // MARK: - SFSafariViewControllerDelegate
