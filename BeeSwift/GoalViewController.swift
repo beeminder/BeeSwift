@@ -23,13 +23,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
 
     let goal: Goal
-
-
-    private var lastFetched: Date? {
-        didSet {
-            updateLastUpdatedLabel()
-        }
-    }
     
     private let timeElapsedView = FreshnessIndicatorView()
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
@@ -53,7 +46,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     
     init(goal: Goal) {
         self.goal = goal
-        self.lastFetched = goal.lastModifiedLocal
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -495,7 +487,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     func updateGoalAndInterface() async throws {
         try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
-        self.lastFetched = goal.lastModifiedLocal
         updateInterfaceToMatchGoal()
     }
 
@@ -504,6 +495,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
 
         self.refreshCountdown()
+        self.updateLastUpdatedLabel()
     }
 
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -520,7 +512,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     @objc func updateLastUpdatedLabel() {
-        let lastUpdated = self.lastFetched ?? .distantPast
+        let lastUpdated = self.goal.lastModifiedLocal
         
         self.timeElapsedView.update(with: lastUpdated)
     }
