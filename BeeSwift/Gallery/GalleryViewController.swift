@@ -166,9 +166,10 @@ class GalleryViewController: UIViewController {
             UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
         ]
         self.navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
+            UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed)),
+            UIBarButtonItem(image: UIImage(systemName: "text.line.magnify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.pickSortTapped)),
         ]
-        
+
         stackView.addArrangedSubview(self.freshnessIndicator)
         self.updateLastUpdatedLabel()
         Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GalleryViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
@@ -455,6 +456,32 @@ extension GalleryViewController: SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
         self.fetchGoals()
+    }
+    
+    
+    
+    
+    @objc private func pickSortTapped() {
+        let alert = UIAlertController(title: "Gallery Sort Method", message: nil, preferredStyle: .actionSheet)
+        
+        Constants.goalSortOptions.forEach { sortOption in
+            let isSelectedAlready = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String == sortOption
+            let title = isSelectedAlready ? "--> " + sortOption : "" + sortOption
+            let action = UIAlertAction(title: title, style: .default) { [weak self] _ in
+                UserDefaults.standard.set(sortOption, forKey: Constants.selectedGoalSortKey)
+                UserDefaults.standard.synchronize()
+                
+                Task {
+                    self?.updateGoals()
+                }
+                
+            }
+            alert.addAction(action)
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
     }
 }
 
