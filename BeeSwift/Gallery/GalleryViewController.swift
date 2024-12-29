@@ -139,7 +139,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.noGoalsLabel.textAlignment = .center
         self.noGoalsLabel.numberOfLines = 0
         self.noGoalsLabel.isHidden = true
-        self.noGoalsLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        self.noGoalsLabel.setContentHuggingPriority(UILayoutPriority(UILayoutPriority.defaultLow.rawValue - 10), for: .vertical)
 
         self.updateGoals()
         self.fetchGoals()
@@ -362,10 +362,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.updateLastUpdatedLabel()
         if self.goals.count == 0 {
             self.noGoalsLabel.isHidden = false
-            self.collectionView?.isHidden = true
+            self.collectionContainer.isHidden = true
         } else {
             self.noGoalsLabel.isHidden = true
-            self.collectionView?.isHidden = false
+            self.collectionContainer.isHidden = false
         }
         let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
         self.navigationItem.leftBarButtonItem = searchItem
