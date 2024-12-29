@@ -138,6 +138,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         updateButton.snp.makeConstraints { (make) in
             make.left.right.equalTo(formView)
             make.top.equalTo(formView.snp.bottom).offset(20)
+            make.height.equalTo(Constants.defaultTextFieldHeight)
         }
 
         let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(self.deleteButtonPressed))

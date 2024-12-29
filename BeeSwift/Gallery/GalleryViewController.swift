@@ -22,8 +22,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewFlowLayout?
-    let lastUpdatedView = UIView()
-    let lastUpdatedLabel = BSLabel()
+    private let freshnessIndicator = FreshnessIndicatorView()
     let cellReuseIdentifier = "Cell"
     var deadbeatView = UIView()
     var outofdateView = UIView()
@@ -56,20 +55,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let item = UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
         self.navigationItem.rightBarButtonItem = item
         
-        self.view.addSubview(self.lastUpdatedView)
-        self.lastUpdatedView.backgroundColor = UIColor.Beeminder.gray
-        self.lastUpdatedView.snp.makeConstraints { (make) -> Void in
+        self.view.addSubview(self.freshnessIndicator)
+        self.freshnessIndicator.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-        }
-        
-        self.lastUpdatedView.addSubview(self.lastUpdatedLabel)
-        self.lastUpdatedLabel.font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
-        self.lastUpdatedLabel.textAlignment = NSTextAlignment.center
-        self.lastUpdatedLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(3)
-            make.bottom.equalTo(-3)
             make.left.equalTo(0)
             make.right.equalTo(0)
         }
@@ -82,7 +70,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.deadbeatView.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
-            make.top.equalTo(self.lastUpdatedView.snp.bottom)
+            make.top.equalTo(self.freshnessIndicator.snp.bottom)
             if !ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
                 make.height.equalTo(0)
             }
@@ -309,7 +297,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.deadbeatView.snp.remakeConstraints { (make) -> Void in
             make.left.equalTo(0)
             make.right.equalTo(0)
-            make.top.equalTo(self.lastUpdatedView.snp.bottom)
+            make.top.equalTo(self.freshnessIndicator.snp.bottom)
             if !ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
                 make.height.equalTo(0)
             }
@@ -325,8 +313,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func updateLastUpdatedLabel() {
         let lastUpdated = self.lastUpdated ?? .distantPast
         
-        self.lastUpdatedView.backgroundColor = lastUpdated.timeIntervalSinceNow < -3600 ? UIColor.Beeminder.red : UIColor.Beeminder.gray
-        self.lastUpdatedLabel.text = "Last updated: " + lastUpdatedDateFormatter.localizedString(for: lastUpdated, relativeTo: Date())
+        self.freshnessIndicator.update(with: lastUpdated)
     }
 
     

@@ -80,6 +80,7 @@ public actor GoalManager {
         goal.updateToMatch(json: goalJSON)
 
         try modelContext.save()
+
         await performPostGoalUpdateBookkeeping()
     }
 
