@@ -15,7 +15,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let slugLabel :BSLabel = BSLabel()
     let titleLabel :BSLabel = BSLabel()
     let todaytaLabel :BSLabel = BSLabel()
-    let thumbnailImageView: GoalImageView
+    let thumbnailImageView = GoalImageView(isThumbnail: true)
     let safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
