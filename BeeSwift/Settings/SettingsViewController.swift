@@ -18,10 +18,17 @@ class SettingsViewController: UIViewController {
     fileprivate let cellReuseIdentifier = "settingsTableViewCell"
     private let currentUserManager: CurrentUserManager
     private let viewContext: NSManagedObjectContext
+    private let goalManager: GoalManager
+    private let requestManager: RequestManager
     
-    init(currentUserManager: CurrentUserManager, viewContext: NSManagedObjectContext) {
+    init(currentUserManager: CurrentUserManager,
+         viewContext: NSManagedObjectContext,
+         goalManager: GoalManager,
+         requestManager: RequestManager) {
         self.currentUserManager = currentUserManager
         self.viewContext = viewContext
+        self.goalManager = goalManager
+        self.requestManager = requestManager
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -187,7 +194,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         if HKHealthStore.isHealthDataAvailable() {
             if section == 0 {
                 self.navigationController?.pushViewController(HealthKitConfigViewController(
-                    goalManager: ServiceLocator.goalManager,
+                    goalManager: goalManager,
                     viewContext: viewContext), animated: true)
                 return
             }
@@ -199,10 +206,10 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             self.navigationController?.pushViewController(ChooseGoalSortViewController(), animated: true)
         case 1:
             self.navigationController?.pushViewController(ConfigureNotificationsViewController(
-                goalManager: ServiceLocator.goalManager,
+                goalManager: goalManager,
                 viewContext: viewContext,
                 currentUserManager: currentUserManager,
-                requestManager: ServiceLocator.requestManager), animated: true)
+                requestManager: requestManager), animated: true)
         case 2:
             print("nothing")
         case 3:
