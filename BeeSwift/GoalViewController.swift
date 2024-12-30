@@ -7,13 +7,16 @@
 //
 
 import Foundation
+import CoreData
+import OSLog
+
 import SwiftyJSON
 import MBProgressHUD
 import AlamofireImage
 import SafariServices
 import Intents
+
 import BeeKit
-import OSLog
 
 class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTableViewControllerDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     let elementSpacing = 10

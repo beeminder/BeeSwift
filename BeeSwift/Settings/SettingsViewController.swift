@@ -9,6 +9,7 @@
 import Foundation
 import MBProgressHUD
 import HealthKit
+import CoreData
 
 import BeeKit
 
@@ -195,7 +196,9 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             if section == 0 {
                 self.navigationController?.pushViewController(HealthKitConfigViewController(
                     goalManager: goalManager,
-                    viewContext: viewContext), animated: true)
+                    viewContext: viewContext,
+                    healthStoreManager: ServiceLocator.healthStoreManager,
+                    requestManager: requestManager), animated: true)
                 return
             }
             section = section - 1

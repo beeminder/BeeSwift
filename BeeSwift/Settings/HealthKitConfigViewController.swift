@@ -6,11 +6,13 @@
 //  Copyright 2017 APB. All rights reserved.
 //
 
-import UIKit
+import CoreData
 import HealthKit
-import UserNotifications
-import SwiftyJSON
 import OSLog
+import UIKit
+import UserNotifications
+
+import SwiftyJSON
 
 import BeeKit
 
@@ -23,10 +25,17 @@ class HealthKitConfigViewController: UIViewController {
     let margin = 12
     private let goalManager: GoalManager
     private let viewContext: NSManagedObjectContext
+    private let healthStoreManager: HealthStoreManager
+    private let requestManager: RequestManager
     
-    init(goalManager: GoalManager, viewContext: NSManagedObjectContext) {
+    init(goalManager: GoalManager,
+         viewContext: NSManagedObjectContext,
+         healthStoreManager: HealthStoreManager,
+         requestManager: RequestManager) {
         self.goalManager = goalManager
         self.viewContext = viewContext
+        self.healthStoreManager = healthStoreManager
+        self.requestManager = requestManager
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -157,10 +166,16 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
         let goal = self.goalAt(indexPath)
         
         if !goal.isDataProvidedAutomatically {
-            let chooseHKMetricViewController = ChooseHKMetricViewController(goal: goal)
+            let chooseHKMetricViewController = ChooseHKMetricViewController(
+                goal: goal,
+                healthStoreManager: healthStoreManager,
+                requestManager: requestManager)
             self.navigationController?.pushViewController(chooseHKMetricViewController, animated: true)
         } else if goal.autodata == "apple" {
-            let controller = RemoveHKMetricViewController(goal: goal)
+            let controller = RemoveHKMetricViewController(
+                goal: goal,
+                requestManager: requestManager,
+                goalManager: goalManager)
             self.navigationController?.pushViewController(controller, animated: true)
         } else {
             let alert: UIAlertController = {
