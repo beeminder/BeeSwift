@@ -64,8 +64,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.currentUserManager = currentUserManager
         self.viewContext = viewContext
         super.init(nibName: nil, bundle: nil)
-        
-        self.goalImageView.goal = goal
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -487,7 +485,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
                 let _ = try await self.requestManager.addDatapoint(urtext: self.urtext, slug: self.goal.slug)
                 self.commentTextField.text = ""
 
-                try await self.updateGoalAndInterface()
+                try await updateGoalAndInterface()
 
                 self.submitButton.isUserInteractionEnabled = true
                 MBProgressHUD.hide(for: self.view, animated: true)
