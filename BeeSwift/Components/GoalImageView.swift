@@ -1,6 +1,5 @@
 import Foundation
 import OSLog
-import CoreData
 
 import Alamofire
 import AlamofireImage
@@ -15,6 +14,7 @@ class GoalImageView : UIView {
 
     private let imageView = UIImageView()
     private let beeLemniscateView = BeeLemniscateView()
+
     private var currentlyShowingGraph = false
     private var inProgressDownload: RequestReceipt? = nil
     private var currentDownloadToken: UUID? = nil
@@ -31,14 +31,16 @@ class GoalImageView : UIView {
         }
     }
 
-    init(isThumbnail: Bool = false) {
+    init(isThumbnail: Bool) {
         self.isThumbnail = isThumbnail
         super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
         setupView()
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        self.isThumbnail = false
+        super.init(coder: coder)
+        setupView()
     }
 
     private func setupView() {
