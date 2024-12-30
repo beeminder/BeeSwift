@@ -541,11 +541,11 @@ private extension GalleryViewController {
     var backgroundViewConsideringContents: UIView? {
         switch (visibleGoals.isEmpty, allGoals.isEmpty) {
         case (true, false):
-            return self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
+            self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
         case (true, true):
-            return self.makeViewForEmptyCollection(when: .noActiveGoals)
+            self.makeViewForEmptyCollection(when: .noActiveGoals)
         default:
-            return nil
+            nil
         }
     }
     
