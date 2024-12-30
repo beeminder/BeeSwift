@@ -392,7 +392,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.applySnapshot()
-        self.setBackgroundView(filteredGoals: visibleGoals, goals: allGoals)
+        self.setBackgroundView(visibleGoals: visibleGoals, allGoals: allGoals)
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
