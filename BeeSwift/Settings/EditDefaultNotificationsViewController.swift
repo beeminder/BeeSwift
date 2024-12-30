@@ -15,9 +15,15 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDefaultNotificationsViewController")
 
     private let user: User
+    private let currentUserManager: CurrentUserManager
+    private let requestManager: RequestManager
+    private let persistentContainer: NSPersistentContainer
 
-    override init() {
-        self.user = ServiceLocator.currentUserManager.user(context: ServiceLocator.persistentContainer.viewContext)!
+    init(currentUserManager: CurrentUserManager, requestManager: RequestManager, goalManager: GoalManager, persistentContainer: NSPersistentContainer) {
+        self.currentUserManager = currentUserManager
+        self.requestManager = requestManager
+        self.persistentContainer = persistentContainer
+        self.user = currentUserManager.user(context: persistentContainer.viewContext)!
         super.init()
         self.leadTimeStepper.value = Double(user.defaultLeadTime)
         self.alertstart = self.user.defaultAlertStart
@@ -35,8 +41,8 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
             guard let leadtime = userInfo["leadtime"] else { return }
             let params = [ "default_leadtime" : leadtime ]
             do {
-                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
-                try await ServiceLocator.currentUserManager.refreshUser()
+                let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
+                try await currentUserManager.refreshUser()
             } catch {
                 logger.error("Error setting default leadtime: \(error)")
                 // show alert
@@ -55,8 +61,8 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                 self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
                 let params = ["default_alertstart" : self.midnightOffsetFromTimePickerView()]
                 do {
-                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
-                    try await ServiceLocator.currentUserManager.refreshUser()
+                    let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
+                    try await currentUserManager.refreshUser()
                 } catch {
                     logger.error("Error setting default alert start: \(error)")
                     //foo
@@ -66,8 +72,8 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                 self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
                 let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
                 do {
-                    let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
-                    try await ServiceLocator.currentUserManager.refreshUser()
+                    let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
+                    try await currentUserManager.refreshUser()
                 } catch {
                     logger.error("Error setting default deadline: \(error)")
                     //foo
