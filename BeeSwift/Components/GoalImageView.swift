@@ -116,7 +116,7 @@ class GoalImageView : UIView {
             beeLemniscateView.isHidden = !currentlyShowingGraph
         }
 
-        let urlString = goal.cacheBustingGraphUrl
+        let urlString = isThumbnail ? goal.cacheBustingThumbUrl : goal.cacheBustingGraphUrl
         let request = URLRequest(url: URL(string: urlString)!)
 
         // Explicitly check the cache to see if the image is already present, and if so set it directly
