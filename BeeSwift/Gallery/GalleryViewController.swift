@@ -27,6 +27,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     private let versionManager: VersionManager
     private let goalManager: GoalManager
     private let healthStoreManager: HealthStoreManager
+    private let requestManager: RequestManager
 
     let stackView = UIStackView()
     let collectionContainer = UIView()
@@ -49,12 +50,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
          viewContext: NSManagedObjectContext,
          versionManager: VersionManager,
          goalManager: GoalManager,
-         healthStoreManager: HealthStoreManager) {
+         healthStoreManager: HealthStoreManager,
+         requestManager: RequestManager) {
         self.currentUserManager = currentUserManager
         self.viewContext = viewContext
         self.versionManager = versionManager
         self.goalManager = goalManager
         self.healthStoreManager = healthStoreManager
+        self.requestManager = requestManager
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -234,7 +237,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func settingsButtonPressed() {
-        self.navigationController?.pushViewController(SettingsViewController(), animated: true)
+        self.navigationController?.pushViewController(SettingsViewController(
+            currentUserManager: currentUserManager,
+            viewContext: viewContext,
+            goalManager: goalManager,
+            requestManager: requestManager), animated: true)
     }
     
     @objc func searchButtonPressed() {
