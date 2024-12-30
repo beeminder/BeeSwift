@@ -103,10 +103,6 @@ public actor CurrentUserManager {
         }
     }
 
-    public nonisolated func isDeadbeat(context: NSManagedObjectContext) -> Bool {
-        return user(context: context)?.deadbeat ?? false
-    }
-    
     public var username: String? {
         return user(context: modelContext)?.username
     }
