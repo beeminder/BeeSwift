@@ -41,14 +41,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var goals : [Goal] = [] {
+    var allGoals : [Goal] = [] {
         didSet {
-            setBackgroundView(filteredGoals: filteredGoals, goals: goals)
+            setBackgroundView(visibleGoals: visibleGoals, allGoals: allGoals)
         }
     }
-    var filteredGoals : [Goal] = [] {
+    var visibleGoals : [Goal] = [] {
         didSet {
-            setBackgroundView(filteredGoals: filteredGoals, goals: goals)
+            setBackgroundView(visibleGoals: visibleGoals, allGoals: allGoals)
         }
     }
 
@@ -261,8 +261,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleSignOut() {
-        self.goals = []
-        self.filteredGoals = []
+        self.allGoals = []
+        self.visibleGoals = []
         self.collectionView?.reloadData()
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
@@ -316,7 +316,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     @objc func fetchGoals() {
         Task { @MainActor in
-            if self.goals.count == 0 {
+            if self.allGoals.count == 0 {
                 MBProgressHUD.showAdded(to: self.view, animated: true)
             }
 
@@ -338,7 +338,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     func updateGoals() {
         let goals = goalManager.staleGoals(context: viewContext) ?? []
-        self.goals = sortedGoals(goals)
+        self.allGoals = sortedGoals(goals)
         self.updateFilteredGoals()
         self.didUpdateGoals()
     }
@@ -365,9 +365,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let searchText = searchBar.text ?? ""
 
         if searchText == "" {
-            self.filteredGoals = self.goals
+            self.visibleGoals = self.allGoals
         } else {
-            self.filteredGoals = self.goals.filter { (goal) -> Bool in
+            self.visibleGoals = self.allGoals.filter { (goal) -> Bool in
                 return goal.slug.lowercased().contains(searchText.lowercased())
             }
         }
@@ -385,16 +385,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count
+        return versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.visibleGoals.count
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        [filteredGoals.isEmpty, goals.isEmpty].contains(true) ? 0 : 1
+        [visibleGoals.isEmpty, allGoals.isEmpty].contains(true) ? 0 : 1
     }
     
-    private func setBackgroundView(filteredGoals: [Goal], goals: [Goal]) {
+    private func setBackgroundView(visibleGoals: [Goal], allGoals: [Goal]) {
         var view: UIView? {
-            switch (filteredGoals.isEmpty, goals.isEmpty) {
+            switch (visibleGoals.isEmpty, allGoals.isEmpty) {
             case (true, false):
                 return self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
             case (true, true):
@@ -433,7 +433,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let goal:Goal = self.filteredGoals[(indexPath as NSIndexPath).row]
+        let goal:Goal = self.visibleGoals[(indexPath as NSIndexPath).row]
 
         cell.goal = goal
         
@@ -441,12 +441,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: 320, height: section == 0 && self.goals.count > 0 ? 5 : 0)
+        return CGSize(width: 320, height: section == 0 && self.allGoals.count > 0 ? 5 : 0)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let row = (indexPath as NSIndexPath).row
-        if row < self.filteredGoals.count { self.openGoal(self.filteredGoals[row]) }
+        if row < self.visibleGoals.count { self.openGoal(self.visibleGoals[row]) }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -467,7 +467,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         else if let slug = notif.userInfo?["slug"] as? String {
-            matchingGoal = self.goals.filter({ (goal) -> Bool in
+            matchingGoal = self.allGoals.filter({ (goal) -> Bool in
                 return goal.slug == slug
             }).last
         }
