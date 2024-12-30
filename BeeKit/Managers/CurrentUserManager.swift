@@ -48,11 +48,13 @@ public actor CurrentUserManager {
 
     init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
         self.requestManager = requestManager
-        modelContainer = container
+        self.modelContainer = container
         let context = container.newBackgroundContext()
         context.name = "CurrentUserManager"
-        modelExecutor = .init(context: context)
+        self.modelExecutor = .init(context: context)
+
         migrateValuesToCoreData()
+        cleanUpUserDefaults()
     }
 
     // If there is an existing session based on UserDefaults, create a new User object
@@ -69,7 +71,6 @@ public actor CurrentUserManager {
             return
         }
 
-
         // Create a new user
         let _ = User(context: context,
             username: userDefaults.object(forKey: CurrentUserManager.usernameKey) as! String,
@@ -82,6 +83,14 @@ public actor CurrentUserManager {
         try! context.save()
     }
 
+    private nonisolated func cleanUpUserDefaults() {
+        for key in CurrentUserManager.allKeys {
+            userDefaults.removeObject(forKey: key)
+        }
+    }
+
+
+    // MARK: - User Management
 
     public nonisolated func user(context: NSManagedObjectContext) -> User? {
         do {
@@ -94,11 +103,27 @@ public actor CurrentUserManager {
         }
     }
 
-    private func modifyUser(_ callback: (User)->()) throws {
+    public nonisolated func isDeadbeat(context: NSManagedObjectContext) -> Bool {
+        return user(context: context)?.deadbeat ?? false
+    }
+    
+    public var username: String? {
+        return user(context: modelContext)?.username
+    }
+
+    public func refreshUser() async throws {
+        let response = try await requestManager.get(url: "api/v1/users/\(username!).json", parameters: [:])
+        let responseJSON = JSON(response!)
+
         guard let user = self.user(context: modelContext) else { return }
         modelContext.refresh(user, mergeChanges: false)
-        callback(user)
+        user.updateToMatch(json: responseJSON)
         try modelContext.save()
+
+        await Task { @MainActor in
+            guard let user = self.user(context: modelContainer.viewContext) else { return }
+            modelContainer.viewContext.refresh(user, mergeChanges: false)
+        }.value
     }
 
     private func deleteUser() throws {
@@ -110,36 +135,20 @@ public actor CurrentUserManager {
         try modelContext.save()
     }
 
-    /// Write a value to the UserDefaults store
-    ///
-    /// During migration to the appGroup shared store we still want to support users downgrading
-    /// to prior versions, and thus write all values to both stores.
-    func set(_ value: Any, forKey key: String) {
-        userDefaults.set(value, forKey: key)
+    // MARK: - Keychain Management
+
+    nonisolated func setAccessToken(_ accessToken: String) {
+        keychain.set(accessToken, forKey: CurrentUserManager.accessTokenKey, withAccess: .accessibleAfterFirstUnlock)
     }
     
-    func removeObject(forKey key: String) {
-        userDefaults.removeObject(forKey: key)
-    }
-
-    public nonisolated var accessToken :String? {
+    public nonisolated var accessToken: String? {
         return keychain.get(CurrentUserManager.accessTokenKey)
     }
-    
-    public var username :String? {
-        return user(context: modelContext)?.username
-    }
+
+    // MARK: - Authentication
 
     public nonisolated func signedIn(context: NSManagedObjectContext) -> Bool {
         return self.accessToken != nil && self.user(context: context)?.username != nil
-    }
-    
-    public nonisolated func isDeadbeat(context: NSManagedObjectContext) -> Bool {
-        return user(context: context)?.deadbeat ?? false
-    }
-    
-    nonisolated func setAccessToken(_ accessToken: String) {
-        keychain.set(accessToken, forKey: CurrentUserManager.accessTokenKey, withAccess: .accessibleAfterFirstUnlock)
     }
     
     public func signInWithEmail(_ email: String, password: String) async {
@@ -157,39 +166,10 @@ public actor CurrentUserManager {
         let _ = User(context: modelContext, json: responseJSON)
         try modelContext.save()
 
-        if responseJSON["deadbeat"].boolValue {
-            self.set(true, forKey: CurrentUserManager.deadbeatKey)
-        } else {
-            self.removeObject(forKey: CurrentUserManager.deadbeatKey)
-        }
         self.setAccessToken(responseJSON[CurrentUserManager.accessTokenKey].string!)
-        self.set(responseJSON[CurrentUserManager.usernameKey].string!, forKey: CurrentUserManager.usernameKey)
-        self.set(responseJSON[CurrentUserManager.defaultAlertstartKey].number!, forKey: CurrentUserManager.defaultAlertstartKey)
-        self.set(responseJSON[CurrentUserManager.defaultDeadlineKey].number!, forKey: CurrentUserManager.defaultDeadlineKey)
-        self.set(responseJSON[CurrentUserManager.defaultLeadtimeKey].number!, forKey: CurrentUserManager.defaultLeadtimeKey)
-        self.set(responseJSON[CurrentUserManager.beemTZKey].string!, forKey: CurrentUserManager.beemTZKey)
+        
         await Task { @MainActor in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
-        }.value
-    }
-    
-    public func refreshUser() async throws {
-        let response = try await requestManager.get(url: "api/v1/users/\(username!).json", parameters: [:])
-        let responseJSON = JSON(response!)
-
-        try! modifyUser { user in
-            user.updateToMatch(json: responseJSON)
-        }
-
-        self.set(responseJSON[CurrentUserManager.usernameKey].string!, forKey: CurrentUserManager.usernameKey)
-        self.set(responseJSON[CurrentUserManager.defaultAlertstartKey].number!, forKey: CurrentUserManager.defaultAlertstartKey)
-        self.set(responseJSON[CurrentUserManager.defaultDeadlineKey].number!, forKey: CurrentUserManager.defaultDeadlineKey)
-        self.set(responseJSON[CurrentUserManager.defaultLeadtimeKey].number!, forKey: CurrentUserManager.defaultLeadtimeKey)
-        self.set(responseJSON[CurrentUserManager.beemTZKey].string!, forKey: CurrentUserManager.beemTZKey)
-
-        await Task { @MainActor in
-            guard let user = self.user(context: modelContainer.viewContext) else { return }
-            modelContainer.viewContext.refresh(user, mergeChanges: false)
         }.value
     }
     
@@ -208,15 +188,9 @@ public actor CurrentUserManager {
         try deleteUser()
 
         keychain.delete(CurrentUserManager.accessTokenKey)
-        self.removeObject(forKey: CurrentUserManager.deadbeatKey)
-        self.removeObject(forKey: CurrentUserManager.usernameKey)
 
         await Task { @MainActor in
             NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
         }.value
     }
-}
-
-public enum CurrentUserManagerError : Error {
-    case loggedOut
 }
