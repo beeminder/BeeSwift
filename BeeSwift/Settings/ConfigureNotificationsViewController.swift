@@ -21,13 +21,13 @@ class ConfigureNotificationsViewController: UIViewController {
     fileprivate var tableView = UITableView()
     fileprivate let settingsButton = BSButton()
     private let goalManager: GoalManager
-    private let persistentContainer: NSPersistentContainer
+    private let viewContext: NSManagedObjectContext
     private let currentUserManager: CurrentUserManager
     private let requestManager: RequestManager
     
-    init(goalManager: GoalManager, persistentContainer: NSPersistentContainer, currentUserManager: CurrentUserManager, requestManager: RequestManager) {
+    init(goalManager: GoalManager, viewContext: NSManagedObjectContext, currentUserManager: CurrentUserManager, requestManager: RequestManager) {
         self.goalManager = goalManager
-        self.persistentContainer = persistentContainer
+        self.viewContext = viewContext
         self.currentUserManager = currentUserManager
         self.requestManager = requestManager
         super.init(nibName: nil, bundle: nil)
@@ -111,7 +111,7 @@ class ConfigureNotificationsViewController: UIViewController {
             MBProgressHUD.showAdded(to: self.view, animated: true)
             do {
                 try await self.goalManager.refreshGoals()
-                self.goals = self.goalManager.staleGoals(context: self.persistentContainer.viewContext)?.sorted(by: { $0.slug < $1.slug }) ?? []
+                self.goals = self.goalManager.staleGoals(context: self.viewContext)?.sorted(by: { $0.slug < $1.slug }) ?? []
                 self.lastFetched = Date()
                 MBProgressHUD.hide(for: self.view, animated: true)
             } catch {
@@ -200,7 +200,7 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
                 currentUserManager: currentUserManager,
                 requestManager: requestManager,
                 goalManager: goalManager,
-                persistentContainer: persistentContainer)
+                viewContext: viewContext)
         case 1:
             let goal = self.goalsUsingDefaultNotifications[indexPath.row]
             editNotificationsVC = EditGoalNotificationsViewController(
@@ -208,7 +208,7 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
                 currentUserManager: currentUserManager,
                 requestManager: requestManager,
                 goalManager: goalManager,
-                persistentContainer: persistentContainer)
+                viewContext: viewContext)
         default:
             let goal = self.goalsUsingNonDefaultNotifications[indexPath.row]
             editNotificationsVC = EditGoalNotificationsViewController(
@@ -216,7 +216,7 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
                 currentUserManager: currentUserManager,
                 requestManager: requestManager,
                 goalManager: goalManager,
-                persistentContainer: persistentContainer)
+                viewContext: viewContext)
         }
         
         self.navigationController?.pushViewController(editNotificationsVC, animated: true)

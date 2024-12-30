@@ -15,7 +15,7 @@ class GoalImageView : UIView {
     private let imageView = UIImageView()
     private let beeLemniscateView = BeeLemniscateView()
     private let currentUserManager: CurrentUserManager
-    private let persistentContainer: NSPersistentContainer
+    private let viewContext: NSManagedObjectContext
 
     private var currentlyShowingGraph = false
     private var inProgressDownload: RequestReceipt? = nil
@@ -33,10 +33,10 @@ class GoalImageView : UIView {
         }
     }
 
-    init(isThumbnail: Bool, currentUserManager: CurrentUserManager, persistentContainer: NSPersistentContainer) {
+    init(isThumbnail: Bool, currentUserManager: CurrentUserManager, viewContext: NSManagedObjectContext) {
         self.isThumbnail = isThumbnail
         self.currentUserManager = currentUserManager
-        self.persistentContainer = persistentContainer
+        self.viewContext = viewContext
         super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
         setupView()
     }

@@ -21,19 +21,19 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
     private let currentUserManager: CurrentUserManager
     private let requestManager: RequestManager
     private let goalManager: GoalManager
-    private let persistentContainer: NSPersistentContainer
+    private let viewContext: NSManagedObjectContext
     
-    init(goal: Goal, 
-         currentUserManager: CurrentUserManager,
+    init(currentUserManager: CurrentUserManager,
          requestManager: RequestManager,
          goalManager: GoalManager,
-         persistentContainer: NSPersistentContainer) {
+         goal: Goal,
+         viewContext: NSManagedObjectContext) {
         self.currentUserManager = currentUserManager
         self.requestManager = requestManager
         self.goalManager = goalManager
-        self.persistentContainer = persistentContainer
-        self.user = currentUserManager.user(context: persistentContainer.viewContext)!
         self.goal = goal
+        self.viewContext = viewContext
+        self.user = currentUserManager.user(context: viewContext)!
         
         super.init()
         self.leadTimeStepper.value = Double(goal.leadTime)
