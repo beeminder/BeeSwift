@@ -15,14 +15,12 @@ class GoalImageView : UIView {
 
     private let imageView = UIImageView()
     private let beeLemniscateView = BeeLemniscateView()
-    private let currentUserManager: CurrentUserManager
-    private let viewContext: NSManagedObjectContext
-
     private var currentlyShowingGraph = false
     private var inProgressDownload: RequestReceipt? = nil
     private var currentDownloadToken: UUID? = nil
 
     public let isThumbnail: Bool
+    public var isDeadbeat: Bool = false
 
     public var goal: Goal? {
         didSet {
@@ -34,10 +32,8 @@ class GoalImageView : UIView {
         }
     }
 
-    init(isThumbnail: Bool, currentUserManager: CurrentUserManager, viewContext: NSManagedObjectContext) {
+    init(isThumbnail: Bool = false) {
         self.isThumbnail = isThumbnail
-        self.currentUserManager = currentUserManager
-        self.viewContext = viewContext
         super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
         setupView()
     }

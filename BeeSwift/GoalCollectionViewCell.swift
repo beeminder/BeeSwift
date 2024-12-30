@@ -15,13 +15,14 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let slugLabel :BSLabel = BSLabel()
     let titleLabel :BSLabel = BSLabel()
     let todaytaLabel :BSLabel = BSLabel()
-    let thumbnailImageView: GoalImageView
+    let thumbnailImageView = GoalImageView(isThumbnail: true)
     let safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
     var goal: Goal? {
         didSet {
             self.thumbnailImageView.goal = goal
+            self.thumbnailImageView.isDeadbeat = goal?.owner?.isDeadbeat ?? false
             self.titleLabel.text = goal?.title
             self.slugLabel.text = goal?.slug
             self.titleLabel.isHidden = goal?.title == goal?.slug
@@ -31,11 +32,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    init(frame: CGRect, currentUserManager: CurrentUserManager, viewContext: NSManagedObjectContext) {
-        self.thumbnailImageView = GoalImageView(
-            isThumbnail: true,
-            currentUserManager: currentUserManager,
-            viewContext: viewContext)
+    override init(frame: CGRect) {
         super.init(frame: frame)
         
         self.contentView.addSubview(self.slugLabel)
