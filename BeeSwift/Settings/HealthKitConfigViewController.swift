@@ -22,11 +22,11 @@ class HealthKitConfigViewController: UIViewController {
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
     let margin = 12
     private let goalManager: GoalManager
-    private let persistentContainer: NSPersistentContainer
+    private let viewContext: NSManagedObjectContext
     
-    init(goalManager: GoalManager, persistentContainer: NSPersistentContainer) {
+    init(goalManager: GoalManager, viewContext: NSManagedObjectContext) {
         self.goalManager = goalManager
-        self.persistentContainer = persistentContainer
+        self.viewContext = viewContext
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -66,7 +66,7 @@ class HealthKitConfigViewController: UIViewController {
     }
 
     func updateGoals() {
-        let goals = goalManager.staleGoals(context: persistentContainer.viewContext) ?? []
+        let goals = goalManager.staleGoals(context: viewContext) ?? []
         self.goals = goals.sorted { $0.slug < $1.slug }
     }
 

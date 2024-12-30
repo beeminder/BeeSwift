@@ -17,11 +17,11 @@ class SettingsViewController: UIViewController {
     fileprivate var tableView = UITableView()
     fileprivate let cellReuseIdentifier = "settingsTableViewCell"
     private let currentUserManager: CurrentUserManager
-    private let persistentContainer: NSPersistentContainer
+    private let viewContext: NSManagedObjectContext
     
-    init(currentUserManager: CurrentUserManager, persistentContainer: NSPersistentContainer) {
+    init(currentUserManager: CurrentUserManager, viewContext: NSManagedObjectContext) {
         self.currentUserManager = currentUserManager
-        self.persistentContainer = persistentContainer
+        self.viewContext = viewContext
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -167,7 +167,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             cell.imageName = "app.badge"
             cell.accessoryType = .disclosureIndicator
         case 2:
-            let user = currentUserManager.user(context: persistentContainer.viewContext)
+            let user = currentUserManager.user(context: viewContext)
             let timezone = user?.timezone ?? "Unknown"
             cell.title = "Time zone: \(timezone)"
             cell.imageName = "clock"
@@ -186,7 +186,9 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         var section = indexPath.section
         if HKHealthStore.isHealthDataAvailable() {
             if section == 0 {
-                self.navigationController?.pushViewController(HealthKitConfigViewController(), animated: true)
+                self.navigationController?.pushViewController(HealthKitConfigViewController(
+                    goalManager: ServiceLocator.goalManager,
+                    viewContext: viewContext), animated: true)
                 return
             }
             section = section - 1
@@ -196,7 +198,11 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         case 0:
             self.navigationController?.pushViewController(ChooseGoalSortViewController(), animated: true)
         case 1:
-            self.navigationController?.pushViewController(ConfigureNotificationsViewController(), animated: true)
+            self.navigationController?.pushViewController(ConfigureNotificationsViewController(
+                goalManager: ServiceLocator.goalManager,
+                viewContext: viewContext,
+                currentUserManager: currentUserManager,
+                requestManager: ServiceLocator.requestManager), animated: true)
         case 2:
             print("nothing")
         case 3:

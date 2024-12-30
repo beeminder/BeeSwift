@@ -17,13 +17,15 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     private let user: User
     private let currentUserManager: CurrentUserManager
     private let requestManager: RequestManager
-    private let persistentContainer: NSPersistentContainer
+    private let goalManager: GoalManager
+    private let viewContext: NSManagedObjectContext
 
-    init(currentUserManager: CurrentUserManager, requestManager: RequestManager, goalManager: GoalManager, persistentContainer: NSPersistentContainer) {
+    init(currentUserManager: CurrentUserManager, requestManager: RequestManager, goalManager: GoalManager, viewContext: NSManagedObjectContext) {
         self.currentUserManager = currentUserManager
         self.requestManager = requestManager
-        self.persistentContainer = persistentContainer
-        self.user = currentUserManager.user(context: persistentContainer.viewContext)!
+        self.goalManager = goalManager
+        self.viewContext = viewContext
+        self.user = currentUserManager.user(context: viewContext)!
         super.init()
         self.leadTimeStepper.value = Double(user.defaultLeadTime)
         self.alertstart = self.user.defaultAlertStart
