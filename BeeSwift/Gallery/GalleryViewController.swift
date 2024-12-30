@@ -374,7 +374,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
+        
+        self.navigationItem.leftBarButtonItem = {
+            guard !allGoals.isEmpty else { return nil }
+            return UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
+        }()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
