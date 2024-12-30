@@ -149,18 +149,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionContainer.addSubview(self.collectionView!)
         self.collectionView!.delegate = self
         self.collectionView!.dataSource = self
-        self.collectionView!.register({ () -> GoalCollectionViewCell.Type in
-            class ConfiguredGoalCollectionViewCell: GoalCollectionViewCell {
-                override init(frame: CGRect) {
-                    super.init(frame: frame, currentUserManager: self.currentUserManager, viewContext: self.viewContext)
-                }
-                
-                required init?(coder: NSCoder) {
-                    fatalError("init(coder:) has not been implemented")
-                }
-            }
-            return ConfiguredGoalCollectionViewCell.self
-        }(), forCellWithReuseIdentifier: self.cellReuseIdentifier)
+        self.collectionView?.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
         self.collectionView?.snp.makeConstraints { (make) in
             make.top.bottom.equalTo(collectionContainer)
             make.left.right.equalTo(collectionContainer.safeAreaLayoutGuide)
