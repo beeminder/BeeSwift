@@ -23,16 +23,16 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
     private let goalManager: GoalManager
     private let viewContext: NSManagedObjectContext
     
-    init(currentUserManager: CurrentUserManager,
+    init(goal: Goal,
+         currentUserManager: CurrentUserManager,
          requestManager: RequestManager,
          goalManager: GoalManager,
-         goal: Goal,
          viewContext: NSManagedObjectContext) {
         self.currentUserManager = currentUserManager
         self.requestManager = requestManager
         self.goalManager = goalManager
-        self.goal = goal
         self.viewContext = viewContext
+        self.goal = goal
         self.user = currentUserManager.user(context: viewContext)!
         
         super.init()
