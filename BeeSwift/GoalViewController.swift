@@ -67,7 +67,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         super.init(nibName: nil, bundle: nil)
         
         self.goalImageView.goal = goal
-        self.goalImageView.isDeadbeat = goal.owner?.isDeadbeat ?? false
     }
 
     required init?(coder aDecoder: NSCoder) {

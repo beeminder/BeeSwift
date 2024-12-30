@@ -22,11 +22,10 @@ class GoalCollectionViewCell: UICollectionViewCell {
     var goal: Goal? {
         didSet {
             self.thumbnailImageView.goal = goal
-            self.thumbnailImageView.isDeadbeat = goal?.owner?.isDeadbeat ?? false
             self.titleLabel.text = goal?.title
             self.slugLabel.text = goal?.slug
             self.titleLabel.isHidden = goal?.title == goal?.slug
-            self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
+            self.todaytaLabel.text = goal?.todayta == true ? "" : ""
             self.safesumLabel.text = goal?.capitalSafesum()
             self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
         }

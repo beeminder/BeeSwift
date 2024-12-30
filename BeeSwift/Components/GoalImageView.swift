@@ -20,7 +20,6 @@ class GoalImageView : UIView {
     private var currentDownloadToken: UUID? = nil
 
     public let isThumbnail: Bool
-    public var isDeadbeat: Bool = false
 
     public var goal: Goal? {
         didSet {
