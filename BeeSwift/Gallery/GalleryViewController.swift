@@ -27,6 +27,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     private let versionManager: VersionManager
     private let goalManager: GoalManager
     private let healthStoreManager: HealthStoreManager
+    private let requestManager: RequestManager
 
     let stackView = UIStackView()
     let collectionContainer = UIView()
@@ -49,12 +50,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
          viewContext: NSManagedObjectContext,
          versionManager: VersionManager,
          goalManager: GoalManager,
-         healthStoreManager: HealthStoreManager) {
+         healthStoreManager: HealthStoreManager,
+         requestManager: RequestManager) {
         self.currentUserManager = currentUserManager
         self.viewContext = viewContext
         self.versionManager = versionManager
         self.goalManager = goalManager
         self.healthStoreManager = healthStoreManager
+        self.requestManager = requestManager
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -217,7 +220,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     override func viewDidAppear(_ animated: Bool) {
         if !currentUserManager.signedIn(context: viewContext) {
-            let signInVC = SignInViewController()
+            let signInVC = SignInViewController(currentUserManager: currentUserManager)
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
         } else {
@@ -234,7 +237,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func settingsButtonPressed() {
-        self.navigationController?.pushViewController(SettingsViewController(), animated: true)
+        self.navigationController?.pushViewController(SettingsViewController(
+            currentUserManager: currentUserManager,
+            viewContext: viewContext,
+            goalManager: goalManager,
+            requestManager: requestManager), animated: true)
     }
     
     @objc func searchButtonPressed() {
@@ -269,7 +276,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
         }
-        let signInVC = SignInViewController()
+        let signInVC = SignInViewController(currentUserManager: currentUserManager)
         signInVC.modalPresentationStyle = .fullScreen
         self.present(signInVC, animated: true, completion: nil)
     }
@@ -474,7 +481,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func openGoal(_ goal: Goal) {
-        let goalViewController = GoalViewController(goal: goal)
+        let goalViewController = GoalViewController(
+            goal: goal,
+            healthStoreManager: healthStoreManager,
+            goalManager: goalManager,
+            requestManager: requestManager,
+            currentUserManager: currentUserManager,
+            viewContext: viewContext)
         self.navigationController?.pushViewController(goalViewController, animated: true)
     }
     

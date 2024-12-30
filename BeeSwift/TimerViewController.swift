@@ -23,11 +23,13 @@ class TimerViewController: UIViewController {
     var timingSince: Date?
     var timer: Timer?
     private let units: TimerUnit
+    private let requestManager: RequestManager
 
     var accumulatedSeconds = 0
     
-    init(goal: Goal) {
+    init(goal: Goal, requestManager: RequestManager) {
         self.goal = goal
+        self.requestManager = requestManager
         self.units = Self.timerUnit(goal: goal) ?? .hours
         super.init(nibName: nil, bundle: nil)
     }
@@ -166,7 +168,7 @@ class TimerViewController: UIViewController {
         Task { @MainActor in
             do {
                 let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
-                let _ = try await ServiceLocator.requestManager.post(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints.json", parameters: params)
+                let _ = try await requestManager.post(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints.json", parameters: params)
                 hud.mode = .text
                 hud.label.text = "Added!"
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
