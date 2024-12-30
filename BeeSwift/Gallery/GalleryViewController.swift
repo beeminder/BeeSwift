@@ -31,6 +31,7 @@ class GalleryViewController: UIViewController {
     private let versionManager: VersionManager
     private let goalManager: GoalManager
     private let healthStoreManager: HealthStoreManager
+    private let requestManager: RequestManager
     
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
@@ -122,12 +123,14 @@ class GalleryViewController: UIViewController {
          viewContext: NSManagedObjectContext,
          versionManager: VersionManager,
          goalManager: GoalManager,
-         healthStoreManager: HealthStoreManager) {
+         healthStoreManager: HealthStoreManager,
+         requestManager: RequestManager) {
         self.currentUserManager = currentUserManager
         self.viewContext = viewContext
         self.versionManager = versionManager
         self.goalManager = goalManager
         self.healthStoreManager = healthStoreManager
+        self.requestManager = requestManager
         
         let fetchRequest = Goal.fetchRequest() as! NSFetchRequest<Goal>
         fetchRequest.sortDescriptors = Self.preferredSort
@@ -273,7 +276,11 @@ class GalleryViewController: UIViewController {
     }
     
     @objc func settingsButtonPressed() {
-        self.navigationController?.pushViewController(SettingsViewController(), animated: true)
+        self.navigationController?.pushViewController(SettingsViewController(
+            currentUserManager: currentUserManager,
+            viewContext: viewContext,
+            goalManager: goalManager,
+            requestManager: requestManager), animated: true)
     }
     
     @objc func searchButtonPressed() {
