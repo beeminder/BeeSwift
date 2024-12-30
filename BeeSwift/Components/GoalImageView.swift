@@ -90,14 +90,14 @@ class GoalImageView : UIView {
             inProgressDownload = nil
         }
 
-        //  - Deadbeat: Placeholder, no animation
-        if ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
+        //  No Goal: Placeholder, no animation
+        guard let goal = self.goal else {
             clearGoalGraph()
             return
         }
 
-        //  No Goal: Placeholder, no animation
-        guard let goal = self.goal else {
+        //  - Deadbeat: Placeholder, no animation
+        if goal.owner.deadbeat {
             clearGoalGraph()
             return
         }

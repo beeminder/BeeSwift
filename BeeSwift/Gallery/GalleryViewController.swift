@@ -289,8 +289,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
 
     func updateDeadbeatVisibility() {
-        let isDeadbeat = currentUserManager.isDeadbeat(context: viewContext)
-        self.deadbeatView.isHidden = !isDeadbeat
+        guard let user = currentUserManager.user(context: viewContext) else { return }
+        self.deadbeatView.isHidden = !user.deadbeat
     }
     
     private let lastUpdatedDateFormatter: RelativeDateTimeFormatter = {
