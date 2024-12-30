@@ -21,6 +21,18 @@ class HealthKitConfigViewController: UIViewController {
     var goals : [Goal] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
     let margin = 12
+    private let goalManager: GoalManager
+    private let persistentContainer: NSPersistentContainer
+    
+    init(goalManager: GoalManager, persistentContainer: NSPersistentContainer) {
+        self.goalManager = goalManager
+        self.persistentContainer = persistentContainer
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,7 +66,7 @@ class HealthKitConfigViewController: UIViewController {
     }
 
     func updateGoals() {
-        let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+        let goals = goalManager.staleGoals(context: persistentContainer.viewContext) ?? []
         self.goals = goals.sorted { $0.slug < $1.slug }
     }
 
@@ -73,7 +85,7 @@ class HealthKitConfigViewController: UIViewController {
 
             MBProgressHUD.showAdded(to: self.view, animated: true)
             do {
-                try await ServiceLocator.goalManager.refreshGoals()
+                try await goalManager.refreshGoals()
                 updateGoals()
                 MBProgressHUD.hide(for: self.view, animated: true)
             } catch {

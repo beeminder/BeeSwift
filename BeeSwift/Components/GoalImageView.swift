@@ -14,6 +14,8 @@ class GoalImageView : UIView {
 
     private let imageView = UIImageView()
     private let beeLemniscateView = BeeLemniscateView()
+    private let currentUserManager: CurrentUserManager
+    private let persistentContainer: NSPersistentContainer
 
     private var currentlyShowingGraph = false
     private var inProgressDownload: RequestReceipt? = nil
@@ -31,16 +33,16 @@ class GoalImageView : UIView {
         }
     }
 
-    init(isThumbnail: Bool) {
+    init(isThumbnail: Bool, currentUserManager: CurrentUserManager, persistentContainer: NSPersistentContainer) {
         self.isThumbnail = isThumbnail
+        self.currentUserManager = currentUserManager
+        self.persistentContainer = persistentContainer
         super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
         setupView()
     }
 
     required init?(coder: NSCoder) {
-        self.isThumbnail = false
-        super.init(coder: coder)
-        setupView()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func setupView() {
