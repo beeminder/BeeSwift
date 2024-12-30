@@ -41,16 +41,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var allGoals : [Goal] = [] {
-        didSet {
-            setBackgroundView(visibleGoals: visibleGoals, allGoals: allGoals)
-        }
-    }
-    var visibleGoals : [Goal] = [] {
-        didSet {
-            setBackgroundView(visibleGoals: visibleGoals, allGoals: allGoals)
-        }
-    }
+    var allGoals : [Goal] = []
+    var visibleGoals : [Goal] = []
 
     init(currentUserManager: CurrentUserManager, 
          viewContext: NSManagedObjectContext,
@@ -378,6 +370,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.collectionView!.reloadData()
+        self.setBackgroundView(visibleGoals: visibleGoals, allGoals: allGoals)
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
