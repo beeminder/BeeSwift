@@ -266,7 +266,7 @@ class GalleryViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         if !currentUserManager.signedIn(context: viewContext) {
-            let signInVC = SignInViewController()
+            let signInVC = SignInViewController(currentUserManager: currentUserManager)
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
         }
@@ -305,7 +305,7 @@ class GalleryViewController: UIViewController {
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
         }
-        let signInVC = SignInViewController()
+        let signInVC = SignInViewController(currentUserManager: currentUserManager)
         signInVC.modalPresentationStyle = .fullScreen
         self.present(signInVC, animated: true, completion: nil)
     }
@@ -422,7 +422,12 @@ class GalleryViewController: UIViewController {
     }
     
     func openGoal(_ goal: Goal) {
-        let goalViewController = GoalViewController(goal: goal)
+        let goalViewController = GoalViewController(
+            goal: goal,
+            healthStoreManager: healthStoreManager,
+            goalManager: goalManager,
+            requestManager: requestManager,
+            currentUserManager: currentUserManager)
         self.navigationController?.pushViewController(goalViewController, animated: true)
     }
     
