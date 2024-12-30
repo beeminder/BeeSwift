@@ -349,7 +349,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     @objc func timerButtonPressed() {
-        let controller = TimerViewController(goal: self.goal)
+        let controller = TimerViewController(goal: self.goal, requestManager: self.requestManager)
         controller.modalPresentationStyle = .fullScreen
         self.present(controller, animated: true, completion: nil)
     }
@@ -389,7 +389,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         guard !self.goal.hideDataEntry else { return }
         guard let existingDatapoint = datapoint as? DataPoint else { return }
 
-        let editDatapointViewController = EditDatapointViewController(goal: goal, datapoint: existingDatapoint)
+        let editDatapointViewController = EditDatapointViewController(goal: goal, datapoint: existingDatapoint, requestManager: self.requestManager, goalManager: self.goalManager)
         let navigationController = UINavigationController(rootViewController: editDatapointViewController)
         navigationController.modalPresentationStyle = .formSheet
         self.present(navigationController, animated: true, completion: nil)
@@ -602,9 +602,9 @@ private extension GoalViewController {
         case goalStatistics
         case goalSettings
         
-        func makeLink(username: String, goalName: String) -> URL? {
+        func makeLink(username: String, goalName: String, currentUserManager: CurrentUserManager) -> URL? {
             guard
-                let accessToken = self.currentUserManager.accessToken
+                let accessToken = currentUserManager.accessToken
             else { return nil }
             
             let destinationUrl: URL
@@ -647,7 +647,7 @@ private extension GoalViewController {
         let actions = options.map { option in
             UIAction(title: option.title, image: UIImage(systemName: option.imageSystemName), handler: { [weak self] _ in
                 guard let self else { return }
-                guard let link = option.action.makeLink(username: self.goal.owner.username, goalName: self.goal.slug) else { return }
+                guard let link = option.action.makeLink(username: self.goal.owner.username, goalName: self.goal.slug, currentUserManager: self.currentUserManager) else { return }
             
                 let safariVC = SFSafariViewController(url: link)
                 safariVC.delegate = self
