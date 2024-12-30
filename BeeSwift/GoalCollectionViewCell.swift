@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreData
 
 import BeeKit
 
@@ -14,7 +15,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let slugLabel :BSLabel = BSLabel()
     let titleLabel :BSLabel = BSLabel()
     let todaytaLabel :BSLabel = BSLabel()
-    let thumbnailImageView = GoalImageView(isThumbnail: true)
+    let thumbnailImageView: GoalImageView
     let safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
@@ -30,7 +31,11 @@ class GoalCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    override init(frame: CGRect) {
+    init(frame: CGRect, currentUserManager: CurrentUserManager, viewContext: NSManagedObjectContext) {
+        self.thumbnailImageView = GoalImageView(
+            isThumbnail: true,
+            currentUserManager: currentUserManager,
+            viewContext: viewContext)
         super.init(frame: frame)
         
         self.contentView.addSubview(self.slugLabel)
@@ -84,6 +89,6 @@ class GoalCollectionViewCell: UICollectionViewCell {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        fatalError("init(coder:) has not been implemented")
     }
 }

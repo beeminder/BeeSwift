@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import CoreData
 
 import Alamofire
 import AlamofireImage

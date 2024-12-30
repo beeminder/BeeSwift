@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import OSLog
+import CoreData
 
 import BeeKit
 
