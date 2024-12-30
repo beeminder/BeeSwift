@@ -386,7 +386,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        [visibleGoals.isEmpty, allGoals.isEmpty].contains(true) ? 0 : 1
+        visibleGoals.isEmpty ? 0 : 1
     }
         
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
