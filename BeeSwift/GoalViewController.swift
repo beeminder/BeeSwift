@@ -27,9 +27,10 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     private let goalManager: GoalManager
     private let requestManager: RequestManager
     private let currentUserManager: CurrentUserManager
+    private let viewContext: NSManagedObjectContext
     
     private let timeElapsedView = FreshnessIndicatorView()
-    fileprivate var goalImageView = GoalImageView(isThumbnail: false)
+    fileprivate var goalImageView: GoalImageView
     fileprivate var datapointTableController = DatapointTableViewController()
     fileprivate var dateTextField = UITextField()
     fileprivate var valueTextField = UITextField()
@@ -51,12 +52,18 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
          healthStoreManager: HealthStoreManager,
          goalManager: GoalManager,
          requestManager: RequestManager,
-         currentUserManager: CurrentUserManager) {
+         currentUserManager: CurrentUserManager,
+         viewContext: NSManagedObjectContext) {
         self.goal = goal
         self.healthStoreManager = healthStoreManager
         self.goalManager = goalManager
         self.requestManager = requestManager
         self.currentUserManager = currentUserManager
+        self.viewContext = viewContext
+        self.goalImageView = GoalImageView(
+            isThumbnail: false,
+            currentUserManager: currentUserManager,
+            viewContext: viewContext)
         super.init(nibName: nil, bundle: nil)
     }
 

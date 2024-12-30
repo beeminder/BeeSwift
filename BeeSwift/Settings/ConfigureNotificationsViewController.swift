@@ -9,6 +9,7 @@
 import UIKit
 import SwiftyJSON
 import OSLog
+import CoreData
 
 import BeeKit
 

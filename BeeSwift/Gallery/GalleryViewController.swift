@@ -434,7 +434,8 @@ class GalleryViewController: UIViewController {
             healthStoreManager: healthStoreManager,
             goalManager: goalManager,
             requestManager: requestManager,
-            currentUserManager: currentUserManager)
+            currentUserManager: currentUserManager,
+            viewContext: viewContext)
         self.navigationController?.pushViewController(goalViewController, animated: true)
     }
     
