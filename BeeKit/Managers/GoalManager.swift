@@ -62,21 +62,29 @@ public actor GoalManager {
             return
         }
 
-        // Fetch user data including goals with associations
-        let response = try await requestManager.get(url: "api/v1/users/\(username).json", parameters: ["associations": "true"])!
+        guard let user = self.currentUserManager.user(context: modelContext) else { return }
+        let goalsUnknown = user.goals.count == 0
 
-        //  Update CoreData representation
-        modelContext.refreshAllObjects()
+        let userResponse: JSON
+        let goalResponse: JSON
+
+        if (goalsUnknown) {
+            // We must fetch the user object first, and then fetch goals afterwards, to guarantee User.updated_at is
+            // a safe timestamp for future fetches without losing data
+            userResponse = JSON(try await requestManager.get(url: "api/v1/users/\(username).json", parameters: nil)!)
+            goalResponse = JSON(try await requestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)!)
+        } else {
+            // FIXME: Wrong last modified time
+            userResponse = JSON(try await requestManager.get(url: "api/v1/users/\(username).json", parameters: ["diff_since": user.lastModifiedLocal.timeIntervalSince1970])!)
+            goalResponse = userResponse["goals"]
+        }
 
         // The user may have logged out during the network operation. If so we have nothing to do
+        modelContext.refreshAllObjects()
         guard let user = self.currentUserManager.user(context: modelContext) else { return }
 
-        user.updateToMatch(json: response)
-
-        // Update goals from the goals array in the user response
-        if let goalsArray = response["goals"].array {
-            self.updateGoalsFromJson(goalsArray)
-        }
+        user.updateToMatch(json: userResponse)
+        self.updateGoalsFromJson(goalResponse)
 
         try modelContext.save()
 
@@ -125,11 +133,12 @@ public actor GoalManager {
         }
 
         // Remove any deleted goals
-        let allGoalIds = Set(responseGoals.map { $0["id"].stringValue })
-        let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
-        for goal in goalsToDelete {
-            modelContext.delete(goal)
-        }
+        // FIXME: We need to consult the deleted goal array for this
+//        let allGoalIds = Set(responseGoals.map { $0["id"].stringValue })
+//        let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
+//        for goal in goalsToDelete {
+//            modelContext.delete(goal)
+//        }
     }
 
     private func performPostGoalUpdateBookkeeping() async {
