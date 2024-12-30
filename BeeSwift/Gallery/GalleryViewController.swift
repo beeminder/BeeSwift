@@ -149,7 +149,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionContainer.addSubview(self.collectionView!)
         self.collectionView!.delegate = self
         self.collectionView!.dataSource = self
-        self.collectionView?.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
+        self.collectionView!.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
         self.collectionView?.snp.makeConstraints { (make) in
             make.top.bottom.equalTo(collectionContainer)
             make.left.right.equalTo(collectionContainer.safeAreaLayoutGuide)
