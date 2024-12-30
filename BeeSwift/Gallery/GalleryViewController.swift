@@ -453,9 +453,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         else if let slug = notif.userInfo?["slug"] as? String {
-            matchingGoal = self.allGoals.filter({ (goal) -> Bool in
-                return goal.slug == slug
-            }).last
+            matchingGoal = self.allGoals.last(where: { $0.slug == slug })
         }
         if matchingGoal != nil {
             self.navigationController?.popToRootViewController(animated: false)
