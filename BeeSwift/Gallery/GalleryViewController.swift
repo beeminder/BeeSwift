@@ -370,7 +370,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.collectionView!.reloadData()
-        self.setBackgroundView(visibleGoals: visibleGoals, allGoals: allGoals)
+        self.collectionView?.backgroundView = backgroundViewConsideringContents
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
@@ -387,20 +387,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         [visibleGoals.isEmpty, allGoals.isEmpty].contains(true) ? 0 : 1
-    }
-    
-    private func setBackgroundView(visibleGoals: [Goal], allGoals: [Goal]) {
-        var view: UIView? {
-            switch (visibleGoals.isEmpty, allGoals.isEmpty) {
-            case (true, false):
-                return self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
-            case (true, true):
-                return self.makeViewForEmptyCollection(when: .noActiveGoals)
-            default:
-                return nil
-            }
-        }
-        collectionView?.backgroundView = view
     }
         
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -487,22 +473,50 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 }
 
+// view for the background of the collection view based on its contents
 private extension GalleryViewController {
+    var backgroundViewConsideringContents: UIView? {
+        switch (visibleGoals.isEmpty, allGoals.isEmpty) {
+        case (true, false):
+            return self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
+        case (true, true):
+            return self.makeViewForEmptyCollection(when: .noActiveGoals)
+        default:
+            return nil
+        }
+    }
+    
     enum NoGoalReason: CaseIterable {
         case noActiveGoals
         case noGoalsMatchingFilter
+        
+        var message: String {
+            switch self {
+            case .noActiveGoals:
+                """
+                You have no Beeminder goals!
+
+                You'll need to create one before this app will be any use.
+                """
+            case .noGoalsMatchingFilter:
+                """
+                You have Beeminder goals!
+                
+                None match the current filter.
+                """
+            }
+        }
     }
     
     func makeViewForEmptyCollection(when reason: NoGoalReason) -> UIView {
         let container = UIView()
         
         let viewCorrespondingToReason: UIView = {
-            switch reason {
-            case .noActiveGoals:
-                return noGoalsView
-            case .noGoalsMatchingFilter:
-                return noGoalsMatchingFilterView
-            }
+            let label = BSLabel()
+            label.text = reason.message
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            return label
         }()
         container.addSubview(viewCorrespondingToReason)
         container.addSubview(UIView())
@@ -513,31 +527,5 @@ private extension GalleryViewController {
         }
 
         return container
-    }
-
-    private var noGoalsView: UIView {
-        let label = BSLabel()
-        label.text = """
-        You have no Beeminder goals!
-
-        You'll need to create one before this app will be any use.
-        """
-        label.textAlignment = .center
-        label.numberOfLines = 0
-
-        return label
-    }
-
-    private var noGoalsMatchingFilterView: UIView {
-        let label = BSLabel()
-        label.text = """
-        You have Beeminder goals!
-
-        None match the current filter.
-        """
-        label.textAlignment = .center
-        label.numberOfLines = 0
-
-        return label
     }
 }
