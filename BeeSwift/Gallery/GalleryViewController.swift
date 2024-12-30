@@ -432,8 +432,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let row = (indexPath as NSIndexPath).row
-        if row < self.visibleGoals.count { self.openGoal(self.visibleGoals[row]) }
+        guard indexPath.row < self.visibleGoals.count else { return }
+        
+        let goal = self.visibleGoals[indexPath.row]
+        
+        self.openGoal(goal)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
