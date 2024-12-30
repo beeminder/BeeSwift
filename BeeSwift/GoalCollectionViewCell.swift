@@ -19,7 +19,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
-    override init(frame: CGRect, currentUserManager: CurrentUserManager, viewContext: NSManagedObjectContext) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         
         self.contentView.addSubview(self.slugLabel)
