@@ -20,6 +20,8 @@ import BeeKit
 class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
 
+    let stackView = UIStackView()
+    let collectionContainer = UIView()
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewFlowLayout?
     private let freshnessIndicator = FreshnessIndicatorView()
@@ -42,9 +44,20 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
-        
+
+        self.view.addSubview(stackView)
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.spacing = 0
+        stackView.insetsLayoutMarginsFromSafeArea = true
+        stackView.snp.makeConstraints { (make) -> Void in
+            make.top.left.right.equalToSuperview()
+            make.bottom.equalTo(stackView.keyboardLayoutGuide.snp.top)
+        }
+
         self.collectionViewLayout = UICollectionViewFlowLayout()
-        self.collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout!)
+        self.collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout!)
         self.collectionView?.backgroundColor = .systemBackground
         self.collectionView?.alwaysBounceVertical = true
         self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
@@ -55,29 +68,18 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let item = UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
         self.navigationItem.rightBarButtonItem = item
         
-        self.view.addSubview(self.freshnessIndicator)
-        self.freshnessIndicator.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-        }
-        
+        stackView.addArrangedSubview(self.freshnessIndicator)
         self.updateLastUpdatedLabel()
         Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GalleryViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
-        self.view.addSubview(self.deadbeatView)
+        stackView.addArrangedSubview(self.deadbeatView)
+        self.deadbeatView.accessibilityIdentifier = "deadbeatView"
         self.deadbeatView.backgroundColor = UIColor.Beeminder.gray
-        self.deadbeatView.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-            make.top.equalTo(self.freshnessIndicator.snp.bottom)
-            if !ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
-                make.height.equalTo(0)
-            }
-        }
-        
+        updateDeadbeatVisibility()
+
         let deadbeatLabel = BSLabel()
         self.deadbeatView.addSubview(deadbeatLabel)
+        deadbeatLabel.accessibilityIdentifier = "deadbeatLabel"
         deadbeatLabel.textColor = UIColor.Beeminder.red
         deadbeatLabel.numberOfLines = 0
         deadbeatLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(13)
@@ -89,15 +91,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.right.equalTo(-10)
         }
         
-        self.view.addSubview(self.outofdateView)
+        stackView.addArrangedSubview(self.outofdateView)
+        self.outofdateView.accessibilityIdentifier = "outofdateView"
         self.outofdateView.backgroundColor = UIColor.Beeminder.gray
-        self.outofdateView.snp.makeConstraints { (make) in
-            make.right.left.equalTo(0)
-            make.top.equalTo(self.deadbeatView.snp.bottom)
-            make.height.equalTo(0)
-        }
-        
+        self.outofdateView.isHidden = true
+
         self.outofdateView.addSubview(self.outofdateLabel)
+        self.outofdateLabel.accessibilityIdentifier = "outofdateLabel"
         self.outofdateLabel.textColor = UIColor.Beeminder.red
         self.outofdateLabel.numberOfLines = 0
         self.outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
@@ -109,44 +109,39 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.right.equalTo(-10)
         }
         
-        self.view.addSubview(self.searchBar)
+        stackView.addArrangedSubview(self.searchBar)
+        self.searchBar.accessibilityIdentifier = "searchBar"
         self.searchBar.delegate = self
         self.searchBar.placeholder = "Filter goals by slug"
         self.searchBar.isHidden = true
         self.searchBar.showsCancelButton = true
-        self.searchBar.snp.makeConstraints { (make) in
-            make.left.right.equalTo(0)
-            make.top.equalTo(self.outofdateView.snp.bottom)
-            make.height.equalTo(0)
-        }
-        
+
+        stackView.addArrangedSubview(self.collectionContainer)
+
+        self.collectionContainer.addSubview(self.collectionView!)
         self.collectionView!.delegate = self
         self.collectionView!.dataSource = self
         self.collectionView!.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
-        self.view.addSubview(self.collectionView!)
-        
+        self.collectionView?.snp.makeConstraints { (make) in
+            make.top.bottom.equalTo(collectionContainer)
+            make.left.right.equalTo(collectionContainer.safeAreaLayoutGuide)
+        }
+
         self.collectionView?.refreshControl = {
             let refreshControl = UIRefreshControl()
             refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControl.Event.valueChanged)
             return refreshControl
         }()
-        
-        self.collectionView!.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.searchBar.snp.bottom)
-            make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
-            make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
-            make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
-        }
-        
-        self.view.addSubview(self.noGoalsLabel)
-        self.noGoalsLabel.snp.makeConstraints { (make) in
-            make.top.left.right.equalTo(self.collectionView!)
-        }
+
+        stackView.addArrangedSubview(self.noGoalsLabel)
+        self.noGoalsLabel.accessibilityIdentifier = "noGoalsLabel"
         self.noGoalsLabel.text = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
         self.noGoalsLabel.textAlignment = .center
         self.noGoalsLabel.numberOfLines = 0
         self.noGoalsLabel.isHidden = true
-        
+        // When shown this label should fill all remaining space so it is centered on the screen.
+        self.noGoalsLabel.setContentHuggingPriority(UILayoutPriority(UILayoutPriority.defaultLow.rawValue - 10), for: .vertical)
+
         self.updateGoals()
         self.fetchGoals()
 
@@ -167,26 +162,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
                 switch updateState {
                 case .UpdateRequired:
-                    self.outofdateView.snp.remakeConstraints { (make) -> Void in
-                        make.left.equalTo(0)
-                        make.right.equalTo(0)
-                        make.top.equalTo(self.deadbeatView.snp.bottom)
-                        make.height.equalTo(42)
-                    }
-                    self.outofdateLabel.isHidden = false
+                    self.outofdateView.isHidden = false
                     self.outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
                     self.collectionView?.isHidden = true
                 case .UpdateSuggested:
-                    self.outofdateView.snp.remakeConstraints { (make) -> Void in
-                        make.left.equalTo(0)
-                        make.right.equalTo(0)
-                        make.top.equalTo(self.deadbeatView.snp.bottom)
-                        make.height.equalTo(42)
-                    }
-                    self.outofdateLabel.isHidden = false
+                    self.outofdateView.isHidden = false
                     self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
                     self.collectionView?.isHidden = false
                 case .UpToDate:
+                    self.outofdateView.isHidden = true
                     self.collectionView?.isHidden = false
                 }
             } catch let error as VersionError {
@@ -242,20 +226,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         } else {
             self.searchBar.becomeFirstResponder()
         }
-        
-        self.updateSearchBarConstraints()
-    }
-    
-    private func updateSearchBarConstraints() {
-        self.searchBar.snp.remakeConstraints { (make) in
-            make.left.right.equalTo(0)
-            make.top.equalTo(self.outofdateView.snp.bottom)
-            if self.searchBar.isHidden {
-                make.height.equalTo(0)
-            } else {
-                make.height.equalTo(self.maxSearchBarHeight)
-            }
-        }
     }
     
     @objc func handleSignIn() {
@@ -293,15 +263,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
 
-    func updateDeadbeatHeight() {
-        self.deadbeatView.snp.remakeConstraints { (make) -> Void in
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-            make.top.equalTo(self.freshnessIndicator.snp.bottom)
-            if !ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext) {
-                make.height.equalTo(0)
-            }
-        }
+    func updateDeadbeatVisibility() {
+        let isDeadbeat = ServiceLocator.currentUserManager.isDeadbeat(context: ServiceLocator.persistentContainer.viewContext)
+        self.deadbeatView.isHidden = !isDeadbeat
     }
     
     private let lastUpdatedDateFormatter: RelativeDateTimeFormatter = {
@@ -391,15 +355,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.collectionView!.reloadData()
-        self.updateDeadbeatHeight()
+        self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
         if self.goals.count == 0 {
             self.noGoalsLabel.isHidden = false
-            self.collectionView?.isHidden = true
+            self.collectionContainer.isHidden = true
         } else {
             self.noGoalsLabel.isHidden = true
-            self.collectionView?.isHidden = false
+            self.collectionContainer.isHidden = false
         }
         let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
         self.navigationItem.leftBarButtonItem = searchItem
