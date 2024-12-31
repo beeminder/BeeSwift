@@ -308,6 +308,13 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.commentTextField.iq.distanceFromKeyboard = addDataPointAdditionalKeyboardDistance
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+        lastUpdatedTimer?.invalidate()
+        lastUpdatedTimer = nil
+    }
+
     @objc func onGoalsUpdatedNotification() {
         updateInterfaceToMatchGoal()
     }
@@ -521,13 +528,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
     }
-}
-
-override func viewDidDisappear(_ animated: Bool) {
-    super.viewDidDisappear(animated)
-    NotificationCenter.default.removeObserver(self)
-    lastUpdatedTimer?.invalidate()
-    lastUpdatedTimer = nil
 }
 
 private extension DateFormatter {
