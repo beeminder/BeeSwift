@@ -29,7 +29,7 @@ public class RequestManager {
     public let baseURLString = Config().baseURLString
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
     
-    func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?, headers: HTTPHeaders) async throws -> Any? {
+    func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders) async throws -> Any? {
 
         var urlWithSubstitutions = url
         if url.contains("{username}") {
@@ -78,20 +78,20 @@ public class RequestManager {
         }
     }
     
-    public func get(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
         return try await rawRequest(url: url, method: .get, parameters: parameters, headers: authenticationHeaders())
     }
     
     
-    public func put(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
         return try await rawRequest(url: url, method: .patch, parameters: parameters, headers: authenticationHeaders())
     }
     
-    public func post(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func post(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
         return try await rawRequest(url: url, method: .post, parameters: parameters, headers: authenticationHeaders())
     }
     
-    public func delete(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
         return try await rawRequest(url: url, method: .delete, parameters: parameters, headers: authenticationHeaders())
     }
     
