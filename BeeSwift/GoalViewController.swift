@@ -310,7 +310,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        NotificationCenter.default.removeObserver(self)
         lastUpdatedTimer?.invalidate()
         lastUpdatedTimer = nil
     }
