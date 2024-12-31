@@ -43,7 +43,7 @@ public actor DataPointManager {
     }
 
     private func deleteDatapoint(goal: Goal, datapoint : DataPoint) async throws {
-        let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)", parameters: nil)
+        let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)")
     }
 
     private func postDatapoint(goal : Goal, params : [String : String]) async throws {
