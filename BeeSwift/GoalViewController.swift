@@ -34,7 +34,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var valueStepper = UIStepper()
     fileprivate var valueDecimalRemnant : Double = 0.0
     fileprivate var goalImageScrollView = UIScrollView()
-    fileprivate var pollTimer : Timer?
+    fileprivate var lastUpdatedTimer: Timer?
     fileprivate var countdownLabel = BSLabel()
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
@@ -72,8 +72,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         
         self.updateLastUpdatedLabel()
-        Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GoalViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
-        
+        lastUpdatedTimer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GoalViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
@@ -309,6 +308,12 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.commentTextField.iq.distanceFromKeyboard = addDataPointAdditionalKeyboardDistance
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        lastUpdatedTimer?.invalidate()
+        lastUpdatedTimer = nil
+    }
+
     @objc func onGoalsUpdatedNotification() {
         updateInterfaceToMatchGoal()
     }
@@ -523,7 +528,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         controller.dismiss(animated: true, completion: nil)
     }
 }
-
 
 private extension DateFormatter {
     private static let urtextDateFormatter: DateFormatter = {
