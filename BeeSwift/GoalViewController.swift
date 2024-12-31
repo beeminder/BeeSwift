@@ -36,6 +36,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var goalImageScrollView = UIScrollView()
     fileprivate var lastUpdatedTimer: Timer?
     fileprivate var countdownLabel = BSLabel()
+    fileprivate let dueByLabel = BSLabel()
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
@@ -136,12 +137,24 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.right.equalTo(self.goalImageScrollView)
         }
         self.goalImageView.goal = self.goal
+        
+        
+        self.scrollView.addSubview(dueByLabel)
+        self.dueByLabel.snp.makeConstraints { make in
+            make.top.equalTo(self.goalImageScrollView.snp.bottom).offset(elementSpacing)
+            make.height.equalTo(Constants.defaultFontSize)
+            make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
+            make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
+        }
+        self.dueByLabel.textAlignment = .center
+        self.dueByLabel.font = UIFont.preferredFont(forTextStyle: .headline)
+        self.dueByLabel.textColor = .label.withAlphaComponent(0.8)
 
         self.addChild(self.datapointTableController)
         self.scrollView.addSubview(self.datapointTableController.view)
         self.datapointTableController.delegate = self
         self.datapointTableController.view.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.goalImageScrollView.snp.bottom).offset(elementSpacing)
+            make.top.equalTo(self.dueByLabel.snp.bottom).offset(elementSpacing)
             make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
             make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
         }
@@ -498,7 +511,10 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     func updateInterfaceToMatchGoal() {
         self.datapointTableController.hhmmformat = goal.hhmmFormat
         self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
-
+        
+        self.dueByLabel.isHidden = goal.dueBy.isEmpty
+        self.dueByLabel.attributedText = self.dueByTableAttributedString
+        
         self.refreshCountdown()
         self.updateLastUpdatedLabel()
     }
@@ -637,5 +653,44 @@ private extension GoalViewController {
         }
         
         return UIMenu(title: "bmndr.com/\(goal.owner.username)/\(goal.slug)", children: actions)
+    }
+}
+
+
+private extension GoalViewController {
+    var dueByContainsSpecificAmounts: Bool {
+        goal.dueBy
+            .compactMap { $0.value.formatted_delta_for_beedroid }
+            .joined(separator: " ")
+            .contains(where: { $0.isNumber })
+    }
+    
+    var dueByTableAttributedString: NSAttributedString {
+        let textAndColor: [(text: String, color: UIColor)] = goal.dueBy
+            .sorted(using: SortDescriptor(\.key))
+            .compactMap { $0.value.formatted_delta_for_beedroid }
+            .map { $0 == "✔" ? "✓" : $0 }
+            .enumerated()
+            .map { offset, element in
+                var color: UIColor {
+                    switch offset {
+                    case 0: return .systemOrange
+                    case 1: return .systemBlue
+                    case 2: return .systemGreen
+                    default: return .label.withAlphaComponent(0.8)
+                    }
+                }
+                return (text: element, color: color)
+            }
+        
+        let attrStr = NSMutableAttributedString()
+        
+        textAndColor
+            .map { (text: String, color: UIColor) in
+                NSAttributedString(string: text + " ", attributes: [.foregroundColor: color])
+            }
+            .forEach { attrStr.append($0) }
+        
+        return attrStr
     }
 }
