@@ -63,7 +63,7 @@ public class VersionManager {
     }
     
     private func checkIfUpdateRequired() async throws -> Bool {
-        let responseJSON = try await requestManager.get(url: "api/private/app_versions.json", parameters: nil)
+        let responseJSON = try await requestManager.get(url: "api/private/app_versions.json")
 
         guard let response = JSON(responseJSON!).dictionary else {
             throw VersionError.invalidServerResponse
