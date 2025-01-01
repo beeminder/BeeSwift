@@ -34,10 +34,13 @@ class SettingsViewController: UIViewController {
         
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.tableView.isScrollEnabled = false
         self.tableView.tableFooterView = UIView()
         self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
-
+        self.tableView.refreshControl = {
+            let refreshControl = UIRefreshControl()
+            refreshControl.addTarget(self, action: #selector(self.fetchUser), for: UIControl.Event.valueChanged)
+            return refreshControl
+        }()
 
         let versionLabel = BSLabel()
         self.view.addSubview(versionLabel)
@@ -86,6 +89,19 @@ class SettingsViewController: UIViewController {
     @objc
     func showLogsTapped() {
         self.navigationController?.pushViewController(LogsViewController(), animated: true)
+    }
+    
+    @objc private func fetchUser() {
+        Task { @MainActor [weak self] in
+            self?.tableView.isUserInteractionEnabled = false
+            try? await ServiceLocator.currentUserManager.refreshUser()
+            
+            self?.tableView.reloadData()
+            self?.tableView.layoutIfNeeded()
+            self?.tableView.refreshControl?.endRefreshing()
+            
+            self?.tableView.isUserInteractionEnabled = true
+        }
     }
 
 }
