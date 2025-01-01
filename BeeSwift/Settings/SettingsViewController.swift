@@ -92,7 +92,7 @@ class SettingsViewController: UIViewController {
     }
     
     @objc private func fetchUser() {
-        Task { [weak self] @MainActor in
+        Task { @MainActor [weak self] in
             self?.tableView.isUserInteractionEnabled = false
             try? await ServiceLocator.currentUserManager.refreshUser()
             
