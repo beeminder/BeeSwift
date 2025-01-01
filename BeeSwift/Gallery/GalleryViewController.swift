@@ -115,6 +115,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.left.equalTo(10)
             make.right.equalTo(-10)
         }
+        self.deadbeatView.isHidden = true
         
         stackView.addArrangedSubview(self.outofdateView)
         self.outofdateView.accessibilityIdentifier = "outofdateView"
@@ -289,8 +290,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
 
     func updateDeadbeatVisibility() {
-        guard let user = currentUserManager.user(context: viewContext) else { return }
-        self.deadbeatView.isHidden = !user.deadbeat
+        let isKnownDeadbeat = currentUserManager.user(context: viewContext)?.deadbeat == true
+        self.deadbeatView.isHidden = !isKnownDeadbeat
     }
     
     private let lastUpdatedDateFormatter: RelativeDateTimeFormatter = {

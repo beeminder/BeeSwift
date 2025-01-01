@@ -60,7 +60,7 @@ public actor GoalManager {
             return
         }
 
-        let responseObject = try await requestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)!
+        let responseObject = try await requestManager.get(url: "api/v1/users/\(username)/goals.json")!
         let response = JSON(responseObject)
         self.updateGoalsFromJson(response) // TODO: Return failure info
 
@@ -72,7 +72,7 @@ public actor GoalManager {
     public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
         let goal = try modelContext.existingObject(with: goalID) as! Goal
 
-        let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
+        let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5")
         let goalJSON = JSON(responseObject!)
 
         // The goal may have changed during the network operation, reload latest version
@@ -85,7 +85,7 @@ public actor GoalManager {
     }
 
     public func forceAutodataRefresh(_ goal: Goal) async throws {
-        let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
+        let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json")
     }
 
     private func updateGoalsFromJson(_ responseJSON: JSON) {

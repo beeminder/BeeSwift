@@ -11,7 +11,7 @@ import UIKit
 
 import BeeKit
 
-protocol DatapointTableViewControllerDelegate {
+protocol DatapointTableViewControllerDelegate: AnyObject {
     func datapointTableViewController(_ datapointTableViewController: DatapointTableViewController, didSelectDatapoint datapoint: BeeDataPoint)
 }
 
@@ -20,7 +20,7 @@ class DatapointTableViewController : UIViewController, UITableViewDelegate, UITa
     fileprivate var datapointsTableView = DatapointsTableView()
 
 
-    public var delegate : DatapointTableViewControllerDelegate?
+    public weak var delegate : DatapointTableViewControllerDelegate?
 
     public var datapoints : [BeeDataPoint] = [] {
         didSet {
