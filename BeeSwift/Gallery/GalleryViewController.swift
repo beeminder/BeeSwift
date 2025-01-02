@@ -36,14 +36,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let cellReuseIdentifier = "Cell"
     var deadbeatView = UIView()
     var outofdateView = UIView()
-    let noGoalsLabel = BSLabel()
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
     var lastUpdated: Date?
     let maxSearchBarHeight: Int = 50
     
-    var goals : [Goal] = []
-    var filteredGoals : [Goal] = []
+    var allGoals : [Goal] = []
+    var visibleGoals : [Goal] = []
 
     init(currentUserManager: CurrentUserManager, 
          viewContext: NSManagedObjectContext,
@@ -159,15 +158,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             return refreshControl
         }()
 
-        stackView.addArrangedSubview(self.noGoalsLabel)
-        self.noGoalsLabel.accessibilityIdentifier = "noGoalsLabel"
-        self.noGoalsLabel.text = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
-        self.noGoalsLabel.textAlignment = .center
-        self.noGoalsLabel.numberOfLines = 0
-        self.noGoalsLabel.isHidden = true
-        // When shown this label should fill all remaining space so it is centered on the screen.
-        self.noGoalsLabel.setContentHuggingPriority(UILayoutPriority(UILayoutPriority.defaultLow.rawValue - 10), for: .vertical)
-
         self.updateGoals()
         self.fetchGoals()
 
@@ -264,8 +254,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleSignOut() {
-        self.goals = []
-        self.filteredGoals = []
+        self.allGoals = []
+        self.visibleGoals = []
         self.collectionView?.reloadData()
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
@@ -319,7 +309,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     @objc func fetchGoals() {
         Task { @MainActor in
-            if self.goals.count == 0 {
+            if self.allGoals.count == 0 {
                 MBProgressHUD.showAdded(to: self.view, animated: true)
             }
 
@@ -341,7 +331,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     func updateGoals() {
         let goals = goalManager.staleGoals(context: viewContext) ?? []
-        self.goals = sortedGoals(goals)
+        self.allGoals = sortedGoals(goals)
         self.updateFilteredGoals()
         self.didUpdateGoals()
     }
@@ -368,9 +358,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         let searchText = searchBar.text ?? ""
 
         if searchText == "" {
-            self.filteredGoals = self.goals
+            self.visibleGoals = self.allGoals
         } else {
-            self.filteredGoals = self.goals.filter { (goal) -> Bool in
+            self.visibleGoals = self.allGoals.filter { (goal) -> Bool in
                 return goal.slug.lowercased().contains(searchText.lowercased())
             }
         }
@@ -381,28 +371,25 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.collectionView!.reloadData()
+        self.collectionView?.backgroundView = backgroundViewConsideringContents
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
-        if self.goals.count == 0 {
-            self.noGoalsLabel.isHidden = false
-            self.collectionContainer.isHidden = true
-        } else {
-            self.noGoalsLabel.isHidden = true
-            self.collectionContainer.isHidden = false
-        }
-        let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
-        self.navigationItem.leftBarButtonItem = searchItem
+        
+        self.navigationItem.leftBarButtonItem = {
+            guard !allGoals.isEmpty else { return nil }
+            return UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
+        }()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count
+        return versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.visibleGoals.count
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        visibleGoals.isEmpty ? 0 : 1
     }
-    
+        
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let minimumWidth: CGFloat = 320
 
@@ -428,9 +415,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
         
-        let goal:Goal = self.filteredGoals[(indexPath as NSIndexPath).row]
+        let goal = self.visibleGoals[indexPath.row]
 
         cell.goal = goal
         
@@ -438,12 +425,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: 320, height: section == 0 && self.goals.count > 0 ? 5 : 0)
+        return CGSize(width: 320, height: section == 0 && self.allGoals.count > 0 ? 5 : 0)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let row = (indexPath as NSIndexPath).row
-        if row < self.filteredGoals.count { self.openGoal(self.filteredGoals[row]) }
+        guard indexPath.row < self.visibleGoals.count else { return }
+        
+        let goal = self.visibleGoals[indexPath.row]
+        
+        self.openGoal(goal)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -455,18 +445,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     @objc func openGoalFromNotification(_ notification: Notification) {
-        guard let notif = notification as NSNotification? else { return }
         var matchingGoal: Goal?
 
-        if let identifier = notif.userInfo?["identifier"] as? String {
+        if let identifier = notification.userInfo?["identifier"] as? String {
             if let url = URL(string: identifier), let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
                 matchingGoal = viewContext.object(with: objectID) as? Goal
             }
         }
-        else if let slug = notif.userInfo?["slug"] as? String {
-            matchingGoal = self.goals.filter({ (goal) -> Bool in
-                return goal.slug == slug
-            }).last
+        else if let slug = notification.userInfo?["slug"] as? String {
+            matchingGoal = self.allGoals.last(where: { $0.slug == slug })
         }
         if matchingGoal != nil {
             self.navigationController?.popToRootViewController(animated: false)
@@ -484,5 +471,62 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
         self.fetchGoals()
+    }
+}
+
+// view for the background of the collection view based on its contents
+private extension GalleryViewController {
+    var backgroundViewConsideringContents: UIView? {
+        switch (visibleGoals.isEmpty, allGoals.isEmpty) {
+        case (true, false):
+            self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
+        case (true, true):
+            self.makeViewForEmptyCollection(when: .noActiveGoals)
+        default:
+            nil
+        }
+    }
+    
+    enum NoGoalReason: CaseIterable {
+        case noActiveGoals
+        case noGoalsMatchingFilter
+        
+        var message: String {
+            switch self {
+            case .noActiveGoals:
+                """
+                You have no Beeminder goals!
+
+                You'll need to create one before this app will be any use.
+                """
+            case .noGoalsMatchingFilter:
+                """
+                You have Beeminder goals!
+                
+                None match the current filter.
+                """
+            }
+        }
+    }
+    
+    func makeViewForEmptyCollection(when reason: NoGoalReason) -> UIView {
+        let container = UIView()
+        
+        let viewCorrespondingToReason: UIView = {
+            let label = BSLabel()
+            label.text = reason.message
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            return label
+        }()
+        container.addSubview(viewCorrespondingToReason)
+        container.addSubview(UIView())
+
+        viewCorrespondingToReason.snp.makeConstraints { make in
+            make.top.lessThanOrEqualTo(100)
+            make.horizontalEdges.equalTo(container)
+        }
+
+        return container
     }
 }
