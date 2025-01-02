@@ -24,8 +24,10 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
 
     /// The last time this record in the CoreData store was updated
     @NSManaged public var lastModifiedLocal: Date
+    
+    @NSManaged public var origin: String
 
-    public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String, value: NSNumber, updatedAt: Int) {
+    public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String, value: NSNumber, updatedAt: Int, origin: String) {
         let entity = NSEntityDescription.entity(forEntityName: "DataPoint", in: context)!
         super.init(entity: entity, insertInto: context)
         self.goal = goal
@@ -35,6 +37,7 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
         self.requestid = requestid
         self.value = value
         self.updatedAt = updatedAt
+        self.origin = origin
         lastModifiedLocal = Date()
     }
 
@@ -83,6 +86,7 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
         comment = json["comment"].stringValue
         requestid = json["requestid"].stringValue
         updatedAt = json["updated_at"].intValue
+        origin = json["origin"].stringValue
         lastModifiedLocal = Date()
     }
 
@@ -103,6 +107,7 @@ extension DataPoint {
     /// DataPoints are used to track certain events, like automatic pessimistic values, goal restarts, derailments, etc. These should sometimes
     /// be treated differently, e.g. not deleted as part of syncing with HealthKit
     public var isMeta: Bool {
-        DataPoint.metaPointHashtags.contains { comment.contains($0) }
+        guard origin == "beeminder" else { return false }
+        return DataPoint.metaPointHashtags.contains { comment.contains($0) }
     }
 }
