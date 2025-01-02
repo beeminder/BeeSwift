@@ -30,8 +30,8 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
             make.edges.equalTo(self.view)
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignedIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignIn(_:)), name: CurrentUserManager.failedSignInNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignedIn(_:)), name: CurrentUserManager.signedInNotificationName, object: nil)
         self.view.backgroundColor = UIColor.systemBackground
         
         

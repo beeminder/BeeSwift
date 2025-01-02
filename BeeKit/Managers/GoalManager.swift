@@ -19,7 +19,7 @@ public actor GoalManager {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalManager")
 
     /// A notification that is triggered any time the data for one or more goals is updated
-    public static let goalsUpdatedNotificationName = "com.beeminder.goalsUpdatedNotification"
+    public static let goalsUpdatedNotificationName = NSNotification.Name(rawValue: "com.beeminder.goalsUpdatedNotification")
 
     private let requestManager: RequestManager
     private nonisolated let currentUserManager: CurrentUserManager
@@ -42,7 +42,7 @@ public actor GoalManager {
         // 2) Other methods may be called with the actor executor, so it is no longer safe for the constructor to
         //    access class properties.
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.onSignedOutNotification), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onSignedOutNotification), name: CurrentUserManager.signedOutNotificationName, object: nil)
     }
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
@@ -132,7 +132,7 @@ public actor GoalManager {
         // Notify all listeners of the update
         await Task { @MainActor in
             modelContainer.viewContext.refreshAllObjects()
-            NotificationCenter.default.post(name: Notification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: self)
+            NotificationCenter.default.post(name: GoalManager.goalsUpdatedNotificationName, object: self)
         }.value
     }
 

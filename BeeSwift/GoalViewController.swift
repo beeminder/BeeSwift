@@ -293,7 +293,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage(systemName: "stopwatch"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(onGoalsUpdatedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onGoalsUpdatedNotification), name: GoalManager.goalsUpdatedNotificationName, object: nil)
 
         setValueTextField()
         updateInterfaceToMatchGoal()

@@ -57,7 +57,7 @@ class GoalImageView : UIView {
         beeLemniscateView.isHidden = true
 
         NotificationCenter.default.addObserver(
-            forName: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName),
+            forName: GoalManager.goalsUpdatedNotificationName,
             object: nil,
             queue: OperationQueue.main
         ) { [weak self] _ in
