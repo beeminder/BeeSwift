@@ -26,7 +26,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     
     private let timeElapsedView = FreshnessIndicatorView()
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
-    fileprivate var datapointTableController = DatapointTableViewController()
+    fileprivate var datapointTableController: DatapointTableViewController?
     fileprivate var dateTextField = UITextField()
     fileprivate var valueTextField = UITextField()
     fileprivate var commentTextField = UITextField()
@@ -137,10 +137,13 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         self.goalImageView.goal = self.goal
 
-        self.addChild(self.datapointTableController)
-        self.scrollView.addSubview(self.datapointTableController.view)
-        self.datapointTableController.delegate = self
-        self.datapointTableController.view.snp.makeConstraints { (make) -> Void in
+        let datapointTableController = DatapointTableViewController()
+        self.datapointTableController = datapointTableController
+        
+        self.addChild(datapointTableController)
+        self.scrollView.addSubview(datapointTableController.view)
+        datapointTableController.delegate = self
+        datapointTableController.view.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.goalImageScrollView.snp.bottom).offset(elementSpacing)
             make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
             make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
@@ -151,9 +154,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         self.scrollView.addSubview(dataEntryView)
         dataEntryView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(elementSpacing)
-            make.left.equalTo(self.datapointTableController.view)
-            make.right.equalTo(self.datapointTableController.view)
+            make.top.equalTo(datapointTableController.view.snp.bottom).offset(elementSpacing)
+            make.left.equalTo(datapointTableController.view)
+            make.right.equalTo(datapointTableController.view)
             make.bottom.equalTo(0)
             make.height.equalTo(120)
         }
@@ -279,7 +282,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             }
 
             pullToRefreshView.snp.makeConstraints { (make) in
-                make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(elementSpacing)
+                make.top.equalTo(datapointTableController.view.snp.bottom).offset(elementSpacing)
                 make.left.equalTo(sideMargin)
                 make.right.equalTo(-sideMargin)
             }
@@ -312,6 +315,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         super.viewDidDisappear(animated)
         lastUpdatedTimer?.invalidate()
         lastUpdatedTimer = nil
+        datapointTableController?.delegate = nil
+        datapointTableController = nil
+        NotificationCenter.default.removeObserver(self)
     }
 
     @objc func onGoalsUpdatedNotification() {
@@ -495,9 +501,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         updateInterfaceToMatchGoal()
     }
 
-    func updateInterfaceToMatchGoal() {
-        self.datapointTableController.hhmmformat = goal.hhmmFormat
-        self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
+    @MainActor func updateInterfaceToMatchGoal() {
+        self.datapointTableController?.hhmmformat = goal.hhmmFormat
+        self.datapointTableController?.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
 
         self.refreshCountdown()
         self.updateLastUpdatedLabel()
