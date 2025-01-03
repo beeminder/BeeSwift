@@ -38,6 +38,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var countdownLabel = BSLabel()
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
+    private let pullToRefreshView = PullToRefreshView()
     fileprivate let headerWidth = Double(1.0/3.0)
     fileprivate let viewGoalActivityType = "com.beeminder.viewGoal"
 
@@ -269,14 +270,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
 
         if self.goal.isDataProvidedAutomatically {
-            let pullToRefreshView = PullToRefreshView()
             scrollView.addSubview(pullToRefreshView)
 
-            if self.goal.isLinkedToHealthKit {
-                pullToRefreshView.message = "Pull down to synchronize with Apple Health"
-            } else {
-                pullToRefreshView.message = "Pull down to update"
-            }
+            refreshPullDown()
 
             pullToRefreshView.snp.makeConstraints { (make) in
                 make.top.equalTo(self.datapointTableController.view.snp.bottom).offset(elementSpacing)
@@ -360,6 +356,21 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     @objc func refreshCountdown() {
         self.countdownLabel.textColor = self.goal.countdownColor
         self.countdownLabel.text = self.goal.capitalSafesum()
+    }
+    
+    private func refreshPullDown() {
+        let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.formatOptions = [.withFullDate, .withFullTime]
+        
+        let lastSynced = goal.lastSyncedWithHealthKit.map { dateFormatter.string(from: $0) } ?? "not yet"
+        
+        if self.goal.isLinkedToHealthKit {
+            pullToRefreshView.message = "Pull down to synchronize with Apple Health"
+                + "\n"
+            + "Last synced: \(lastSynced)"
+        } else {
+            pullToRefreshView.message = "Pull down to update"
+        }
     }
 
     @objc func goalImageTapped() {
@@ -501,6 +512,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
         self.refreshCountdown()
         self.updateLastUpdatedLabel()
+        self.refreshPullDown()
     }
 
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {

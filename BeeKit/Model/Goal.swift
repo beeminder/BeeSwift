@@ -65,6 +65,8 @@ public class Goal: NSManagedObject {
 
     /// The last time this record in the CoreData store was updated
     @NSManaged public var lastModifiedLocal: Date
+    
+    @NSManaged public var lastSyncedWithHealthKit: Date?
 
     public init(
         context: NSManagedObjectContext,
@@ -121,6 +123,7 @@ public class Goal: NSManagedObject {
         self.yAxis = yAxis
 
         lastModifiedLocal = Date()
+        lastSyncedWithHealthKit = Date.distantPast
     }
 
     public init(context: NSManagedObjectContext, owner: User, json: JSON) {
@@ -129,6 +132,8 @@ public class Goal: NSManagedObject {
         self.owner = owner
         self.id = json["id"].string!
 
+        lastSyncedWithHealthKit = Date.distantPast
+        
         self.updateToMatch(json: json)
     }
 
