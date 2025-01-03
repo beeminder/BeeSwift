@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 4/19/15.
-//  Copyright (c) 2015 APB. All rights reserved.
+//  Copyright 2015 APB. All rights reserved.
 //
 
 import UIKit
@@ -65,10 +65,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: GoalManager.NotificationName.goalsUpdated, object: nil)
 
         self.view.addSubview(stackView)
         stackView.axis = .vertical

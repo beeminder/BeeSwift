@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 4/24/15.
-//  Copyright (c) 2015 APB. All rights reserved.
+//  Copyright 2015 APB. All rights reserved.
 //
 
 import Foundation
@@ -293,7 +293,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage(systemName: "stopwatch"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(onGoalsUpdatedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onGoalsUpdatedNotification), name: GoalManager.NotificationName.goalsUpdated, object: nil)
 
         setValueTextField()
         updateInterfaceToMatchGoal()

@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 4/26/15.
-//  Copyright (c) 2015 APB. All rights reserved.
+//  Copyright 2015 APB. All rights reserved.
 //
 
 import Foundation
@@ -30,8 +30,8 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
             make.edges.equalTo(self.view)
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignedIn(_:)), name: NSNotification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignIn(_:)), name: CurrentUserManager.NotificationName.failedSignIn, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignedIn(_:)), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         self.view.backgroundColor = UIColor.systemBackground
         
         

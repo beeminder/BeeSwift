@@ -3,7 +3,7 @@
 //  BeeSwiftTests
 //
 //  Created by Theo Spears on 7/30/23.
-//  Copyright © 2023 APB. All rights reserved.
+//  Copyright 2023 APB. All rights reserved.
 //
 
 import CoreData

@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 3/14/17.
-//  Copyright © 2017 APB. All rights reserved.
+//  Copyright 2017 APB. All rights reserved.
 //
 
 import UIKit
@@ -50,7 +50,7 @@ class HealthKitConfigViewController: UIViewController {
 
         self.updateGoals()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricRemovedNotification(notification:)), name: NSNotification.Name(rawValue: CurrentUserManager.healthKitMetricRemovedNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleMetricRemovedNotification(notification:)), name: CurrentUserManager.NotificationName.healthKitMetricRemoved, object: nil)
     }
 
     func updateGoals() {
