@@ -91,7 +91,7 @@ class GoalImageView : UIView {
         }
 
         //  No Goal: Placeholder, no animation
-        guard let goal = self.goal else {
+        guard let goal = self.goal, !goal.graphUrl.isEmpty, !goal.thumbUrl.isEmpty else {
             clearGoalGraph()
             return
         }
