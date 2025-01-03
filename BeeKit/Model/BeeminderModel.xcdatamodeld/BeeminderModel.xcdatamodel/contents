@@ -5,6 +5,7 @@
         <attribute name="daystampRaw" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="origin" optional="YES" attributeType="String"/>
         <attribute name="requestid" optional="YES" attributeType="String"/>
         <attribute name="updatedAt" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="value" attributeType="Decimal" defaultValueString="0.0"/>

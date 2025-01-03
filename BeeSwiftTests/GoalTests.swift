@@ -134,12 +134,12 @@ final class GoalTests: XCTestCase {
     func testSuggestedNextValueIgnoresDerailsAndSelfDestructs() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = [
-            ["id": "101", "value": 0, "daystamp": "20221131", "updated_at": 600, "comment": "Goal #RESTART Point"],
-            ["id": "102", "value": 0, "daystamp": "20221131", "updated_at": 500, "comment": "This will #SELFDESTRUCT"],
-            ["id": "103", "value": 0, "daystamp": "20221131", "updated_at": 400, "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT"],
-            ["id": "104", "value": 0, "daystamp": "20221130", "updated_at": 300, "comment": "#DERAIL ON THE 1st"],
-            ["id": "105", "value": 2, "daystamp": "20221126", "updated_at": 200],
-            ["id": "106", "value": 3.5, "daystamp": "20221125", "updated_at": 100],
+            ["id": "101", "value": 0, "daystamp": "20221131", "updated_at": 600, "origin": "beeminder", "comment": "Goal #RESTART Point"],
+            ["id": "102", "value": 0, "daystamp": "20221131", "updated_at": 500, "origin": "beeminder", "comment": "This will #SELFDESTRUCT"],
+            ["id": "103", "value": 0, "daystamp": "20221131", "updated_at": 400, "origin": "beeminder", "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT"],
+            ["id": "104", "value": 0, "daystamp": "20221130", "updated_at": 300, "origin": "beeminder", "comment": "#DERAIL ON THE 1st"],
+            ["id": "105", "value": 2, "daystamp": "20221126", "updated_at": 200, "origin": "beemiOS"],
+            ["id": "106", "value": 3.5, "daystamp": "20221125", "updated_at": 100, "origin": "Beeminder Web"],
         ]
 
         let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
