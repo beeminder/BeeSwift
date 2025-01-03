@@ -17,14 +17,16 @@ import SwiftyJSON
 public actor CurrentUserManager {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CurrentUserManager")
 
-    public static let signedInNotificationName     = "com.beeminder.signedInNotification"
-    public static let willSignOutNotificationName  = "com.beeminder.willSignOutNotification"
-    public static let failedSignInNotificationName = "com.beeminder.failedSignInNotification"
-    public static let signedOutNotificationName    = "com.beeminder.signedOutNotification"
-    public static let resetNotificationName        = "com.beeminder.resetNotification"
-    public static let willResetNotificationName    = "com.beeminder.willResetNotification"
-    public static let healthKitMetricRemovedNotificationName = "com.beeminder.healthKitMetricRemovedNotification"
-
+    public enum NotificationName {
+        public static let signedIn     = NSNotification.Name(rawValue: "com.beeminder.signedInNotification")
+        public static let willSignOut  = NSNotification.Name(rawValue: "com.beeminder.willSignOutNotification")
+        public static let failedSignIn = NSNotification.Name(rawValue: "com.beeminder.failedSignInNotification")
+        public static let signedOut    = NSNotification.Name(rawValue: "com.beeminder.signedOutNotification")
+        public static let reset        = NSNotification.Name(rawValue: "com.beeminder.resetNotification")
+        public static let willReset    = NSNotification.Name(rawValue: "com.beeminder.willResetNotification")
+        public static let healthKitMetricRemoved = NSNotification.Name(rawValue: "com.beeminder.healthKitMetricRemovedNotification")
+    }
+    
     fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
     
     internal static let accessTokenKey = "access_token"
@@ -165,20 +167,20 @@ public actor CurrentUserManager {
         self.setAccessToken(responseJSON[CurrentUserManager.accessTokenKey].string!)
         
         await Task { @MainActor in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
+            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedIn, object: self)
         }.value
     }
     
     func handleFailedSignin(_ responseError: Error, errorMessage : String?) async throws {
         await Task { @MainActor in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: self, userInfo: ["error" : responseError])
+            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.failedSignIn, object: self, userInfo: ["error" : responseError])
         }.value
         try await self.signOut()
     }
     
     public func signOut() async throws {
         await Task { @MainActor in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
+            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.willSignOut, object: self)
         }.value
 
         try deleteUser()
@@ -186,7 +188,7 @@ public actor CurrentUserManager {
         keychain.delete(CurrentUserManager.accessTokenKey)
 
         await Task { @MainActor in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
+            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: self)
         }.value
     }
 }
