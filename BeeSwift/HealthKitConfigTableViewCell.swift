@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 3/15/17.
-//  Copyright © 2017 APB. All rights reserved.
+//  Copyright 2017 APB. All rights reserved.
 //
 
 import UIKit

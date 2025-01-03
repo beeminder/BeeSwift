@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 11/2/15.
-//  Copyright © 2015 APB. All rights reserved.
+//  Copyright 2015 APB. All rights reserved.
 //
 
 import Foundation

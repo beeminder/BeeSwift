@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Theo Spears on 11/27/22.
-//  Copyright © 2022 APB. All rights reserved.
+//  Copyright 2022 APB. All rights reserved.
 //
 
 import Foundation

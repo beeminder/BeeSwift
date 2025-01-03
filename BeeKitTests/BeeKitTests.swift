@@ -3,7 +3,7 @@
 //  BeeKitTests
 //
 //  Created by Andrew Brett on 5/19/21.
-//  Copyright © 2021 APB. All rights reserved.
+//  Copyright 2021 APB. All rights reserved.
 //
 
 import XCTest
