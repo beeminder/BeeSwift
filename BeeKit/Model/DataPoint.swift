@@ -101,13 +101,14 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
 }
 
 extension DataPoint {
-    private static var metaPointHashtags = Set(["#DERAIL", "#SELFDESTRUCT", "#THISWILLSELFDESTRUCT", "#RESTART", "#TARE"])
-
     /// Is this a DataPoint containing metadata, rather than a real value
     /// DataPoints are used to track certain events, like automatic pessimistic values, goal restarts, derailments, etc. These should sometimes
     /// be treated differently, e.g. not deleted as part of syncing with HealthKit
     public var isMeta: Bool {
-        guard !["beeminder", "nihilo"].contains(origin) else { return true }
-        return DataPoint.metaPointHashtags.contains { comment.contains($0) }
+        [
+            "beeminder",
+            "nihilo"
+        ]
+            .contains(origin)
     }
 }
