@@ -68,6 +68,9 @@ public actor GoalManager {
         let userResponse: JSON
         let goalResponse: JSON
 
+        let deleteMissingGoals: Bool
+        let deletedGoals: JSON
+
         if (goalsUnknown) {
             logger.notice("Goals unknown, doing full fetch")
             // We must fetch the user object first, and then fetch goals afterwards, to guarantee User.updated_at is
@@ -75,13 +78,15 @@ public actor GoalManager {
             userResponse = JSON(try await requestManager.get(url: "api/v1/users/\(username).json", parameters: nil)!)
             goalResponse = JSON(try await requestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)!)
 
-            // TODO: Delete goals not in goalResponse after sync
+            deleteMissingGoals = true
+            deletedGoals = JSON(arrayLiteral: [])
         } else {
             logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
             userResponse = JSON(try await requestManager.get(url: "api/v1/users/\(username).json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1])!)
             goalResponse = userResponse["goals"]
 
-            // TODO: Delete goals in the list of deleted goals. Possibly before sync if we only get names?
+            deleteMissingGoals = false
+            deletedGoals = userResponse["deleted_goals"]
         }
 
         // The user may have logged out during the network operation. If so we have nothing to do
@@ -89,6 +94,12 @@ public actor GoalManager {
         guard let user = modelContext.object(with: user.objectID) as? User else { return }
 
         user.updateToMatch(json: userResponse)
+        if deleteMissingGoals {
+            // TODO: Delete all missing goals
+        }
+        for deletedGoal in deletedGoals.arrayValue {
+            // TODO: Delete goal
+        }
         self.updateGoalsFromJson(goalResponse)
 
         try modelContext.save()
