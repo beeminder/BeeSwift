@@ -75,6 +75,7 @@ public actor CurrentUserManager {
             username: userDefaults.object(forKey: CurrentUserManager.usernameKey) as! String,
             deadbeat: userDefaults.object(forKey: CurrentUserManager.deadbeatKey) != nil,
             timezone: userDefaults.object(forKey: CurrentUserManager.beemTZKey) as? String ?? "Unknown",
+            updatedAt: Date(timeIntervalSince1970: 0),
             defaultAlertStart: (userDefaults.object(forKey: CurrentUserManager.defaultAlertstartKey) ?? 0) as! Int,
             defaultDeadline: (userDefaults.object(forKey: CurrentUserManager.defaultDeadlineKey) ?? 0) as! Int,
             defaultLeadTime: (userDefaults.object(forKey: CurrentUserManager.defaultLeadtimeKey) ?? 0) as! Int
