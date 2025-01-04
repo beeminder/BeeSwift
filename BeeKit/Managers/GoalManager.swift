@@ -86,7 +86,7 @@ public actor GoalManager {
 
         // The user may have logged out during the network operation. If so we have nothing to do
         modelContext.refreshAllObjects()
-        guard let user = self.currentUserManager.user(context: modelContext) else { return }
+        guard let user = modelContext.object(with: user.objectID) as? User else { return }
 
         user.updateToMatch(json: userResponse)
         self.updateGoalsFromJson(goalResponse)
