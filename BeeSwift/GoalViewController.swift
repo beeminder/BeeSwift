@@ -359,10 +359,9 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     private func refreshPullDown() {
-        let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [.withFullDate, .withFullTime]
-        
-        let lastSynced = goal.lastSyncedWithHealthKit.map { dateFormatter.string(from: $0) } ?? "not yet"
+        let lastSynced = goal.lastSyncedWithHealthKit?
+            .formatted(date: .omitted, time: .shortened)
+        ?? "not yet"
         
         if self.goal.isLinkedToHealthKit {
             pullToRefreshView.message = "Pull down to synchronize with Apple Health"
