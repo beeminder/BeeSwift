@@ -287,18 +287,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.toggleSearchBar()
     }
-    
 
     func updateDeadbeatVisibility() {
         let isKnownDeadbeat = currentUserManager.user(context: viewContext)?.deadbeat == true
         self.deadbeatView.isHidden = !isKnownDeadbeat
     }
-    
-    private let lastUpdatedDateFormatter: RelativeDateTimeFormatter = {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.dateTimeStyle = .named
-        return formatter
-    }()
     
     @objc func updateLastUpdatedLabel() {
         let lastUpdated = self.lastUpdated ?? .distantPast
