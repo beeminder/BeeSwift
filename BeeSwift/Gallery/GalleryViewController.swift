@@ -40,7 +40,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
     var lastUpdated: Date?
-    let maxSearchBarHeight: Int = 50
     
     var goals : [Goal] = []
     var filteredGoals : [Goal] = []
