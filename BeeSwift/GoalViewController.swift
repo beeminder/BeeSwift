@@ -359,9 +359,19 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     private func refreshPullDown() {
-        let lastSynced = goal.lastSyncedWithHealthKit?
-            .formatted(date: .omitted, time: .shortened)
-        ?? "not yet"
+        let lastSynced: String = {
+            guard
+                let lastSyncedWithHealthKit = goal.lastSyncedWithHealthKit
+            else { return "not yet" }
+            
+            let isSameDay = Calendar.autoupdatingCurrent.isDate(lastSyncedWithHealthKit,
+                                                                inSameDayAs: .now)
+            let dateStyle: Date.FormatStyle.DateStyle = isSameDay ? .omitted : .numeric
+            
+            return lastSyncedWithHealthKit
+                .formatted(date: dateStyle,
+                           time: .shortened)
+        }()
         
         if self.goal.isLinkedToHealthKit {
             pullToRefreshView.message = "Pull down to synchronize with Apple Health"
