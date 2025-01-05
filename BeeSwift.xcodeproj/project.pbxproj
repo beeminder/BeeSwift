@@ -60,7 +60,6 @@
 		E458C8052AD11BC8000DCA5C /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C161932423CE9F0045C90D /* VersionManager.swift */; };
 		E458C8062AD11BCD000DCA5C /* GoalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE782299338C500394E87 /* GoalManager.swift */; };
 		E458C8082AD11BFB000DCA5C /* BeeDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* BeeDataPoint.swift */; };
-		E458C8092AD11C13000DCA5C /* SynchronizedBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */; };
 		E458C80A2AD11C1C000DCA5C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
 		E458C80B2AD11C2B000DCA5C /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE7722993317B00394E87 /* ServiceLocator.swift */; };
 		E458C80D2AD11C64000DCA5C /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12BA9531AFFF21800AFEF32 /* Crypto.swift */; };
@@ -290,7 +289,6 @@
 		E457BE5C28C192B50012F5D0 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
 		E46070EE2B36A4D900305DB4 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		E46070F72B3FEFD400305DB4 /* BeeminderPersistentContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderPersistentContainer.swift; sourceTree = "<group>"; };
-		E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedBox.swift; sourceTree = "<group>"; };
 		E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshHint.swift; sourceTree = "<group>"; };
 		E46FF15A2984C522009F8C7A /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutes.swift; sourceTree = "<group>"; };
@@ -444,7 +442,6 @@
 			children = (
 				A1C11B471B06F5D100D22871 /* Constants.swift */,
 				A12BA9531AFFF21800AFEF32 /* Crypto.swift */,
-				E462BA2D29A31C3B00E80EF0 /* SynchronizedBox.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -1075,7 +1072,6 @@
 				E458C8052AD11BC8000DCA5C /* VersionManager.swift in Sources */,
 				E458C8142AD11C99000DCA5C /* QuantityHealthKitMetric.swift in Sources */,
 				E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */,
-				E458C8092AD11C13000DCA5C /* SynchronizedBox.swift in Sources */,
 				E458C8102AD11C87000DCA5C /* CategoryHealthKitMetric.swift in Sources */,
 				E458C8192AD11CB0000DCA5C /* StandHoursHealthKitMetric.swift in Sources */,
 				E45470282B60E24500EE648B /* Daystamp.swift in Sources */,
