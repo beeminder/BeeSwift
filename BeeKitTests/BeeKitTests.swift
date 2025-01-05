@@ -7,7 +7,6 @@
 //
 
 import XCTest
-@testable import BeeKit
 
 class BeeKitTests: XCTestCase {
 
