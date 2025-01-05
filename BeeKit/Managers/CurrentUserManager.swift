@@ -23,7 +23,6 @@ public actor CurrentUserManager {
         public static let failedSignIn = NSNotification.Name(rawValue: "com.beeminder.failedSignInNotification")
         public static let signedOut    = NSNotification.Name(rawValue: "com.beeminder.signedOutNotification")
         public static let reset        = NSNotification.Name(rawValue: "com.beeminder.resetNotification")
-        public static let willReset    = NSNotification.Name(rawValue: "com.beeminder.willResetNotification")
         public static let healthKitMetricRemoved = NSNotification.Name(rawValue: "com.beeminder.healthKitMetricRemovedNotification")
     }
     
