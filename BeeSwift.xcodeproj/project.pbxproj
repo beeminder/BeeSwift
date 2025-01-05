@@ -121,7 +121,6 @@
 		E55760F526549D310076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E557610026549DD10076B95A /* AddDataIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55760F426549D310076B95A /* AddDataIntentHandler.swift */; };
 		E57BE6E92655EBE000BA540B /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
-		E57BE6F02655EBE000BA540B /* BeeKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E57BE6EF2655EBE000BA540B /* BeeKitTests.swift */; };
 		E57BE6F22655EBE000BA540B /* BeeKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E57BE6E22655EBDA00BA540B /* BeeKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E57BE6F52655EBE000BA540B /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
 		E57BE7042655EE1F00BA540B /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
@@ -317,7 +316,6 @@
 		E57BE6E22655EBDA00BA540B /* BeeKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeeKit.h; sourceTree = "<group>"; };
 		E57BE6E32655EBDA00BA540B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E57BE6E82655EBDF00BA540B /* BeeKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeeKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E57BE6EF2655EBE000BA540B /* BeeKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeKitTests.swift; sourceTree = "<group>"; };
 		E57BE6F12655EBE000BA540B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E5C161932423CE9F0045C90D /* VersionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionManager.swift; sourceTree = "<group>"; };
 		E5DF493624DC69A200260560 /* Config.swift.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = Config.swift.sample; sourceTree = "<group>"; };
@@ -662,7 +660,6 @@
 		E57BE6EE2655EBE000BA540B /* BeeKitTests */ = {
 			isa = PBXGroup;
 			children = (
-				E57BE6EF2655EBE000BA540B /* BeeKitTests.swift */,
 				E45470292B60E25C00EE648B /* DaystampTests.swift */,
 				E57BE6F12655EBE000BA540B /* Info.plist */,
 			);
@@ -1113,7 +1110,6 @@
 			files = (
 				E454702A2B60E25C00EE648B /* DaystampTests.swift in Sources */,
 				E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */,
-				E57BE6F02655EBE000BA540B /* BeeKitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
