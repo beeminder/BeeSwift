@@ -40,6 +40,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
     fileprivate let viewGoalActivityType = "com.beeminder.viewGoal"
+    private let goalRateLabel = BSLabel()
 
     // date corresponding to the datapoint to be created
     private var date: Date = Date()
@@ -136,12 +137,24 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.right.equalTo(self.goalImageScrollView)
         }
         self.goalImageView.goal = self.goal
+        
+        self.scrollView.addSubview(goalRateLabel)
+        self.goalRateLabel.snp.makeConstraints { make in
+            make.top.equalTo(self.goalImageScrollView.snp.bottom).offset(elementSpacing)
+            make.height.equalTo(Constants.defaultFontSize)
+            make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
+            make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
+        }
+        self.goalRateLabel.textAlignment = .center
+        self.goalRateLabel.font = UIFont.preferredFont(forTextStyle: .footnote).withSize(Constants.defaultFontSize * 0.9)
+        self.goalRateLabel.textColor = .label.withAlphaComponent(0.8)
+
 
         self.addChild(self.datapointTableController)
         self.scrollView.addSubview(self.datapointTableController.view)
         self.datapointTableController.delegate = self
         self.datapointTableController.view.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.goalImageScrollView.snp.bottom).offset(elementSpacing)
+            make.top.equalTo(self.goalRateLabel.snp.bottom).offset(elementSpacing)
             make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
             make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
         }
@@ -499,6 +512,8 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.datapointTableController.hhmmformat = goal.hhmmFormat
         self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
 
+        self.goalRateLabel.text = "\(goal.rate) \(goal.goalUnits) / \(goal.rateUnits)"
+        
         self.refreshCountdown()
         self.updateLastUpdatedLabel()
     }
