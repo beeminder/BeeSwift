@@ -51,6 +51,15 @@ public class Goal: NSManagedObject {
     @NSManaged public var won: Bool
     /// The label for the y-axis of the graph. E.g., "Cumulative total hours".
     @NSManaged public var yAxis: String
+    
+    /// Goal units, like "hours" or "pushups" or "pages".
+    @NSManaged public var goalUnits: String
+    
+    /// Rate units. One of y, m, w, d, h indicating that the rate of the bright red line is yearly, monthly, weekly, daily, or hourly.
+    @NSManaged public var rateUnits: String
+    
+    /// The slope of the (final section of the) bright red line. You must also consider runits to fully specify the rate. NOTE: this may be null
+    @NSManaged public var rate: Double
 
     @NSManaged public var recentData: Set<DataPoint>
 
@@ -171,7 +180,11 @@ public class Goal: NSManagedObject {
         self.useDefaults = json["use_defaults"].boolValue
         self.won = json["won"].boolValue
         self.yAxis = json["yaxis"].stringValue
-
+        
+        self.goalUnits = json["gunits"].stringValue
+        self.rateUnits = json["runits"].stringValue
+        self.rate = json["rate"].doubleValue
+        
         // Replace recent data with results from server
         // Note at present this leaks data points in the main db. This is probably fine for now
         let newRecentData = Set<DataPoint>(json["recent_data"].arrayValue.map {
