@@ -51,16 +51,20 @@ public class Goal: NSManagedObject {
     @NSManaged public var won: Bool
     /// The label for the y-axis of the graph. E.g., "Cumulative total hours".
     @NSManaged public var yAxis: String
-    
+        
     /// Goal units, like "hours" or "pushups" or "pages".
     @NSManaged public var goalUnits: String
     
     /// Rate units. One of y, m, w, d, h indicating that the rate of the bright red line is yearly, monthly, weekly, daily, or hourly.
     @NSManaged public var rateUnits: String
     
-    /// The slope of the (final section of the) bright red line. You must also consider runits to fully specify the rate. NOTE: this may be null
-    @NSManaged public var rate: Double
-
+    /// The slope of the (final section of the) bright red line. You must also consider runits to fully specify the rate.
+    @NSManaged public var goalRateRaw: NSNumber?
+    /// Unix timestamp (in seconds) of the goal date.
+    @NSManaged public var goalDateRaw: NSNumber?
+    /// Goal value — the number the bright red line will eventually reach. E.g., 70 kilograms.
+    @NSManaged public var goalValueRaw: NSNumber?
+    
     @NSManaged public var recentData: Set<DataPoint>
 
     @objc(addRecentDataObject:)
@@ -183,7 +187,19 @@ public class Goal: NSManagedObject {
         
         self.goalUnits = json["gunits"].stringValue
         self.rateUnits = json["runits"].stringValue
-        self.rate = json["rate"].doubleValue
+        
+        // mathishard (array of 3 numbers): The goaldate, goalval, and rate — all filled in. (The commitment dial specifies 2 out of 3 and you can check this if you want Beeminder to do the math for you on inferring the third one.) Note: this field may be null if the goal is in an error state such that the graph image can't be generated.
+        let calculatedGoalDateGoalValueAndGoalRate = json["mathishard"].array
+        if let calculatedGoalDateGoalValueAndGoalRate, calculatedGoalDateGoalValueAndGoalRate.count == 3 {
+            self.goalDate = calculatedGoalDateGoalValueAndGoalRate[0].doubleValue
+            self.goalValue = calculatedGoalDateGoalValueAndGoalRate[1].doubleValue
+            self.goalRate = calculatedGoalDateGoalValueAndGoalRate[2].doubleValue
+        } else {
+            // logger.debug("mathishard array expected to have have 3 elements")
+            self.goalDateRaw = json["goaldate"].number
+            self.goalValueRaw = json["goalval"].number
+            self.goalRateRaw = json["rate"].number
+        }
         
         // Replace recent data with results from server
         // Note at present this leaks data points in the main db. This is probably fine for now
@@ -197,3 +213,21 @@ public class Goal: NSManagedObject {
         lastModifiedLocal = Date()
     }
 }
+
+public extension Goal {
+    var goalDate: Double? {
+        get { goalDateRaw?.doubleValue }
+        set { goalDateRaw = newValue as NSNumber? }
+    }
+
+    var goalValue: Double? {
+        get { goalValueRaw?.doubleValue }
+        set { goalValueRaw = newValue as NSNumber? }
+    }
+    
+    var goalRate: Double? {
+        get { goalRateRaw?.doubleValue }
+        set { goalRateRaw = newValue as NSNumber? }
+    }
+}
+

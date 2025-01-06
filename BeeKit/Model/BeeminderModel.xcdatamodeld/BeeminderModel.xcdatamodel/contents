@@ -14,7 +14,10 @@
         <attribute name="alertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="autodata" optional="YES" attributeType="String"/>
         <attribute name="deadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="goalDateRaw" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="goalRateRaw" optional="YES" attributeType="Double" usesScalarValueType="YES"/>
         <attribute name="goalUnits" optional="YES" attributeType="String"/>
+        <attribute name="goalValueRaw" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="graphUrl" attributeType="String"/>
         <attribute name="healthKitMetric" optional="YES" attributeType="String"/>
         <attribute name="hhmmFormat" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -26,7 +29,6 @@
         <attribute name="limSum" attributeType="String"/>
         <attribute name="pledge" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="queued" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="rate" optional="YES" attributeType="Double" usesScalarValueType="YES"/>
         <attribute name="rateUnits" optional="YES" attributeType="String"/>
         <attribute name="safeBuf" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="safeSum" attributeType="String"/>
