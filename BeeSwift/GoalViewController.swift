@@ -506,12 +506,29 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
         updateInterfaceToMatchGoal()
     }
+    
+    private static var goalRateNumberFormatter: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 3
+        return formatter
+    }
+    
+    private var formattedGoalRate: String? {
+        guard let rate = goal.goalRate as NSNumber? else { return nil }
+        
+        return Self.goalRateNumberFormatter.string(from: rate)
+    }
 
     func updateInterfaceToMatchGoal() {
         self.datapointTableController.hhmmformat = goal.hhmmFormat
         self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
 
-        self.goalRateLabel.text = "\(goal.rate) \(goal.goalUnits) / \(goal.rateUnits)"
+        self.goalRateLabel.isHidden = formattedGoalRate == nil
+        self.goalRateLabel.text = {
+            guard let formattedGoalRate else { return nil }
+            return "\(formattedGoalRate) \(goal.goalUnits) / \(goal.rateUnits)"
+        }()
         
         self.refreshCountdown()
         self.updateLastUpdatedLabel()
