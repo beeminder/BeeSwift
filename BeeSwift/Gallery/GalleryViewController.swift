@@ -33,7 +33,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewFlowLayout?
     private let freshnessIndicator = FreshnessIndicatorView()
-    let cellReuseIdentifier = "Cell"
     var deadbeatView = UIView()
     var outofdateView = UIView()
     let noGoalsLabel = BSLabel()
@@ -44,7 +43,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var goals : [Goal] = []
     var filteredGoals : [Goal] = []
     
-    var dataSource: UICollectionViewDiffableDataSource<Int, Goal>!
+    private enum Section: CaseIterable {
+        case main
+    }
+    
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Goal>!
     
     public enum NotificationName {
         public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
@@ -85,27 +88,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.top.left.right.equalToSuperview()
             make.bottom.equalTo(stackView.keyboardLayoutGuide.snp.top)
         }
-
+        
+        configureCollectionView()
+        configureDataSource()
         
         
-        self.collectionViewLayout = UICollectionViewFlowLayout()
-        self.collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout!)
-        self.collectionView?.backgroundColor = .systemBackground
-        self.collectionView?.alwaysBounceVertical = true
-        self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
-        
-        self.dataSource = .init(collectionView: collectionView!, cellProvider: { collectionView, indexPath, itemIdentifier in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
-            cell.goal = self.filteredGoals[indexPath.row]
-            
-            return cell
-        })
-        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
-            let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
-            return footerView
-        }
-        self.collectionView?.dataSource = dataSource
-
         self.view.backgroundColor = .systemBackground
         self.title = "Goals"
         
@@ -166,7 +153,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.collectionContainer.addSubview(self.collectionView!)
         self.collectionView!.delegate = self
         
-        self.collectionView!.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
         self.collectionView?.snp.makeConstraints { (make) in
             make.top.bottom.equalTo(collectionContainer)
             make.left.right.equalTo(collectionContainer.safeAreaLayoutGuide)
@@ -234,10 +220,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
         }
         
-        var snapshot = NSDiffableDataSourceSnapshot<Int, Goal>()
-        snapshot.appendSections([0])
-        snapshot.appendItems(filteredGoals)
-        dataSource.apply(snapshot, animatingDifferences: true)
+        applySnapshot()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -397,17 +380,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
     }
+    
+    private func applySnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Goal>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(filteredGoals, toSection: .main)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
 
     @objc func didUpdateGoals() {
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
-        
-        var snapshot = NSDiffableDataSourceSnapshot<Int, Goal>()
-        snapshot.appendSections([0])
-        snapshot.appendItems(filteredGoals)
-        dataSource.apply(snapshot, animatingDifferences: true)
-        
+        self.applySnapshot()
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
@@ -494,6 +479,30 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func openGoal(_ goal: Goal) {
         let goalViewController = GoalViewController(goal: goal)
         self.navigationController?.pushViewController(goalViewController, animated: true)
+    }
+    
+    private func configureCollectionView() {
+        self.collectionViewLayout = UICollectionViewFlowLayout()
+        self.collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout!)
+        self.collectionView?.backgroundColor = .systemBackground
+        self.collectionView?.alwaysBounceVertical = true
+        self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
+    }
+    
+    private func configureDataSource() {
+        let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, Goal> { cell, indexPath, goal in
+            cell.configure(with: goal)
+        }
+        
+        self.dataSource = .init(collectionView: collectionView!, cellProvider: { collectionView, indexPath, goal in
+            collectionView.dequeueConfiguredReusableCell(using: cellRegistration,
+                                                         for: indexPath,
+                                                         item: goal)
+        })
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+            collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
+        }
+        self.collectionView?.dataSource = dataSource
     }
     
     // MARK: - SFSafariViewControllerDelegate
