@@ -16,6 +16,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let todaytaLabel :BSLabel = BSLabel()
     let thumbnailImageView = GoalImageView(isThumbnail: true)
     let safesumLabel :BSLabel = BSLabel()
+    let rateLabel = BSLabel()
     let margin = 8
     
     var goal: Goal? {
@@ -27,6 +28,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
             self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
             self.safesumLabel.text = goal?.capitalSafesum()
             self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
+            self.rateLabel.text = goal?.currentRate
         }
     }
     
@@ -38,6 +40,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(self.todaytaLabel)
         self.contentView.addSubview(self.thumbnailImageView)
         self.contentView.addSubview(self.safesumLabel)
+        self.contentView.addSubview(self.rateLabel)
         self.contentView.backgroundColor = .systemBackground
 
         self.slugLabel.font = UIFont.beeminder.defaultFontHeavy
@@ -78,7 +81,16 @@ class GoalCollectionViewCell: UICollectionViewCell {
         self.safesumLabel.numberOfLines = 0
         self.safesumLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
-            make.centerY.equalTo(self.thumbnailImageView.snp.centerY)
+            make.centerY.equalTo(self.thumbnailImageView.snp.centerY).offset(-8)
+            make.right.equalTo(-self.margin)
+        }
+        
+        self.rateLabel.textAlignment = .center
+        self.rateLabel.font = UIFont.preferredFont(forTextStyle: .footnote)
+        self.rateLabel.numberOfLines = 0
+        self.rateLabel.snp.makeConstraints { make in
+            make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
+            make.centerY.equalTo(self.thumbnailImageView.snp.centerY).offset(8)
             make.right.equalTo(-self.margin)
         }
     }

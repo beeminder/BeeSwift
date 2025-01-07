@@ -86,3 +86,23 @@ extension Goal {
         return candidateDatapoints.first?.value
     }
 }
+
+public extension Goal {
+    private static var goalRateNumberFormatter: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 3
+        return formatter
+    }
+
+    private var formattedGoalRate: String? {
+        guard let rate = goalRate as NSNumber? else { return nil }
+
+        return Self.goalRateNumberFormatter.string(from: rate)
+    }
+    
+    var currentRate: String? {
+        guard let formattedGoalRate else { return nil }
+        return "\(formattedGoalRate) \(goalUnits) / \(rateUnits)"
+    }
+}
