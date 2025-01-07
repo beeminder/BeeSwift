@@ -2,8 +2,6 @@ import XCTest
 @testable import BeeKit
 
 final class DaystampTests: XCTestCase {
-    var previousTimezone: TimeZone!
-
     let OneHourInSeconds = 60 * 60
 
     func testFormatsAsString() throws {

@@ -15,7 +15,6 @@ import BeeKit
 class ChooseHKMetricViewController: UIViewController {
     fileprivate let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ChooseHKMetricViewController")
     fileprivate let cellReuseIdentifier = "hkMetricTableViewCell"
-    fileprivate let headerReusedIdentifier = "hkMetricTableHeader"
     fileprivate var tableView = UITableView()
     let goal: Goal
     

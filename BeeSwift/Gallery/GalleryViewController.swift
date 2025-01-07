@@ -40,10 +40,13 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
     var lastUpdated: Date?
-    let maxSearchBarHeight: Int = 50
     
     var goals : [Goal] = []
     var filteredGoals : [Goal] = []
+    
+    public enum NotificationName {
+        public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
+    }
 
     init(currentUserManager: CurrentUserManager, 
          viewContext: NSManagedObjectContext,
@@ -67,7 +70,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: GoalManager.NotificationName.goalsUpdated, object: nil)
 
         self.view.addSubview(stackView)
@@ -287,18 +290,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.toggleSearchBar()
     }
-    
 
     func updateDeadbeatVisibility() {
         let isKnownDeadbeat = currentUserManager.user(context: viewContext)?.deadbeat == true
         self.deadbeatView.isHidden = !isKnownDeadbeat
     }
-    
-    private let lastUpdatedDateFormatter: RelativeDateTimeFormatter = {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.dateTimeStyle = .named
-        return formatter
-    }()
     
     @objc func updateLastUpdatedLabel() {
         let lastUpdated = self.lastUpdated ?? .distantPast
