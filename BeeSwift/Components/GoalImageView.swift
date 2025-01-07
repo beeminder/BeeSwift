@@ -77,7 +77,7 @@ class GoalImageView : UIView {
 
     @MainActor
     private func showGraphImage(image: UIImage) {
-        let duration = isThumbnail ? 0.0 : 0.2
+        let duration = isThumbnail ? 0.0 : 0.4
 
         UIView.transition(with: imageView,
                           duration: duration,
