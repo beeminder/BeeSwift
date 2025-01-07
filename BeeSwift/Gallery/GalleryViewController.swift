@@ -40,7 +40,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
     var lastUpdated: Date?
-    let maxSearchBarHeight: Int = 50
     
     var goals : [Goal] = []
     var filteredGoals : [Goal] = []
@@ -291,18 +290,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.toggleSearchBar()
     }
-    
 
     func updateDeadbeatVisibility() {
         let isKnownDeadbeat = currentUserManager.user(context: viewContext)?.deadbeat == true
         self.deadbeatView.isHidden = !isKnownDeadbeat
     }
-    
-    private let lastUpdatedDateFormatter: RelativeDateTimeFormatter = {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.dateTimeStyle = .named
-        return formatter
-    }()
     
     @objc func updateLastUpdatedLabel() {
         let lastUpdated = self.lastUpdated ?? .distantPast

@@ -4,7 +4,6 @@ import OSLog
 
 class StandHoursHealthKitMetric : CategoryHealthKitMetric {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "StandHoursHealthKitMetric")
-    let hourInSeconds = 3600.0
 
     init(humanText: String, databaseString: String, category: HealthKitCategory) {
         super.init(humanText: humanText, databaseString: databaseString, category: category, hkSampleType: HKObjectType.categoryType(forIdentifier: .appleStandHour)!)
