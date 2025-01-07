@@ -61,18 +61,21 @@ class GoalImageView : UIView {
             object: nil,
             queue: OperationQueue.main
         ) { [weak self] _ in
-            self?.refresh()
+            DispatchQueue.main.async {
+                self?.refresh()
+            }
         }
-
         refresh()
     }
 
+    @MainActor
     private func clearGoalGraph() {
         imageView.image = UIImage(named: "GraphPlaceholder")
         currentlyShowingGraph = false
         beeLemniscateView.isHidden = true
     }
 
+    @MainActor
     private func showGraphImage(image: UIImage) {
         let duration = isThumbnail ? 0.0 : 0.2
 
@@ -88,6 +91,7 @@ class GoalImageView : UIView {
         }
     }
 
+    @MainActor
     private func refresh() {
         // Invalidate the download token, meaning that any queued download callbacks
         // will no-op. This avoids race conditions with downloads finishing out of order.
