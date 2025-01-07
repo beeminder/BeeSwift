@@ -105,8 +105,8 @@ public class RequestManager {
         ])
     }
 
-    public func addDatapoint(urtext: String, slug: String) async throws -> Any? {
-        let params = ["urtext": urtext, "requestid": UUID().uuidString]
+    public func addDatapoint(urtext: String, slug: String, requestId: String = UUID().uuidString) async throws -> Any? {
+        let params = ["urtext": urtext, "requestid": requestId]
         
         return try await post(url: "api/v1/users/{username}/goals/\(slug)/datapoints.json", parameters: params)
     }
