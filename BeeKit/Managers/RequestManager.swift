@@ -105,11 +105,12 @@ public class RequestManager {
         ])
     }
 
-    public func addDatapoint(urtext: String, slug: String, requestId: String = UUID().uuidString) async throws -> Any? {
+    public func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
         let params = [
             "urtext": urtext,
             "requestid": requestId
         ]
+            .compactMapValues { $0 }
         
         return try await post(url: "api/v1/users/{username}/goals/\(slug)/datapoints.json",
                               parameters: params)
