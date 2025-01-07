@@ -74,20 +74,15 @@ class GoalImageView : UIView {
     }
 
     private func showGraphImage(image: UIImage) {
-        switch self.isThumbnail {
-        case false:
-            UIView.transition(with: imageView,
-                                      duration: 0.2,
-                                      options: .transitionCrossDissolve,
-                                      animations: { [weak self] in
-                self?.imageView.image = image
-            }) { [weak self] successful in
-                guard let self else { return }
-                self.currentlyShowingGraph = true
-                self.beeLemniscateView.isHidden = !(self.goal?.queued ?? false)
-            }
-        case true:
-            self.imageView.image = image
+        let duration = isThumbnail ? 0.0 : 0.2
+
+        UIView.transition(with: imageView,
+                          duration: duration,
+                          options: .transitionCrossDissolve,
+                          animations: { [weak self] in
+            self?.imageView.image = image
+        }) { [weak self] successful in
+            guard let self else { return }
             self.currentlyShowingGraph = true
             self.beeLemniscateView.isHidden = !(self.goal?.queued ?? false)
         }
