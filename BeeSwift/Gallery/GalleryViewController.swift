@@ -40,9 +40,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let searchBar = UISearchBar()
     var lastUpdated: Date?
     
-    var goals : [Goal] = []
-    var filteredGoals : [Goal] = []
-    
     private enum Section: CaseIterable {
         case main
     }
@@ -52,8 +49,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     public enum NotificationName {
         public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
     }
-
-    init(currentUserManager: CurrentUserManager, 
+    
+    private let fetchedResultsController: NSFetchedResultsController<Goal>!
+    private var fetchRequest: NSFetchRequest<Goal>?
+    
+    init(currentUserManager: CurrentUserManager,
          viewContext: NSManagedObjectContext,
          versionManager: VersionManager,
          goalManager: GoalManager,
@@ -63,7 +63,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.versionManager = versionManager
         self.goalManager = goalManager
         self.healthStoreManager = healthStoreManager
+        
+        let fetchRequest = Goal.fetchRequest() as! NSFetchRequest<Goal>
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)]
+        fetchedResultsController = .init(fetchRequest: fetchRequest,
+                                         managedObjectContext: viewContext,
+                                         sectionNameKeyPath: nil, cacheName: nil)
+        self.fetchRequest = fetchRequest
+        
         super.init(nibName: nil, bundle: nil)
+        fetchedResultsController.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -208,6 +217,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 logger.error("Error checking for current version: \(error)")
             }
         }
+        
+        try? fetchedResultsController.performFetch()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -235,10 +247,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleGoalsFetchedNotification() {
-        Task {
-            self.lastUpdated = await goalManager.goalsFetchedAt
-            self.updateGoals()
-        }
+        logger.debug("\(#function)")
+        logger.debug("doing nothing because GalleryVC should be informed over Core Data about updates to goals of interest")
     }
     
     @objc func settingsButtonPressed() {
@@ -253,7 +263,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.searchBar.isHidden.toggle()
         
         if searchBar.isHidden {
-            self.searchBar.text = ""
+            self.searchBar.text = nil
             self.searchBar.resignFirstResponder()
             self.updateGoals()
         } else {
@@ -271,8 +281,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleSignOut() {
-        self.goals = []
-        self.filteredGoals = []
         self.applySnapshot()
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
@@ -319,7 +327,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     @objc func fetchGoals() {
         Task { @MainActor in
-            if self.goals.count == 0 {
+            if self.filteredGoals.count == 0 {
                 MBProgressHUD.showAdded(to: self.view, animated: true)
             }
 
@@ -340,40 +348,47 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
 
     func updateGoals() {
-        let goals = goalManager.staleGoals(context: viewContext) ?? []
-        self.goals = sortedGoals(goals)
         self.updateFilteredGoals()
         self.didUpdateGoals()
     }
-
-    func sortedGoals(_ goals: any Sequence<Goal>) -> [Goal] {
+    
+    private var preferredSort: [NSSortDescriptor] {
         let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String ?? Constants.urgencyGoalSortString
         
         switch selectedGoalSort {
         case Constants.nameGoalSortString:
-            return goals.sorted(using: [SortDescriptor(\.slug),
-                                        SortDescriptor(\.urgencyKey)])
+            return [
+                NSSortDescriptor(keyPath: \Goal.slug, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
         case Constants.recentDataGoalSortString:
-            return goals.sorted(using: [SortDescriptor(\.lastTouch, order: .reverse),
-                                        SortDescriptor(\.urgencyKey)])
+            return [
+                NSSortDescriptor(keyPath: \Goal.lastTouch, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
         case Constants.pledgeGoalSortString:
-            return goals.sorted(using: [SortDescriptor(\.pledge, order: .reverse),
-                                        SortDescriptor(\.urgencyKey)])
+            return [
+                NSSortDescriptor(keyPath: \Goal.pledge, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
         default:
-            return goals.sorted(using: SortDescriptor(\.urgencyKey))
+            return [
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
         }
     }
-
+    
     func updateFilteredGoals() {
-        let searchText = searchBar.text ?? ""
-
-        if searchText == "" {
-            self.filteredGoals = self.goals
+        if let searchText = searchBar.text, !searchText.isEmpty {
+            self.fetchedResultsController.fetchRequest.predicate = NSPredicate(format: "slug contains[cd] %@", searchText)
         } else {
-            self.filteredGoals = self.goals.filter { (goal) -> Bool in
-                return goal.slug.lowercased().contains(searchText.lowercased())
-            }
+            self.fetchedResultsController.fetchRequest.predicate = nil
         }
+        
+        self.fetchedResultsController.fetchRequest.sortDescriptors = preferredSort
+        try? self.fetchedResultsController.performFetch()
+        
+        self.applySnapshot()
     }
     
     private func applySnapshot() {
@@ -389,6 +404,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 
+    
+    private var filteredGoals: [Goal] {
+        fetchedResultsController.fetchedObjects ?? []
+    }
+    
     @objc func didUpdateGoals() {
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
@@ -397,7 +417,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
-        if self.goals.count == 0 {
+        if self.filteredGoals.count == 0 {
             self.noGoalsLabel.isHidden = false
             self.collectionContainer.isHidden = true
         } else {
@@ -433,12 +453,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: 320, height: section == 0 && self.goals.count > 0 ? 5 : 0)
+        return CGSize(width: 320, height: section == 0 && self.filteredGoals.count > 0 ? 5 : 0)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let row = (indexPath as NSIndexPath).row
-        if row < self.filteredGoals.count { self.openGoal(self.filteredGoals[row]) }
+        let goal = fetchedResultsController.object(at: indexPath)
+        self.openGoal(goal)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -458,7 +478,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         else if let slug = notif.userInfo?["slug"] as? String {
-            matchingGoal = self.goals.filter({ (goal) -> Bool in
+            matchingGoal = self.filteredGoals.filter({ (goal) -> Bool in
                 return goal.slug == slug
             }).last
         }
@@ -502,5 +522,19 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
         self.fetchGoals()
+    }
+}
+
+extension GalleryViewController: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        self.applySnapshot()
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                    didChange anObject: Any,
+                    at indexPath: IndexPath?,
+                    for type: NSFetchedResultsChangeType,
+                    newIndexPath: IndexPath?) {
+        self.applySnapshot()
     }
 }
