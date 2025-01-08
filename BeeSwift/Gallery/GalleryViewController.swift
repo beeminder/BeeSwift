@@ -377,9 +377,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     private func applySnapshot() {
+        let goalsToShow = versionManager.lastChckedUpdateState() == .UpdateRequired ? [] : filteredGoals
+        
         var snapshot = NSDiffableDataSourceSnapshot<Section, Goal>()
         snapshot.appendSections([.main])
-        snapshot.appendItems(filteredGoals, toSection: .main)
+        snapshot.appendItems(goalsToShow, toSection: .main)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 
@@ -400,10 +402,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
         self.navigationItem.leftBarButtonItem = searchItem
-    }
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
