@@ -30,8 +30,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     let stackView = UIStackView()
     let collectionContainer = UIView()
-    var collectionView :UICollectionView?
-    var collectionViewLayout :UICollectionViewFlowLayout?
+    var collectionView :UICollectionView!
+    var collectionViewLayout :UICollectionViewFlowLayout!
     private let freshnessIndicator = FreshnessIndicatorView()
     var deadbeatView = UIView()
     var outofdateView = UIView()
@@ -150,15 +150,15 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
         stackView.addArrangedSubview(self.collectionContainer)
 
-        self.collectionContainer.addSubview(self.collectionView!)
-        self.collectionView!.delegate = self
+        self.collectionContainer.addSubview(self.collectionView)
+        self.collectionView.delegate = self
         
-        self.collectionView?.snp.makeConstraints { (make) in
+        self.collectionView.snp.makeConstraints { (make) in
             make.top.bottom.equalTo(collectionContainer)
             make.left.right.equalTo(collectionContainer.safeAreaLayoutGuide)
         }
 
-        self.collectionView?.refreshControl = {
+        self.collectionView.refreshControl = {
             let refreshControl = UIRefreshControl()
             refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControl.Event.valueChanged)
             return refreshControl
@@ -195,14 +195,14 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 case .UpdateRequired:
                     self.outofdateView.isHidden = false
                     self.outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
-                    self.collectionView?.isHidden = true
+                    self.collectionView.isHidden = true
                 case .UpdateSuggested:
                     self.outofdateView.isHidden = false
                     self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
-                    self.collectionView?.isHidden = false
+                    self.collectionView.isHidden = false
                 case .UpToDate:
                     self.outofdateView.isHidden = true
-                    self.collectionView?.isHidden = false
+                    self.collectionView.isHidden = false
                 }
             } catch let error as VersionError {
                 logger.error("Error checking for current version: \(error)")
@@ -213,11 +213,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.collectionView!.snp.remakeConstraints { make in
+        self.collectionView.snp.remakeConstraints { make in
             make.top.equalTo(self.searchBar.snp.bottom)
             make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
-            make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
+            make.bottom.equalTo(self.collectionView.keyboardLayoutGuide.snp.top)
         }
         
         applySnapshot()
@@ -273,12 +273,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func handleSignOut() {
         self.goals = []
         self.filteredGoals = []
-        
-        var snapshot = NSDiffableDataSourceSnapshot<Int, Goal>()
-        snapshot.appendSections([0])
-        snapshot.appendItems(filteredGoals)
-        dataSource.apply(snapshot, animatingDifferences: true)
-        
+        self.applySnapshot()
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
         }
@@ -337,9 +332,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alert, animated: true, completion: nil)
                 }
-                self.collectionView?.refreshControl?.endRefreshing()
+                self.collectionView.refreshControl?.endRefreshing()
                 MBProgressHUD.hide(for: self.view, animated: true)
-                self.collectionView!.reloadData()
+                self.collectionView.reloadData()
             }
         }
     }
@@ -390,7 +385,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     @objc func didUpdateGoals() {
         self.setupHealthKit()
-        self.collectionView?.refreshControl?.endRefreshing()
+        self.collectionView.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.applySnapshot()
         self.updateDeadbeatVisibility()
@@ -414,8 +409,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let minimumWidth: CGFloat = 320
 
-        let availableWidth = self.collectionView!.frame.width - self.collectionView!.contentInset.left - self.collectionView!.contentInset.right
-        let itemSpacing = self.collectionViewLayout!.minimumInteritemSpacing
+        let availableWidth = self.collectionView.frame.width - self.collectionView.contentInset.left - self.collectionView.contentInset.right
+        let itemSpacing = self.collectionViewLayout.minimumInteritemSpacing
 
         // Calculate how many cells could fit at the minimum width, rounding down (as we can't show a fractional cell)
         // We need to account for there being margin between cells, so there is 1 fewer margin than cell. We do this by
@@ -430,7 +425,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         // Calculate how wide a cell can be. This can be larger than our minimum width because we
         // may have rounded down the number of cells. E.g. if we could have fit 1.5 minimum width
         // cells we will only show 1, but can make it 50% wider than minimum
-        let targetWidth = (availableWidth + itemSpacing) / CGFloat(cellsWhileMaintainingMinimumWidth) -  self.collectionViewLayout!.minimumInteritemSpacing
+        let targetWidth = (availableWidth + itemSpacing) / CGFloat(cellsWhileMaintainingMinimumWidth) -  self.collectionViewLayout.minimumInteritemSpacing
 
         return CGSize(width: targetWidth, height: 120)
     }
@@ -449,10 +444,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         // We instruct the collectionView to reload so widths are recalculated.
         coordinator.animate { _ in } completion: { [weak self] _ in
             guard let self else { return }
-            var snapshot = NSDiffableDataSourceSnapshot<Int, Goal>()
-            snapshot.appendSections([0])
-            snapshot.appendItems(filteredGoals)
-            dataSource.apply(snapshot, animatingDifferences: true)
+            self.applySnapshot()
         }
     }
 
@@ -483,10 +475,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     private func configureCollectionView() {
         self.collectionViewLayout = UICollectionViewFlowLayout()
-        self.collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout!)
-        self.collectionView?.backgroundColor = .systemBackground
-        self.collectionView?.alwaysBounceVertical = true
-        self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
+        self.collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout)
+        self.collectionView.backgroundColor = .systemBackground
+        self.collectionView.alwaysBounceVertical = true
+        self.collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
     }
     
     private func configureDataSource() {
@@ -494,7 +486,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             cell.configure(with: goal)
         }
         
-        self.dataSource = .init(collectionView: collectionView!, cellProvider: { collectionView, indexPath, goal in
+        self.dataSource = .init(collectionView: collectionView, cellProvider: { collectionView, indexPath, goal in
             collectionView.dequeueConfiguredReusableCell(using: cellRegistration,
                                                          for: indexPath,
                                                          item: goal)
@@ -502,7 +494,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
             collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
         }
-        self.collectionView?.dataSource = dataSource
+        self.collectionView.dataSource = dataSource
     }
     
     // MARK: - SFSafariViewControllerDelegate
