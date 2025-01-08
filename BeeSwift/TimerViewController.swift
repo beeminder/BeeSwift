@@ -165,8 +165,7 @@ class TimerViewController: UIViewController {
 
         Task { @MainActor in
             do {
-                let params = ["urtext": self.urtext(), "requestid": UUID().uuidString]
-                let _ = try await ServiceLocator.requestManager.post(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints.json", parameters: params)
+                let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: self.urtext(), slug: self.goal.slug)
                 hud.mode = .text
                 hud.label.text = "Added!"
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
