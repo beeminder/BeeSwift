@@ -440,7 +440,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         // After a rotation or other size change the optimal width for our cells may have changed.
-        // We instruct the collectionView to reload so widths are recalculated.
         coordinator.animate(alongsideTransition: { _ in }, completion: { _ in
             self.collectionViewLayout?.invalidateLayout()
         })
