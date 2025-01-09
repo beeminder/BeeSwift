@@ -334,7 +334,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 }
                 self.collectionView.refreshControl?.endRefreshing()
                 MBProgressHUD.hide(for: self.view, animated: true)
-                self.collectionView.reloadData()
+                self.applySnapshot()
             }
         }
     }
