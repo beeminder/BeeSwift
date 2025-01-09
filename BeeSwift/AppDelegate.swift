@@ -91,7 +91,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
                 let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
+                NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": slug])
             }
         }
         return true
@@ -104,7 +104,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
                 let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
+                NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": slug])
             }
         }
         return true
@@ -180,12 +180,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if userActivity.activityType == CSSearchableItemActionType {
             guard let goalIdentifier = userActivity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return false
             }
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["identifier": goalIdentifier])
+            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["identifier": goalIdentifier])
         } else if let intent = userActivity.interaction?.intent as? AddDataIntent {
             guard let goalSlug = intent.goal else { return false }
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": goalSlug])
+            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
         } else if let goalSlug = userActivity.userInfo?["slug"] {
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": goalSlug])
+            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
         }
         return true
     }

@@ -18,7 +18,7 @@ import CoreData
 import BeeKit
 
 
-class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SFSafariViewControllerDelegate {
+class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UISearchBarDelegate, SFSafariViewControllerDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
 
     // Dependencies
@@ -33,17 +33,25 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewFlowLayout?
     private let freshnessIndicator = FreshnessIndicatorView()
-    let cellReuseIdentifier = "Cell"
     var deadbeatView = UIView()
     var outofdateView = UIView()
     let noGoalsLabel = BSLabel()
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
     var lastUpdated: Date?
-    let maxSearchBarHeight: Int = 50
     
     var goals : [Goal] = []
     var filteredGoals : [Goal] = []
+    
+    private enum Section: CaseIterable {
+        case main
+    }
+    
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Goal>!
+    
+    public enum NotificationName {
+        public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
+    }
 
     init(currentUserManager: CurrentUserManager, 
          viewContext: NSManagedObjectContext,
@@ -67,7 +75,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: NSNotification.Name(rawValue: "openGoal"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: GoalManager.NotificationName.goalsUpdated, object: nil)
 
         self.view.addSubview(stackView)
@@ -80,13 +88,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.top.left.right.equalToSuperview()
             make.bottom.equalTo(stackView.keyboardLayoutGuide.snp.top)
         }
-
-        self.collectionViewLayout = UICollectionViewFlowLayout()
-        self.collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout!)
-        self.collectionView?.backgroundColor = .systemBackground
-        self.collectionView?.alwaysBounceVertical = true
-        self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
-
+        
+        configureCollectionView()
+        configureDataSource()
+        
+        
         self.view.backgroundColor = .systemBackground
         self.title = "Goals"
         
@@ -146,8 +152,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
         self.collectionContainer.addSubview(self.collectionView!)
         self.collectionView!.delegate = self
-        self.collectionView!.dataSource = self
-        self.collectionView!.register(GoalCollectionViewCell.self, forCellWithReuseIdentifier: self.cellReuseIdentifier)
+        
         self.collectionView?.snp.makeConstraints { (make) in
             make.top.bottom.equalTo(collectionContainer)
             make.left.right.equalTo(collectionContainer.safeAreaLayoutGuide)
@@ -214,6 +219,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
         }
+        
+        applySnapshot()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -266,7 +273,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @objc func handleSignOut() {
         self.goals = []
         self.filteredGoals = []
-        self.collectionView?.reloadData()
+        self.applySnapshot()
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
         }
@@ -287,18 +294,11 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.toggleSearchBar()
     }
-    
 
     func updateDeadbeatVisibility() {
         let isKnownDeadbeat = currentUserManager.user(context: viewContext)?.deadbeat == true
         self.deadbeatView.isHidden = !isKnownDeadbeat
     }
-    
-    private let lastUpdatedDateFormatter: RelativeDateTimeFormatter = {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.dateTimeStyle = .named
-        return formatter
-    }()
     
     @objc func updateLastUpdatedLabel() {
         let lastUpdated = self.lastUpdated ?? .distantPast
@@ -334,7 +334,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 }
                 self.collectionView?.refreshControl?.endRefreshing()
                 MBProgressHUD.hide(for: self.view, animated: true)
-                self.collectionView!.reloadData()
+                self.applySnapshot()
             }
         }
     }
@@ -375,12 +375,25 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
     }
+    
+    private func applySnapshot() {
+        var goalsToShow: [Goal] {
+            guard versionManager.lastChckedUpdateState() != .UpdateRequired else { return [] }
+            return filteredGoals
+        }
+        
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Goal>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(goalsToShow, toSection: .main)
+        snapshot.reconfigureItems(goalsToShow)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
 
     @objc func didUpdateGoals() {
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
-        self.collectionView!.reloadData()
+        self.applySnapshot()
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
@@ -393,14 +406,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
         let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
         self.navigationItem.leftBarButtonItem = searchItem
-    }
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return versionManager.lastChckedUpdateState() == .UpdateRequired ? 0 : self.filteredGoals.count
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -427,16 +432,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         return CGSize(width: targetWidth, height: 120)
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell:GoalCollectionViewCell = self.collectionView!.dequeueReusableCell(withReuseIdentifier: self.cellReuseIdentifier, for: indexPath) as! GoalCollectionViewCell
-        
-        let goal:Goal = self.filteredGoals[(indexPath as NSIndexPath).row]
-
-        cell.goal = goal
-        
-        return cell
-    }
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: 320, height: section == 0 && self.goals.count > 0 ? 5 : 0)
     }
@@ -448,10 +443,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         // After a rotation or other size change the optimal width for our cells may have changed.
-        // We instruct the collectionView to reload so widths are recalculated.
-        coordinator.animate { _ in } completion: { _ in
-            self.collectionView?.reloadData()
-        }
+        coordinator.animate(alongsideTransition: { _ in }, completion: { _ in
+            self.collectionViewLayout?.invalidateLayout()
+        })
     }
 
     @objc func openGoalFromNotification(_ notification: Notification) {
@@ -477,6 +471,30 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func openGoal(_ goal: Goal) {
         let goalViewController = GoalViewController(goal: goal)
         self.navigationController?.pushViewController(goalViewController, animated: true)
+    }
+    
+    private func configureCollectionView() {
+        self.collectionViewLayout = UICollectionViewFlowLayout()
+        self.collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout!)
+        self.collectionView?.backgroundColor = .systemBackground
+        self.collectionView?.alwaysBounceVertical = true
+        self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
+    }
+    
+    private func configureDataSource() {
+        let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, Goal> { cell, indexPath, goal in
+            cell.configure(with: goal)
+        }
+        
+        self.dataSource = .init(collectionView: collectionView!, cellProvider: { collectionView, indexPath, goal in
+            collectionView.dequeueConfiguredReusableCell(using: cellRegistration,
+                                                         for: indexPath,
+                                                         item: goal)
+        })
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+            collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
+        }
+        self.collectionView?.dataSource = dataSource
     }
     
     // MARK: - SFSafariViewControllerDelegate

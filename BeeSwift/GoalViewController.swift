@@ -40,7 +40,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var submitButton = BSButton()
     private let pullToRefreshView = PullToRefreshView()
     fileprivate let headerWidth = Double(1.0/3.0)
-    fileprivate let viewGoalActivityType = "com.beeminder.viewGoal"
 
     // date corresponding to the datapoint to be created
     private var date: Date = Date()

@@ -18,18 +18,6 @@ class GoalCollectionViewCell: UICollectionViewCell {
     let safesumLabel :BSLabel = BSLabel()
     let margin = 8
     
-    var goal: Goal? {
-        didSet {
-            self.thumbnailImageView.goal = goal
-            self.titleLabel.text = goal?.title
-            self.slugLabel.text = goal?.slug
-            self.titleLabel.isHidden = goal?.title == goal?.slug
-            self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
-            self.safesumLabel.text = goal?.capitalSafesum()
-            self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
-        }
-    }
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -85,5 +73,21 @@ class GoalCollectionViewCell: UICollectionViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        configure(with: nil)
+    }
+    
+    func configure(with goal: Goal?) {
+        self.thumbnailImageView.goal = goal
+        self.titleLabel.text = goal?.title
+        self.slugLabel.text = goal?.slug
+        self.titleLabel.isHidden = goal?.title == goal?.slug
+        self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
+        self.safesumLabel.text = goal?.capitalSafesum()
+        self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
     }
 }

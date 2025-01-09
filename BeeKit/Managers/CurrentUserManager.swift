@@ -22,8 +22,6 @@ public actor CurrentUserManager {
         public static let willSignOut  = NSNotification.Name(rawValue: "com.beeminder.willSignOutNotification")
         public static let failedSignIn = NSNotification.Name(rawValue: "com.beeminder.failedSignInNotification")
         public static let signedOut    = NSNotification.Name(rawValue: "com.beeminder.signedOutNotification")
-        public static let reset        = NSNotification.Name(rawValue: "com.beeminder.resetNotification")
-        public static let willReset    = NSNotification.Name(rawValue: "com.beeminder.willResetNotification")
         public static let healthKitMetricRemoved = NSNotification.Name(rawValue: "com.beeminder.healthKitMetricRemovedNotification")
     }
     
@@ -39,14 +37,12 @@ public actor CurrentUserManager {
 
     internal static let keychainPrefix = "CurrentUserManager_"
 
-    private let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
     private let requestManager: RequestManager
 
     fileprivate static var allKeys: [String] {
         [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
     }
     
-    nonisolated let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
 
     init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
         self.requestManager = requestManager
@@ -62,6 +58,7 @@ public actor CurrentUserManager {
     // If there is an existing session based on UserDefaults, create a new User object
     private nonisolated func migrateValuesToCoreData() {
         let context = modelContainer.newBackgroundContext()
+        let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
 
         // If there is already a session do nothing
         if user(context: context) != nil {
@@ -86,6 +83,7 @@ public actor CurrentUserManager {
     }
 
     private nonisolated func cleanUpUserDefaults() {
+        let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
         for key in CurrentUserManager.allKeys {
             userDefaults.removeObject(forKey: key)
         }
@@ -136,10 +134,12 @@ public actor CurrentUserManager {
     // MARK: - Keychain Management
 
     nonisolated func setAccessToken(_ accessToken: String) {
+        let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
         keychain.set(accessToken, forKey: CurrentUserManager.accessTokenKey, withAccess: .accessibleAfterFirstUnlock)
     }
     
     public nonisolated var accessToken: String? {
+        let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
         return keychain.get(CurrentUserManager.accessTokenKey)
     }
 
@@ -185,6 +185,7 @@ public actor CurrentUserManager {
 
         try deleteUser()
 
+        let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
         keychain.delete(CurrentUserManager.accessTokenKey)
 
         await Task { @MainActor in
