@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Theo Spears on 2/7/23.
-//  Copyright © 2023 APB. All rights reserved.
+//  Copyright 2023 APB. All rights reserved.
 //
 
 import Foundation
@@ -18,9 +18,11 @@ import OrderedCollections
 public actor GoalManager {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalManager")
 
-    /// A notification that is triggered any time the data for one or more goals is updated
-    public static let goalsUpdatedNotificationName = "com.beeminder.goalsUpdatedNotification"
-
+    public enum NotificationName {
+        /// A notification that is triggered any time the data for one or more goals is updated
+        public static let goalsUpdated = NSNotification.Name(rawValue: "com.beeminder.goalsUpdatedNotification")
+    }
+        
     private let requestManager: RequestManager
     private nonisolated let currentUserManager: CurrentUserManager
 
@@ -42,7 +44,7 @@ public actor GoalManager {
         // 2) Other methods may be called with the actor executor, so it is no longer safe for the constructor to
         //    access class properties.
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.onSignedOutNotification), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onSignedOutNotification), name: CurrentUserManager.NotificationName.signedOut, object: nil)
     }
 
     /// Return the state of goals the last time they were fetched from the server. This could have been an arbitrarily long time ago.
@@ -60,7 +62,7 @@ public actor GoalManager {
             return
         }
 
-        let responseObject = try await requestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)!
+        let responseObject = try await requestManager.get(url: "api/v1/users/\(username)/goals.json")!
         let response = JSON(responseObject)
         self.updateGoalsFromJson(response) // TODO: Return failure info
 
@@ -72,7 +74,7 @@ public actor GoalManager {
     public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
         let goal = try modelContext.existingObject(with: goalID) as! Goal
 
-        let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5", parameters: nil)
+        let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5")
         let goalJSON = JSON(responseObject!)
 
         // The goal may have changed during the network operation, reload latest version
@@ -85,7 +87,7 @@ public actor GoalManager {
     }
 
     public func forceAutodataRefresh(_ goal: Goal) async throws {
-        let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json", parameters: nil)
+        let _ = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json")
     }
 
     private func updateGoalsFromJson(_ responseJSON: JSON) {
@@ -132,7 +134,7 @@ public actor GoalManager {
         // Notify all listeners of the update
         await Task { @MainActor in
             modelContainer.viewContext.refreshAllObjects()
-            NotificationCenter.default.post(name: Notification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: self)
+            NotificationCenter.default.post(name: GoalManager.NotificationName.goalsUpdated, object: self)
         }.value
     }
 

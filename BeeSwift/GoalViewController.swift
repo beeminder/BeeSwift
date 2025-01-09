@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 4/24/15.
-//  Copyright (c) 2015 APB. All rights reserved.
+//  Copyright 2015 APB. All rights reserved.
 //
 
 import Foundation
@@ -34,12 +34,11 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var valueStepper = UIStepper()
     fileprivate var valueDecimalRemnant : Double = 0.0
     fileprivate var goalImageScrollView = UIScrollView()
-    fileprivate var pollTimer : Timer?
+    fileprivate var lastUpdatedTimer: Timer?
     fileprivate var countdownLabel = BSLabel()
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
-    fileprivate let viewGoalActivityType = "com.beeminder.viewGoal"
 
     // date corresponding to the datapoint to be created
     private var date: Date = Date()
@@ -72,8 +71,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         
         self.updateLastUpdatedLabel()
-        Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GoalViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
-        
+        lastUpdatedTimer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GoalViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
@@ -294,7 +292,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem(image: UIImage(systemName: "stopwatch"), style: .plain, target: self, action: #selector(self.timerButtonPressed)))
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(onGoalsUpdatedNotification), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onGoalsUpdatedNotification), name: GoalManager.NotificationName.goalsUpdated, object: nil)
 
         setValueTextField()
         updateInterfaceToMatchGoal()
@@ -307,6 +305,12 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.dateTextField.iq.distanceFromKeyboard = addDataPointAdditionalKeyboardDistance
         self.valueTextField.iq.distanceFromKeyboard = addDataPointAdditionalKeyboardDistance
         self.commentTextField.iq.distanceFromKeyboard = addDataPointAdditionalKeyboardDistance
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        lastUpdatedTimer?.invalidate()
+        lastUpdatedTimer = nil
     }
 
     @objc func onGoalsUpdatedNotification() {
@@ -523,7 +527,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         controller.dismiss(animated: true, completion: nil)
     }
 }
-
 
 private extension DateFormatter {
     private static let urtextDateFormatter: DateFormatter = {

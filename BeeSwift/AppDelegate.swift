@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 4/19/15.
-//  Copyright (c) 2015 APB. All rights reserved.
+//  Copyright 2015 APB. All rights reserved.
 //
 
 import CoreSpotlight
@@ -41,8 +41,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsUpdated), name: NSNotification.Name(rawValue: GoalManager.goalsUpdatedNotificationName), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleUserSignedOut), name: NSNotification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsUpdated), name: GoalManager.NotificationName.goalsUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleUserSignedOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
 
         backgroundUpdates.startUpdatingRegularlyInBackground()
         
@@ -91,7 +91,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
                 let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
+                NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": slug])
             }
         }
         return true
@@ -104,7 +104,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
                 let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": slug])
+                NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": slug])
             }
         }
         return true
@@ -180,12 +180,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if userActivity.activityType == CSSearchableItemActionType {
             guard let goalIdentifier = userActivity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return false
             }
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["identifier": goalIdentifier])
+            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["identifier": goalIdentifier])
         } else if let intent = userActivity.interaction?.intent as? AddDataIntent {
             guard let goalSlug = intent.goal else { return false }
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": goalSlug])
+            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
         } else if let goalSlug = userActivity.userInfo?["slug"] {
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "openGoal"), object: nil, userInfo: ["slug": goalSlug])
+            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
         }
         return true
     }

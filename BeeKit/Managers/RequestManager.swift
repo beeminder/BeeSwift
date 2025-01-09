@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 5/10/15.
-//  Copyright (c) 2015 APB. All rights reserved.
+//  Copyright 2015 APB. All rights reserved.
 //
 
 import Foundation
@@ -29,7 +29,7 @@ public class RequestManager {
     public let baseURLString = Config().baseURLString
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
     
-    func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]?, headers: HTTPHeaders) async throws -> Any? {
+    func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders) async throws -> Any? {
 
         var urlWithSubstitutions = url
         if url.contains("{username}") {
@@ -78,20 +78,20 @@ public class RequestManager {
         }
     }
     
-    public func get(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
         return try await rawRequest(url: url, method: .get, parameters: parameters, headers: authenticationHeaders())
     }
     
     
-    public func put(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
         return try await rawRequest(url: url, method: .patch, parameters: parameters, headers: authenticationHeaders())
     }
     
-    public func post(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func post(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
         return try await rawRequest(url: url, method: .post, parameters: parameters, headers: authenticationHeaders())
     }
     
-    public func delete(url: String, parameters: [String: Any]?) async throws -> Any? {
+    public func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
         return try await rawRequest(url: url, method: .delete, parameters: parameters, headers: authenticationHeaders())
     }
     
@@ -105,10 +105,15 @@ public class RequestManager {
         ])
     }
 
-    public func addDatapoint(urtext: String, slug: String) async throws -> Any? {
-        let params = ["urtext": urtext, "requestid": UUID().uuidString]
+    public func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
+        let params = [
+            "urtext": urtext,
+            "requestid": requestId
+        ]
+            .compactMapValues { $0 }
         
-        return try await post(url: "api/v1/users/{username}/goals/\(slug)/datapoints.json", parameters: params)
+        return try await post(url: "api/v1/users/{username}/goals/\(slug)/datapoints.json",
+                              parameters: params)
     }
 }
 

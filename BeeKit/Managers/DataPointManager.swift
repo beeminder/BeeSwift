@@ -43,11 +43,11 @@ public actor DataPointManager {
     }
 
     private func deleteDatapoint(goal: Goal, datapoint : DataPoint) async throws {
-        let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)", parameters: nil)
+        let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)")
     }
 
-    private func postDatapoint(goal : Goal, params : [String : String]) async throws {
-        let _ = try await requestManager.post(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json", parameters: params)
+    private func postDatapoint(goal : Goal, urText: String, requestId: String) async throws {
+        let _ = try await requestManager.addDatapoint(urtext: urText, slug: goal.slug, requestId: requestId)
     }
 
     private func fetchDatapoints(goal: Goal, sort: String, per: Int, page: Int) async throws -> [DataPoint] {
@@ -118,11 +118,12 @@ public actor DataPointManager {
                 return
             }
 
-            let params = ["urtext": "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\"", "requestid": newDataPoint.requestid]
+            let urText = "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\""
+            let requestId = newDataPoint.requestid
 
             logger.notice("Creating new datapoint for \(goal.id, privacy: .public) on \(newDataPoint.daystamp, privacy: .public): \(newDataPoint.value, privacy: .private)")
 
-            try await postDatapoint(goal: goal, params: params)
+            try await postDatapoint(goal: goal, urText: urText, requestId: requestId)
         } else if matchingDatapoints.count >= 1 {
             let firstDatapoint = matchingDatapoints.remove(at: 0)
             for datapoint in matchingDatapoints {

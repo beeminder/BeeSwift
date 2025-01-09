@@ -3,7 +3,7 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 4/26/15.
-//  Copyright (c) 2015 APB. All rights reserved.
+//  Copyright 2015 APB. All rights reserved.
 //
 
 import CoreData
@@ -17,14 +17,14 @@ import SwiftyJSON
 public actor CurrentUserManager {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CurrentUserManager")
 
-    public static let signedInNotificationName     = "com.beeminder.signedInNotification"
-    public static let willSignOutNotificationName  = "com.beeminder.willSignOutNotification"
-    public static let failedSignInNotificationName = "com.beeminder.failedSignInNotification"
-    public static let signedOutNotificationName    = "com.beeminder.signedOutNotification"
-    public static let resetNotificationName        = "com.beeminder.resetNotification"
-    public static let willResetNotificationName    = "com.beeminder.willResetNotification"
-    public static let healthKitMetricRemovedNotificationName = "com.beeminder.healthKitMetricRemovedNotification"
-
+    public enum NotificationName {
+        public static let signedIn     = NSNotification.Name(rawValue: "com.beeminder.signedInNotification")
+        public static let willSignOut  = NSNotification.Name(rawValue: "com.beeminder.willSignOutNotification")
+        public static let failedSignIn = NSNotification.Name(rawValue: "com.beeminder.failedSignInNotification")
+        public static let signedOut    = NSNotification.Name(rawValue: "com.beeminder.signedOutNotification")
+        public static let healthKitMetricRemoved = NSNotification.Name(rawValue: "com.beeminder.healthKitMetricRemovedNotification")
+    }
+    
     fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
     
     internal static let accessTokenKey = "access_token"
@@ -37,14 +37,12 @@ public actor CurrentUserManager {
 
     internal static let keychainPrefix = "CurrentUserManager_"
 
-    private let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
     private let requestManager: RequestManager
 
     fileprivate static var allKeys: [String] {
         [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
     }
     
-    nonisolated let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
 
     init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
         self.requestManager = requestManager
@@ -60,6 +58,7 @@ public actor CurrentUserManager {
     // If there is an existing session based on UserDefaults, create a new User object
     private nonisolated func migrateValuesToCoreData() {
         let context = modelContainer.newBackgroundContext()
+        let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
 
         // If there is already a session do nothing
         if user(context: context) != nil {
@@ -84,6 +83,7 @@ public actor CurrentUserManager {
     }
 
     private nonisolated func cleanUpUserDefaults() {
+        let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
         for key in CurrentUserManager.allKeys {
             userDefaults.removeObject(forKey: key)
         }
@@ -134,10 +134,12 @@ public actor CurrentUserManager {
     // MARK: - Keychain Management
 
     nonisolated func setAccessToken(_ accessToken: String) {
+        let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
         keychain.set(accessToken, forKey: CurrentUserManager.accessTokenKey, withAccess: .accessibleAfterFirstUnlock)
     }
     
     public nonisolated var accessToken: String? {
+        let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
         return keychain.get(CurrentUserManager.accessTokenKey)
     }
 
@@ -165,28 +167,29 @@ public actor CurrentUserManager {
         self.setAccessToken(responseJSON[CurrentUserManager.accessTokenKey].string!)
         
         await Task { @MainActor in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedInNotificationName), object: self)
+            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedIn, object: self)
         }.value
     }
     
     func handleFailedSignin(_ responseError: Error, errorMessage : String?) async throws {
         await Task { @MainActor in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.failedSignInNotificationName), object: self, userInfo: ["error" : responseError])
+            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.failedSignIn, object: self, userInfo: ["error" : responseError])
         }.value
         try await self.signOut()
     }
     
     public func signOut() async throws {
         await Task { @MainActor in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.willSignOutNotificationName), object: self)
+            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.willSignOut, object: self)
         }.value
 
         try deleteUser()
 
+        let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
         keychain.delete(CurrentUserManager.accessTokenKey)
 
         await Task { @MainActor in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: CurrentUserManager.signedOutNotificationName), object: self)
+            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: self)
         }.value
     }
 }

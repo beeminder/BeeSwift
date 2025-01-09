@@ -3,7 +3,7 @@
 //  BeeSwiftUITests
 //
 //  Created by Andrew Brett on 8/14/20.
-//  Copyright © 2020 APB. All rights reserved.
+//  Copyright 2020 APB. All rights reserved.
 //
 
 import XCTest
