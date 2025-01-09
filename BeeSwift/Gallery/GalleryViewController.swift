@@ -377,7 +377,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     private func applySnapshot() {
-        let goalsToShow = versionManager.lastChckedUpdateState() == .UpdateRequired ? [] : filteredGoals
+        var goalsToShow: [Goal] {
+            guard versionManager.lastChckedUpdateState() != .UpdateRequired else { return [] }
+            return filteredGoals
+        }
         
         var snapshot = NSDiffableDataSourceSnapshot<Section, Goal>()
         snapshot.appendSections([.main])
