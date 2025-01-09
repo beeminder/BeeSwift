@@ -382,6 +382,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         var snapshot = NSDiffableDataSourceSnapshot<Section, Goal>()
         snapshot.appendSections([.main])
         snapshot.appendItems(goalsToShow, toSection: .main)
+        snapshot.reconfigureItems(goalsToShow)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 
