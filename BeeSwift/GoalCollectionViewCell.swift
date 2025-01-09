@@ -78,22 +78,16 @@ class GoalCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        self.thumbnailImageView.goal = nil
-        self.titleLabel.text = nil
-        self.slugLabel.text = nil
-        self.titleLabel.isHidden = true
-        self.todaytaLabel.text = nil
-        self.safesumLabel.text = nil
-        self.safesumLabel.textColor = UIColor.Beeminder.gray
+        configure(with: nil)
     }
     
-    func configure(with goal: Goal) {
+    func configure(with goal: Goal?) {
         self.thumbnailImageView.goal = goal
-        self.titleLabel.text = goal.title
-        self.slugLabel.text = goal.slug
-        self.titleLabel.isHidden = goal.title == goal.slug
-        self.todaytaLabel.text = goal.todayta ? "✓" : ""
-        self.safesumLabel.text = goal.capitalSafesum()
-        self.safesumLabel.textColor = goal.countdownColor
+        self.titleLabel.text = goal?.title
+        self.slugLabel.text = goal?.slug
+        self.titleLabel.isHidden = goal?.title == goal?.slug
+        self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
+        self.safesumLabel.text = goal?.capitalSafesum()
+        self.safesumLabel.textColor = goal?.countdownColor
     }
 }
