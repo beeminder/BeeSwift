@@ -82,10 +82,10 @@ class GoalImageView : UIView {
                           options: .transitionCrossDissolve,
                           animations: { [weak self] in
             self?.imageView.image = image
+            self?.beeLemniscateView.isHidden = self?.goal == nil || self?.goal?.queued == false
+
         }) { [weak self] _ in
-            guard let self else { return }
-            self.currentlyShowingGraph = true
-            self.beeLemniscateView.isHidden = !(self.goal?.queued ?? false)
+            self?.currentlyShowingGraph = true
         }
     }
 
