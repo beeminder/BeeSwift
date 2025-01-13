@@ -38,8 +38,8 @@ class GalleryViewController: UIViewController,
     var collectionView :UICollectionView?
     var collectionViewLayout :UICollectionViewFlowLayout?
     private let freshnessIndicator = FreshnessIndicatorView()
-    var deadbeatView = UIView()
-    var outofdateView = UIView()
+    let deadbeatView = UIView()
+    let outofdateView = UIView()
     let noGoalsLabel = BSLabel()
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
