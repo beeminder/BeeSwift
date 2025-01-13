@@ -43,14 +43,15 @@ class GalleryViewController: UIViewController,
     let noGoalsLabel = BSLabel()
     let outofdateLabel = BSLabel()
     let searchBar = UISearchBar()
-    var lastUpdated: Date?
+
     
     private enum Section: CaseIterable {
         case main
     }
     
     private typealias GallerySnapshot = NSDiffableDataSourceSnapshot<GalleryViewController.Section, NSManagedObjectID>
-    
+
+    private var lastUpdated: Date?
     private var dataSource: UICollectionViewDiffableDataSource<Section, NSManagedObjectID>!
     
     public enum NotificationName {
