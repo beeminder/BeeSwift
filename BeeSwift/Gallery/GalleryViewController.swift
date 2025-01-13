@@ -26,6 +26,10 @@ class GalleryViewController: UIViewController,
                              NSFetchedResultsControllerDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
 
+    public enum NotificationName {
+        public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
+    }
+    
     // Dependencies
     private let currentUserManager: CurrentUserManager
     private let viewContext: NSManagedObjectContext
@@ -53,10 +57,6 @@ class GalleryViewController: UIViewController,
 
     private var lastUpdated: Date?
     private var dataSource: UICollectionViewDiffableDataSource<Section, NSManagedObjectID>!
-    
-    public enum NotificationName {
-        public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
-    }
     
     private let fetchedResultsController: NSFetchedResultsController<Goal>!
     private var fetchRequest: NSFetchRequest<Goal>?
