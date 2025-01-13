@@ -18,7 +18,7 @@ import CoreData
 import BeeKit
 
 
-class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UISearchBarDelegate, SFSafariViewControllerDelegate {
+class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UISearchBarDelegate, SFSafariViewControllerDelegate, NSFetchedResultsControllerDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
 
     // Dependencies
@@ -506,9 +506,8 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         controller.dismiss(animated: true, completion: nil)
         self.fetchGoals()
     }
-}
-
-extension GalleryViewController: NSFetchedResultsControllerDelegate {
+    
+    // MARK: - NSFetchedResultsControllerDelegate
     func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: true)
     }
