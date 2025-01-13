@@ -44,7 +44,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         case main
     }
     
-    private var dataSource: UICollectionViewDiffableDataSource<Section, Goal>!
+    private typealias GallerySnapshot = NSDiffableDataSourceSnapshot<GalleryViewController.Section, NSManagedObjectID>
+    
+    private var dataSource: UICollectionViewDiffableDataSource<Section, NSManagedObjectID>!
     
     public enum NotificationName {
         public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
@@ -231,8 +233,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
         }
-        
-        applySnapshot()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -281,7 +281,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleSignOut() {
-        self.applySnapshot()
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
         }
@@ -342,7 +341,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 }
                 self.collectionView?.refreshControl?.endRefreshing()
                 MBProgressHUD.hide(for: self.view, animated: true)
-                self.applySnapshot()
             }
         }
     }
@@ -387,23 +385,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         self.fetchedResultsController.fetchRequest.sortDescriptors = preferredSort
         try? self.fetchedResultsController.performFetch()
-        
-        self.applySnapshot()
     }
-    
-    private func applySnapshot() {
-        var goalsToShow: [Goal] {
-            guard versionManager.lastChckedUpdateState() != .UpdateRequired else { return [] }
-            return filteredGoals
-        }
-        
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Goal>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(goalsToShow, toSection: .main)
-        snapshot.reconfigureItems(goalsToShow)
-        dataSource.apply(snapshot, animatingDifferences: true)
-    }
-
     
     private var filteredGoals: [Goal] {
         fetchedResultsController.fetchedObjects ?? []
@@ -413,7 +395,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
-        self.applySnapshot()
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
@@ -502,18 +483,20 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     private func configureDataSource() {
-        let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, Goal> { cell, indexPath, goal in
+        let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, NSManagedObjectID> { [weak self] cell, indexPath, goalObjectId in
+            let goal = self?.fetchedResultsController.fetchedObjects?.first(where: { $0.objectID == goalObjectId })
             cell.configure(with: goal)
         }
         
-        self.dataSource = .init(collectionView: collectionView!, cellProvider: { collectionView, indexPath, goal in
+        self.dataSource = .init(collectionView: collectionView!, cellProvider: { collectionView, indexPath, goalObjectId in
             collectionView.dequeueConfiguredReusableCell(using: cellRegistration,
                                                          for: indexPath,
-                                                         item: goal)
+                                                         item: goalObjectId)
         })
         dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
             collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
         }
+        
         self.collectionView?.dataSource = dataSource
     }
     
@@ -526,15 +509,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 }
 
 extension GalleryViewController: NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        self.applySnapshot()
-    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
-                    didChange anObject: Any,
-                    at indexPath: IndexPath?,
-                    for type: NSFetchedResultsChangeType,
-                    newIndexPath: IndexPath?) {
-        self.applySnapshot()
+    func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: true)
     }
 }
