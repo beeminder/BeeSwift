@@ -61,32 +61,42 @@ class GoalImageView : UIView {
             object: nil,
             queue: OperationQueue.main
         ) { [weak self] _ in
-            self?.refresh()
+            DispatchQueue.main.async {
+                self?.refresh()
+            }
         }
-
         refresh()
     }
 
+    @MainActor
     private func clearGoalGraph() {
         imageView.image = UIImage(named: "GraphPlaceholder")
         currentlyShowingGraph = false
         beeLemniscateView.isHidden = true
     }
 
+    @MainActor
     private func showGraphImage(image: UIImage) {
-        imageView.image = image
-        currentlyShowingGraph = true
-        beeLemniscateView.isHidden = !(goal?.queued ?? false)
-        
-        if isThumbnail {
-            imageView.layer.borderColor = goal?.countdownColor.cgColor
-            imageView.layer.borderWidth = goal == nil ? 0 : 1
-        } else {
-            imageView.layer.borderColor = nil
-            imageView.layer.borderWidth = 0
+        UIView.transition(with: imageView,
+                          duration: 0.8,
+                          options: .transitionCrossDissolve,
+                          animations: { [weak self] in
+            self?.imageView.image = image
+            self?.beeLemniscateView.isHidden = self?.goal == nil || self?.goal?.queued == false
+
+            if self?.isThumbnail == true {
+                self?.imageView.layer.borderColor = self?.goal?.countdownColor.cgColor
+                self?.imageView.layer.borderWidth = self?.goal == nil ? 0 : 1
+            } else {
+                self?.imageView.layer.borderColor = nil
+                self?.imageView.layer.borderWidth = 0
+            }
+        }) { [weak self] _ in
+            self?.currentlyShowingGraph = true
         }
     }
 
+    @MainActor
     private func refresh() {
         // Invalidate the download token, meaning that any queued download callbacks
         // will no-op. This avoids race conditions with downloads finishing out of order.
