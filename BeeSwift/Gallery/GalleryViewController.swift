@@ -18,7 +18,12 @@ import CoreData
 import BeeKit
 
 
-class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UISearchBarDelegate, SFSafariViewControllerDelegate, NSFetchedResultsControllerDelegate {
+class GalleryViewController: UIViewController,
+                             UICollectionViewDelegateFlowLayout,
+                             UICollectionViewDelegate,
+                             UISearchBarDelegate,
+                             SFSafariViewControllerDelegate,
+                             NSFetchedResultsControllerDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
 
     // Dependencies
