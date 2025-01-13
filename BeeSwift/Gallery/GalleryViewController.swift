@@ -484,7 +484,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     private func configureDataSource() {
         let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, NSManagedObjectID> { [weak self] cell, indexPath, goalObjectId in
-            let goal = self?.fetchedResultsController.fetchedObjects?.first(where: { $0.objectID == goalObjectId })
+            let goal = self?.fetchedResultsController.object(at: indexPath)
             cell.configure(with: goal)
         }
         
