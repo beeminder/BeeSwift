@@ -67,7 +67,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.healthStoreManager = healthStoreManager
         
         let fetchRequest = Goal.fetchRequest() as! NSFetchRequest<Goal>
-        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)]
+        fetchRequest.sortDescriptors = Self.preferredSort
         fetchedResultsController = .init(fetchRequest: fetchRequest,
                                          managedObjectContext: viewContext,
                                          sectionNameKeyPath: nil, cacheName: nil)
@@ -350,7 +350,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.didUpdateGoals()
     }
     
-    private var preferredSort: [NSSortDescriptor] {
+    static private var preferredSort: [NSSortDescriptor] {
         let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String ?? Constants.urgencyGoalSortString
         
         switch selectedGoalSort {
@@ -383,7 +383,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.fetchedResultsController.fetchRequest.predicate = nil
         }
         
-        self.fetchedResultsController.fetchRequest.sortDescriptors = preferredSort
+        self.fetchedResultsController.fetchRequest.sortDescriptors = Self.preferredSort
         try? self.fetchedResultsController.performFetch()
     }
     
