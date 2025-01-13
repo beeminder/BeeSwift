@@ -87,7 +87,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: GoalManager.NotificationName.goalsUpdated, object: nil)
 
         self.view.addSubview(stackView)
         stackView.axis = .vertical
@@ -244,11 +243,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             self.updateGoals()
             self.fetchGoals()
         }
-    }
-    
-    @objc func handleGoalsFetchedNotification() {
-        logger.debug("\(#function)")
-        logger.debug("doing nothing because GalleryVC should be informed over Core Data about updates to goals of interest")
     }
     
     @objc func settingsButtonPressed() {
