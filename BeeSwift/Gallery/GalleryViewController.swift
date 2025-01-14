@@ -272,9 +272,6 @@ class GalleryViewController: UIViewController {
             let signInVC = SignInViewController()
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
-        } else {
-            self.updateGoals()
-            self.fetchGoals()
         }
     }
     
