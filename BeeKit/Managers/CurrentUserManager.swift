@@ -13,6 +13,8 @@ import KeychainSwift
 import OSLog
 import SwiftyJSON
 
+import WidgetKit
+
 @NSModelActor(disableGenerateInit: true)
 public actor CurrentUserManager {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CurrentUserManager")
@@ -168,12 +170,14 @@ public actor CurrentUserManager {
         
         await Task { @MainActor in
             NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedIn, object: self)
+            WidgetCenter.shared.reloadAllTimelines()
         }.value
     }
     
     func handleFailedSignin(_ responseError: Error, errorMessage : String?) async throws {
         await Task { @MainActor in
             NotificationCenter.default.post(name: CurrentUserManager.NotificationName.failedSignIn, object: self, userInfo: ["error" : responseError])
+            WidgetCenter.shared.reloadAllTimelines()
         }.value
         try await self.signOut()
     }
@@ -190,6 +194,8 @@ public actor CurrentUserManager {
 
         await Task { @MainActor in
             NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: self)
+
+            WidgetCenter.shared.reloadAllTimelines()
         }.value
     }
 }

@@ -8,8 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		9B65F2322CFA6427009674A7 /* DeeplinkGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */; };
+		9B037D502CE80290008C25BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B037D452CE80290008C25BD /* Assets.xcassets */; };
+		9B037D532CE80290008C25BD /* BeeminderGoalCountdownWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B037D472CE80290008C25BD /* BeeminderGoalCountdownWidget.swift */; };
+		9B037D542CE80290008C25BD /* BeeminderGoalListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B037D482CE80290008C25BD /* BeeminderGoalListWidget.swift */; };
+		9B037D552CE80290008C25BD /* BeeminderPledgedTodayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B037D492CE80290008C25BD /* BeeminderPledgedTodayWidget.swift */; };
+		9B037D572CE80290008C25BD /* BeeminderWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B037D4B2CE80290008C25BD /* BeeminderWidgetBundle.swift */; };
+		9B037D582CE80290008C25BD /* BeeminderWidgetConfigurationIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B037D4C2CE80290008C25BD /* BeeminderWidgetConfigurationIntents.swift */; };
+		9B5860FF2CE4963F00079A1C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B5860FE2CE4963E00079A1C /* WidgetKit.framework */; };
+		9B5861012CE4963F00079A1C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B5861002CE4963F00079A1C /* SwiftUI.framework */; };
 		9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */; };
 		9BFB27E92CFE770F0056D10D /* FreshnessIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */; };
+		9B93301C2CE55C7F00720B19 /* BeeminderWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9B5860FD2CE4963E00079A1C /* BeeminderWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9B93301F2CE55D0400720B19 /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
+		9B9330202CE55D0400720B19 /* BeeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
 		A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */; };
 		A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */; };
@@ -139,6 +150,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		9B93301D2CE55C7F00720B19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9B5860FC2CE4963E00079A1C;
+			remoteInfo = BeeminderWidgetExtension;
+		};
+		9B9330212CE55D0400720B19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E57BE6DF2655EBD900BA540B;
+			remoteInfo = BeeKit;
+		};
 		A196CB2D1AE4142F00B90A3E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A196CB0C1AE4142E00B90A3E /* Project object */;
@@ -191,12 +216,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		9B9330232CE55D0400720B19 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				9B9330202CE55D0400720B19 /* BeeKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1B53C401B2D04EB00AF266F /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				9B93301C2CE55C7F00720B19 /* BeeminderWidgetExtension.appex in Embed Foundation Extensions */,
 				E5F7C4AA260FC5300095684F /* BeeSwiftIntents.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -217,6 +254,17 @@
 
 /* Begin PBXFileReference section */
 		9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkGenerator.swift; sourceTree = "<group>"; };
+		9B037D452CE80290008C25BD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9B037D472CE80290008C25BD /* BeeminderGoalCountdownWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderGoalCountdownWidget.swift; sourceTree = "<group>"; };
+		9B037D482CE80290008C25BD /* BeeminderGoalListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderGoalListWidget.swift; sourceTree = "<group>"; };
+		9B037D492CE80290008C25BD /* BeeminderPledgedTodayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderPledgedTodayWidget.swift; sourceTree = "<group>"; };
+		9B037D4B2CE80290008C25BD /* BeeminderWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderWidgetBundle.swift; sourceTree = "<group>"; };
+		9B037D4C2CE80290008C25BD /* BeeminderWidgetConfigurationIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderWidgetConfigurationIntents.swift; sourceTree = "<group>"; };
+		9B037D4D2CE80290008C25BD /* BeeminderWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BeeminderWidgetExtension.entitlements; sourceTree = "<group>"; };
+		9B037D4E2CE80290008C25BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9B5860FD2CE4963E00079A1C /* BeeminderWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BeeminderWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		9B5860FE2CE4963E00079A1C /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		9B5861002CE4963F00079A1C /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshnessIndicatorView.swift; sourceTree = "<group>"; };
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
@@ -331,6 +379,33 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		9B5860FA2CE4963E00079A1C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9B5861012CE4963F00079A1C /* SwiftUI.framework in Frameworks */,
+				9B93301F2CE55D0400720B19 /* BeeKit.framework in Frameworks */,
+				9B5860FF2CE4963F00079A1C /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A12E694A1BD3EF0200AB94C2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E41286F52A62E9840093D598 /* KeychainSwift in Frameworks */,
+				E462BA4A29ADAAB800E80EF0 /* SnapKit in Frameworks */,
+				A142492E1FD0A56A007736B3 /* HealthKit.framework in Frameworks */,
+				E462BA5129ADAB4F00E80EF0 /* MBProgressHUD in Frameworks */,
+				E462BA5529ADACB600E80EF0 /* Alamofire in Frameworks */,
+				E462BA4F29ADAB4300E80EF0 /* SwiftyJSON in Frameworks */,
+				E458C7FC2AD10D6E000DCA5C /* BeeKit.framework in Frameworks */,
+				A12E694E1BD3EF0200AB94C2 /* NotificationCenter.framework in Frameworks */,
+				E486DE2829B040FB00F338B2 /* OrderedCollections in Frameworks */,
+				E462BA5729AEEF9D00E80EF0 /* AlamofireImage in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A196CB111AE4142E00B90A3E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -407,6 +482,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9B037D4F2CE80290008C25BD /* BeeminderWidget */ = {
+			isa = PBXGroup;
+			children = (
+				9B037D452CE80290008C25BD /* Assets.xcassets */,
+				9B037D472CE80290008C25BD /* BeeminderGoalCountdownWidget.swift */,
+				9B037D482CE80290008C25BD /* BeeminderGoalListWidget.swift */,
+				9B037D492CE80290008C25BD /* BeeminderPledgedTodayWidget.swift */,
+				9B037D4B2CE80290008C25BD /* BeeminderWidgetBundle.swift */,
+				9B037D4C2CE80290008C25BD /* BeeminderWidgetConfigurationIntents.swift */,
+				9B037D4D2CE80290008C25BD /* BeeminderWidgetExtension.entitlements */,
+				9B037D4E2CE80290008C25BD /* Info.plist */,
+			);
+			path = BeeminderWidget;
+			sourceTree = "<group>";
+		};
 		A106AD8B1AF1F62800C434E8 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -452,6 +542,7 @@
 				E5F7C493260FC5300095684F /* BeeSwiftIntents */,
 				E57BE6E12655EBDA00BA540B /* BeeKit */,
 				E57BE6EE2655EBE000BA540B /* BeeKitTests */,
+				9B037D4F2CE80290008C25BD /* BeeminderWidget */,
 				A196CB151AE4142E00B90A3E /* Products */,
 				C039E8389CFF5C0D8CF85D8D /* Frameworks */,
 			);
@@ -466,6 +557,7 @@
 				E5F7C490260FC5300095684F /* BeeSwiftIntents.appex */,
 				E57BE6E02655EBD900BA540B /* BeeKit.framework */,
 				E57BE6E82655EBDF00BA540B /* BeeKitTests.xctest */,
+				9B5860FD2CE4963E00079A1C /* BeeminderWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -550,6 +642,8 @@
 				A1B53C301B2D04EA00AF266F /* NotificationCenter.framework */,
 				E5F7C491260FC5300095684F /* Intents.framework */,
 				E5F7C49C260FC5300095684F /* IntentsUI.framework */,
+				9B5860FE2CE4963E00079A1C /* WidgetKit.framework */,
+				9B5861002CE4963F00079A1C /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -708,7 +802,28 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		A196CB131AE4142E00B90A3E /* BeeSwift */ = {
+		9B5860FC2CE4963E00079A1C /* BeeminderWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9B5861162CE4964400079A1C /* Build configuration list for PBXNativeTarget "BeeminderWidgetExtension" */;
+			buildPhases = (
+				9B5860F92CE4963E00079A1C /* Sources */,
+				9B5860FA2CE4963E00079A1C /* Frameworks */,
+				9B5860FB2CE4963E00079A1C /* Resources */,
+				9B9330232CE55D0400720B19 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9B9330222CE55D0400720B19 /* PBXTargetDependency */,
+			);
+			name = BeeminderWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = MyFirstWidgetExtension;
+			productReference = 9B5860FD2CE4963E00079A1C /* BeeminderWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+        A196CB131AE4142E00B90A3E /* BeeSwift */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A196CB361AE4142F00B90A3E /* Build configuration list for PBXNativeTarget "BeeSwift" */;
 			buildPhases = (
@@ -723,6 +838,7 @@
 			dependencies = (
 				E5F7C4A9260FC5300095684F /* PBXTargetDependency */,
 				E57BE7132655F00200BA540B /* PBXTargetDependency */,
+				9B93301E2CE55C7F00720B19 /* PBXTargetDependency */,
 			);
 			name = BeeSwift;
 			packageProductDependencies = (
@@ -856,10 +972,27 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftMigration = 0710;
-				LastSwiftUpdateCheck = 1240;
+				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1500;
 				ORGANIZATIONNAME = APB;
 				TargetAttributes = {
+					9B5860FC2CE4963E00079A1C = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					A12E694C1BD3EF0200AB94C2 = {
+						CreatedOnToolsVersion = 7.1;
+						DevelopmentTeam = 8TW9V9HVES;
+						LastSwiftMigration = 1240;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.SafariKeychain = {
+								enabled = 0;
+							};
+						};
+					};
 					A196CB131AE4142E00B90A3E = {
 						CreatedOnToolsVersion = 6.3;
 						DevelopmentTeam = 8TW9V9HVES;
@@ -946,11 +1079,30 @@
 				E5F7C48F260FC5300095684F /* BeeSwiftIntents */,
 				E57BE6DF2655EBD900BA540B /* BeeKit */,
 				E57BE6E72655EBDF00BA540B /* BeeKitTests */,
+				9B5860FC2CE4963E00079A1C /* BeeminderWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		9B5860FB2CE4963E00079A1C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9B037D502CE80290008C25BD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A12E694B1BD3EF0200AB94C2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5DF493924DC69A200260560 /* Config.swift.sample in Resources */,
+				A12E69541BD3EF0200AB94C2 /* MainInterface.storyboard in Resources */,
+				A1D853311EB3E0A300FC75DE /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A196CB121AE4142E00B90A3E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1002,6 +1154,18 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		9B5860F92CE4963E00079A1C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9B037D532CE80290008C25BD /* BeeminderGoalCountdownWidget.swift in Sources */,
+				9B037D542CE80290008C25BD /* BeeminderGoalListWidget.swift in Sources */,
+				9B037D552CE80290008C25BD /* BeeminderPledgedTodayWidget.swift in Sources */,
+				9B037D572CE80290008C25BD /* BeeminderWidgetBundle.swift in Sources */,
+				9B037D582CE80290008C25BD /* BeeminderWidgetConfigurationIntents.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A196CB101AE4142E00B90A3E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1136,6 +1300,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		9B93301E2CE55C7F00720B19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9B5860FC2CE4963E00079A1C /* BeeminderWidgetExtension */;
+			targetProxy = 9B93301D2CE55C7F00720B19 /* PBXContainerItemProxy */;
+		};
+		9B9330222CE55D0400720B19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E57BE6DF2655EBD900BA540B /* BeeKit */;
+			targetProxy = 9B9330212CE55D0400720B19 /* PBXContainerItemProxy */;
+		};
 		A196CB2E1AE4142F00B90A3E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A196CB131AE4142E00B90A3E /* BeeSwift */;
@@ -1174,6 +1348,89 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		9B5861132CE4964400079A1C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BeeminderWidget/BeeminderWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 50;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 8TW9V9HVES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BeeminderWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BeeminderWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Beeminder. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeminderWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9B5861142CE4964400079A1C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BeeminderWidget/BeeminderWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 50;
+				DEVELOPMENT_TEAM = 8TW9V9HVES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BeeminderWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BeeminderWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Beeminder. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.beeminder.beeminder.BeeminderWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		A196CB341AE4142F00B90A3E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1705,6 +1962,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		9B5861162CE4964400079A1C /* Build configuration list for PBXNativeTarget "BeeminderWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9B5861132CE4964400079A1C /* Debug */,
+				9B5861142CE4964400079A1C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A196CB0F1AE4142E00B90A3E /* Build configuration list for PBXProject "BeeSwift" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
