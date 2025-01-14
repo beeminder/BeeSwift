@@ -381,32 +381,6 @@ class GalleryViewController: UIViewController,
         self.didUpdateGoals()
     }
     
-    static private var preferredSort: [NSSortDescriptor] {
-        let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String ?? Constants.urgencyGoalSortString
-        
-        switch selectedGoalSort {
-        case Constants.nameGoalSortString:
-            return [
-                NSSortDescriptor(keyPath: \Goal.slug, ascending: true),
-                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
-            ]
-        case Constants.recentDataGoalSortString:
-            return [
-                NSSortDescriptor(keyPath: \Goal.lastTouch, ascending: true),
-                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
-            ]
-        case Constants.pledgeGoalSortString:
-            return [
-                NSSortDescriptor(keyPath: \Goal.pledge, ascending: true),
-                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
-            ]
-        default:
-            return [
-                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
-            ]
-        }
-    }
-    
     func updateFilteredGoals() {
         if let searchText = searchBar.text, !searchText.isEmpty {
             self.fetchedResultsController.fetchRequest.predicate = NSPredicate(format: "slug contains[cd] %@", searchText)
@@ -538,5 +512,33 @@ extension GalleryViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let goal = fetchedResultsController.object(at: indexPath)
         self.openGoal(goal)
+    }
+}
+
+private extension GalleryViewController {
+    static private var preferredSort: [NSSortDescriptor] {
+        let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String ?? Constants.urgencyGoalSortString
+        
+        switch selectedGoalSort {
+        case Constants.nameGoalSortString:
+            return [
+                NSSortDescriptor(keyPath: \Goal.slug, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
+        case Constants.recentDataGoalSortString:
+            return [
+                NSSortDescriptor(keyPath: \Goal.lastTouch, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
+        case Constants.pledgeGoalSortString:
+            return [
+                NSSortDescriptor(keyPath: \Goal.pledge, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
+        default:
+            return [
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
+        }
     }
 }
