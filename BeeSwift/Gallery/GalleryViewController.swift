@@ -19,7 +19,6 @@ import BeeKit
 
 
 class GalleryViewController: UIViewController,
-                             UICollectionViewDelegate,
                              UISearchBarDelegate,
                              SFSafariViewControllerDelegate,
                              NSFetchedResultsControllerDelegate {
@@ -441,11 +440,6 @@ class GalleryViewController: UIViewController,
         self.navigationItem.leftBarButtonItem = searchItem
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let goal = fetchedResultsController.object(at: indexPath)
-        self.openGoal(goal)
-    }
-    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         // After a rotation or other size change the optimal width for our cells may have changed.
         coordinator.animate(alongsideTransition: { _ in }, completion: { _ in
@@ -537,5 +531,12 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: 320, height: section == 0 && self.filteredGoals.count > 0 ? 5 : 0)
+    }
+}
+
+extension GalleryViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let goal = fetchedResultsController.object(at: indexPath)
+        self.openGoal(goal)
     }
 }
