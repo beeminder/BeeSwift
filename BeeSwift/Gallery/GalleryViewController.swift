@@ -482,7 +482,7 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
         let minimumWidth: CGFloat = 320
         let itemSpacing = self.collectionViewLayout.minimumInteritemSpacing
         
-        let availableWidth = self.collectionView.frame.width - self.collectionView.contentInset.left - self.collectionView.contentInset.right
+        let availableWidth = collectionView.frame.width - collectionView.contentInset.left - collectionView.contentInset.right
         
 
         // Calculate how many cells could fit at the minimum width, rounding down (as we can't show a fractional cell)
