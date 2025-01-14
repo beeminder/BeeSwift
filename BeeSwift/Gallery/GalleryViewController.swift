@@ -37,16 +37,80 @@ class GalleryViewController: UIViewController,
     private let goalManager: GoalManager
     private let healthStoreManager: HealthStoreManager
 
-    let stackView = UIStackView()
-    let collectionContainer = UIView()
-    var collectionView :UICollectionView?
-    var collectionViewLayout :UICollectionViewFlowLayout?
-    private let freshnessIndicator = FreshnessIndicatorView()
-    let deadbeatView = UIView()
-    let outofdateView = UIView()
-    let noGoalsLabel = BSLabel()
-    let outofdateLabel = BSLabel()
-    let searchBar = UISearchBar()
+    private lazy var stackView: UIStackView = {
+            let stackView = UIStackView()
+            stackView.axis = .vertical
+            stackView.alignment = .fill
+            stackView.distribution = .fill
+            stackView.spacing = 0
+            stackView.insetsLayoutMarginsFromSafeArea = true
+            return stackView
+        }()
+
+    private lazy var collectionContainer = UIView()
+
+    private lazy var collectionView: UICollectionView = {
+           let collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout)
+           collectionView.backgroundColor = .systemBackground
+           collectionView.alwaysBounceVertical = true
+           collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
+           return collectionView
+       }()
+
+    private lazy var collectionViewLayout = UICollectionViewFlowLayout()
+    private lazy var freshnessIndicator = FreshnessIndicatorView()
+
+    private lazy var deadbeatView = UIView()
+    private lazy var outofdateView: UIView = {
+        let outofdateView = UIView()
+        outofdateView.accessibilityIdentifier = "outofdateView"
+        outofdateView.backgroundColor = UIColor.Beeminder.gray
+        outofdateView.isHidden = true
+        return outofdateView
+    }()
+    
+    private lazy var noGoalsLabel: BSLabel = {
+        let noGoalsLabel = BSLabel()
+        noGoalsLabel.accessibilityIdentifier = "noGoalsLabel"
+        noGoalsLabel.text = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
+        noGoalsLabel.textAlignment = .center
+        noGoalsLabel.numberOfLines = 0
+        noGoalsLabel.isHidden = true
+        // When shown this label should fill all remaining space so it is centered on the screen.
+        noGoalsLabel.setContentHuggingPriority(UILayoutPriority(UILayoutPriority.defaultLow.rawValue - 10), for: .vertical)
+        return noGoalsLabel
+    }()
+    
+    private lazy var outofdateLabel: BSLabel = {
+        let outofdateLabel = BSLabel()
+        outofdateLabel.accessibilityIdentifier = "outofdateLabel"
+        outofdateLabel.textColor = UIColor.Beeminder.red
+        outofdateLabel.numberOfLines = 0
+        outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
+        outofdateLabel.textAlignment = .center
+        return outofdateLabel
+    }()
+    
+    private lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.accessibilityIdentifier = "searchBar"
+        searchBar.delegate = self
+        searchBar.placeholder = "Filter goals by slug"
+        searchBar.isHidden = true
+        searchBar.showsCancelButton = true
+        return searchBar
+    }()
+    
+    private lazy var deadbeatLabel: BSLabel = {
+        let deadbeatLabel = BSLabel()
+        deadbeatLabel.accessibilityIdentifier = "deadbeatLabel"
+        deadbeatLabel.textColor = UIColor.Beeminder.red
+        deadbeatLabel.numberOfLines = 0
+        deadbeatLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(13)
+        deadbeatLabel.text = "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
+        return deadbeatLabel
+    }()
+
 
     
     private enum Section: CaseIterable {
@@ -93,44 +157,34 @@ class GalleryViewController: UIViewController,
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
-
-        self.view.addSubview(stackView)
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.distribution = .fill
-        stackView.spacing = 0
-        stackView.insetsLayoutMarginsFromSafeArea = true
+        
+        self.view.addSubview(self.stackView)
         stackView.snp.makeConstraints { (make) -> Void in
             make.top.left.right.equalToSuperview()
             make.bottom.equalTo(stackView.keyboardLayoutGuide.snp.top)
         }
         
-        configureCollectionView()
         configureDataSource()
-        
         
         self.view.backgroundColor = .systemBackground
         self.title = "Goals"
         
-        let item = UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
-        self.navigationItem.rightBarButtonItem = item
+        self.navigationItem.leftBarButtonItems = [
+            UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
+        ]
+        self.navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
+        ]
+
         
         stackView.addArrangedSubview(self.freshnessIndicator)
         self.updateLastUpdatedLabel()
         Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GalleryViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
         stackView.addArrangedSubview(self.deadbeatView)
-        self.deadbeatView.accessibilityIdentifier = "deadbeatView"
-        self.deadbeatView.backgroundColor = UIColor.Beeminder.gray
         updateDeadbeatVisibility()
 
-        let deadbeatLabel = BSLabel()
-        self.deadbeatView.addSubview(deadbeatLabel)
-        deadbeatLabel.accessibilityIdentifier = "deadbeatLabel"
-        deadbeatLabel.textColor = UIColor.Beeminder.red
-        deadbeatLabel.numberOfLines = 0
-        deadbeatLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(13)
-        deadbeatLabel.text = "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
+        self.deadbeatView.addSubview(self.deadbeatLabel)
         deadbeatLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(3)
             make.bottom.equalTo(-3)
@@ -139,17 +193,9 @@ class GalleryViewController: UIViewController,
         }
         self.deadbeatView.isHidden = true
         
-        stackView.addArrangedSubview(self.outofdateView)
-        self.outofdateView.accessibilityIdentifier = "outofdateView"
-        self.outofdateView.backgroundColor = UIColor.Beeminder.gray
-        self.outofdateView.isHidden = true
+        self.stackView.addArrangedSubview(self.outofdateView)
 
         self.outofdateView.addSubview(self.outofdateLabel)
-        self.outofdateLabel.accessibilityIdentifier = "outofdateLabel"
-        self.outofdateLabel.textColor = UIColor.Beeminder.red
-        self.outofdateLabel.numberOfLines = 0
-        self.outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
-        self.outofdateLabel.textAlignment = .center
         self.outofdateLabel.snp.makeConstraints { (make) in
             make.top.equalTo(3)
             make.bottom.equalTo(-3)
@@ -157,37 +203,24 @@ class GalleryViewController: UIViewController,
             make.right.equalTo(-10)
         }
         
-        stackView.addArrangedSubview(self.searchBar)
-        self.searchBar.accessibilityIdentifier = "searchBar"
-        self.searchBar.delegate = self
-        self.searchBar.placeholder = "Filter goals by slug"
-        self.searchBar.isHidden = true
-        self.searchBar.showsCancelButton = true
-
-        stackView.addArrangedSubview(self.collectionContainer)
-
-        self.collectionContainer.addSubview(self.collectionView!)
-        self.collectionView!.delegate = self
+        self.stackView.addArrangedSubview(self.searchBar)
+        self.stackView.addArrangedSubview(self.collectionContainer)
         
-        self.collectionView?.snp.makeConstraints { (make) in
+        self.collectionContainer.addSubview(self.collectionView)
+        self.collectionView.delegate = self
+        
+        self.collectionView.snp.makeConstraints { (make) in
             make.top.bottom.equalTo(collectionContainer)
             make.left.right.equalTo(collectionContainer.safeAreaLayoutGuide)
         }
 
-        self.collectionView?.refreshControl = {
+        self.collectionView.refreshControl = {
             let refreshControl = UIRefreshControl()
             refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControl.Event.valueChanged)
             return refreshControl
         }()
 
-        stackView.addArrangedSubview(self.noGoalsLabel)
-        self.noGoalsLabel.accessibilityIdentifier = "noGoalsLabel"
-        self.noGoalsLabel.text = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
-        self.noGoalsLabel.textAlignment = .center
-        self.noGoalsLabel.numberOfLines = 0
-        self.noGoalsLabel.isHidden = true
-        // When shown this label should fill all remaining space so it is centered on the screen.
-        self.noGoalsLabel.setContentHuggingPriority(UILayoutPriority(UILayoutPriority.defaultLow.rawValue - 10), for: .vertical)
+        self.stackView.addArrangedSubview(self.noGoalsLabel)
 
         self.updateGoals()
         self.fetchGoals()
@@ -211,14 +244,14 @@ class GalleryViewController: UIViewController,
                 case .UpdateRequired:
                     self.outofdateView.isHidden = false
                     self.outofdateLabel.text = "This version of the Beeminder app is no longer supported.\n Please update to the newest version in the App Store."
-                    self.collectionView?.isHidden = true
+                    self.collectionView.isHidden = true
                 case .UpdateSuggested:
                     self.outofdateView.isHidden = false
                     self.outofdateLabel.text = "There is a new version of the Beeminder app in the App Store.\nPlease update when you have a moment."
-                    self.collectionView?.isHidden = false
+                    self.collectionView.isHidden = false
                 case .UpToDate:
                     self.outofdateView.isHidden = true
-                    self.collectionView?.isHidden = false
+                    self.collectionView.isHidden = false
                 }
             } catch let error as VersionError {
                 logger.error("Error checking for current version: \(error)")
@@ -232,11 +265,11 @@ class GalleryViewController: UIViewController,
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.collectionView!.snp.remakeConstraints { make in
+        self.collectionView.snp.remakeConstraints { make in
             make.top.equalTo(self.searchBar.snp.bottom)
             make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
-            make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
+            make.bottom.equalTo(self.collectionView.keyboardLayoutGuide.snp.top)
         }
     }
     
@@ -339,7 +372,7 @@ class GalleryViewController: UIViewController,
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alert, animated: true, completion: nil)
                 }
-                self.collectionView?.refreshControl?.endRefreshing()
+                self.collectionView.refreshControl?.endRefreshing()
                 MBProgressHUD.hide(for: self.view, animated: true)
             }
         }
@@ -393,7 +426,7 @@ class GalleryViewController: UIViewController,
     
     @objc func didUpdateGoals() {
         self.setupHealthKit()
-        self.collectionView?.refreshControl?.endRefreshing()
+        self.collectionView.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
@@ -411,9 +444,10 @@ class GalleryViewController: UIViewController,
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let minimumWidth: CGFloat = 320
-
-        let availableWidth = self.collectionView!.frame.width - self.collectionView!.contentInset.left - self.collectionView!.contentInset.right
-        let itemSpacing = self.collectionViewLayout!.minimumInteritemSpacing
+        let itemSpacing = self.collectionViewLayout.minimumInteritemSpacing
+        
+        let availableWidth = self.collectionView.frame.width - self.collectionView.contentInset.left - self.collectionView.contentInset.right
+        
 
         // Calculate how many cells could fit at the minimum width, rounding down (as we can't show a fractional cell)
         // We need to account for there being margin between cells, so there is 1 fewer margin than cell. We do this by
@@ -428,7 +462,7 @@ class GalleryViewController: UIViewController,
         // Calculate how wide a cell can be. This can be larger than our minimum width because we
         // may have rounded down the number of cells. E.g. if we could have fit 1.5 minimum width
         // cells we will only show 1, but can make it 50% wider than minimum
-        let targetWidth = (availableWidth + itemSpacing) / CGFloat(cellsWhileMaintainingMinimumWidth) -  self.collectionViewLayout!.minimumInteritemSpacing
+        let targetWidth = (availableWidth + itemSpacing) / CGFloat(cellsWhileMaintainingMinimumWidth) - itemSpacing
 
         return CGSize(width: targetWidth, height: 120)
     }
@@ -445,7 +479,7 @@ class GalleryViewController: UIViewController,
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         // After a rotation or other size change the optimal width for our cells may have changed.
         coordinator.animate(alongsideTransition: { _ in }, completion: { _ in
-            self.collectionViewLayout?.invalidateLayout()
+            self.collectionViewLayout.invalidateLayout()
         })
     }
 
@@ -474,21 +508,13 @@ class GalleryViewController: UIViewController,
         self.navigationController?.pushViewController(goalViewController, animated: true)
     }
     
-    private func configureCollectionView() {
-        self.collectionViewLayout = UICollectionViewFlowLayout()
-        self.collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout!)
-        self.collectionView?.backgroundColor = .systemBackground
-        self.collectionView?.alwaysBounceVertical = true
-        self.collectionView?.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
-    }
-    
     private func configureDataSource() {
         let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, NSManagedObjectID> { [weak self] cell, indexPath, goalObjectId in
             let goal = self?.fetchedResultsController.object(at: indexPath)
             cell.configure(with: goal)
         }
         
-        self.dataSource = .init(collectionView: collectionView!, cellProvider: { collectionView, indexPath, goalObjectId in
+        self.dataSource = .init(collectionView: collectionView, cellProvider: { collectionView, indexPath, goalObjectId in
             collectionView.dequeueConfiguredReusableCell(using: cellRegistration,
                                                          for: indexPath,
                                                          item: goalObjectId)
@@ -497,7 +523,7 @@ class GalleryViewController: UIViewController,
             collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
         }
         
-        self.collectionView?.dataSource = dataSource
+        self.collectionView.dataSource = dataSource
     }
     
     // MARK: - SFSafariViewControllerDelegate
