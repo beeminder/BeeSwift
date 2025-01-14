@@ -314,8 +314,11 @@ class GalleryViewController: UIViewController {
     }
     
     func updateDeadbeatVisibility() {
-        let isKnownDeadbeat = currentUserManager.user(context: viewContext)?.deadbeat == true
-        self.deadbeatView.isHidden = !isKnownDeadbeat
+        self.deadbeatView.isHidden = !isUserKnownDeadbeat
+    }
+    
+    private var isUserKnownDeadbeat: Bool {
+        currentUserManager.user(context: viewContext)?.deadbeat == true
     }
     
     @objc func updateLastUpdatedLabel() {
