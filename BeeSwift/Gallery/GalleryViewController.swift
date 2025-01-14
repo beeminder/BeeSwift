@@ -18,12 +18,9 @@ import CoreData
 import BeeKit
 
 
-class GalleryViewController: UIViewController,
-                             UISearchBarDelegate,
-                             SFSafariViewControllerDelegate,
-                             NSFetchedResultsControllerDelegate {
+class GalleryViewController: UIViewController {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
-
+    
     public enum NotificationName {
         public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
     }
@@ -34,30 +31,30 @@ class GalleryViewController: UIViewController,
     private let versionManager: VersionManager
     private let goalManager: GoalManager
     private let healthStoreManager: HealthStoreManager
-
+    
     private lazy var stackView: UIStackView = {
-            let stackView = UIStackView()
-            stackView.axis = .vertical
-            stackView.alignment = .fill
-            stackView.distribution = .fill
-            stackView.spacing = 0
-            stackView.insetsLayoutMarginsFromSafeArea = true
-            return stackView
-        }()
-
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.spacing = 0
+        stackView.insetsLayoutMarginsFromSafeArea = true
+        return stackView
+    }()
+    
     private lazy var collectionContainer = UIView()
-
+    
     private lazy var collectionView: UICollectionView = {
-           let collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout)
-           collectionView.backgroundColor = .systemBackground
-           collectionView.alwaysBounceVertical = true
-           collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
-           return collectionView
-       }()
-
+        let collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout)
+        collectionView.backgroundColor = .systemBackground
+        collectionView.alwaysBounceVertical = true
+        collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
+        return collectionView
+    }()
+    
     private lazy var collectionViewLayout = UICollectionViewFlowLayout()
     private lazy var freshnessIndicator = FreshnessIndicatorView()
-
+    
     private lazy var deadbeatView = UIView()
     private lazy var outofdateView: UIView = {
         let outofdateView = UIView()
@@ -108,15 +105,15 @@ class GalleryViewController: UIViewController,
         deadbeatLabel.text = "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
         return deadbeatLabel
     }()
-
-
+    
+    
     
     private enum Section: CaseIterable {
         case main
     }
     
     private typealias GallerySnapshot = NSDiffableDataSourceSnapshot<GalleryViewController.Section, NSManagedObjectID>
-
+    
     private var lastUpdated: Date?
     private var dataSource: UICollectionViewDiffableDataSource<Section, NSManagedObjectID>!
     
@@ -148,7 +145,7 @@ class GalleryViewController: UIViewController,
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -173,7 +170,6 @@ class GalleryViewController: UIViewController,
         self.navigationItem.rightBarButtonItems = [
             UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.settingsButtonPressed))
         ]
-
         
         stackView.addArrangedSubview(self.freshnessIndicator)
         self.updateLastUpdatedLabel()
@@ -181,7 +177,7 @@ class GalleryViewController: UIViewController,
         
         stackView.addArrangedSubview(self.deadbeatView)
         updateDeadbeatVisibility()
-
+        
         self.deadbeatView.addSubview(self.deadbeatLabel)
         deadbeatLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(3)
@@ -192,7 +188,7 @@ class GalleryViewController: UIViewController,
         self.deadbeatView.isHidden = true
         
         self.stackView.addArrangedSubview(self.outofdateView)
-
+        
         self.outofdateView.addSubview(self.outofdateLabel)
         self.outofdateLabel.snp.makeConstraints { (make) in
             make.top.equalTo(3)
@@ -211,18 +207,18 @@ class GalleryViewController: UIViewController,
             make.top.bottom.equalTo(collectionContainer)
             make.left.right.equalTo(collectionContainer.safeAreaLayoutGuide)
         }
-
+        
         self.collectionView.refreshControl = {
             let refreshControl = UIRefreshControl()
             refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControl.Event.valueChanged)
             return refreshControl
         }()
-
+        
         self.stackView.addArrangedSubview(self.noGoalsLabel)
-
+        
         self.updateGoals()
         self.fetchGoals()
-
+        
         if currentUserManager.signedIn(context: viewContext) {
             UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
                 print(success)
@@ -233,11 +229,11 @@ class GalleryViewController: UIViewController,
                 }
             }
         }
-
+        
         Task { @MainActor in
             do {
                 let updateState = try await versionManager.updateState()
-
+                
                 switch updateState {
                 case .UpdateRequired:
                     self.outofdateView.isHidden = false
@@ -320,19 +316,6 @@ class GalleryViewController: UIViewController,
         self.present(signInVC, animated: true, completion: nil)
     }
     
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        updateGoals()
-    }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        self.searchBar.resignFirstResponder()
-        updateGoals()
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        self.toggleSearchBar()
-    }
-
     func updateDeadbeatVisibility() {
         let isKnownDeadbeat = currentUserManager.user(context: viewContext)?.deadbeat == true
         self.deadbeatView.isHidden = !isKnownDeadbeat
@@ -343,7 +326,7 @@ class GalleryViewController: UIViewController,
         
         self.freshnessIndicator.update(with: lastUpdated)
     }
-
+    
     
     func setupHealthKit() {
         Task { @MainActor in
@@ -354,13 +337,13 @@ class GalleryViewController: UIViewController,
             }
         }
     }
-
+    
     @objc func fetchGoals() {
         Task { @MainActor in
             if self.filteredGoals.isEmpty {
                 MBProgressHUD.showAdded(to: self.view, animated: true)
             }
-
+            
             do {
                 try await goalManager.refreshGoals()
                 self.updateGoals()
@@ -375,7 +358,7 @@ class GalleryViewController: UIViewController,
             }
         }
     }
-
+    
     func updateGoals() {
         self.updateFilteredGoals()
         self.didUpdateGoals()
@@ -420,11 +403,11 @@ class GalleryViewController: UIViewController,
             self.collectionViewLayout.invalidateLayout()
         })
     }
-
+    
     @objc func openGoalFromNotification(_ notification: Notification) {
         guard let notif = notification as NSNotification? else { return }
         var matchingGoal: Goal?
-
+        
         if let identifier = notif.userInfo?["identifier"] as? String {
             if let url = URL(string: identifier), let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
                 matchingGoal = viewContext.object(with: objectID) as? Goal
@@ -463,17 +446,33 @@ class GalleryViewController: UIViewController,
         
         self.collectionView.dataSource = dataSource
     }
-    
-    // MARK: - SFSafariViewControllerDelegate
-    
+}
+
+extension GalleryViewController: NSFetchedResultsControllerDelegate {
+    func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: true)
+    }
+}
+
+extension GalleryViewController: SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
         self.fetchGoals()
     }
+}
+
+extension GalleryViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        updateGoals()
+    }
     
-    // MARK: - NSFetchedResultsControllerDelegate
-    func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
-        dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: true)
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        self.searchBar.resignFirstResponder()
+        updateGoals()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.toggleSearchBar()
     }
 }
 
@@ -484,7 +483,7 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
         
         let availableWidth = collectionView.frame.width - collectionView.contentInset.left - collectionView.contentInset.right
         
-
+        
         // Calculate how many cells could fit at the minimum width, rounding down (as we can't show a fractional cell)
         // We need to account for there being margin between cells, so there is 1 fewer margin than cell. We do this by
         // imagining there is some non-showed spacing after the final cell. For example with wo cells:
@@ -494,12 +493,12 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
             (availableWidth + itemSpacing) /
             (minimumWidth + itemSpacing)
         )
-
+        
         // Calculate how wide a cell can be. This can be larger than our minimum width because we
         // may have rounded down the number of cells. E.g. if we could have fit 1.5 minimum width
         // cells we will only show 1, but can make it 50% wider than minimum
         let targetWidth = (availableWidth + itemSpacing) / CGFloat(cellsWhileMaintainingMinimumWidth) - itemSpacing
-
+        
         return CGSize(width: targetWidth, height: 120)
     }
     
