@@ -218,12 +218,11 @@ class GalleryViewController: UIViewController {
         self.fetchGoals()
         
         if currentUserManager.signedIn(context: viewContext) {
-            UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
-                print(success)
-                if success {
-                    DispatchQueue.main.async {
-                        UIApplication.shared.registerForRemoteNotifications()
-                    }
+            UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { [weak self] (success, error) in
+                self?.logger.info("Requested person’s authorization at GalleryVC load to allow local and remote notifications; successful? \(success)")
+                guard success else { return }
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
                 }
             }
         }
@@ -298,7 +297,7 @@ class GalleryViewController: UIViewController {
         self.fetchGoals()
         
         UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { [weak self] (success, error) in
-            self?.logger.info("Requested person’s authorization to allow local and remote notifications; successful? \(success)")
+            self?.logger.info("Requested person’s authorization upon signin to allow local and remote notifications; successful? \(success)")
         }
     }
     
