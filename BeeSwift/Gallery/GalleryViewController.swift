@@ -357,7 +357,7 @@ class GalleryViewController: UIViewController,
 
     @objc func fetchGoals() {
         Task { @MainActor in
-            if self.filteredGoals.count == 0 {
+            if self.filteredGoals.isEmpty {
                 MBProgressHUD.showAdded(to: self.view, animated: true)
             }
 
@@ -403,7 +403,7 @@ class GalleryViewController: UIViewController,
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
-        if self.filteredGoals.count == 0 {
+        if self.filteredGoals.isEmpty {
             self.noGoalsLabel.isHidden = false
             self.collectionContainer.isHidden = true
         } else {
