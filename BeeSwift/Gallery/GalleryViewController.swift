@@ -19,7 +19,6 @@ import BeeKit
 
 
 class GalleryViewController: UIViewController,
-                             UICollectionViewDelegateFlowLayout,
                              UICollectionViewDelegate,
                              UISearchBarDelegate,
                              SFSafariViewControllerDelegate,
@@ -442,35 +441,6 @@ class GalleryViewController: UIViewController,
         self.navigationItem.leftBarButtonItem = searchItem
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let minimumWidth: CGFloat = 320
-        let itemSpacing = self.collectionViewLayout.minimumInteritemSpacing
-        
-        let availableWidth = self.collectionView.frame.width - self.collectionView.contentInset.left - self.collectionView.contentInset.right
-        
-
-        // Calculate how many cells could fit at the minimum width, rounding down (as we can't show a fractional cell)
-        // We need to account for there being margin between cells, so there is 1 fewer margin than cell. We do this by
-        // imagining there is some non-showed spacing after the final cell. For example with wo cells:
-        // | available width in parent | spacing |
-        // |  cell  | spacing |  cell  | spacing |
-        let cellsWhileMaintainingMinimumWidth = Int(
-            (availableWidth + itemSpacing) /
-            (minimumWidth + itemSpacing)
-        )
-
-        // Calculate how wide a cell can be. This can be larger than our minimum width because we
-        // may have rounded down the number of cells. E.g. if we could have fit 1.5 minimum width
-        // cells we will only show 1, but can make it 50% wider than minimum
-        let targetWidth = (availableWidth + itemSpacing) / CGFloat(cellsWhileMaintainingMinimumWidth) - itemSpacing
-
-        return CGSize(width: targetWidth, height: 120)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: 320, height: section == 0 && self.filteredGoals.count > 0 ? 5 : 0)
-    }
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let goal = fetchedResultsController.object(at: indexPath)
         self.openGoal(goal)
@@ -536,5 +506,36 @@ class GalleryViewController: UIViewController,
     // MARK: - NSFetchedResultsControllerDelegate
     func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: true)
+    }
+}
+
+extension GalleryViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let minimumWidth: CGFloat = 320
+        let itemSpacing = self.collectionViewLayout.minimumInteritemSpacing
+        
+        let availableWidth = self.collectionView.frame.width - self.collectionView.contentInset.left - self.collectionView.contentInset.right
+        
+
+        // Calculate how many cells could fit at the minimum width, rounding down (as we can't show a fractional cell)
+        // We need to account for there being margin between cells, so there is 1 fewer margin than cell. We do this by
+        // imagining there is some non-showed spacing after the final cell. For example with wo cells:
+        // | available width in parent | spacing |
+        // |  cell  | spacing |  cell  | spacing |
+        let cellsWhileMaintainingMinimumWidth = Int(
+            (availableWidth + itemSpacing) /
+            (minimumWidth + itemSpacing)
+        )
+
+        // Calculate how wide a cell can be. This can be larger than our minimum width because we
+        // may have rounded down the number of cells. E.g. if we could have fit 1.5 minimum width
+        // cells we will only show 1, but can make it 50% wider than minimum
+        let targetWidth = (availableWidth + itemSpacing) / CGFloat(cellsWhileMaintainingMinimumWidth) - itemSpacing
+
+        return CGSize(width: targetWidth, height: 120)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        return CGSize(width: 320, height: section == 0 && self.filteredGoals.count > 0 ? 5 : 0)
     }
 }
