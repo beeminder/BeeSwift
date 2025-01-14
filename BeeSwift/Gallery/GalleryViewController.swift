@@ -18,7 +18,7 @@ import CoreData
 import BeeKit
 
 
-class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UISearchBarDelegate, SFSafariViewControllerDelegate {
+class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UISearchBarDelegate, SFSafariViewControllerDelegate, NSFetchedResultsControllerDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
 
     // Dependencies
@@ -40,20 +40,22 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let searchBar = UISearchBar()
     var lastUpdated: Date?
     
-    var goals : [Goal] = []
-    var filteredGoals : [Goal] = []
-    
     private enum Section: CaseIterable {
         case main
     }
     
-    private var dataSource: UICollectionViewDiffableDataSource<Section, Goal>!
+    private typealias GallerySnapshot = NSDiffableDataSourceSnapshot<GalleryViewController.Section, NSManagedObjectID>
+    
+    private var dataSource: UICollectionViewDiffableDataSource<Section, NSManagedObjectID>!
     
     public enum NotificationName {
         public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
     }
-
-    init(currentUserManager: CurrentUserManager, 
+    
+    private let fetchedResultsController: NSFetchedResultsController<Goal>!
+    private var fetchRequest: NSFetchRequest<Goal>?
+    
+    init(currentUserManager: CurrentUserManager,
          viewContext: NSManagedObjectContext,
          versionManager: VersionManager,
          goalManager: GoalManager,
@@ -63,7 +65,16 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.versionManager = versionManager
         self.goalManager = goalManager
         self.healthStoreManager = healthStoreManager
+        
+        let fetchRequest = Goal.fetchRequest() as! NSFetchRequest<Goal>
+        fetchRequest.sortDescriptors = Self.preferredSort
+        fetchedResultsController = .init(fetchRequest: fetchRequest,
+                                         managedObjectContext: viewContext,
+                                         sectionNameKeyPath: nil, cacheName: nil)
+        self.fetchRequest = fetchRequest
+        
         super.init(nibName: nil, bundle: nil)
+        fetchedResultsController.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -76,7 +87,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsFetchedNotification), name: GoalManager.NotificationName.goalsUpdated, object: nil)
 
         self.view.addSubview(stackView)
         stackView.axis = .vertical
@@ -208,6 +218,9 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 logger.error("Error checking for current version: \(error)")
             }
         }
+        
+        try? fetchedResultsController.performFetch()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -219,8 +232,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(self.collectionView!.keyboardLayoutGuide.snp.top)
         }
-        
-        applySnapshot()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -231,13 +242,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         } else {
             self.updateGoals()
             self.fetchGoals()
-        }
-    }
-    
-    @objc func handleGoalsFetchedNotification() {
-        Task {
-            self.lastUpdated = await goalManager.goalsFetchedAt
-            self.updateGoals()
         }
     }
     
@@ -253,7 +257,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.searchBar.isHidden.toggle()
         
         if searchBar.isHidden {
-            self.searchBar.text = ""
+            self.searchBar.text = nil
             self.searchBar.resignFirstResponder()
             self.updateGoals()
         } else {
@@ -271,9 +275,6 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func handleSignOut() {
-        self.goals = []
-        self.filteredGoals = []
-        self.applySnapshot()
         if self.presentedViewController != nil {
             if type(of: self.presentedViewController!) == SignInViewController.self { return }
         }
@@ -319,7 +320,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
 
     @objc func fetchGoals() {
         Task { @MainActor in
-            if self.goals.count == 0 {
+            if self.filteredGoals.count == 0 {
                 MBProgressHUD.showAdded(to: self.view, animated: true)
             }
 
@@ -334,70 +335,64 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 }
                 self.collectionView?.refreshControl?.endRefreshing()
                 MBProgressHUD.hide(for: self.view, animated: true)
-                self.applySnapshot()
             }
         }
     }
 
     func updateGoals() {
-        let goals = goalManager.staleGoals(context: viewContext) ?? []
-        self.goals = sortedGoals(goals)
         self.updateFilteredGoals()
         self.didUpdateGoals()
     }
-
-    func sortedGoals(_ goals: any Sequence<Goal>) -> [Goal] {
+    
+    static private var preferredSort: [NSSortDescriptor] {
         let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String ?? Constants.urgencyGoalSortString
         
         switch selectedGoalSort {
         case Constants.nameGoalSortString:
-            return goals.sorted(using: [SortDescriptor(\.slug),
-                                        SortDescriptor(\.urgencyKey)])
+            return [
+                NSSortDescriptor(keyPath: \Goal.slug, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
         case Constants.recentDataGoalSortString:
-            return goals.sorted(using: [SortDescriptor(\.lastTouch, order: .reverse),
-                                        SortDescriptor(\.urgencyKey)])
+            return [
+                NSSortDescriptor(keyPath: \Goal.lastTouch, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
         case Constants.pledgeGoalSortString:
-            return goals.sorted(using: [SortDescriptor(\.pledge, order: .reverse),
-                                        SortDescriptor(\.urgencyKey)])
+            return [
+                NSSortDescriptor(keyPath: \Goal.pledge, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
         default:
-            return goals.sorted(using: SortDescriptor(\.urgencyKey))
-        }
-    }
-
-    func updateFilteredGoals() {
-        let searchText = searchBar.text ?? ""
-
-        if searchText == "" {
-            self.filteredGoals = self.goals
-        } else {
-            self.filteredGoals = self.goals.filter { (goal) -> Bool in
-                return goal.slug.lowercased().contains(searchText.lowercased())
-            }
+            return [
+                NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
+            ]
         }
     }
     
-    private func applySnapshot() {
-        var goalsToShow: [Goal] {
-            guard versionManager.lastChckedUpdateState() != .UpdateRequired else { return [] }
-            return filteredGoals
+    func updateFilteredGoals() {
+        if let searchText = searchBar.text, !searchText.isEmpty {
+            self.fetchedResultsController.fetchRequest.predicate = NSPredicate(format: "slug contains[cd] %@", searchText)
+        } else {
+            self.fetchedResultsController.fetchRequest.predicate = nil
         }
         
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Goal>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(goalsToShow, toSection: .main)
-        snapshot.reconfigureItems(goalsToShow)
-        dataSource.apply(snapshot, animatingDifferences: true)
+        self.fetchedResultsController.fetchRequest.sortDescriptors = Self.preferredSort
+        try? self.fetchedResultsController.performFetch()
     }
-
+    
+    private var filteredGoals: [Goal] {
+        fetchedResultsController.fetchedObjects ?? []
+    }
+    
     @objc func didUpdateGoals() {
         self.setupHealthKit()
         self.collectionView?.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
-        self.applySnapshot()
         self.updateDeadbeatVisibility()
         self.lastUpdated = Date()
         self.updateLastUpdatedLabel()
-        if self.goals.count == 0 {
+        if self.filteredGoals.count == 0 {
             self.noGoalsLabel.isHidden = false
             self.collectionContainer.isHidden = true
         } else {
@@ -433,12 +428,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: 320, height: section == 0 && self.goals.count > 0 ? 5 : 0)
+        return CGSize(width: 320, height: section == 0 && self.filteredGoals.count > 0 ? 5 : 0)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let row = (indexPath as NSIndexPath).row
-        if row < self.filteredGoals.count { self.openGoal(self.filteredGoals[row]) }
+        let goal = fetchedResultsController.object(at: indexPath)
+        self.openGoal(goal)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -458,7 +453,7 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
         }
         else if let slug = notif.userInfo?["slug"] as? String {
-            matchingGoal = self.goals.filter({ (goal) -> Bool in
+            matchingGoal = self.filteredGoals.filter({ (goal) -> Bool in
                 return goal.slug == slug
             }).last
         }
@@ -482,18 +477,20 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     private func configureDataSource() {
-        let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, Goal> { cell, indexPath, goal in
+        let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, NSManagedObjectID> { [weak self] cell, indexPath, goalObjectId in
+            let goal = self?.fetchedResultsController.object(at: indexPath)
             cell.configure(with: goal)
         }
         
-        self.dataSource = .init(collectionView: collectionView!, cellProvider: { collectionView, indexPath, goal in
+        self.dataSource = .init(collectionView: collectionView!, cellProvider: { collectionView, indexPath, goalObjectId in
             collectionView.dequeueConfiguredReusableCell(using: cellRegistration,
                                                          for: indexPath,
-                                                         item: goal)
+                                                         item: goalObjectId)
         })
         dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
             collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
         }
+        
         self.collectionView?.dataSource = dataSource
     }
     
@@ -502,5 +499,10 @@ class GalleryViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
         self.fetchGoals()
+    }
+    
+    // MARK: - NSFetchedResultsControllerDelegate
+    func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: true)
     }
 }
