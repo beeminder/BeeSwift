@@ -106,8 +106,6 @@ class GalleryViewController: UIViewController {
         return deadbeatLabel
     }()
     
-    
-    
     private enum Section: CaseIterable {
         case main
     }
