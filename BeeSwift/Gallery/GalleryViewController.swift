@@ -299,8 +299,8 @@ class GalleryViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
         self.fetchGoals()
         
-        UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { (success, error) in
-            print(success)
+        UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { [weak self] (success, error) in
+            self?.logger.info("Requested person’s authorization to allow local and remote notifications; successful? \(success)")
         }
     }
     
