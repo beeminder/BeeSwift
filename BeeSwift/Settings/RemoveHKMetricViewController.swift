@@ -16,9 +16,13 @@ class RemoveHKMetricViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RemoveHKMetricViewController")
     
     let goal: Goal
+    private let requestManager: RequestManager
+    private let goalManager: GoalManager
     
-    init(goal: Goal) {
+    init(goal: Goal, requestManager: RequestManager, goalManager: GoalManager) {
         self.goal = goal
+        self.requestManager = requestManager
+        self.goalManager = goalManager
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -82,9 +86,9 @@ class RemoveHKMetricViewController: UIViewController {
 
         Task { @MainActor in
             do {
-                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
+                let _ = try await self.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
 
-                try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
+                try await self.goalManager.refreshGoal(self.goal.objectID)
 
                 hud.mode = .customView
                 hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))

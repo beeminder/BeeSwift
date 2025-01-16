@@ -16,6 +16,18 @@ class SettingsViewController: UIViewController {
     
     fileprivate var tableView = UITableView()
     fileprivate let cellReuseIdentifier = "settingsTableViewCell"
+    private let currentUserManager: CurrentUserManager
+    private let persistentContainer: NSPersistentContainer
+    
+    init(currentUserManager: CurrentUserManager, persistentContainer: NSPersistentContainer) {
+        self.currentUserManager = currentUserManager
+        self.persistentContainer = persistentContainer
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         self.title = "Settings"
@@ -81,7 +93,7 @@ class SettingsViewController: UIViewController {
     
     func signOutButtonPressed() {
         Task { @MainActor in
-            try! await ServiceLocator.currentUserManager.signOut()
+            try! await currentUserManager.signOut()
             self.navigationController?.popViewController(animated: true)
         }
     }
@@ -155,7 +167,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             cell.imageName = "app.badge"
             cell.accessoryType = .disclosureIndicator
         case 2:
-            let user = ServiceLocator.currentUserManager.user(context: ServiceLocator.persistentContainer.viewContext)
+            let user = currentUserManager.user(context: persistentContainer.viewContext)
             let timezone = user?.timezone ?? "Unknown"
             cell.title = "Time zone: \(timezone)"
             cell.imageName = "clock"
