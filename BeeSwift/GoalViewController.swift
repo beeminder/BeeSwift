@@ -691,9 +691,9 @@ private extension GoalViewController {
             .map { offset, element in
                 var color: UIColor {
                     switch offset {
-                    case 0: return .systemOrange
-                    case 1: return .systemBlue
-                    case 2: return .systemGreen
+                    case 0: return UIColor.Beeminder.SafetyBuffer.orange
+                    case 1: return UIColor.Beeminder.SafetyBuffer.blue
+                    case 2: return UIColor.Beeminder.SafetyBuffer.green
                     default: return .label.withAlphaComponent(0.8)
                     }
                 }
