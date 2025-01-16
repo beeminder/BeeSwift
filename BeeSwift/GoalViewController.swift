@@ -164,7 +164,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
         }
         self.dueByLabel.textAlignment = .center
-        self.dueByLabel.font = UIFont.preferredFont(forTextStyle: .headline)
+        self.dueByLabel.font = UIFont.beeminder.defaultBoldFont.withSize(Constants.defaultFontSize)
         self.dueByLabel.textColor = .label.withAlphaComponent(0.8)
 
         self.addChild(self.datapointTableController)
