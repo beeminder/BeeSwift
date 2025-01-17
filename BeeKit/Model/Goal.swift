@@ -96,8 +96,7 @@ public class Goal: NSManagedObject {
         urgencyKey: String,
         useDefaults: Bool,
         won: Bool,
-        yAxis: String,
-        dueBy: String?
+        yAxis: String
     ) {
         let entity = NSEntityDescription.entity(forEntityName: "Goal", in: context)!
         super.init(entity: entity, insertInto: context)
