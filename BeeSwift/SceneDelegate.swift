@@ -17,7 +17,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             viewContext: ServiceLocator.persistentContainer.viewContext,
             versionManager: ServiceLocator.versionManager,
             goalManager: ServiceLocator.goalManager,
-            healthStoreManager: ServiceLocator.healthStoreManager
+            healthStoreManager: ServiceLocator.healthStoreManager,
+            requestManager: ServiceLocator.requestManager
         )
         
         let navigationController = UINavigationController(rootViewController: galleryVC)
