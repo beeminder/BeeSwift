@@ -330,6 +330,10 @@
 		E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		9BB602A42D3A6D1900756109 /* DueBy */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DueBy; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		A196CB111AE4142E00B90A3E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -557,6 +561,7 @@
 		E46070F62B3FEFB300305DB4 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				9BB602A42D3A6D1900756109 /* DueBy */,
 				E41286EC2A62DF330093D598 /* BeeminderModel.xcdatamodeld */,
 				E46070F72B3FEFD400305DB4 /* BeeminderPersistentContainer.swift */,
 				E46070EE2B36A4D900305DB4 /* User.swift */,
@@ -774,6 +779,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				9BB602A42D3A6D1900756109 /* DueBy */,
 			);
 			name = BeeKit;
 			packageProductDependencies = (
