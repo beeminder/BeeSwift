@@ -14,15 +14,19 @@ class ConfigureHKMetricViewController : UIViewController {
 
     private let goal: Goal
     private let metric: HealthKitMetric
+    private let healthStoreManager: HealthStoreManager
+    private let requestManager: RequestManager
 
     let previewDescriptionLabel = BSLabel()
     fileprivate var datapointTableController = DatapointTableViewController()
     fileprivate let noDataFoundLabel = BSLabel()
     let saveButton = BSButton()
 
-    init(goal: Goal, metric : HealthKitMetric) {
+    init(goal: Goal, metric: HealthKitMetric, healthStoreManager: HealthStoreManager, requestManager: RequestManager) {
         self.goal = goal
         self.metric = metric
+        self.healthStoreManager = healthStoreManager
+        self.requestManager = requestManager
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -100,7 +104,7 @@ class ConfigureHKMetricViewController : UIViewController {
 
         self.datapointTableController.hhmmformat = self.goal.hhmmFormat
         Task { @MainActor in
-            let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline, healthStore: ServiceLocator.healthStoreManager.healthStore)
+            let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline, healthStore: self.healthStoreManager.healthStore)
             self.datapointTableController.datapoints = datapoints
 
             if datapoints.isEmpty {
@@ -115,7 +119,7 @@ class ConfigureHKMetricViewController : UIViewController {
                 }
             }
 
-            let units = try await self.metric.units(healthStore: ServiceLocator.healthStoreManager.healthStore)
+            let units = try await self.metric.units(healthStore: self.healthStoreManager.healthStore)
             unitsLabel.attributedText = {
                 let text = NSMutableAttributedString()
                 text.append(NSMutableAttributedString(string: "This metric reports results as ", attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]))
@@ -142,7 +146,7 @@ class ConfigureHKMetricViewController : UIViewController {
             self.goal.autodata = "apple"
 
             do {
-                try await ServiceLocator.healthStoreManager.ensureUpdatesRegularly(goalID: self.goal.objectID)
+                try await self.healthStoreManager.ensureUpdatesRegularly(goalID: self.goal.objectID)
             } catch {
                 logger.error("Error setting up goal \(error)")
                 hud.hide(animated: true)
@@ -157,7 +161,7 @@ class ConfigureHKMetricViewController : UIViewController {
             params = ["ii_params" : ["name" : "apple", "metric" : self.goal.healthKitMetric!]]
 
             do {
-                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
+                let _ = try await self.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
                 hud.mode = .customView
                 hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))
                 hud.hide(animated: true, afterDelay: 2)

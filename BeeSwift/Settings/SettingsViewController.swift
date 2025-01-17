@@ -9,6 +9,7 @@
 import Foundation
 import MBProgressHUD
 import HealthKit
+import CoreData
 
 import BeeKit
 
@@ -16,6 +17,25 @@ class SettingsViewController: UIViewController {
     
     fileprivate var tableView = UITableView()
     fileprivate let cellReuseIdentifier = "settingsTableViewCell"
+    private let currentUserManager: CurrentUserManager
+    private let viewContext: NSManagedObjectContext
+    private let goalManager: GoalManager
+    private let requestManager: RequestManager
+    
+    init(currentUserManager: CurrentUserManager,
+         viewContext: NSManagedObjectContext,
+         goalManager: GoalManager,
+         requestManager: RequestManager) {
+        self.currentUserManager = currentUserManager
+        self.viewContext = viewContext
+        self.goalManager = goalManager
+        self.requestManager = requestManager
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         self.title = "Settings"
@@ -81,7 +101,7 @@ class SettingsViewController: UIViewController {
     
     func signOutButtonPressed() {
         Task { @MainActor in
-            try! await ServiceLocator.currentUserManager.signOut()
+            try! await currentUserManager.signOut()
             self.navigationController?.popViewController(animated: true)
         }
     }
@@ -155,7 +175,7 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             cell.imageName = "app.badge"
             cell.accessoryType = .disclosureIndicator
         case 2:
-            let user = ServiceLocator.currentUserManager.user(context: ServiceLocator.persistentContainer.viewContext)
+            let user = currentUserManager.user(context: viewContext)
             let timezone = user?.timezone ?? "Unknown"
             cell.title = "Time zone: \(timezone)"
             cell.imageName = "clock"
@@ -174,7 +194,11 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         var section = indexPath.section
         if HKHealthStore.isHealthDataAvailable() {
             if section == 0 {
-                self.navigationController?.pushViewController(HealthKitConfigViewController(), animated: true)
+                self.navigationController?.pushViewController(HealthKitConfigViewController(
+                    goalManager: goalManager,
+                    viewContext: viewContext,
+                    healthStoreManager: ServiceLocator.healthStoreManager,
+                    requestManager: requestManager), animated: true)
                 return
             }
             section = section - 1
@@ -184,7 +208,11 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
         case 0:
             self.navigationController?.pushViewController(ChooseGoalSortViewController(), animated: true)
         case 1:
-            self.navigationController?.pushViewController(ConfigureNotificationsViewController(), animated: true)
+            self.navigationController?.pushViewController(ConfigureNotificationsViewController(
+                goalManager: goalManager,
+                viewContext: viewContext,
+                currentUserManager: currentUserManager,
+                requestManager: requestManager), animated: true)
         case 2:
             print("nothing")
         case 3:
