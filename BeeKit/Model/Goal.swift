@@ -63,11 +63,8 @@ public class Goal: NSManagedObject {
     @objc(removeRecentData:)
     @NSManaged public func removeFromRecentData(_ values: Set<DataPoint>)
     
-    @NSManaged public var dueByTableData: String?
+    @NSManaged public var dueByTable: DueByTable
     
-    public var dueBy: [String: BeeminderDueByEntry] {
-        self.loadDueByTable() ?? [:]
-    }
     
     
 
@@ -128,7 +125,6 @@ public class Goal: NSManagedObject {
         self.useDefaults = useDefaults
         self.won = won
         self.yAxis = yAxis
-        self.dueByTableData = dueByTableData
 
         lastModifiedLocal = Date()
     }
@@ -181,12 +177,7 @@ public class Goal: NSManagedObject {
         self.useDefaults = json["use_defaults"].boolValue
         self.won = json["won"].boolValue
         self.yAxis = json["yaxis"].stringValue
-        self.dueByTableData = {
-            let entries = json.dictionaryValue["dueby"]?.dictionary?.compactMapValues(BeeminderDueByEntry.init)
-            ?? json.dictionary?.mapValues(BeeminderDueByEntry.init)
-            ?? [:]
-            return Goal.createDueByTableData(entries)
-        }()
+        self.dueByTable = DueByTable(dueByJson: json["dueby"])
 
 
         // Replace recent data with results from server
@@ -202,32 +193,44 @@ public class Goal: NSManagedObject {
     }
 }
 
-// Helper methods for conversion of due by table
-extension Goal {
-    static func createDueByTableData(_ dictionary: [String: BeeminderDueByEntry]) -> String? {
+@objc(DueByTableValueTransformer)
+public class DueByTableValueTransformer: ValueTransformer {
+    public override class func transformedValueClass() -> AnyClass {
+        return NSData.self
+    }
+    
+    public override func transformedValue(_ value: Any?) -> Any? {
+        guard let dueByTable = value as? DueByTable else { return nil }
         do {
-            let data = try JSONEncoder().encode(dictionary)
-            return String(data: data, encoding: .utf8)
+            return try JSONEncoder().encode(dueByTable)
         } catch {
-            print("Error encoding dictionary: \(error)")
+            print("Error encoding due by table: \(error)")
         }
         return nil
     }
-    
-    func loadDueByTable() -> [String: BeeminderDueByEntry]? {
-        guard let data = dueByTableData?.data(using: .utf8) else { return nil }
-        
+
+    public override func reverseTransformedValue(_ value: Any?) -> Any? {
+        guard let data = (value as? Data) else { return nil }
         do {
-            let dictionary = try JSONDecoder().decode([String: BeeminderDueByEntry].self, from: data)
-            return dictionary
+            return try JSONDecoder().decode(DueByTable.self, from: data)
         } catch {
             print("Error decoding dictionary: \(error)")
             return nil
         }
     }
+    
+    public static var name: NSValueTransformerName {
+        .init(rawValue: String(describing: DueByTableValueTransformer.self))
+    }
+    
+    public static func register() {
+        ValueTransformer.setValueTransformer(DueByTableValueTransformer(),
+                                             forName: DueByTableValueTransformer.name)
+    }
 }
 
-public class DueByTable: NSObject, NSCoding, Codable {
+@objc(DueByTable)
+public class DueByTable: NSObject, NSSecureCoding, Codable {
     public private(set) var entries: [String: BeeminderDueByEntry]
     
     private enum Key: String {
@@ -237,6 +240,8 @@ public class DueByTable: NSObject, NSCoding, Codable {
     public init(entries: [String: BeeminderDueByEntry]) {
         self.entries = entries
     }
+    
+    public static var supportsSecureCoding: Bool { true }
     
     public func encode(with coder: NSCoder) {
         coder.encode(entries, forKey: Key.entries.rawValue)
@@ -248,9 +253,17 @@ public class DueByTable: NSObject, NSCoding, Codable {
         self.init(entries: entries)
     }
     
+    convenience init(dueByJson: JSON?) {
+        var entries: [String : BeeminderDueByEntry] {
+            dueByJson?.dictionary?.compactMapValues(BeeminderDueByEntry.init)
+            ?? dueByJson?.dictionary?.mapValues(BeeminderDueByEntry.init)
+            ?? [:]
+        }
+        self.init(entries: entries)
+    }
 }
 
-public class BeeminderDueByEntry: NSObject, NSCoding, Codable {
+public class BeeminderDueByEntry: NSObject, NSSecureCoding, Codable {
     public let total: Double
     public let delta: Double
     public let formatted_total_for_beedroid: String
@@ -270,6 +283,8 @@ public class BeeminderDueByEntry: NSObject, NSCoding, Codable {
         self.formatted_total_for_beedroid = formatted_total_for_beedroid
         self.formatted_delta_for_beedroid = formatted_delta_for_beedroid
     }
+    
+    public static var supportsSecureCoding: Bool { true }
 
     private enum Key: String {
         case total
@@ -290,8 +305,8 @@ public class BeeminderDueByEntry: NSObject, NSCoding, Codable {
         let delta = coder.decodeDouble(forKey: Key.delta.rawValue)
         
         guard
-            let formatted_total_for_beedroid = coder.decodeObject(forKey: Key.formattedTotalForBeedroid.rawValue) as? String,
-            let formatted_delta_for_beedroid = coder.decodeObject(forKey: Key.formattedDeltaForBeedroid.rawValue) as? String
+            let formatted_total_for_beedroid = coder.decodeObject(of: NSString.self, forKey: Key.formattedTotalForBeedroid.rawValue) as? String,
+            let formatted_delta_for_beedroid = coder.decodeObject(of: NSString.self, forKey: Key.formattedDeltaForBeedroid.rawValue) as? String
         else { return nil }
         
         self.init(total: total,
