@@ -9,6 +9,7 @@
 import UIKit
 import SwiftyJSON
 import OSLog
+import CoreData
 
 import BeeKit
 
@@ -20,6 +21,22 @@ class ConfigureNotificationsViewController: UIViewController {
     fileprivate var cellReuseIdentifier = "configureNotificationsTableViewCell"
     fileprivate var tableView = UITableView()
     fileprivate let settingsButton = BSButton()
+    private let goalManager: GoalManager
+    private let viewContext: NSManagedObjectContext
+    private let currentUserManager: CurrentUserManager
+    private let requestManager: RequestManager
+    
+    init(goalManager: GoalManager, viewContext: NSManagedObjectContext, currentUserManager: CurrentUserManager, requestManager: RequestManager) {
+        self.goalManager = goalManager
+        self.viewContext = viewContext
+        self.currentUserManager = currentUserManager
+        self.requestManager = requestManager
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -94,8 +111,8 @@ class ConfigureNotificationsViewController: UIViewController {
 
             MBProgressHUD.showAdded(to: self.view, animated: true)
             do {
-                try await ServiceLocator.goalManager.refreshGoals()
-                self.goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext)?.sorted(by: { $0.slug < $1.slug }) ?? []
+                try await self.goalManager.refreshGoals()
+                self.goals = self.goalManager.staleGoals(context: self.viewContext)?.sorted(by: { $0.slug < $1.slug }) ?? []
                 self.lastFetched = Date()
                 MBProgressHUD.hide(for: self.view, animated: true)
             } catch {
@@ -180,17 +197,30 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
         
         switch indexPath.section {
         case 0:
-            editNotificationsVC = EditDefaultNotificationsViewController()
+            editNotificationsVC = EditDefaultNotificationsViewController(
+                currentUserManager: currentUserManager,
+                requestManager: requestManager,
+                goalManager: goalManager,
+                viewContext: viewContext)
         case 1:
             let goal = self.goalsUsingDefaultNotifications[indexPath.row]
-            editNotificationsVC = EditGoalNotificationsViewController(goal: goal)
+            editNotificationsVC = EditGoalNotificationsViewController(
+                goal: goal,
+                currentUserManager: currentUserManager,
+                requestManager: requestManager,
+                goalManager: goalManager,
+                viewContext: viewContext)
         default:
             let goal = self.goalsUsingNonDefaultNotifications[indexPath.row]
-            editNotificationsVC = EditGoalNotificationsViewController(goal: goal)
+            editNotificationsVC = EditGoalNotificationsViewController(
+                goal: goal,
+                currentUserManager: currentUserManager,
+                requestManager: requestManager,
+                goalManager: goalManager,
+                viewContext: viewContext)
         }
         
         self.navigationController?.pushViewController(editNotificationsVC, animated: true)
         self.tableView.deselectRow(at: indexPath, animated: true)
     }
 }
-

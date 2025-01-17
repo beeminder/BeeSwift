@@ -7,13 +7,16 @@
 //
 
 import Foundation
+import CoreData
+import OSLog
+
 import SwiftyJSON
 import MBProgressHUD
 import AlamofireImage
 import SafariServices
 import Intents
+
 import BeeKit
-import OSLog
 
 class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTableViewControllerDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     let elementSpacing = 10
@@ -23,6 +26,11 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalViewController")
 
     let goal: Goal
+    private let healthStoreManager: HealthStoreManager
+    private let goalManager: GoalManager
+    private let requestManager: RequestManager
+    private let currentUserManager: CurrentUserManager
+    private let viewContext: NSManagedObjectContext
     
     private let timeElapsedView = FreshnessIndicatorView()
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
@@ -44,8 +52,18 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     // date corresponding to the datapoint to be created
     private var date: Date = Date()
     
-    init(goal: Goal) {
+    init(goal: Goal, 
+         healthStoreManager: HealthStoreManager,
+         goalManager: GoalManager,
+         requestManager: RequestManager,
+         currentUserManager: CurrentUserManager,
+         viewContext: NSManagedObjectContext) {
         self.goal = goal
+        self.healthStoreManager = healthStoreManager
+        self.goalManager = goalManager
+        self.requestManager = requestManager
+        self.currentUserManager = currentUserManager
+        self.viewContext = viewContext
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -325,7 +343,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     @objc func timerButtonPressed() {
-        let controller = TimerViewController(goal: self.goal)
+        let controller = TimerViewController(goal: self.goal, requestManager: self.requestManager)
         controller.modalPresentationStyle = .fullScreen
         self.present(controller, animated: true, completion: nil)
     }
@@ -334,11 +352,11 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         Task { @MainActor in
             do {
                 if self.goal.isLinkedToHealthKit {
-                    try await ServiceLocator.healthStoreManager.updateWithRecentData(goalID: self.goal.objectID, days: 7)
+                    try await self.healthStoreManager.updateWithRecentData(goalID: self.goal.objectID, days: 7)
                 } else if goal.isDataProvidedAutomatically {
                     // Don't force a refresh for manual goals. While doing so is harmless, it queues the goal which means we show a
                     // lemniscate for a few seconds, making the refresh slower.
-                    try await ServiceLocator.goalManager.forceAutodataRefresh(self.goal)
+                    try await self.goalManager.forceAutodataRefresh(self.goal)
                 }
                 try await self.updateGoalAndInterface()
             } catch {
@@ -389,7 +407,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         guard !self.goal.hideDataEntry else { return }
         guard let existingDatapoint = datapoint as? DataPoint else { return }
 
-        let editDatapointViewController = EditDatapointViewController(goal: goal, datapoint: existingDatapoint)
+        let editDatapointViewController = EditDatapointViewController(goal: goal, datapoint: existingDatapoint, requestManager: self.requestManager, goalManager: self.goalManager)
         let navigationController = UINavigationController(rootViewController: editDatapointViewController)
         navigationController.modalPresentationStyle = .formSheet
         self.present(navigationController, animated: true, completion: nil)
@@ -484,7 +502,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
 
             do {
-                let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: self.urtext, slug: self.goal.slug)
+                let _ = try await self.requestManager.addDatapoint(urtext: self.urtext, slug: self.goal.slug)
                 self.commentTextField.text = ""
 
                 try await updateGoalAndInterface()
@@ -502,7 +520,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             }
 
             do {
-                try await ServiceLocator.goalManager.refreshGoals()
+                try await self.goalManager.refreshGoals()
             } catch {
                 logger.error("Failed up refresh goals after posting: \(error)")
             }
@@ -510,7 +528,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
 
     func updateGoalAndInterface() async throws {
-        try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
+        try await self.goalManager.refreshGoal(self.goal.objectID)
         updateInterfaceToMatchGoal()
     }
 
@@ -603,9 +621,9 @@ private extension GoalViewController {
         case goalStatistics
         case goalSettings
         
-        func makeLink(username: String, goalName: String) -> URL? {
+        func makeLink(username: String, goalName: String, currentUserManager: CurrentUserManager) -> URL? {
             guard
-                let accessToken = ServiceLocator.currentUserManager.accessToken
+                let accessToken = currentUserManager.accessToken
             else { return nil }
             
             let destinationUrl: URL
@@ -648,7 +666,7 @@ private extension GoalViewController {
         let actions = options.map { option in
             UIAction(title: option.title, image: UIImage(systemName: option.imageSystemName), handler: { [weak self] _ in
                 guard let self else { return }
-                guard let link = option.action.makeLink(username: self.goal.owner.username, goalName: self.goal.slug) else { return }
+                guard let link = option.action.makeLink(username: self.goal.owner.username, goalName: self.goal.slug, currentUserManager: self.currentUserManager) else { return }
             
                 let safariVC = SFSafariViewController(url: link)
                 safariVC.delegate = self
