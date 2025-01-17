@@ -23,10 +23,14 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     fileprivate var datePicker = InlineDatePicker()
     fileprivate var valueField = UITextField()
     fileprivate var commentField = UITextField()
+    private let requestManager: RequestManager
+    private let goalManager: GoalManager
 
-    init(goal: Goal, datapoint: DataPoint) {
+    init(goal: Goal, datapoint: DataPoint, requestManager: RequestManager, goalManager: GoalManager) {
         self.goal = goal
         self.datapoint = datapoint
+        self.requestManager = requestManager
+        self.goalManager = goalManager
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -213,8 +217,8 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
                 let params = [
                     "urtext": self.urtext()
                 ]
-                let _ = try await ServiceLocator.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: params)
-                try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
+                let _ = try await self.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json", parameters: params)
+                try await self.goalManager.refreshGoal(self.goal.objectID)
 
                 hud.mode = .customView
                 hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))
@@ -235,8 +239,8 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             hud.mode = .indeterminate
 
             do {
-                let _ = try await ServiceLocator.requestManager.delete(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json")
-                try await ServiceLocator.goalManager.refreshGoal(self.goal.objectID)
+                let _ = try await self.requestManager.delete(url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json")
+                try await self.goalManager.refreshGoal(self.goal.objectID)
 
                 hud.mode = .customView
                 hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))

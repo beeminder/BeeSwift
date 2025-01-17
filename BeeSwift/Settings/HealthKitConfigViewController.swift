@@ -3,14 +3,16 @@
 //  BeeSwift
 //
 //  Created by Andy Brett on 3/14/17.
-//  Copyright 2017 APB. All rights reserved.
+//  Copyright © 2017 APB. All rights reserved.
 //
 
-import UIKit
+import CoreData
 import HealthKit
-import UserNotifications
-import SwiftyJSON
 import OSLog
+import UIKit
+import UserNotifications
+
+import SwiftyJSON
 
 import BeeKit
 
@@ -21,6 +23,25 @@ class HealthKitConfigViewController: UIViewController {
     var goals : [Goal] = []
     let cellReuseIdentifier = "healthKitConfigTableViewCell"
     let margin = 12
+    private let goalManager: GoalManager
+    private let viewContext: NSManagedObjectContext
+    private let healthStoreManager: HealthStoreManager
+    private let requestManager: RequestManager
+    
+    init(goalManager: GoalManager,
+         viewContext: NSManagedObjectContext,
+         healthStoreManager: HealthStoreManager,
+         requestManager: RequestManager) {
+        self.goalManager = goalManager
+        self.viewContext = viewContext
+        self.healthStoreManager = healthStoreManager
+        self.requestManager = requestManager
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,7 +75,7 @@ class HealthKitConfigViewController: UIViewController {
     }
 
     func updateGoals() {
-        let goals = ServiceLocator.goalManager.staleGoals(context: ServiceLocator.persistentContainer.viewContext) ?? []
+        let goals = goalManager.staleGoals(context: viewContext) ?? []
         self.goals = goals.sorted { $0.slug < $1.slug }
     }
 
@@ -73,7 +94,7 @@ class HealthKitConfigViewController: UIViewController {
 
             MBProgressHUD.showAdded(to: self.view, animated: true)
             do {
-                try await ServiceLocator.goalManager.refreshGoals()
+                try await goalManager.refreshGoals()
                 updateGoals()
                 MBProgressHUD.hide(for: self.view, animated: true)
             } catch {
@@ -145,10 +166,16 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
         let goal = self.goalAt(indexPath)
         
         if !goal.isDataProvidedAutomatically {
-            let chooseHKMetricViewController = ChooseHKMetricViewController(goal: goal)
+            let chooseHKMetricViewController = ChooseHKMetricViewController(
+                goal: goal,
+                healthStoreManager: healthStoreManager,
+                requestManager: requestManager)
             self.navigationController?.pushViewController(chooseHKMetricViewController, animated: true)
         } else if goal.autodata == "apple" {
-            let controller = RemoveHKMetricViewController(goal: goal)
+            let controller = RemoveHKMetricViewController(
+                goal: goal,
+                requestManager: requestManager,
+                goalManager: goalManager)
             self.navigationController?.pushViewController(controller, animated: true)
         } else {
             let alert: UIAlertController = {

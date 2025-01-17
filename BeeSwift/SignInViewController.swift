@@ -20,6 +20,16 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
     var beeImageView = UIImageView()
     var signInButton = BSButton()
     var divider = UIView()
+    private let currentUserManager: CurrentUserManager
+    
+    init(currentUserManager: CurrentUserManager) {
+        self.currentUserManager = currentUserManager
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -138,7 +148,7 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
             }
 
             MBProgressHUD.showAdded(to: self.view, animated: true)
-            await ServiceLocator.currentUserManager.signInWithEmail(email, password: password)
+            await currentUserManager.signInWithEmail(email, password: password)
         }
     }
     
