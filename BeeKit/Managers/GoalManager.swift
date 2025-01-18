@@ -57,11 +57,6 @@ public actor GoalManager {
 
     /// Fetch and return the latest set of goals from the server
     public func refreshGoals() async throws {
-        guard let username = await currentUserManager.username else {
-            try await currentUserManager.signOut()
-            return
-        }
-
         guard let user = self.currentUserManager.user(context: modelContext) else { return }
         let goalsUnknown = user.goals.count == 0 || user.updatedAt.timeIntervalSince1970 == 0
 
@@ -75,14 +70,14 @@ public actor GoalManager {
             logger.notice("Goals unknown, doing full fetch")
             // We must fetch the user object first, and then fetch goals afterwards, to guarantee User.updated_at is
             // a safe timestamp for future fetches without losing data
-            userResponse = JSON(try await requestManager.get(url: "api/v1/users/\(username).json", parameters: nil)!)
-            goalResponse = JSON(try await requestManager.get(url: "api/v1/users/\(username)/goals.json", parameters: nil)!)
+            userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json")!)
+            goalResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}/goals.json")!)
 
             deleteMissingGoals = true
             deletedGoals = JSON(arrayLiteral: [])
         } else {
             logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
-            userResponse = JSON(try await requestManager.get(url: "api/v1/users/\(username).json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1])!)
+            userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1])!)
             goalResponse = userResponse["goals"]
 
             deleteMissingGoals = false
