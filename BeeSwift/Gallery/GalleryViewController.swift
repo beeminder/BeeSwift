@@ -19,6 +19,7 @@ import BeeKit
 
 
 class GalleryViewController: UIViewController {
+    private weak var coordinator: MainCoordinator?
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
     
     public enum NotificationName {
@@ -131,13 +132,15 @@ class GalleryViewController: UIViewController {
          versionManager: VersionManager,
          goalManager: GoalManager,
          healthStoreManager: HealthStoreManager,
-         requestManager: RequestManager) {
+         requestManager: RequestManager,
+         coordinator: MainCoordinator) {
         self.currentUserManager = currentUserManager
         self.viewContext = viewContext
         self.versionManager = versionManager
         self.goalManager = goalManager
         self.healthStoreManager = healthStoreManager
         self.requestManager = requestManager
+        self.coordinator = coordinator
         
         let fetchRequest = Goal.fetchRequest() as! NSFetchRequest<Goal>
         fetchRequest.sortDescriptors = Self.preferredSort
@@ -159,10 +162,7 @@ class GalleryViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.navigateToGallery), name: GalleryViewController.NotificationName.navigateToGallery, object: nil)
-
+        
         self.view.addSubview(self.stackView)
         stackView.snp.makeConstraints { (make) -> Void in
             make.top.left.right.equalToSuperview()
@@ -277,20 +277,8 @@ class GalleryViewController: UIViewController {
         self.updateGoals()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        if !currentUserManager.signedIn(context: viewContext) {
-            let signInVC = SignInViewController(currentUserManager: currentUserManager)
-            signInVC.modalPresentationStyle = .fullScreen
-            self.present(signInVC, animated: true, completion: nil)
-        }
-    }
-    
     @objc func settingsButtonPressed() {
-        self.navigationController?.pushViewController(SettingsViewController(
-            currentUserManager: currentUserManager,
-            viewContext: viewContext,
-            goalManager: goalManager,
-            requestManager: requestManager), animated: true)
+        coordinator?.showSettings()
     }
     
     @objc func searchButtonPressed() {
@@ -316,21 +304,11 @@ class GalleryViewController: UIViewController {
     }
     
     @objc func handleSignIn() {
-        self.dismiss(animated: true, completion: nil)
         self.fetchGoals()
         
         UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) { [weak self] (success, error) in
-            self?.logger.info("Requested person’s authorization upon signin to allow local and remote notifications; successful? \(success)")
+            self?.logger.info("Requested person's authorization upon signin to allow local and remote notifications; successful? \(success)")
         }
-    }
-    
-    @objc func handleSignOut() {
-        if self.presentedViewController != nil {
-            if type(of: self.presentedViewController!) == SignInViewController.self { return }
-        }
-        let signInVC = SignInViewController(currentUserManager: currentUserManager)
-        signInVC.modalPresentationStyle = .fullScreen
-        self.present(signInVC, animated: true, completion: nil)
     }
     
     func updateDeadbeatVisibility() {
@@ -426,39 +404,8 @@ class GalleryViewController: UIViewController {
         })
     }
     
-    @objc func openGoalFromNotification(_ notification: Notification) {
-        guard let notif = notification as NSNotification? else { return }
-        var matchingGoal: Goal?
-        
-        if let identifier = notif.userInfo?["identifier"] as? String {
-            if let url = URL(string: identifier), let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
-                matchingGoal = viewContext.object(with: objectID) as? Goal
-            }
-        }
-        else if let slug = notif.userInfo?["slug"] as? String {
-            matchingGoal = self.filteredGoals.filter({ (goal) -> Bool in
-                return goal.slug == slug
-            }).last
-        }
-        if matchingGoal != nil {
-            self.navigationController?.popToRootViewController(animated: false)
-            self.openGoal(matchingGoal!)
-        }
-    }
-    
-    @objc func navigateToGallery() {
-        self.navigationController?.popToRootViewController(animated: true)
-    }
-    
     func openGoal(_ goal: Goal) {
-        let goalViewController = GoalViewController(
-            goal: goal,
-            healthStoreManager: healthStoreManager,
-            goalManager: goalManager,
-            requestManager: requestManager,
-            currentUserManager: currentUserManager,
-            viewContext: viewContext)
-        self.navigationController?.pushViewController(goalViewController, animated: true)
+        coordinator?.showGoal(goal)
     }
     
     private func configureDataSource() {

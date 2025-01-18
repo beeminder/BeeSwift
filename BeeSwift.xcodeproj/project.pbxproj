@@ -13,6 +13,7 @@
 		8646D674ADB842B797E2F98D /* AddDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8646D674ADB842B797E2F98E /* AddDataError.swift */; };
 		9B65F2322CFA6427009674A7 /* DeeplinkGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */; };
 		9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */; };
+		9BD4C4E82D45A09F00B03E99 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */; };
 		9BFB27E92CFE770F0056D10D /* FreshnessIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */; };
 		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
 		A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */; };
@@ -202,6 +203,7 @@
 		8646D674ADB842B797E2F98E /* AddDataError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataError.swift; sourceTree = "<group>"; };
 		9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkGenerator.swift; sourceTree = "<group>"; };
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
 		9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshnessIndicatorView.swift; sourceTree = "<group>"; };
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
 		A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveHKMetricViewController.swift; sourceTree = "<group>"; };
@@ -445,6 +447,7 @@
 		A196CB161AE4142E00B90A3E /* BeeSwift */ = {
 			isa = PBXGroup;
 			children = (
+				9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */,
 				9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */,
 				A1E618E51E79E01900D8ED93 /* Cells */,
 				E46071002B43DA7100305DB4 /* Gallery */,
@@ -955,6 +958,7 @@
 				A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */,
 				E412DAE12B86A8F70099E483 /* GoalImageView.swift in Sources */,
 				A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */,
+				9BD4C4E82D45A09F00B03E99 /* MainCoordinator.swift in Sources */,
 				A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */,
 				E46DC80F2AA58DF20059FDFE /* PullToRefreshHint.swift in Sources */,
 				A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */,
