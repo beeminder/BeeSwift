@@ -31,8 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             UIFont.beeminder.defaultFontPlain.withSize(20)]
         UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedString.Key.font : UIFont.beeminder.defaultFontPlain.withSize(18)], for: UIControl.State())
 
-        DueByTableValueTransformer.register()
-        
         IQKeyboardManager.shared.isEnabled = true
         
         if HKHealthStore.isHealthDataAvailable() {
