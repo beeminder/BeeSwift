@@ -22,7 +22,7 @@ public class DueByTable: NSObject, NSSecureCoding, Codable {
     }
     
     public required convenience init?(coder: NSCoder) {
-        let entries = coder.decodeObject(forKey: Key.entries.rawValue) as? [String: BeeminderDueByEntry] ?? [:]
+        let entries = coder.decodeObject(of: NSDictionary.self, forKey: Key.entries.rawValue) as? [String: BeeminderDueByEntry] ?? [:]
         
         self.init(entries: entries)
     }
