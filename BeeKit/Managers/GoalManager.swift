@@ -58,7 +58,7 @@ public actor GoalManager {
     /// Fetch and return the latest set of goals from the server
     public func refreshGoals() async throws {
         guard let user = self.currentUserManager.user(context: modelContext) else { return }
-        let goalsUnknown = user.goals.count == 0 || user.updatedAt.timeIntervalSince1970 == 0
+        let goalsUnknown = user.goals.count == 0 || user.updatedAt.timeIntervalSince1970 < 24*60*60
 
         let userResponse: JSON
         let goalResponse: JSON
@@ -76,8 +76,10 @@ public actor GoalManager {
             deleteMissingGoals = true
             deletedGoals = JSON(arrayLiteral: [])
         } else {
+            // TODO: Use old data to find deleted goals
+            let fudgeFactor: Double = 3 * 30 * 24 * 60 * 60
             logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
-            userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1])!)
+            userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1 - fudgeFactor])!)
             goalResponse = userResponse["goals"]
 
             deleteMissingGoals = false
@@ -89,11 +91,21 @@ public actor GoalManager {
         guard let user = modelContext.object(with: user.objectID) as? User else { return }
 
         user.updateToMatch(json: userResponse)
-        if deleteMissingGoals {
-            // TODO: Delete all missing goals
+
+        // For the incremental case, delete all goals marked as deleted
+        let deletedGoalIds = Set(deletedGoals.arrayValue.map { $0["id"].stringValue })
+        let goalsToDelete = user.goals.filter { deletedGoalIds.contains($0.id) }
+        for goal in goalsToDelete {
+            modelContext.delete(goal)
         }
-        for deletedGoal in deletedGoals.arrayValue {
-            // TODO: Delete goal
+
+        // For the non-incremental case, delete all goals which weren't in the response
+        if deleteMissingGoals, let goalsArray = goalResponse.array {
+            let allGoalIds = Set(goalsArray.map { $0["id"].stringValue })
+            let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
+            for goal in goalsToDelete {
+                modelContext.delete(goal)
+            }
         }
         self.updateGoalsFromJson(goalResponse)
 
@@ -145,11 +157,6 @@ public actor GoalManager {
 
         // Remove any deleted goals
         // FIXME: We need to consult the deleted goal array for this
-//        let allGoalIds = Set(responseGoals.map { $0["id"].stringValue })
-//        let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
-//        for goal in goalsToDelete {
-//            modelContext.delete(goal)
-//        }
     }
 
     private func performPostGoalUpdateBookkeeping() async {
