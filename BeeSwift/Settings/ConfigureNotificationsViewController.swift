@@ -25,12 +25,18 @@ class ConfigureNotificationsViewController: UIViewController {
     private let viewContext: NSManagedObjectContext
     private let currentUserManager: CurrentUserManager
     private let requestManager: RequestManager
+    private weak var coordinator: MainCoordinator?
     
-    init(goalManager: GoalManager, viewContext: NSManagedObjectContext, currentUserManager: CurrentUserManager, requestManager: RequestManager) {
+    init(goalManager: GoalManager,
+         viewContext: NSManagedObjectContext,
+         currentUserManager: CurrentUserManager,
+         requestManager: RequestManager,
+         coordinator: MainCoordinator) {
         self.goalManager = goalManager
         self.viewContext = viewContext
         self.currentUserManager = currentUserManager
         self.requestManager = requestManager
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -193,34 +199,19 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let editNotificationsVC: UIViewController
+        self.tableView.deselectRow(at: indexPath, animated: true)
         
         switch indexPath.section {
         case 0:
-            editNotificationsVC = EditDefaultNotificationsViewController(
-                currentUserManager: currentUserManager,
-                requestManager: requestManager,
-                goalManager: goalManager,
-                viewContext: viewContext)
+            coordinator?.showConfigureDefaultNotifications()
         case 1:
             let goal = self.goalsUsingDefaultNotifications[indexPath.row]
-            editNotificationsVC = EditGoalNotificationsViewController(
-                goal: goal,
-                currentUserManager: currentUserManager,
-                requestManager: requestManager,
-                goalManager: goalManager,
-                viewContext: viewContext)
-        default:
+            coordinator?.showConfigureNotificationsForGoal(goal)
+        case 2:
             let goal = self.goalsUsingNonDefaultNotifications[indexPath.row]
-            editNotificationsVC = EditGoalNotificationsViewController(
-                goal: goal,
-                currentUserManager: currentUserManager,
-                requestManager: requestManager,
-                goalManager: goalManager,
-                viewContext: viewContext)
+            coordinator?.showConfigureNotificationsForGoal(goal)
+        default:
+            break
         }
-        
-        self.navigationController?.pushViewController(editNotificationsVC, animated: true)
-        self.tableView.deselectRow(at: indexPath, animated: true)
     }
 }

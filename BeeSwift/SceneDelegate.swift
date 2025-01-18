@@ -7,12 +7,16 @@ import BeeKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    
+    private var coordinator: MainCoordinator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: .all))
 
-        let galleryVC = GalleryViewController(
+        let navigationController = UINavigationController()
+        self.coordinator = MainCoordinator(
+            navigationController: navigationController,
             currentUserManager: ServiceLocator.currentUserManager,
             viewContext: ServiceLocator.persistentContainer.viewContext,
             versionManager: ServiceLocator.versionManager,
@@ -21,13 +25,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             requestManager: ServiceLocator.requestManager
         )
         
-        let navigationController = UINavigationController(rootViewController: galleryVC)
-        navigationController.navigationBar.isTranslucent = false
-        navigationController.navigationBar.barStyle = .black
-        navigationController.navigationBar.tintColor = .white
-
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
+        
+        coordinator?.start()
     }
 }

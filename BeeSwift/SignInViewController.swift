@@ -21,9 +21,13 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
     var signInButton = BSButton()
     var divider = UIView()
     private let currentUserManager: CurrentUserManager
+    private weak var coordinator: MainCoordinator?
     
-    init(currentUserManager: CurrentUserManager) {
+    init(currentUserManager: CurrentUserManager,
+         coordinator: MainCoordinator?) {
         self.currentUserManager = currentUserManager
+        self.coordinator = coordinator
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -129,15 +133,20 @@ class SignInViewController : UIViewController, UITextFieldDelegate {
         return lackOfCredentials
     }
     
+    private var couldNotSignInAlertController: UIAlertController {
+        let controller = UIAlertController(title: "Could not sign in", message: "Invalid credentials", preferredStyle: .alert)
+        controller.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        return controller
+    }
+    
     @objc func handleFailedSignIn(_ notification : Notification) {
-        let failureAC = UIAlertController(title: "Could not sign in", message: "Invalid credentials", preferredStyle: .alert)
-        failureAC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-        self.present(failureAC, animated: true, completion: nil)
+        self.present(couldNotSignInAlertController, animated: true, completion: nil)
         MBProgressHUD.hide(for: self.view, animated: true)
     }
     
     @objc func handleSignedIn(_ notification : Notification) {
         MBProgressHUD.hide(for: self.view, animated: true)
+        coordinator?.start()
     }
     
     @objc func signInButtonPressed() {

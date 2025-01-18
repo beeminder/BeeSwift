@@ -21,15 +21,18 @@ class SettingsViewController: UIViewController {
     private let viewContext: NSManagedObjectContext
     private let goalManager: GoalManager
     private let requestManager: RequestManager
+    private weak var coordinator: MainCoordinator?
     
     init(currentUserManager: CurrentUserManager,
          viewContext: NSManagedObjectContext,
          goalManager: GoalManager,
-         requestManager: RequestManager) {
+         requestManager: RequestManager,
+         coordinator: MainCoordinator) {
         self.currentUserManager = currentUserManager
         self.viewContext = viewContext
         self.goalManager = goalManager
         self.requestManager = requestManager
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -108,7 +111,7 @@ class SettingsViewController: UIViewController {
 
     @objc
     func showLogsTapped() {
-        self.navigationController?.pushViewController(LogsViewController(), animated: true)
+        coordinator?.showLogs()
     }
     
     @objc private func fetchUser() {
@@ -128,45 +131,43 @@ class SettingsViewController: UIViewController {
 
 extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return UIView()
+        UIView()
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return UIView()
+        UIView()
     }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return CGFloat.leastNormalMagnitude
+        CGFloat.leastNormalMagnitude
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 20
+        20
     }
     func numberOfSections(in tableView: UITableView) -> Int {
-        return HKHealthStore.isHealthDataAvailable() ? 5 : 4
+        5
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var section = indexPath.section
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as? SettingsTableViewCell else { return UITableViewCell() }
-        if HKHealthStore.isHealthDataAvailable() {
-            if section == 0 {
-                cell.title = "Health app integration"
-                cell.imageName = "Health"
-                cell.accessoryType = .disclosureIndicator
-                return cell
-            }
-            section = section - 1
-        }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier, for: indexPath) as? SettingsTableViewCell
+        else { return UITableViewCell() }
         
-        switch section {
+
+        switch indexPath.section {
         case 0:
+            cell.title = "Health app integration"
+            cell.imageName = "Health"
+            cell.accessoryType = .disclosureIndicator
+            cell.isUserInteractionEnabled = HKHealthStore.isHealthDataAvailable()
+            return cell
+        case 1:
             let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String
             cell.title = "Sort goals by: \(selectedGoalSort ?? "")"
             cell.imageName = "arrow.up.arrow.down"
             cell.accessoryType = .disclosureIndicator
-        case 1:
+        case 2:
             UNUserNotificationCenter.current().getNotificationSettings { (settings) in
                 DispatchQueue.main.async {
                     cell.title = "Emergency notifications: \(settings.authorizationStatus == .authorized ? "on" : "off")"
@@ -174,13 +175,13 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
             }
             cell.imageName = "app.badge"
             cell.accessoryType = .disclosureIndicator
-        case 2:
+        case 3:
             let user = currentUserManager.user(context: viewContext)
             let timezone = user?.timezone ?? "Unknown"
             cell.title = "Time zone: \(timezone)"
             cell.imageName = "clock"
             cell.accessoryType = .none
-        case 3:
+        case 4:
             cell.title = "Sign out"
             cell.imageName = "rectangle.portrait.and.arrow.right"
             cell.accessoryType = .none
@@ -191,31 +192,16 @@ extension SettingsViewController : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        var section = indexPath.section
-        if HKHealthStore.isHealthDataAvailable() {
-            if section == 0 {
-                self.navigationController?.pushViewController(HealthKitConfigViewController(
-                    goalManager: goalManager,
-                    viewContext: viewContext,
-                    healthStoreManager: ServiceLocator.healthStoreManager,
-                    requestManager: requestManager), animated: true)
-                return
-            }
-            section = section - 1
-        }
-        
-        switch section {
-        case 0:
-            self.navigationController?.pushViewController(ChooseGoalSortViewController(), animated: true)
+        switch indexPath.section {
+        case 0 where HKHealthStore.isHealthDataAvailable():
+            coordinator?.showConfigureHealthKitIntegration()
         case 1:
-            self.navigationController?.pushViewController(ConfigureNotificationsViewController(
-                goalManager: goalManager,
-                viewContext: viewContext,
-                currentUserManager: currentUserManager,
-                requestManager: requestManager), animated: true)
+            coordinator?.showChooseGallerySortAlgorithm()
         case 2:
-            print("nothing")
+            coordinator?.showConfigureNotifications()
         case 3:
+            print("nothing")
+        case 4:
             self.signOutButtonPressed()
         default:
             break
