@@ -674,14 +674,7 @@ private extension GoalViewController {
 }
 
 
-private extension GoalViewController {
-    var dueByContainsSpecificAmounts: Bool {
-        goal.dueByTable.entries
-            .compactMap { $0.value.formatted_delta_for_beedroid }
-            .joined(separator: " ")
-            .contains(where: { $0.isNumber })
-    }
-    
+private extension GoalViewController {    
     var dueByTableAttributedString: NSAttributedString {
         let textAndColor: [(text: String, color: UIColor)] = goal.dueByTable.entries
             .sorted(using: SortDescriptor(\.key))
