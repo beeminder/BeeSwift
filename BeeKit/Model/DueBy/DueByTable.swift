@@ -37,4 +37,15 @@ public class DueByTable: NSObject, NSSecureCoding, Codable {
         var container = encoder.singleValueContainer()
         try container.encode(entries)
     }
+    
+    public override var debugDescription: String {
+        "DueByTable\n" +
+        "yyyymmdd : delta\n" +
+        entries
+            .sorted { $0.key < $1.key }
+            .map { key, value in
+                "\(key) : \(value.formatted_delta_for_beedroid)"
+            }
+            .joined(separator: "\n")
+    }
 }
