@@ -17,7 +17,7 @@ public class BeeminderDueByEntry: NSObject, NSSecureCoding, Codable {
     
     public static var supportsSecureCoding: Bool { true }
 
-    private enum Key: String {
+    private enum CodingKey: String {
         case total
         case delta
         case formattedTotalForBeedroid
@@ -25,19 +25,19 @@ public class BeeminderDueByEntry: NSObject, NSSecureCoding, Codable {
     }
     
     public func encode(with coder: NSCoder) {
-        coder.encode(total, forKey: Key.total.rawValue)
-        coder.encode(delta, forKey: Key.delta.rawValue)
-        coder.encode(formatted_total_for_beedroid, forKey: Key.formattedTotalForBeedroid.rawValue)
-        coder.encode(formatted_delta_for_beedroid, forKey: Key.formattedDeltaForBeedroid.rawValue)
+        coder.encode(total, forKey: CodingKey.total.rawValue)
+        coder.encode(delta, forKey: CodingKey.delta.rawValue)
+        coder.encode(formatted_total_for_beedroid, forKey: CodingKey.formattedTotalForBeedroid.rawValue)
+        coder.encode(formatted_delta_for_beedroid, forKey: CodingKey.formattedDeltaForBeedroid.rawValue)
     }
     
     public required convenience init?(coder: NSCoder) {
-        let total = coder.decodeDouble(forKey: Key.total.rawValue)
-        let delta = coder.decodeDouble(forKey: Key.delta.rawValue)
+        let total = coder.decodeDouble(forKey: CodingKey.total.rawValue)
+        let delta = coder.decodeDouble(forKey: CodingKey.delta.rawValue)
         
         guard
-            let formatted_total_for_beedroid = coder.decodeObject(of: NSString.self, forKey: Key.formattedTotalForBeedroid.rawValue) as? String,
-            let formatted_delta_for_beedroid = coder.decodeObject(of: NSString.self, forKey: Key.formattedDeltaForBeedroid.rawValue) as? String
+            let formatted_total_for_beedroid = coder.decodeObject(of: NSString.self, forKey: CodingKey.formattedTotalForBeedroid.rawValue) as? String,
+            let formatted_delta_for_beedroid = coder.decodeObject(of: NSString.self, forKey: CodingKey.formattedDeltaForBeedroid.rawValue) as? String
         else { return nil }
         
         self.init(total: total,
