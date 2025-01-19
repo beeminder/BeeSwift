@@ -27,12 +27,14 @@ public class DueByTable: NSObject, NSSecureCoding, Codable {
         self.init(entries: entries)
     }
     
-    convenience init(dueByJson: JSON?) {
-        var entries: [String : BeeminderDueByEntry] {
-            dueByJson?.dictionary?.compactMapValues(BeeminderDueByEntry.init)
-            ?? dueByJson?.dictionary?.mapValues(BeeminderDueByEntry.init)
-            ?? [:]
-        }
-        self.init(entries: entries)
+    // Implement custom decoding of the dynamic key : valueType
+    required public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.entries = try container.decode([String: BeeminderDueByEntry].self)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(entries)
     }
 }

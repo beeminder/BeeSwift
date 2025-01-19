@@ -176,7 +176,14 @@ public class Goal: NSManagedObject {
         self.useDefaults = json["use_defaults"].boolValue
         self.won = json["won"].boolValue
         self.yAxis = json["yaxis"].stringValue
-        self.dueByTable = DueByTable(dueByJson: json["dueby"])
+        self.dueByTable = {
+            guard let dueByJson = try? json["dueby"].rawData() else {
+                return DueByTable(entries: .init())
+            }
+            let decoded = try? JSONDecoder().decode(DueByTable.self, from: dueByJson)
+            return decoded ?? DueByTable(entries: .init())
+        }()
+        
 
 
         // Replace recent data with results from server
