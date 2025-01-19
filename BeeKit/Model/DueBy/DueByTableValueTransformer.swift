@@ -30,11 +30,11 @@ public class DueByTableValueTransformer: ValueTransformer {
 }
 
 public extension DueByTableValueTransformer {
-    public static var name: NSValueTransformerName {
+    static var name: NSValueTransformerName {
         .init(rawValue: String(describing: DueByTableValueTransformer.self))
     }
     
-    public static func register() {
+    static func register() {
         ValueTransformer.setValueTransformer(DueByTableValueTransformer(),
                                              forName: DueByTableValueTransformer.name)
     }
