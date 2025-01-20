@@ -63,10 +63,7 @@ public class Goal: NSManagedObject {
     @objc(removeRecentData:)
     @NSManaged public func removeFromRecentData(_ values: Set<DataPoint>)
     
-    @NSManaged public var dueByTable: DueByTable
-    
-    
-    
+    @NSManaged public var deltaDueByDaystampTable: DeltaDueByDaystamp
 
     /// The last time this record in the CoreData store was updated
     @NSManaged public var lastModifiedLocal: Date
@@ -176,15 +173,7 @@ public class Goal: NSManagedObject {
         self.useDefaults = json["use_defaults"].boolValue
         self.won = json["won"].boolValue
         self.yAxis = json["yaxis"].stringValue
-        self.dueByTable = {
-            guard let dueByJson = try? json["dueby"].rawData() else {
-                return DueByTable(entries: .init())
-            }
-            let decoded = try? JSONDecoder().decode(DueByTable.self, from: dueByJson)
-            return decoded ?? DueByTable(entries: .init())
-        }()
-        
-
+        self.deltaDueByDaystampTable = json["dueby"].dictionaryValue.mapValues(BeeminderDueByEntry.init)
 
         // Replace recent data with results from server
         // Note at present this leaks data points in the main db. This is probably fine for now

@@ -2,47 +2,32 @@
 
 import SwiftyJSON
 
-public class BeeminderDueByEntry: NSObject, NSSecureCoding, Codable {
+@objc(BeeminderDueByEntry)
+public class BeeminderDueByEntry: NSObject, Codable {
     public let total: Double
     public let delta: Double
-    public let formatted_total_for_beedroid: String
-    public let formatted_delta_for_beedroid: String
+    public let formattedTotal: String
+    public let formattedDelta: String
     
-    init(total: Double, delta: Double, formatted_total_for_beedroid: String, formatted_delta_for_beedroid: String) {
+    init(total: Double, delta: Double, formattedTotalForBeedroid: String, formattedDeltaForBeedroid: String) {
         self.total = total
         self.delta = delta
-        self.formatted_total_for_beedroid = formatted_total_for_beedroid
-        self.formatted_delta_for_beedroid = formatted_delta_for_beedroid
+        self.formattedTotal = formattedTotalForBeedroid
+        self.formattedDelta = formattedDeltaForBeedroid
     }
     
-    public static var supportsSecureCoding: Bool { true }
-
     private enum CodingKey: String {
         case total
         case delta
-        case formattedTotalForBeedroid
-        case formattedDeltaForBeedroid
+        case formattedTotal = "formatted_total_for_beedroid"
+        case formattedDelta = "formatted_delta_for_beedroid"
     }
     
-    public func encode(with coder: NSCoder) {
-        coder.encode(total, forKey: CodingKey.total.rawValue)
-        coder.encode(delta, forKey: CodingKey.delta.rawValue)
-        coder.encode(formatted_total_for_beedroid, forKey: CodingKey.formattedTotalForBeedroid.rawValue)
-        coder.encode(formatted_delta_for_beedroid, forKey: CodingKey.formattedDeltaForBeedroid.rawValue)
-    }
-    
-    public required convenience init?(coder: NSCoder) {
-        let total = coder.decodeDouble(forKey: CodingKey.total.rawValue)
-        let delta = coder.decodeDouble(forKey: CodingKey.delta.rawValue)
+    public init(json: JSON) {
+        self.delta = json["delta"].doubleValue
+        self.total = json["total"].doubleValue
         
-        guard
-            let formatted_total_for_beedroid = coder.decodeObject(of: NSString.self, forKey: CodingKey.formattedTotalForBeedroid.rawValue) as? String,
-            let formatted_delta_for_beedroid = coder.decodeObject(of: NSString.self, forKey: CodingKey.formattedDeltaForBeedroid.rawValue) as? String
-        else { return nil }
-        
-        self.init(total: total,
-                  delta: delta,
-                  formatted_total_for_beedroid: formatted_total_for_beedroid,
-                  formatted_delta_for_beedroid: formatted_delta_for_beedroid)
+        self.formattedDelta = json["formatted_delta_for_beedroid"].stringValue
+        self.formattedTotal = json["formatted_total_for_beedroid"].stringValue
     }
 }
