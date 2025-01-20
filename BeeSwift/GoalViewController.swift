@@ -529,7 +529,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.datapointTableController.hhmmformat = goal.hhmmFormat
         self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
         
-        self.deltasLabel.isHidden = goal.dueByTable.entries.isEmpty
+        self.deltasLabel.isHidden = goal.dueByTable.isEmpty
         self.deltasLabel.attributedText = self.dueByTableAttributedString
         
         self.refreshCountdown()
@@ -676,7 +676,7 @@ private extension GoalViewController {
 
 private extension GoalViewController {    
     var dueByTableAttributedString: NSAttributedString {
-        let textAndColor: [(text: String, color: UIColor)] = goal.dueByTable.entries
+        let textAndColor: [(text: String, color: UIColor)] = goal.dueByTable
             .sorted(using: SortDescriptor(\.key))
             .compactMap { $0.value.formatted_delta_for_beedroid }
             .map { $0 == "✔" ? "✓" : $0 }
