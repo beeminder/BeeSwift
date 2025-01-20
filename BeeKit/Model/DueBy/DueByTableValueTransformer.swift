@@ -8,7 +8,7 @@ public class DueByTableValueTransformer: ValueTransformer {
     }
     
     public override func transformedValue(_ value: Any?) -> Any? {
-        guard let dueByTable = value as? DeltaDueByDaystamp else { return nil }
+        guard let dueByTable = value as? DueByDictionary else { return nil }
         do {
             return try JSONEncoder().encode(dueByTable)
         } catch {
@@ -20,7 +20,7 @@ public class DueByTableValueTransformer: ValueTransformer {
     public override func reverseTransformedValue(_ value: Any?) -> Any? {
         guard let data = value as? Data else { return nil }
         do {
-            return try JSONDecoder().decode(DeltaDueByDaystamp.self, from: data)
+            return try JSONDecoder().decode(DueByDictionary.self, from: data)
         } catch {
             print("Error decoding due by table: \(error)")
             return nil
