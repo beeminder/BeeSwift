@@ -16,7 +16,7 @@ public class BeeminderDueByEntry: NSObject, Codable {
         self.formattedDelta = formattedDeltaForBeedroid
     }
     
-    private enum CodingKey: String, CaseIterable {
+    private enum CodingKeys: String, CodingKey, CaseIterable {
         case total
         case delta
         case formattedTotal = "formatted_total_for_beedroid"
@@ -26,7 +26,7 @@ public class BeeminderDueByEntry: NSObject, Codable {
     public init?(json: JSON) {
         guard
             let dueByDictionary = json.dictionary,
-            CodingKey.allCases.allSatisfy({ dueByDictionary.keys.contains($0.rawValue) })
+            CodingKeys.allCases.allSatisfy({ dueByDictionary.keys.contains($0.rawValue) })
         else { return nil }
         
         self.delta = json["delta"].doubleValue
