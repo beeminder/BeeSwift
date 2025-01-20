@@ -44,7 +44,15 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var goalImageScrollView = UIScrollView()
     fileprivate var lastUpdatedTimer: Timer?
     fileprivate var countdownLabel = BSLabel()
-    fileprivate let deltasLabel = BSLabel()
+    
+    private lazy var deltasLabel: BSLabel = {
+        let label = BSLabel()
+        label.textAlignment = .center
+        label.font = UIFont.beeminder.defaultBoldFont.withSize(Constants.defaultFontSize)
+        label.textColor = .label.withAlphaComponent(0.8)
+        return label
+    }()
+
     fileprivate var scrollView = UIScrollView()
     fileprivate var submitButton = BSButton()
     fileprivate let headerWidth = Double(1.0/3.0)
@@ -163,9 +171,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
             make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
             make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
         }
-        self.deltasLabel.textAlignment = .center
-        self.deltasLabel.font = UIFont.beeminder.defaultBoldFont.withSize(Constants.defaultFontSize)
-        self.deltasLabel.textColor = .label.withAlphaComponent(0.8)
 
         self.addChild(self.datapointTableController)
         self.scrollView.addSubview(self.datapointTableController.view)
