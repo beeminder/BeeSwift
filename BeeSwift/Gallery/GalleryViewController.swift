@@ -275,11 +275,14 @@ class GalleryViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if !currentUserManager.signedIn(context: viewContext) {
+        guard currentUserManager.signedIn(context: viewContext) else {
             let signInVC = SignInViewController(currentUserManager: currentUserManager)
             signInVC.modalPresentationStyle = .fullScreen
             self.present(signInVC, animated: true, completion: nil)
+            return
         }
+        
+        self.updateGoals()
     }
     
     @objc func settingsButtonPressed() {
