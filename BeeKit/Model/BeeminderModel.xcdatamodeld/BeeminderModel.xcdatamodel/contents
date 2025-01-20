@@ -14,7 +14,7 @@
         <attribute name="alertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="autodata" optional="YES" attributeType="String"/>
         <attribute name="deadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="deltaDueByDaystampTable" optional="YES" attributeType="Transformable" valueTransformerName="DueByTableValueTransformer" customClassName="NSDictionary"/>
+        <attribute name="dueByDaystamp" optional="YES" attributeType="Transformable" valueTransformerName="DueByTableValueTransformer" customClassName="NSDictionary"/>
         <attribute name="graphUrl" attributeType="String"/>
         <attribute name="healthKitMetric" optional="YES" attributeType="String"/>
         <attribute name="hhmmFormat" attributeType="Boolean" usesScalarValueType="YES"/>
