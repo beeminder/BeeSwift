@@ -29,11 +29,11 @@ public class BeeminderDueByEntry: NSObject, Codable {
             CodingKeys.allCases.allSatisfy({ dueByDictionary.keys.contains($0.rawValue) })
         else { return nil }
         
-        self.delta = json["delta"].doubleValue
-        self.total = json["total"].doubleValue
+        self.delta = json[CodingKeys.delta.rawValue].doubleValue
+        self.total = json[CodingKeys.total.rawValue].doubleValue
         
-        self.formattedDelta = json["formatted_delta_for_beedroid"].stringValue
-        self.formattedTotal = json["formatted_total_for_beedroid"].stringValue
+        self.formattedDelta = json[CodingKeys.formattedDelta.rawValue].stringValue
+        self.formattedTotal = json[CodingKeys.formattedTotal.rawValue].stringValue
     }
 
 }
