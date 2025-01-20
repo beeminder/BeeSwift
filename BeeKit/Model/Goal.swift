@@ -66,9 +66,6 @@ public class Goal: NSManagedObject {
     public typealias DueByTable = [String: BeeminderDueByEntry]
     @NSManaged public var dueByTable: DueByTable
 
-    
-    
-
     /// The last time this record in the CoreData store was updated
     @NSManaged public var lastModifiedLocal: Date
 
