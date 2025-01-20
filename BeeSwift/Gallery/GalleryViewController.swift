@@ -398,8 +398,12 @@ class GalleryViewController: UIViewController {
         self.collectionView.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.updateDeadbeatVisibility()
-        self.lastUpdated = Date()
-        self.updateLastUpdatedLabel()
+        
+        Task {
+            self.lastUpdated = await goalManager.goalsFetchedAt
+            self.updateLastUpdatedLabel()
+        }
+        
         if self.filteredGoals.isEmpty {
             self.noGoalsLabel.isHidden = false
             self.collectionContainer.isHidden = true
