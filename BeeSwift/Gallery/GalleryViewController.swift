@@ -157,6 +157,7 @@ class GalleryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
@@ -281,8 +282,6 @@ class GalleryViewController: UIViewController {
             self.present(signInVC, animated: true, completion: nil)
             return
         }
-        
-        self.updateGoals()
     }
     
     @objc func settingsButtonPressed() {
@@ -307,6 +306,10 @@ class GalleryViewController: UIViewController {
         } else {
             self.searchBar.becomeFirstResponder()
         }
+    }
+    
+    @objc private func userDefaultsDidChange() {
+        self.updateGoals()
     }
     
     @objc func handleSignIn() {
