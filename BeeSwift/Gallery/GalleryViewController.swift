@@ -56,7 +56,14 @@ class GalleryViewController: UIViewController {
     private lazy var collectionViewLayout = UICollectionViewFlowLayout()
     private lazy var freshnessIndicator = FreshnessIndicatorView()
     
-    private lazy var deadbeatView = UIView()
+    private lazy var deadbeatView: UIView = {
+        let outofdateView = UIView()
+        outofdateView.accessibilityIdentifier = "deadbeatView"
+        outofdateView.backgroundColor = UIColor.Beeminder.gray
+        outofdateView.isHidden = true
+        return outofdateView
+    }()
+    
     private lazy var outofdateView: UIView = {
         let outofdateView = UIView()
         outofdateView.accessibilityIdentifier = "outofdateView"
@@ -80,7 +87,7 @@ class GalleryViewController: UIViewController {
     private lazy var outofdateLabel: BSLabel = {
         let outofdateLabel = BSLabel()
         outofdateLabel.accessibilityIdentifier = "outofdateLabel"
-        outofdateLabel.textColor = UIColor.Beeminder.red
+        outofdateLabel.textColor = UIColor.Beeminder.yellow
         outofdateLabel.numberOfLines = 0
         outofdateLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(12)
         outofdateLabel.textAlignment = .center
@@ -100,7 +107,7 @@ class GalleryViewController: UIViewController {
     private lazy var deadbeatLabel: BSLabel = {
         let deadbeatLabel = BSLabel()
         deadbeatLabel.accessibilityIdentifier = "deadbeatLabel"
-        deadbeatLabel.textColor = UIColor.Beeminder.red
+        deadbeatLabel.textColor = UIColor.Beeminder.yellow
         deadbeatLabel.numberOfLines = 0
         deadbeatLabel.font = UIFont.beeminder.defaultFontHeavy.withSize(13)
         deadbeatLabel.text = "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
