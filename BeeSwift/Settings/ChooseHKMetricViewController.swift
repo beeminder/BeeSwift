@@ -17,9 +17,13 @@ class ChooseHKMetricViewController: UIViewController {
     fileprivate let cellReuseIdentifier = "hkMetricTableViewCell"
     fileprivate var tableView = UITableView()
     let goal: Goal
+    private let healthStoreManager: HealthStoreManager
+    private let requestManager: RequestManager
     
-    init(goal: Goal) {
+    init(goal: Goal, healthStoreManager: HealthStoreManager, requestManager: RequestManager) {
         self.goal = goal
+        self.healthStoreManager = healthStoreManager
+        self.requestManager = requestManager
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -131,14 +135,21 @@ extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSou
             let metric = self.sortedMetricsByCategory[section]![indexPath.row]
 
             do {
-                try await ServiceLocator.healthStoreManager.requestAuthorization(metric: metric)
+                try await self.healthStoreManager.requestAuthorization(metric: metric)
             } catch {
                 logger.error("Error requesting permission for metric: \(error)")
                 self.tableView.isUserInteractionEnabled = true
                 return
             }
 
-            self.navigationController?.pushViewController(ConfigureHKMetricViewController(goal: self.goal, metric: metric), animated: true)
+            self.navigationController?.pushViewController(
+                ConfigureHKMetricViewController(
+                    goal: self.goal,
+                    metric: metric,
+                    healthStoreManager: self.healthStoreManager,
+                    requestManager: self.requestManager
+                ),
+                animated: true)
         }
     }
     
