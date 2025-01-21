@@ -168,6 +168,19 @@ extension EditNotificationsViewController: UIPickerViewDataSource, UIPickerViewD
     let hour = self.hourFromTimePicker()
     return 3600 * hour.intValue + 60 * minute.intValue
   }
+  // Convert to deadline format:
+  // - Times from midnight to 6am (0-6) stay positive
+  // - Times from 7am to midnight (7-23) become negative offsets from next midnight
+  var deadlineFromTimePickerView: Int {
+    let hour24 = hour24FromPicker
+    let selectedMinute = self.timePickerView.selectedRow(inComponent: 1)
+    let totalSeconds = 3600 * hour24 + 60 * selectedMinute
+    if hour24 <= 6 {
+      return totalSeconds  // Keep positive for early morning hours
+    } else {
+      return totalSeconds - (24 * 3600)  // Convert to negative offset from next midnight
+    }
+  }
   // we're doing this instead of just using a UIDatePicker so that we can use the
   // Beeminder font in the picker instead of the system font
   func hourFromTimePicker() -> NSNumber {
@@ -183,6 +196,15 @@ extension EditNotificationsViewController: UIPickerViewDataSource, UIPickerViewD
         return NSNumber(value: isPM ? (selectedHour == 12 ? 12 : selectedHour + 12) : selectedHour)
       }
     }
+  }
+  var hour24FromPicker: Int {
+    let selectedHour = self.timePickerView.selectedRow(inComponent: 0)
+    // 24h
+    guard !self.use24HourTime() else { return selectedHour }
+    // 12h am
+    guard self.timePickerView.selectedRow(inComponent: 2) == 1 else { return selectedHour }
+    // 12h pm
+    return selectedHour == 12 ? 12 : selectedHour + 12
   }
   func numberOfComponents(in pickerView: UIPickerView) -> Int { return self.use24HourTime() ? 2 : 3 }
   func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?)
