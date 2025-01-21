@@ -101,13 +101,13 @@ class EditNotificationsViewController: UIViewController {
   func updateDeadlineLabel(_ deadline: Int) {
     self.deadlineLabel.text = "Goal deadline: \(self.stringFromMidnightOffset(deadline))"
   }
-  func stringFromMidnightOffset(_ offset: Int) -> NSString {
+  func stringFromMidnightOffset(_ offset: Int) -> String {
     let date = Date(timeInterval: Double(offset), since: Calendar.current.startOfDay(for: Date()))
     let dateFormatter = DateFormatter()
     dateFormatter.locale = Locale(identifier: self.use24HourTime() ? "en_UK" : "en_US")
     dateFormatter.timeStyle = DateFormatter.Style.short
     dateFormatter.dateStyle = DateFormatter.Style.none
-    return dateFormatter.string(from: date) as NSString
+    return dateFormatter.string(from: date)
   }
   func updateLeadTimeLabel() {
     if self.leadTimeStepper.value == 1 {
@@ -164,9 +164,9 @@ extension EditNotificationsViewController: UIPickerViewDataSource, UIPickerViewD
     return 2
   }
   func midnightOffsetFromTimePickerView() -> Int {
-    let minute = NSNumber(value: self.timePickerView.selectedRow(inComponent: 1))
+    let minute = self.timePickerView.selectedRow(inComponent: 1)
     let hour = self.hour24FromPicker
-    return 3600 * hour.intValue + 60 * minute.intValue
+    return 3600 * hour + 60 * minute
   }
   // Convert to deadline format:
   // - Times from midnight to 6am (0-6) stay positive
