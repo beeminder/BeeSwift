@@ -37,7 +37,6 @@ class EditNotificationsViewController: UIViewController {
   var deadline = Int() { didSet { self.updateDeadlineLabel(self.deadline) } }
   fileprivate var leadTimeDelayTimer: Timer?
   init() { super.init(nibName: nil, bundle: nil) }
-
   required init?(coder aDecoder: NSCoder) { super.init(coder: aDecoder) }
   override func viewDidLoad() {
     self.view.backgroundColor = UIColor.systemBackground
@@ -137,26 +136,31 @@ class EditNotificationsViewController: UIViewController {
   func setTimePickerComponents(_ offsetFromMidnight: Int) {
     var hour = offsetFromMidnight / 3600
     var minute = (offsetFromMidnight % 3600) / 60
-    if self.use24HourTime() {
-      if hour < 0 { hour = 25 + hour }
-      if minute < 0 { minute = 60 + minute }
-      self.timePickerView.selectRow(hour, inComponent: 0, animated: true)
-      self.timePickerView.selectRow(minute, inComponent: 1, animated: true)
-    } else {
-      if hour > 12 {
-        self.timePickerView.selectRow(1, inComponent: 2, animated: true)
-        self.timePickerView.selectRow(hour - 12, inComponent: 0, animated: true)
-      } else {
-        self.timePickerView.selectRow(hour, inComponent: 0, animated: true)
-      }
-      self.timePickerView.selectRow(minute, inComponent: 1, animated: true)
+    // Normalize the time to ensure positive values
+    if hour < 0 || minute < 0 {
+      // For times like 23:59 which come in as -1 minutes before midnight
+      // we need to convert to the equivalent hour before midnight
+      let totalMinutes = hour * 60 + minute
+      let normalizedMinutes = (totalMinutes + 24 * 60) % (24 * 60)
+      hour = normalizedMinutes / 60
+      minute = normalizedMinutes % 60
     }
+    if self.use24HourTime() {
+      self.timePickerView.selectRow(hour, inComponent: 0, animated: true)
+    } else {
+      // Convert to 12-hour format
+      let isPM = hour >= 12
+      let displayHour = hour % 12
+      self.timePickerView.selectRow(displayHour == 0 ? 12 : displayHour, inComponent: 0, animated: true)
+      self.timePickerView.selectRow(isPM ? 1 : 0, inComponent: 2, animated: true)
+    }
+    self.timePickerView.selectRow(minute, inComponent: 1, animated: true)
   }
 }
 
 extension EditNotificationsViewController: UIPickerViewDataSource, UIPickerViewDelegate {
   func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-    if component == 0 { return Bool(self.use24HourTime()) ? 24 : 12 } else if component == 1 { return 60 }
+    if component == 0 { return self.use24HourTime() ? 24 : 12 } else if component == 1 { return 60 }
     return 2
   }
   func midnightOffsetFromTimePickerView() -> Int {
@@ -167,10 +171,18 @@ extension EditNotificationsViewController: UIPickerViewDataSource, UIPickerViewD
   // we're doing this instead of just using a UIDatePicker so that we can use the
   // Beeminder font in the picker instead of the system font
   func hourFromTimePicker() -> NSNumber {
-    if self.use24HourTime() || self.timePickerView.selectedRow(inComponent: 2) == 0 {
-      return NSNumber(value: self.timePickerView.selectedRow(inComponent: 0))
+    let selectedHour = self.timePickerView.selectedRow(inComponent: 0)
+    if self.use24HourTime() {
+      return NSNumber(value: selectedHour)
+    } else {
+      // Handle 12-hour time conversion
+      let isPM = self.timePickerView.selectedRow(inComponent: 2) == 1
+      if selectedHour == 0 {  // 12 AM/PM case
+        return NSNumber(value: isPM ? 12 : 0)
+      } else {
+        return NSNumber(value: isPM ? (selectedHour == 12 ? 12 : selectedHour + 12) : selectedHour)
+      }
     }
-    return NSNumber(value: self.timePickerView.selectedRow(inComponent: 0) + 12)
   }
   func numberOfComponents(in pickerView: UIPickerView) -> Int { return self.use24HourTime() ? 2 : 3 }
   func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?)
