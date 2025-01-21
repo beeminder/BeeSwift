@@ -197,7 +197,7 @@ extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerView
     
     func midnightOffsetFromTimePickerView() -> Int {
         let minute = NSNumber(value: self.timePickerView.selectedRow(inComponent: 1))
-        let hour = self.hourFromTimePicker()
+        let hour = self.hour24FromPicker
         
         return 3600*hour.intValue + 60*minute.intValue
     }
@@ -220,23 +220,6 @@ extension EditNotificationsViewController : UIPickerViewDataSource, UIPickerView
     
     // we're doing this instead of just using a UIDatePicker so that we can use the
     // Beeminder font in the picker instead of the system font
-    func hourFromTimePicker() -> NSNumber {
-        let selectedHour = self.timePickerView.selectedRow(inComponent: 0)
-        
-        if self.use24HourTime() {
-            return NSNumber(value: selectedHour)
-        } else {
-            // Handle 12-hour time conversion
-            let isPM = self.timePickerView.selectedRow(inComponent: 2) == 1
-            if selectedHour == 0 { // 12 AM/PM case
-                return NSNumber(value: isPM ? 12 : 0)
-            } else {
-                return NSNumber(value: isPM ? (selectedHour == 12 ? 12 : selectedHour + 12) : selectedHour)
-            }
-        }
-    }
-    
-    
     var hour24FromPicker: Int {
         let selectedHour = self.timePickerView.selectedRow(inComponent: 0)
         // 24h
