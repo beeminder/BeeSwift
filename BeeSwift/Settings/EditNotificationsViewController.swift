@@ -181,8 +181,6 @@ extension EditNotificationsViewController: UIPickerViewDataSource, UIPickerViewD
       return totalSeconds - (24 * 3600)  // Convert to negative offset from next midnight
     }
   }
-  // we're doing this instead of just using a UIDatePicker so that we can use the
-  // Beeminder font in the picker instead of the system font
   var hour24FromPicker: Int {
     let selectedHour = self.timePickerView.selectedRow(inComponent: 0)
     // 24h
