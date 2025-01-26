@@ -1,5 +1,6 @@
 // Part of BeeSwift. Copyright Beeminder
 
+import CoreSpotlight
 import Foundation
 import UIKit
 
@@ -30,5 +31,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.makeKeyAndVisible()
         
         coordinator?.start()
+    }
+    
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        if userActivity.activityType == CSSearchableItemActionType {
+            guard let goalIdentifier = userActivity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return }
+            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["identifier": goalIdentifier])
+        } else if let intent = userActivity.interaction?.intent as? AddDataIntent {
+            guard let goalSlug = intent.goal else { return }
+            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
+        } else if let goalSlug = userActivity.userInfo?["slug"] {
+            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
+        }
     }
 }
