@@ -308,7 +308,9 @@ class GalleryViewController: UIViewController {
     }
     
     @objc private func userDefaultsDidChange() {
-        self.updateGoals()
+        Task { @MainActor [weak self] in
+            self?.updateGoals()
+        }
     }
     
     @objc func handleSignIn() {
@@ -401,9 +403,9 @@ class GalleryViewController: UIViewController {
         MBProgressHUD.hide(for: self.view, animated: true)
         self.updateDeadbeatVisibility()
         
-        Task {
-            self.lastUpdated = await goalManager.goalsFetchedAt
-            self.updateLastUpdatedLabel()
+        Task { [weak self] in
+            self?.lastUpdated = await self?.goalManager.goalsFetchedAt
+            self?.updateLastUpdatedLabel()
         }
         
         if self.filteredGoals.isEmpty {
