@@ -77,8 +77,13 @@ class GoalImageView : UIView {
 
     @MainActor
     private func showGraphImage(image: UIImage) {
+        // Animating the thumbnail view interacts badly with cell re-use in the gallery
+        // e.g. it would cause us to show the image from a different goal before animating
+        // to the corrent one.
+        let duration = isThumbnail ? 0 : 0.4
+
         UIView.transition(with: imageView,
-                          duration: 0.8,
+                          duration: duration,
                           options: .transitionCrossDissolve,
                           animations: { [weak self] in
             self?.imageView.image = image
