@@ -57,6 +57,8 @@ public enum HealthKitConfig {
 
             // Other
             QuantityHealthKitMetric(humanText: "Time in Daylight", databaseString: "timeInDaylight", category: .Other, hkQuantityTypeIdentifier: .timeInDaylight),
+            ToothbrushingDailyMinutesHealthKitMetric(),
+            ToothbrushingDailySessionsHealthKitMetric(),
         ]
     }
 }

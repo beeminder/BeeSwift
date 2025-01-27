@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B1CB1B02D47B7D400CAF556 /* ToothbrushingDailySessionsHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1CB1AF2D47B7D400CAF556 /* ToothbrushingDailySessionsHealthKitMetric.swift */; };
+		9B1CB1B12D47B7D400CAF556 /* ToothbrushingDailyMinutesHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1CB1AE2D47B7D400CAF556 /* ToothbrushingDailyMinutesHealthKitMetric.swift */; };
 		9B65F2322CFA6427009674A7 /* DeeplinkGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */; };
 		9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */; };
 		9BFB27E92CFE770F0056D10D /* FreshnessIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */; };
@@ -216,6 +218,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9B1CB1AE2D47B7D400CAF556 /* ToothbrushingDailyMinutesHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToothbrushingDailyMinutesHealthKitMetric.swift; sourceTree = "<group>"; };
+		9B1CB1AF2D47B7D400CAF556 /* ToothbrushingDailySessionsHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToothbrushingDailySessionsHealthKitMetric.swift; sourceTree = "<group>"; };
 		9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkGenerator.swift; sourceTree = "<group>"; };
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshnessIndicatorView.swift; sourceTree = "<group>"; };
@@ -407,6 +411,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9B7D44642D12C2F3003B62B1 /* Toothbrushing */ = {
+			isa = PBXGroup;
+			children = (
+				9B1CB1AE2D47B7D400CAF556 /* ToothbrushingDailyMinutesHealthKitMetric.swift */,
+				9B1CB1AF2D47B7D400CAF556 /* ToothbrushingDailySessionsHealthKitMetric.swift */,
+			);
+			path = Toothbrushing;
+			sourceTree = "<group>";
+		};
 		A106AD8B1AF1F62800C434E8 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -621,6 +634,7 @@
 		E4E6426E290E27CB004F3EA9 /* HeathKit */ = {
 			isa = PBXGroup;
 			children = (
+				9B7D44642D12C2F3003B62B1 /* Toothbrushing */,
 				A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */,
 				E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */,
 				E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */,
@@ -1074,6 +1088,8 @@
 				E4B0A33128C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */,
 				E458C8132AD11C94000DCA5C /* HealthKitMetric.swift in Sources */,
 				E458C80F2AD11C80000DCA5C /* HealthKitConfig.swift in Sources */,
+				9B1CB1B02D47B7D400CAF556 /* ToothbrushingDailySessionsHealthKitMetric.swift in Sources */,
+				9B1CB1B12D47B7D400CAF556 /* ToothbrushingDailyMinutesHealthKitMetric.swift in Sources */,
 				E458C8262AD11E12000DCA5C /* BSTextField.swift in Sources */,
 				E458C8022AD11BB9000DCA5C /* CurrentUserManager.swift in Sources */,
 				E458C8182AD11CAC000DCA5C /* TimeAsleepHealthKitMetric.swift in Sources */,
