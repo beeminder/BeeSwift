@@ -34,14 +34,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-        if userActivity.activityType == CSSearchableItemActionType {
-            guard let goalIdentifier = userActivity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return }
-            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["identifier": goalIdentifier])
-        } else if let intent = userActivity.interaction?.intent as? AddDataIntent {
-            guard let goalSlug = intent.goal else { return }
-            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
-        } else if let goalSlug = userActivity.userInfo?["slug"] {
-            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
+        var userInfoOfGoalFromSpotlight: [AnyHashable : Any]? {
+            guard userActivity.activityType == CSSearchableItemActionType else { return nil }
+            guard let goalIdentifier = userActivity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return nil }
+            return ["identifier": goalIdentifier]
+        }
+        
+        var userInfoOfGoalFromIntent: [AnyHashable : Any]? {
+            guard let intent = userActivity.interaction?.intent as? AddDataIntent else { return nil }
+            guard let goalSlug = intent.goal else { return nil }
+            return ["slug": goalSlug]
+        }
+        
+        var userInfoOfGoalFrom: [AnyHashable : Any]? {
+            guard let goalname = userActivity.userInfo?["slug"] else { return nil }
+            return ["slug": goalname]
+        }
+        
+        if let userInfo = userInfoOfGoalFromSpotlight ?? userInfoOfGoalFromIntent ?? userInfoOfGoalFrom {
+            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal,
+                                            object: nil,
+                                            userInfo: userInfo)
         }
     }
 }
