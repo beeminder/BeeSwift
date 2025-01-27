@@ -19,7 +19,6 @@ import BeeKit
 
 
 class GalleryViewController: UIViewController {
-    private weak var coordinator: MainCoordinator?
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GalleryViewController")
     
     public enum NotificationName {
@@ -33,6 +32,7 @@ class GalleryViewController: UIViewController {
     private let goalManager: GoalManager
     private let healthStoreManager: HealthStoreManager
     private let requestManager: RequestManager
+    private weak var coordinator: MainCoordinator?
     
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
