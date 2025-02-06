@@ -157,6 +157,7 @@ class GalleryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.userDefaultsDidChange), name: UserDefaults.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
@@ -306,6 +307,12 @@ class GalleryViewController: UIViewController {
         }
     }
     
+    @objc private func userDefaultsDidChange() {
+        Task { @MainActor [weak self] in
+            self?.updateGoals()
+        }
+    }
+    
     @objc func handleSignIn() {
         self.dismiss(animated: true, completion: nil)
         self.fetchGoals()
@@ -395,8 +402,12 @@ class GalleryViewController: UIViewController {
         self.collectionView.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.updateDeadbeatVisibility()
-        self.lastUpdated = Date()
-        self.updateLastUpdatedLabel()
+        
+        Task { [weak self] in
+            self?.lastUpdated = await self?.goalManager.goalsFetchedAt
+            self?.updateLastUpdatedLabel()
+        }
+        
         if self.filteredGoals.isEmpty {
             self.noGoalsLabel.isHidden = false
             self.collectionContainer.isHidden = true
