@@ -98,7 +98,7 @@ class GalleryViewController: UIViewController {
         let searchBar = UISearchBar()
         searchBar.accessibilityIdentifier = "searchBar"
         searchBar.delegate = self
-        searchBar.placeholder = "Filter goals by slug"
+        searchBar.placeholder = "Search goals"
         searchBar.isHidden = true
         searchBar.showsCancelButton = true
         return searchBar
