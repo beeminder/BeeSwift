@@ -447,7 +447,6 @@
 			children = (
 				A196CB161AE4142E00B90A3E /* BeeSwift */,
 				A196CB2F1AE4142F00B90A3E /* BeeSwiftTests */,
-				E5FEFB3F24E6FAD900A076BB /* BeeSwiftUITests */,
 				E5FEFB3624E6FAC800A076BB /* BeeSwiftUITests */,
 				E5F7C493260FC5300095684F /* BeeSwiftIntents */,
 				E57BE6E12655EBDA00BA540B /* BeeKit */,
@@ -681,17 +680,9 @@
 			children = (
 				E5FEFB3724E6FAC800A076BB /* BeeSwiftUITests.swift */,
 				E5FEFB3924E6FAC800A076BB /* Info.plist */,
-			);
-			path = BeeSwiftUITests;
-			sourceTree = "<group>";
-		};
-		E5FEFB3F24E6FAD900A076BB /* BeeSwiftUITests */ = {
-			isa = PBXGroup;
-			children = (
 				E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */,
 			);
-			name = BeeSwiftUITests;
-			path = BeeSwift/BeeSwiftUITests;
+			path = BeeSwiftUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
