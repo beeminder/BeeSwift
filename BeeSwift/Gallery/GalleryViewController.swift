@@ -478,7 +478,7 @@ class GalleryViewController: UIViewController {
 
 extension GalleryViewController: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
-        dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: true)
+        dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: false)
     }
 }
 
