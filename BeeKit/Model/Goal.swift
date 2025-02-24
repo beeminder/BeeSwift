@@ -173,7 +173,7 @@ public class Goal: NSManagedObject {
         self.useDefaults = json["use_defaults"].boolValue
         self.won = json["won"].boolValue
         self.yAxis = json["yaxis"].stringValue
-        self.dueBy = json["dueby"].dictionaryValue.compactMapValues(DueByEntry.init)
+        self.dueBy = DueByDictionary(json: json["dueby"])
 
         // Replace recent data with results from server
         // Note at present this leaks data points in the main db. This is probably fine for now
