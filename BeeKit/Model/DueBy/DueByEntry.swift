@@ -2,8 +2,8 @@
 
 import SwiftyJSON
 
-@objc(BeeminderDueByEntry)
-public class BeeminderDueByEntry: NSObject, Codable {
+@objc(DueByEntry)
+public class DueByEntry: NSObject, Codable {
     public let total: Double
     public let delta: Double
     public let formattedTotal: String

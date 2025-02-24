@@ -534,7 +534,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         self.datapointTableController.hhmmformat = goal.hhmmFormat
         self.datapointTableController.datapoints = goal.recentData.sorted(by: {$0.updatedAt < $1.updatedAt})
         
-        self.deltasLabel.isHidden = goal.dueByDaystamp.isEmpty
+        self.deltasLabel.isHidden = goal.dueBy.isEmpty
         self.deltasLabel.attributedText = self.dueByTableAttributedString
         
         self.refreshCountdown()
@@ -681,7 +681,7 @@ private extension GoalViewController {
 
 private extension GoalViewController {    
     var dueByTableAttributedString: NSAttributedString {
-        let textAndColor: [(text: String, color: UIColor)] = goal.dueByDaystamp
+        let textAndColor: [(text: String, color: UIColor)] = goal.dueBy
             .sorted(using: SortDescriptor(\.key))
             .compactMap { $0.value.formattedDelta }
             .map { $0 == "✔" ? "✓" : $0 }
