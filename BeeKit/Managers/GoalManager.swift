@@ -77,9 +77,8 @@ public actor GoalManager {
             deletedGoals = JSON(arrayLiteral: [])
         } else {
             // TODO: Use old data to find deleted goals
-            let fudgeFactor: Double = 3 * 30 * 24 * 60 * 60
             logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
-            userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1 - fudgeFactor])!)
+            userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1])!)
             goalResponse = userResponse["goals"]
 
             deleteMissingGoals = false
