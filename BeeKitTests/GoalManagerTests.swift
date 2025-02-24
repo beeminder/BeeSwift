@@ -28,10 +28,9 @@ class GoalManagerTests: XCTestCase {
         currentUserManager = CurrentUserManager(requestManager: mockRequestManager, container: container)
         goalManager = GoalManager(requestManager: mockRequestManager, currentUserManager: currentUserManager, container: container)
         
-        // Set up initial user
         let context = container.viewContext
         let user = User(context: context,
-                        username: "theospears_test1",
+                        username: "test_user",
                         deadbeat: false,
                         timezone: "America/Los_Angeles",
                         updatedAt: Date(timeIntervalSince1970: 1740350182),
@@ -49,10 +48,9 @@ class GoalManagerTests: XCTestCase {
     }
     
     func testInitialGoalCreation() async throws {
-        // Set up mock responses
         let userResponse = """
         {
-            "username": "theospears_test1",
+            "username": "test_user",
             "timezone": "America/Los_Angeles",
             "updated_at": 1740350182,
             "deadbeat": false,
@@ -93,10 +91,8 @@ class GoalManagerTests: XCTestCase {
             "api/v1/users/{username}/goals.json": try JSONSerialization.jsonObject(with: goalsResponse.data(using: .utf8)!, options: [])
         ]
         
-        // Execute refresh
         try await goalManager.refreshGoals()
         
-        // Verify results
         let context = container.viewContext
         context.refreshAllObjects()
         
@@ -109,13 +105,11 @@ class GoalManagerTests: XCTestCase {
     }
     
     func testGoalDeletion() async throws {
-        // First create a goal
         try await testInitialGoalCreation()
         
-        // Now simulate a deletion update
         let deletionResponse = """
         {
-            "username": "theospears_test1",
+            "username": "test_user",
             "timezone": "America/Los_Angeles",
             "updated_at": 1740350657,
             "deadbeat": false,
@@ -135,10 +129,8 @@ class GoalManagerTests: XCTestCase {
             "api/v1/users/{username}.json": try JSONSerialization.jsonObject(with: deletionResponse.data(using: .utf8)!, options: [])
         ]
         
-        // Execute refresh
         try await goalManager.refreshGoals()
         
-        // Verify results
         let context = container.viewContext
         context.refreshAllObjects()
         
