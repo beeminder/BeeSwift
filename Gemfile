@@ -9,3 +9,5 @@ gem "xcode-install"
 gem "rest-client"
 
 eval_gemfile('fastlane/Pluginfile')
+
+gem "abbrev", "~> 0.1.2"
