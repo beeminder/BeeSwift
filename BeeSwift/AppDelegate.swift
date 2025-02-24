@@ -176,17 +176,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func removeAllLocalNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        if userActivity.activityType == CSSearchableItemActionType {
-            guard let goalIdentifier = userActivity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return false
-            }
-            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["identifier": goalIdentifier])
-        } else if let intent = userActivity.interaction?.intent as? AddDataIntent {
-            guard let goalSlug = intent.goal else { return false }
-            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
-        } else if let goalSlug = userActivity.userInfo?["slug"] {
-            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
-        }
-        return true
-    }
 }
