@@ -29,7 +29,7 @@ class GoalManagerTests: XCTestCase {
         goalManager = GoalManager(requestManager: mockRequestManager, currentUserManager: currentUserManager, container: container)
         
         let context = container.viewContext
-        let user = User(context: context,
+        let _ = User(context: context,
                         username: "test_user",
                         deadbeat: false,
                         timezone: "America/Los_Angeles",
