@@ -340,12 +340,10 @@ class GalleryViewController: UIViewController {
     }
     
     @objc func updateLastUpdatedLabel() {
-        let lastUpdated = self.lastUpdated ?? .distantPast
-        
+        let lastUpdated = currentUserManager.user(context: viewContext)?.lastModifiedLocal ?? .distantPast
         self.freshnessIndicator.update(with: lastUpdated)
     }
-    
-    
+
     func setupHealthKit() {
         Task { @MainActor in
             do {
