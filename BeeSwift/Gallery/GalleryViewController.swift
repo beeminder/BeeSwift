@@ -120,7 +120,6 @@ class GalleryViewController: UIViewController {
     
     private typealias GallerySnapshot = NSDiffableDataSourceSnapshot<GalleryViewController.Section, NSManagedObjectID>
     
-    private var lastUpdated: Date?
     private var dataSource: UICollectionViewDiffableDataSource<Section, NSManagedObjectID>!
     
     private let fetchedResultsController: NSFetchedResultsController<Goal>!
@@ -340,12 +339,10 @@ class GalleryViewController: UIViewController {
     }
     
     @objc func updateLastUpdatedLabel() {
-        let lastUpdated = self.lastUpdated ?? .distantPast
-        
+        let lastUpdated = currentUserManager.user(context: viewContext)?.lastModifiedLocal ?? .distantPast
         self.freshnessIndicator.update(with: lastUpdated)
     }
-    
-    
+
     func setupHealthKit() {
         Task { @MainActor in
             do {
@@ -402,12 +399,8 @@ class GalleryViewController: UIViewController {
         self.collectionView.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.updateDeadbeatVisibility()
-        
-        Task { [weak self] in
-            self?.lastUpdated = await self?.goalManager.goalsFetchedAt
-            self?.updateLastUpdatedLabel()
-        }
-        
+        self.updateLastUpdatedLabel()
+
         if self.filteredGoals.isEmpty {
             self.noGoalsLabel.isHidden = false
             self.collectionContainer.isHidden = true
