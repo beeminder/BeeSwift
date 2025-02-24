@@ -57,17 +57,60 @@ public actor GoalManager {
 
     /// Fetch and return the latest set of goals from the server
     public func refreshGoals() async throws {
-        guard let username = await currentUserManager.username else {
-            try await currentUserManager.signOut()
-            return
+        guard let user = self.currentUserManager.user(context: modelContext) else { return }
+        let goalsUnknown = user.goals.count == 0 || user.updatedAt.timeIntervalSince1970 < 24*60*60
+
+        let userResponse: JSON
+        let goalResponse: JSON
+
+        let deleteMissingGoals: Bool
+        let deletedGoals: JSON
+
+        if (goalsUnknown) {
+            logger.notice("Goals unknown, doing full fetch")
+            // We must fetch the user object first, and then fetch goals afterwards, to guarantee User.updated_at is
+            // a safe timestamp for future fetches without losing data
+            userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json")!)
+            goalResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}/goals.json")!)
+
+            deleteMissingGoals = true
+            deletedGoals = JSON(arrayLiteral: [])
+        } else {
+            // TODO: Use old data to find deleted goals
+            logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
+            userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1])!)
+            goalResponse = userResponse["goals"]
+
+            deleteMissingGoals = false
+            deletedGoals = userResponse["deleted_goals"]
         }
 
-        let responseObject = try await requestManager.get(url: "api/v1/users/\(username)/goals.json")!
-        let response = JSON(responseObject)
-        self.updateGoalsFromJson(response) // TODO: Return failure info
+        // The user may have logged out during the network operation. If so we have nothing to do
+        modelContext.refreshAllObjects()
+        guard let user = modelContext.object(with: user.objectID) as? User else { return }
+
+        user.updateToMatch(json: userResponse)
+
+        // For the incremental case, delete all goals marked as deleted
+        let deletedGoalIds = Set(deletedGoals.arrayValue.map { $0["id"].stringValue })
+        let goalsToDelete = user.goals.filter { deletedGoalIds.contains($0.id) }
+        for goal in goalsToDelete {
+            modelContext.delete(goal)
+        }
+
+        // For the non-incremental case, delete all goals which weren't in the response
+        if deleteMissingGoals, let goalsArray = goalResponse.array {
+            let allGoalIds = Set(goalsArray.map { $0["id"].stringValue })
+            let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
+            for goal in goalsToDelete {
+                modelContext.delete(goal)
+            }
+        }
+        self.updateGoalsFromJson(goalResponse)
+
+        try modelContext.save()
 
         self.goalsFetchedAt = Date()
-
         await performPostGoalUpdateBookkeeping()
     }
 
@@ -95,33 +138,24 @@ public actor GoalManager {
             return
         }
 
-        //  Update CoreData representation
         // The user may have logged out while waiting for the data, so ignore if so
-        modelContext.refreshAllObjects()
-        if let user = self.currentUserManager.user(context: modelContext) {
-            // Create and update existing goals
-            for goalJSON in responseGoals {
-                let goalId = goalJSON["id"].stringValue
-                let request = NSFetchRequest<Goal>(entityName: "Goal")
-                request.predicate = NSPredicate(format: "id == %@", goalId)
-                // TODO: Better error handling of failure here?
-                if let existingGoal = try! modelContext.fetch(request).first {
-                    existingGoal.updateToMatch(json: goalJSON)
-                } else {
-                    let _ = Goal(context: modelContext, owner: user, json: goalJSON)
-                }
-            }
+        guard let user = self.currentUserManager.user(context: modelContext) else { return }
 
-            // Remove any deleted goals
-            let allGoalIds = Set(responseGoals.map { $0["id"].stringValue })
-            let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
-            for goal in goalsToDelete {
-                modelContext.delete(goal)
+        // Create and update existing goals
+        for goalJSON in responseGoals {
+            let goalId = goalJSON["id"].stringValue
+            let request = NSFetchRequest<Goal>(entityName: "Goal")
+            request.predicate = NSPredicate(format: "id == %@", goalId)
+            // TODO: Better error handling of failure here?
+            if let existingGoal = try! modelContext.fetch(request).first {
+                existingGoal.updateToMatch(json: goalJSON)
+            } else {
+                let _ = Goal(context: modelContext, owner: user, json: goalJSON)
             }
-
-            // Crash on save failure so we can learn about issues via testflight
-            try! modelContext.save()
         }
+
+        // Remove any deleted goals
+        // FIXME: We need to consult the deleted goal array for this
     }
 
     private func performPostGoalUpdateBookkeeping() async {
