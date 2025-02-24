@@ -108,21 +108,6 @@ public actor CurrentUserManager {
         return user(context: modelContext)?.username
     }
 
-    public func refreshUser() async throws {
-        let response = try await requestManager.get(url: "api/v1/users/\(username!).json", parameters: [:])
-        let responseJSON = JSON(response!)
-
-        guard let user = self.user(context: modelContext) else { return }
-        modelContext.refresh(user, mergeChanges: false)
-        user.updateToMatch(json: responseJSON)
-        try modelContext.save()
-
-        await Task { @MainActor in
-            guard let user = self.user(context: modelContainer.viewContext) else { return }
-            modelContainer.viewContext.refresh(user, mergeChanges: false)
-        }.value
-    }
-
     private func deleteUser() throws {
         // Delete any existing users. We expect at most one, but delete all to be safe.
         modelContext.refreshAllObjects()
