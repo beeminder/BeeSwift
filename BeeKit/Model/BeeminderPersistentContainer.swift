@@ -13,6 +13,8 @@ public class BeeminderPersistentContainer: NSPersistentContainer, @unchecked Sen
     }
 
     static func create() -> BeeminderPersistentContainer {
+        DueByTableValueTransformer.register()
+        
         let container = BeeminderPersistentContainer(name: "BeeminderModel")
 
         guard let description = container.persistentStoreDescriptions.first else {
@@ -35,6 +37,8 @@ public class BeeminderPersistentContainer: NSPersistentContainer, @unchecked Sen
     }
 
     static func createMemoryBackedForTests() -> BeeminderPersistentContainer {
+        DueByTableValueTransformer.register()
+        
         let container = BeeminderPersistentContainer(name: "BeeminderModel")
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
