@@ -26,8 +26,6 @@ public actor GoalManager {
     private let requestManager: RequestManager
     private nonisolated let currentUserManager: CurrentUserManager
 
-    public var goalsFetchedAt : Date? = nil
-
     private var queuedGoalsBackgroundTaskRunning : Bool = false
 
     init(requestManager: RequestManager, currentUserManager: CurrentUserManager, container: BeeminderPersistentContainer) {
@@ -110,7 +108,6 @@ public actor GoalManager {
 
         try modelContext.save()
 
-        self.goalsFetchedAt = Date()
         await performPostGoalUpdateBookkeeping()
     }
 
@@ -227,8 +224,6 @@ public actor GoalManager {
     }
 
     private func resetStateForSignOut() {
-        self.goalsFetchedAt = Date(timeIntervalSince1970: 0)
-
         // TODO: Delete from CoreData
     }
 }
