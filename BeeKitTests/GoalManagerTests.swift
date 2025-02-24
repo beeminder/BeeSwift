@@ -51,11 +51,41 @@ class GoalManagerTests: XCTestCase {
     func testInitialGoalCreation() async throws {
         // Set up mock responses
         let userResponse = """
-        {"username":"theospears_test1","timezone":"America/Los_Angeles","goals":["deletable-goal"],"created_at":1740350064,"updated_at":1740350182,"urgency_load":0,"deadbeat":false,"has_authorized_fitbit":false,"default_leadtime":0,"default_alertstart":34200,"default_deadline":0,"subscription":null,"subs_downto":null,"subs_freq":null,"subs_lifetime":null,"remaining_subs_credit":0,"id":"67bba270d4865fb1a5f556dd"}
+        {
+            "username": "theospears_test1",
+            "timezone": "America/Los_Angeles",
+            "updated_at": 1740350182,
+            "deadbeat": false,
+            "default_leadtime": 0,
+            "default_alertstart": 34200,
+            "default_deadline": 0
+        }
         """
         
         let goalsResponse = """
-        [{"slug":"deletable-goal","title":"We will delete this","description":null,"goalval":null,"rate":1.0,"goaldate":4102444799,"svg_url":"https://cdn.beeminder.com/uploads/e2d311f3-be50-43d4-9210-fbc3d3c5068a.svg","graph_url":"https://cdn.beeminder.com/uploads/e2d311f3-be50-43d4-9210-fbc3d3c5068a.png","thumb_url":"https://cdn.beeminder.com/uploads/e2d311f3-be50-43d4-9210-fbc3d3c5068a-thumb.png","goal_type":"hustler","autodata":null,"healthkitmetric":"","autodata_config":{},"losedate":1740988799,"urgencykey":"FROx;PPRx;DL1740988799;P1000000000;deletable-goal","deadline":0,"leadtime":0,"alertstart":34200,"use_defaults":true,"id":"67bba2e4d4865fb1a5f556e0","ephem":false,"queued":false,"panic":54000,"updated_at":1740350182,"burner":"frontburner","yaw":1,"lane":6,"delta":0,"runits":"d","limsum":"+1 in 7 days","frozen":false,"lost":false,"won":false}]
+        [
+            {
+                "id": "67bba2e4d4865fb1a5f556e0",
+                "slug": "deletable-goal",
+                "title": "We will delete this",
+                "graph_url": "https://cdn.beeminder.com/uploads/e2d311f3-be50-43d4-9210-fbc3d3c5068a.png",
+                "thumb_url": "https://cdn.beeminder.com/uploads/e2d311f3-be50-43d4-9210-fbc3d3c5068a-thumb.png",
+                "healthkitmetric": "",
+                "urgencykey": "FROx;PPRx;DL1740988799;P1000000000;deletable-goal",
+                "deadline": 0,
+                "leadtime": 0,
+                "alertstart": 34200,
+                "use_defaults": true,
+                "queued": false,
+                "limsum": "+1 in 7 days",
+                "safesum": "7 days",
+                "last_touch": "2024-02-23",
+                "init_day": 1740350182,
+                "hhmmformat": false,
+                "won": false,
+                "y_axis": "hours"
+            }
+        ]
         """
         
         mockRequestManager.responses = [
@@ -84,7 +114,21 @@ class GoalManagerTests: XCTestCase {
         
         // Now simulate a deletion update
         let deletionResponse = """
-        {"username":"theospears_test1","timezone":"America/Los_Angeles","goals":[],"created_at":1740350064,"updated_at":1740350657,"urgency_load":0,"deadbeat":false,"has_authorized_fitbit":false,"default_leadtime":0,"default_alertstart":34200,"default_deadline":0,"subscription":null,"subs_downto":null,"subs_freq":null,"subs_lifetime":null,"remaining_subs_credit":0,"id":"67bba270d4865fb1a5f556dd","deleted_goals":[{"id":"67bba2e4d4865fb1a5f556e0","slug":"deletable-goal"}]}
+        {
+            "username": "theospears_test1",
+            "timezone": "America/Los_Angeles",
+            "updated_at": 1740350657,
+            "deadbeat": false,
+            "default_leadtime": 0,
+            "default_alertstart": 34200,
+            "default_deadline": 0,
+            "deleted_goals": [
+                {
+                    "id": "67bba2e4d4865fb1a5f556e0",
+                    "slug": "deletable-goal"
+                }
+            ]
+        }
         """
         
         mockRequestManager.responses = [
