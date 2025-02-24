@@ -8,6 +8,7 @@ public class User: NSManagedObject {
     @NSManaged public var username: String
     @NSManaged public var deadbeat: Bool
     @NSManaged public var timezone: String
+    @NSManaged public var updatedAt: Date
     @NSManaged public var defaultAlertStart: Int
     @NSManaged public var defaultDeadline: Int
     @NSManaged public var defaultLeadTime: Int
@@ -25,6 +26,7 @@ public class User: NSManagedObject {
                 username: String,
                 deadbeat: Bool,
                 timezone: String,
+                updatedAt: Date,
                 defaultAlertStart: Int,
                 defaultDeadline: Int,
                 defaultLeadTime: Int
@@ -34,6 +36,7 @@ public class User: NSManagedObject {
         self.username = username
         self.deadbeat = deadbeat
         self.timezone = timezone
+        self.updatedAt = updatedAt
         self.defaultAlertStart = defaultAlertStart
         self.defaultDeadline = defaultDeadline
         self.defaultLeadTime = defaultLeadTime
@@ -52,6 +55,7 @@ public class User: NSManagedObject {
         self.username = json["username"].string!
         self.deadbeat = json["deadbeat"].bool!
         self.timezone = json["timezone"].string!
+        self.updatedAt = Date(timeIntervalSince1970: json["updated_at"].double!)
         self.defaultAlertStart = json["default_alertstart"].int!
         self.defaultDeadline = json["default_deadline"].int!
         self.defaultLeadTime = json["default_leadtime"].int!

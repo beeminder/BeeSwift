@@ -114,8 +114,8 @@ class SettingsViewController: UIViewController {
     @objc private func fetchUser() {
         Task { @MainActor [weak self] in
             self?.tableView.isUserInteractionEnabled = false
-            try? await ServiceLocator.currentUserManager.refreshUser()
-            
+            try? await self?.goalManager.refreshGoals()
+
             self?.tableView.reloadData()
             self?.tableView.layoutIfNeeded()
             self?.tableView.refreshControl?.endRefreshing()
