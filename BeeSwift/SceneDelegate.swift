@@ -65,4 +65,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                             userInfo: userInfo)
         }
     }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        logger.info("\(#function)")
+        guard let url = URLContexts.first?.url else { return }
+        
+        logger.info("SceneDelegate: Received URL \(url)")
+        
+        guard
+            let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+            components.scheme == "beeminder",
+            let goalname = components.queryItems?.first(where: { $0.name == "slug" })?.value
+        else { return }
+        
+        NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalname])
+    }
+
 }
