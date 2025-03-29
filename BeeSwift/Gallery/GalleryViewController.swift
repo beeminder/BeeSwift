@@ -98,7 +98,7 @@ class GalleryViewController: UIViewController {
         let searchBar = UISearchBar()
         searchBar.accessibilityIdentifier = "searchBar"
         searchBar.delegate = self
-        searchBar.placeholder = "Filter goals by slug"
+        searchBar.placeholder = "Search goals"
         searchBar.isHidden = true
         searchBar.showsCancelButton = true
         return searchBar
@@ -381,7 +381,11 @@ class GalleryViewController: UIViewController {
     
     func updateFilteredGoals() {
         if let searchText = searchBar.text, !searchText.isEmpty {
-            self.fetchedResultsController.fetchRequest.predicate = NSPredicate(format: "slug contains[cd] %@", searchText)
+            self.fetchedResultsController.fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates:
+                                                                                        [
+                                                                                            NSPredicate(format: "slug contains[cd] %@", searchText),
+                                                                                            NSPredicate(format: "title contains[cd] %@", searchText)
+                                                                                        ])
         } else {
             self.fetchedResultsController.fetchRequest.predicate = nil
         }
