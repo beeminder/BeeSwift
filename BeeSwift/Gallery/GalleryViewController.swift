@@ -72,18 +72,6 @@ class GalleryViewController: UIViewController {
         return outofdateView
     }()
     
-    private lazy var noGoalsLabel: BSLabel = {
-        let noGoalsLabel = BSLabel()
-        noGoalsLabel.accessibilityIdentifier = "noGoalsLabel"
-        noGoalsLabel.text = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
-        noGoalsLabel.textAlignment = .center
-        noGoalsLabel.numberOfLines = 0
-        noGoalsLabel.isHidden = true
-        // When shown this label should fill all remaining space so it is centered on the screen.
-        noGoalsLabel.setContentHuggingPriority(UILayoutPriority(UILayoutPriority.defaultLow.rawValue - 10), for: .vertical)
-        return noGoalsLabel
-    }()
-    
     private lazy var outofdateLabel: BSLabel = {
         let outofdateLabel = BSLabel()
         outofdateLabel.accessibilityIdentifier = "outofdateLabel"
@@ -221,8 +209,6 @@ class GalleryViewController: UIViewController {
             refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControl.Event.valueChanged)
             return refreshControl
         }()
-        
-        self.stackView.addArrangedSubview(self.noGoalsLabel)
         
         self.updateGoals()
         self.fetchGoals()
@@ -398,16 +384,9 @@ class GalleryViewController: UIViewController {
         self.setupHealthKit()
         self.collectionView.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
+        self.collectionView.backgroundView = backgroundViewConsideringContents
         self.updateDeadbeatVisibility()
         self.updateLastUpdatedLabel()
-
-        if self.filteredGoals.isEmpty {
-            self.noGoalsLabel.isHidden = false
-            self.collectionContainer.isHidden = true
-        } else {
-            self.noGoalsLabel.isHidden = true
-            self.collectionContainer.isHidden = false
-        }
         let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(self.searchButtonPressed))
         self.navigationItem.leftBarButtonItem = searchItem
     }
@@ -560,5 +539,65 @@ private extension GalleryViewController {
                 NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
             ]
         }
+    }
+}
+
+
+// view for the background of the collection view based on its contents
+private extension GalleryViewController {
+    var backgroundViewConsideringContents: UIView? {
+        let allGoals = currentUserManager.user(context: viewContext)?.goals
+        
+        return switch (filteredGoals.isEmpty, allGoals?.isEmpty) {
+        case (true, false):
+            self.makeViewForEmptyCollection(when: .noGoalsMatchingFilter)
+        case (true, true):
+            self.makeViewForEmptyCollection(when: .noActiveGoals)
+        default:
+            nil
+        }
+    }
+    
+    enum NoGoalReason: CaseIterable {
+        case noActiveGoals
+        case noGoalsMatchingFilter
+        
+        var message: String {
+            switch self {
+            case .noActiveGoals:
+                """
+                You have no Beeminder goals!
+
+                You'll need to create one before this app will be any use.
+                """
+            case .noGoalsMatchingFilter:
+                """
+                You have Beeminder goals!
+
+                None match the current filter.
+                """
+            }
+        }
+    }
+    
+    func makeViewForEmptyCollection(when reason: NoGoalReason) -> UIView {
+        let container = UIView()
+        
+        let viewCorrespondingToReason: UIView = {
+            let label = BSLabel()
+            label.text = reason.message
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            return label
+        }()
+        container.addSubview(viewCorrespondingToReason)
+        container.addSubview(UIView())
+        
+        viewCorrespondingToReason.snp.makeConstraints { make in
+            make.top.lessThanOrEqualTo(100)
+            make.horizontalEdges.equalTo(container)
+        }
+        
+        return container
     }
 }
