@@ -22,8 +22,8 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
 
     @NSManaged public var updatedAt: Int
 
-    /// The last time this record in the CoreData store was updated
-    @NSManaged public var lastModifiedLocal: Date
+    /// The last time this record in the CoreData store was refreshed
+    @NSManaged public var lastRefreshedLocal: Date
 
     public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String, value: NSNumber, updatedAt: Int) {
         let entity = NSEntityDescription.entity(forEntityName: "DataPoint", in: context)!
@@ -35,7 +35,7 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
         self.requestid = requestid
         self.value = value
         self.updatedAt = updatedAt
-        lastModifiedLocal = Date()
+        lastRefreshedLocal = Date()
     }
 
     @available(*, unavailable)
@@ -83,7 +83,7 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
         comment = json["comment"].stringValue
         requestid = json["requestid"].stringValue
         updatedAt = json["updated_at"].intValue
-        lastModifiedLocal = Date()
+        lastRefreshedLocal = Date()
     }
 
     public var daystamp: Daystamp {

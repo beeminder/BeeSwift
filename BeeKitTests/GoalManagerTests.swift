@@ -138,7 +138,7 @@ class GoalManagerTests: XCTestCase {
         XCTAssertEqual(user.goals.count, 0, "All goals should be deleted")
     }
     
-    func testIncrementalUpdateUpdatesAllGoalsLastModifiedLocal() async throws {
+    func testIncrementalUpdateUpdatesAllGoalsLastRefreshedLocal() async throws {
         // 1. First create two goals
         let userResponse = """
         {
@@ -219,8 +219,8 @@ class GoalManagerTests: XCTestCase {
         XCTAssertNotNil(goalOne)
         XCTAssertNotNil(goalTwo)
         
-        let originalGoalOneTimestamp = goalOne!.lastModifiedLocal
-        let originalGoalTwoTimestamp = goalTwo!.lastModifiedLocal
+        let originalGoalOneTimestamp = goalOne!.lastRefreshedLocal
+        let originalGoalTwoTimestamp = goalTwo!.lastRefreshedLocal
         
         // Wait a moment to ensure timestamps will be different
         try await Task.sleep(nanoseconds: 1_000_000_000)
@@ -276,8 +276,8 @@ class GoalManagerTests: XCTestCase {
         XCTAssertNotNil(updatedGoalOne)
         XCTAssertNotNil(updatedGoalTwo)
         
-        XCTAssertGreaterThan(updatedGoalOne!.lastModifiedLocal, originalGoalOneTimestamp, "Goal One should have updated timestamp")
-        XCTAssertGreaterThan(updatedGoalTwo!.lastModifiedLocal, originalGoalTwoTimestamp, "Goal Two should have updated timestamp even though it wasn't in the response")
+        XCTAssertGreaterThan(updatedGoalOne!.lastRefreshedLocal, originalGoalOneTimestamp, "Goal One should have updated timestamp")
+        XCTAssertGreaterThan(updatedGoalTwo!.lastRefreshedLocal, originalGoalTwoTimestamp, "Goal Two should have updated timestamp even though it wasn't in the response")
         
         // 5. Verify other properties updated correctly
         XCTAssertEqual(updatedGoalOne!.title, "Goal One Updated")

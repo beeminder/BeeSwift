@@ -555,7 +555,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     @objc func updateLastUpdatedLabel() {
-        let lastUpdated = self.goal.lastModifiedLocal
+        let lastUpdated = self.goal.lastRefreshedLocal
         
         self.timeElapsedView.update(with: lastUpdated)
     }

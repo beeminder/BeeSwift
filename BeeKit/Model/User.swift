@@ -19,8 +19,8 @@ public class User: NSManagedObject {
     @NSManaged func addGoals(value: Set<Goal>)
     @NSManaged func removeGoals(value: Set<Goal>)
 
-    /// The last time this record in the CoreData store was updated
-    @NSManaged public var lastModifiedLocal: Date
+    /// The last time this record in the CoreData store was refreshed
+    @NSManaged public var lastRefreshedLocal: Date
 
     public init(context: NSManagedObjectContext,
                 username: String,
@@ -41,7 +41,7 @@ public class User: NSManagedObject {
         self.defaultDeadline = defaultDeadline
         self.defaultLeadTime = defaultLeadTime
 
-        lastModifiedLocal = Date()
+        lastRefreshedLocal = Date()
     }
 
     public init(context: NSManagedObjectContext, json: JSON) {
@@ -60,7 +60,7 @@ public class User: NSManagedObject {
         self.defaultDeadline = json["default_deadline"].int!
         self.defaultLeadTime = json["default_leadtime"].int!
 
-        lastModifiedLocal = Date()
+        lastRefreshedLocal = Date()
     }
 
     @available(*, unavailable)
