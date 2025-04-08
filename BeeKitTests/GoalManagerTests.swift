@@ -137,4 +137,150 @@ class GoalManagerTests: XCTestCase {
         let user = try XCTUnwrap(currentUserManager.user(context: context))
         XCTAssertEqual(user.goals.count, 0, "All goals should be deleted")
     }
+    
+    func testIncrementalUpdateUpdatesAllGoalsLastModifiedLocal() async throws {
+        // 1. First create two goals
+        let userResponse = """
+        {
+            "username": "test_user",
+            "timezone": "America/Los_Angeles",
+            "updated_at": 1740350182,
+            "deadbeat": false,
+            "default_leadtime": 0,
+            "default_alertstart": 34200,
+            "default_deadline": 0
+        }
+        """
+        
+        let initialGoalsResponse = """
+        [
+            {
+                "id": "goal1",
+                "slug": "goal-one",
+                "title": "Goal One",
+                "graph_url": "https://cdn.beeminder.com/uploads/example.png",
+                "thumb_url": "https://cdn.beeminder.com/uploads/example-thumb.png",
+                "healthkitmetric": "",
+                "urgencykey": "FROx;PPRx;DL1740988799;P1000000000;goal-one",
+                "deadline": 0,
+                "leadtime": 0,
+                "alertstart": 34200,
+                "use_defaults": true,
+                "queued": false,
+                "limsum": "+1 in 7 days",
+                "safesum": "7 days",
+                "last_touch": "2024-02-23",
+                "init_day": 1740350182,
+                "hhmmformat": false,
+                "won": false,
+                "y_axis": "hours"
+            },
+            {
+                "id": "goal2",
+                "slug": "goal-two",
+                "title": "Goal Two",
+                "graph_url": "https://cdn.beeminder.com/uploads/example2.png",
+                "thumb_url": "https://cdn.beeminder.com/uploads/example2-thumb.png",
+                "healthkitmetric": "",
+                "urgencykey": "FROx;PPRx;DL1740988799;P1000000000;goal-two",
+                "deadline": 0,
+                "leadtime": 0,
+                "alertstart": 34200,
+                "use_defaults": true,
+                "queued": false,
+                "limsum": "+1 in 7 days",
+                "safesum": "7 days",
+                "last_touch": "2024-02-23",
+                "init_day": 1740350182,
+                "hhmmformat": false,
+                "won": false,
+                "y_axis": "hours"
+            }
+        ]
+        """
+        
+        mockRequestManager.responses = [
+            "api/v1/users/{username}.json": try JSONSerialization.jsonObject(with: userResponse.data(using: .utf8)!, options: []),
+            "api/v1/users/{username}/goals.json": try JSONSerialization.jsonObject(with: initialGoalsResponse.data(using: .utf8)!, options: [])
+        ]
+        
+        try await goalManager.refreshGoals()
+        
+        // 2. Capture original timestamps
+        let context = container.viewContext
+        context.refreshAllObjects()
+        let user = try XCTUnwrap(currentUserManager.user(context: context))
+        XCTAssertEqual(user.goals.count, 2)
+        
+        // Find goals by slug
+        let goalOne = user.goals.first { $0.slug == "goal-one" }
+        let goalTwo = user.goals.first { $0.slug == "goal-two" }
+        
+        XCTAssertNotNil(goalOne)
+        XCTAssertNotNil(goalTwo)
+        
+        let originalGoalOneTimestamp = goalOne!.lastModifiedLocal
+        let originalGoalTwoTimestamp = goalTwo!.lastModifiedLocal
+        
+        // Wait a moment to ensure timestamps will be different
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        
+        // 3. Now perform an incremental update that only updates one goal
+        let incrementalResponse = """
+        {
+            "username": "test_user",
+            "timezone": "America/Los_Angeles",
+            "updated_at": 1740350657,
+            "deadbeat": false,
+            "default_leadtime": 0,
+            "default_alertstart": 34200,
+            "default_deadline": 0,
+            "goals": [
+                {
+                    "id": "goal1",
+                    "slug": "goal-one",
+                    "title": "Goal One Updated",
+                    "graph_url": "https://cdn.beeminder.com/uploads/example.png",
+                    "thumb_url": "https://cdn.beeminder.com/uploads/example-thumb.png",
+                    "healthkitmetric": "",
+                    "urgencykey": "FROx;PPRx;DL1740988799;P1000000000;goal-one",
+                    "deadline": 0,
+                    "leadtime": 0,
+                    "alertstart": 34200,
+                    "use_defaults": true,
+                    "queued": false,
+                    "limsum": "+1 in 7 days",
+                    "safesum": "7 days",
+                    "last_touch": "2024-02-23",
+                    "initday": 1740350182,
+                    "hhmmformat": false,
+                    "won": false,
+                    "yaxis": "hours"
+                }
+            ],
+            "deleted_goals": []
+        }
+        """
+        
+        mockRequestManager.responses = [
+            "api/v1/users/{username}.json": try JSONSerialization.jsonObject(with: incrementalResponse.data(using: .utf8)!, options: [])
+        ]
+        
+        try await goalManager.refreshGoals()
+        
+        // 4. Verify that both goals' timestamps were updated
+        context.refreshAllObjects()
+        let updatedGoalOne = user.goals.first { $0.slug == "goal-one" }
+        let updatedGoalTwo = user.goals.first { $0.slug == "goal-two" }
+        
+        XCTAssertNotNil(updatedGoalOne)
+        XCTAssertNotNil(updatedGoalTwo)
+        
+        XCTAssertGreaterThan(updatedGoalOne!.lastModifiedLocal, originalGoalOneTimestamp, "Goal One should have updated timestamp")
+        XCTAssertGreaterThan(updatedGoalTwo!.lastModifiedLocal, originalGoalTwoTimestamp, "Goal Two should have updated timestamp even though it wasn't in the response")
+        
+        // 5. Verify other properties updated correctly
+        XCTAssertEqual(updatedGoalOne!.title, "Goal One Updated")
+        XCTAssertEqual(updatedGoalTwo!.title, "Goal Two")
+    }
 }
