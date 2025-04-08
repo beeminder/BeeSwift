@@ -64,6 +64,7 @@ public actor GoalManager {
             try await refreshGoalsIncremental(user: user)
         }
         
+        try modelContext.save()
         await performPostGoalUpdateBookkeeping()
     }
     
@@ -91,7 +92,6 @@ public actor GoalManager {
         }
         
         updateGoalsFromJson(goalResponse)
-        try modelContext.save()
     }
     
     /// Perform an incremental refresh of goals for regular updates
@@ -115,7 +115,6 @@ public actor GoalManager {
         }
         
         updateGoalsFromJson(goalResponse)
-        try modelContext.save()
     }
 
     public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
