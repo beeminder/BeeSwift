@@ -41,6 +41,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
         
+        UNUserNotificationCenter.current().delegate = self
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsUpdated), name: GoalManager.NotificationName.goalsUpdated, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleUserSignedOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
 
