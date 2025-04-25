@@ -148,7 +148,7 @@ final class GoalTests: XCTestCase {
     }
 
     func createTestUser(context: NSManagedObjectContext) -> User {
-        return User(context: context, username: "test-user", deadbeat: false, timezone: "Etc/UTC", defaultAlertStart: 0, defaultDeadline: 0, defaultLeadTime: 0)
+        return User(context: context, username: "test-user", deadbeat: false, timezone: "Etc/UTC", updatedAt: Date(timeIntervalSince1970: 0), defaultAlertStart: 0, defaultDeadline: 0, defaultLeadTime: 0)
     }
 
 

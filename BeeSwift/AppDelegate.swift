@@ -17,7 +17,7 @@ import AlamofireNetworkActivityIndicator
 import BeeKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "AppDelegate")
     let backgroundUpdates = BackgroundUpdates()
 
@@ -40,6 +40,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
+        
+        UNUserNotificationCenter.current().delegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsUpdated), name: GoalManager.NotificationName.goalsUpdated, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleUserSignedOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
@@ -161,12 +163,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
-    // MARK: - UNUserNotificationCenterDelegate
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.list, .banner, .sound, .badge])
-    }
-    
     private func resetStateIfUITesting() {
         if ProcessInfo.processInfo.arguments.contains("UI-Testing") {
             UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
@@ -176,17 +172,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func removeAllLocalNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        if userActivity.activityType == CSSearchableItemActionType {
-            guard let goalIdentifier = userActivity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return false
-            }
-            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["identifier": goalIdentifier])
-        } else if let intent = userActivity.interaction?.intent as? AddDataIntent {
-            guard let goalSlug = intent.goal else { return false }
-            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
-        } else if let goalSlug = userActivity.userInfo?["slug"] {
-            NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalSlug])
-        }
-        return true
+}
+
+// MARK: - UNUserNotificationCenterDelegate
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
+        [.list, .banner, .sound, .badge]
     }
 }
