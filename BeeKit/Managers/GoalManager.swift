@@ -116,10 +116,10 @@ public actor GoalManager {
         
         updateGoalsFromJson(goalResponse)
         
-        // Update lastRefreshedLocal for all goals, even those not in response
+        // Update lastUpdatedLocal for all goals, even those not in response
         let now = Date()
         for goal in user.goals {
-            goal.lastRefreshedLocal = now
+            goal.lastUpdatedLocal = now
         }
     }
 

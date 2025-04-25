@@ -23,6 +23,10 @@ public class BeeminderPersistentContainer: NSPersistentContainer, @unchecked Sen
         // Spotlight indexing requires sqlite and history tracking
         description.type = NSSQLiteStoreType
         description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        
+        // Enable automatic migration
+        description.shouldMigrateStoreAutomatically = true
+        description.shouldInferMappingModelAutomatically = true
 
         container.loadPersistentStores { description, error in
             if let error = error {
