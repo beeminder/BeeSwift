@@ -78,7 +78,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let goalname = components.queryItems?.first(where: { $0.name == "slug" })?.value
         else { return }
         
-        NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": goalname])
+        NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal,
+                                        object: nil,
+                                        userInfo: ["slug": goalname])
     }
 
 }
