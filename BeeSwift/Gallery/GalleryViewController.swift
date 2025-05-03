@@ -547,7 +547,7 @@ private extension GalleryViewController {
             ]
         case Constants.recentDataGoalSortString:
             return [
-                NSSortDescriptor(keyPath: \Goal.lastTouch, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.lastTouch, ascending: false),
                 NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
             ]
         case Constants.pledgeGoalSortString:
