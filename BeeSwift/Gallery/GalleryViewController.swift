@@ -552,7 +552,7 @@ private extension GalleryViewController {
             ]
         case Constants.pledgeGoalSortString:
             return [
-                NSSortDescriptor(keyPath: \Goal.pledge, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.pledge, ascending: false),
                 NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
             ]
         default:
