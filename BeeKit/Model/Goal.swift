@@ -66,7 +66,7 @@ public class Goal: NSManagedObject {
     @NSManaged public var dueBy: DueByDictionary
 
     /// The last time this record in the CoreData store was updated
-    @NSManaged public var lastModifiedLocal: Date
+    @NSManaged public var lastUpdatedLocal: Date
 
     public init(
         context: NSManagedObjectContext,
@@ -122,7 +122,7 @@ public class Goal: NSManagedObject {
         self.won = won
         self.yAxis = yAxis
 
-        lastModifiedLocal = Date()
+        lastUpdatedLocal = Date()
     }
 
     public init(context: NSManagedObjectContext, owner: User, json: JSON) {
@@ -184,6 +184,6 @@ public class Goal: NSManagedObject {
         removeFromRecentData(recentData)
         addToRecentData(newRecentData)
 
-        lastModifiedLocal = Date()
+        lastUpdatedLocal = Date()
     }
 }
