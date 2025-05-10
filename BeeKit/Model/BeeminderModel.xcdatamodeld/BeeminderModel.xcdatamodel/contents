@@ -21,6 +21,7 @@
         <attribute name="id" attributeType="String"/>
         <attribute name="initDay" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastSyncedWithHealthKit" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastTouch" attributeType="String"/>
         <attribute name="leadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="limSum" attributeType="String"/>
