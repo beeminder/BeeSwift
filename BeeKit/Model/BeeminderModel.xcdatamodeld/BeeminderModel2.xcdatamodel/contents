@@ -4,7 +4,7 @@
         <attribute name="comment" optional="YES" attributeType="String"/>
         <attribute name="daystampRaw" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
-        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO" elementID="lastUpdatedLocal">
+        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
             <userInfo>
                 <entry key="renamingIdentifier" value="lastModifiedLocal"/>
             </userInfo>
@@ -25,7 +25,7 @@
         <attribute name="id" attributeType="String"/>
         <attribute name="initDay" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="lastTouch" attributeType="String"/>
-        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO" elementID="lastUpdatedLocal">
+        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
             <userInfo>
                 <entry key="renamingIdentifier" value="lastModifiedLocal"/>
             </userInfo>
@@ -53,7 +53,7 @@
         <attribute name="defaultAlertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="defaultDeadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="defaultLeadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO" elementID="lastUpdatedLocal">
+        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
             <userInfo>
                 <entry key="renamingIdentifier" value="lastModifiedLocal"/>
             </userInfo>
