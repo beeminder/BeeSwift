@@ -4,18 +4,31 @@ import CoreData
 
 class MigrationTests: XCTestCase {
     
-    override func tearDown() {
-        super.tearDown()
-        // Clean up any test files
-        cleanupTestFiles()
+    // MARK: - Test Data
+    
+    // Define test data once for use throughout the test
+    private struct TestData {
+        static let username = "testuser"
+        static let timezone = "America/Los_Angeles"
+        static let goalSlug = "test-goal"
+        static let goalTitle = "Test Goal"
+        static let goalId = "test1"
+        static let dataPointId = "dp1"
+        static let dataPointDaystamp = "20230101"
+        static let dataPointValue = NSDecimalNumber(value: 1.0)
+
+        static let userLastModified = Date(timeIntervalSince1970: 1600000000)
+        static let goalLastModified = Date(timeIntervalSince1970: 1610000000)
+        static let dataPointLastModified = Date(timeIntervalSince1970: 1620000000)
     }
     
-    // MARK: - Helper Methods
-    
-    private func cleanupTestFiles() {
+    override func tearDown() {
+        super.tearDown()
+
+        // Clean up any test files
         let fileManager = FileManager.default
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
-        
+
         if let files = try? fileManager.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil) {
             for file in files where file.lastPathComponent.hasPrefix("TestMigration_") {
                 try? fileManager.removeItem(at: file)
@@ -23,6 +36,8 @@ class MigrationTests: XCTestCase {
         }
     }
     
+    // MARK: - Helper Methods
+
     // Creates a CoreData store with the old model version (v1)
     private func createStoreWithOldModel() -> URL {
         let storeURL = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -53,63 +68,44 @@ class MigrationTests: XCTestCase {
             let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
             context.persistentStoreCoordinator = coordinator
             
-            // Create minimal test data with specific dates
-            let testDates = [
-                "user": Date(timeIntervalSince1970: 1600000000),      // Sep 13, 2020
-                "goal": Date(timeIntervalSince1970: 1610000000),      // Jan 7, 2021
-                "datapoint": Date(timeIntervalSince1970: 1620000000)  // May 3, 2021
-            ]
-            
             // Create user
             let user = NSEntityDescription.insertNewObject(forEntityName: "User", into: context)
-            user.setValue("testuser", forKey: "username")
-            user.setValue("America/Los_Angeles", forKey: "timezone")
+            user.setValue(TestData.username, forKey: "username")
+            user.setValue(TestData.timezone, forKey: "timezone")
             user.setValue(false, forKey: "deadbeat")
             user.setValue(Date(), forKey: "updatedAt")
-            user.setValue(testDates["user"], forKey: "lastModifiedLocal")
-            
+            user.setValue(TestData.userLastModified, forKey: "lastModifiedLocal")
+
             // Create goal with minimal required fields
             let goal = NSEntityDescription.insertNewObject(forEntityName: "Goal", into: context)
-            goal.setValue("test-goal", forKey: "slug")
-            goal.setValue("Test Goal", forKey: "title")
-            goal.setValue("test1", forKey: "id")
+            goal.setValue(TestData.goalSlug, forKey: "slug")
+            goal.setValue(TestData.goalTitle, forKey: "title")
+            goal.setValue(TestData.goalId, forKey: "id")
             
-            // Set required string fields to empty
+            // Add placeholders for all required fields
             for field in ["graphUrl", "thumbUrl", "urgencyKey", "lastTouch", "limSum", "safeSum", "yAxis"] {
                 goal.setValue("", forKey: field)
             }
-            
-            // Set required numeric fields to 0
             for field in ["alertStart", "deadline", "initDay", "leadTime", "pledge", "safeBuf"] {
                 goal.setValue(0, forKey: field)
             }
-            
-            // Set required boolean fields to false
             for field in ["hhmmFormat", "queued", "todayta", "useDefaults", "won"] {
                 goal.setValue(false, forKey: field)
             }
             
             goal.setValue(DueByDictionary(), forKey: "dueBy")
-            goal.setValue(testDates["goal"], forKey: "lastModifiedLocal")
+            goal.setValue(TestData.goalLastModified, forKey: "lastModifiedLocal")
             goal.setValue(user, forKey: "owner")
             
             // Create datapoint
             let dataPoint = NSEntityDescription.insertNewObject(forEntityName: "DataPoint", into: context)
-            dataPoint.setValue("dp1", forKey: "id")
-            dataPoint.setValue("2023-01-01", forKey: "daystampRaw")
-            dataPoint.setValue(NSDecimalNumber(value: 1.0), forKey: "value")
-            dataPoint.setValue(testDates["datapoint"], forKey: "lastModifiedLocal")
+            dataPoint.setValue(TestData.dataPointId, forKey: "id")
+            dataPoint.setValue(TestData.dataPointDaystamp, forKey: "daystampRaw")
+            dataPoint.setValue(TestData.dataPointValue, forKey: "value")
+            dataPoint.setValue(TestData.dataPointLastModified, forKey: "lastModifiedLocal")
             dataPoint.setValue(goal, forKey: "goal")
             
             try context.save()
-            
-            // Verify data was saved correctly
-            let verifyRequest = NSFetchRequest<NSManagedObject>(entityName: "User")
-            let savedUsers = try context.fetch(verifyRequest)
-            if let savedUser = savedUsers.first {
-                let savedDate = savedUser.value(forKey: "lastModifiedLocal") as? Date
-                print("Before migration - User lastModifiedLocal: \(String(describing: savedDate))")
-            }
             
             return storeURL
         } catch {
@@ -119,76 +115,54 @@ class MigrationTests: XCTestCase {
     }
     
     // Test that migration from lastModifiedLocal to lastUpdatedLocal works
-    func testMigration() throws {
-        // Define expected test dates
-        let expectedDates = [
-            "user": Date(timeIntervalSince1970: 1600000000),      // Sep 13, 2020
-            "goal": Date(timeIntervalSince1970: 1610000000),      // Jan 7, 2021
-            "datapoint": Date(timeIntervalSince1970: 1620000000)  // May 3, 2021
-        ]
-        
-        // 1. Create a store with the old model
+    func testLastUpdatedLocalMigration() throws {
+        DueByTableValueTransformer.register()
+
         let storeURL = createStoreWithOldModel()
         
-        // 2. Load the store with the current model (which should be v2) to trigger migration
-        // Create container using BeeminderPersistentContainer to ensure proper setup
-        DueByTableValueTransformer.register() // Ensure transformers are registered
         let container = BeeminderPersistentContainer(name: "BeeminderModel")
         let description = NSPersistentStoreDescription(url: storeURL)
-        description.shouldMigrateStoreAutomatically = true
-        description.shouldInferMappingModelAutomatically = true
         container.persistentStoreDescriptions = [description]
         
-        // Load store with migration
         let expectation = XCTestExpectation(description: "Load store")
         var loadError: Error?
-        
         container.loadPersistentStores { _, error in
             loadError = error
             expectation.fulfill()
         }
-        
         wait(for: [expectation], timeout: 5.0)
         XCTAssertNil(loadError, "Migration should succeed")
         
-        // 3. Verify migration completed successfully with correct values
         let context = container.viewContext
         
-        // Force a refresh to ensure we're seeing migrated data
-        context.refreshAllObjects()
+        // Migration on User
+        let userRequest = NSFetchRequest<User>(entityName: "User")
+        let users = try context.fetch(userRequest)
+        XCTAssertEqual(users.count, 1, "Should have one user after migration")
         
-        // Helper to verify entity migration and value preservation
-        func verifyEntityMigration(_ entityName: String, expectedDate: Date) throws {
-            let request = NSFetchRequest<NSManagedObject>(entityName: entityName)
-            let results = try context.fetch(request)
-            
-            XCTAssertEqual(results.count, 1, "Should have one \(entityName) after migration")
-            
-            if let entity = results.first {
-                // Verify new attribute exists
-                let hasNewAttribute = entity.entity.attributesByName.keys.contains("lastUpdatedLocal")
-                XCTAssertTrue(hasNewAttribute, "\(entityName) should have lastUpdatedLocal attribute")
-                
-                // Verify old attribute name no longer exists
-                let hasOldAttribute = entity.entity.attributesByName.keys.contains("lastModifiedLocal")
-                XCTAssertFalse(hasOldAttribute, "\(entityName) should not have lastModifiedLocal attribute")
-                
-                // Verify the value was migrated correctly
-                let migratedValue = entity.value(forKey: "lastUpdatedLocal")
-                print("\(entityName) - lastUpdatedLocal value: \(String(describing: migratedValue))")
-                
-                if let migratedDate = migratedValue as? Date {
-                    XCTAssertEqual(migratedDate.timeIntervalSince1970, expectedDate.timeIntervalSince1970,
-                                 accuracy: 0.001, "\(entityName) date should be preserved during migration")
-                } else {
-                    XCTFail("\(entityName).lastUpdatedLocal should have migrated date value, but got: \(String(describing: migratedValue))")
-                }
-            }
+        if let user = users.first {
+            XCTAssertEqual(user.lastUpdatedLocal.timeIntervalSince1970, TestData.userLastModified.timeIntervalSince1970,
+                         accuracy: 0.001, "User date value should be preserved during migration")
         }
         
-        // Verify each entity type with its expected date
-        try verifyEntityMigration("User", expectedDate: expectedDates["user"]!)
-        try verifyEntityMigration("Goal", expectedDate: expectedDates["goal"]!)
-        try verifyEntityMigration("DataPoint", expectedDate: expectedDates["datapoint"]!)
+        // Migration on Goal
+        let goalRequest = NSFetchRequest<Goal>(entityName: "Goal")
+        let goals = try context.fetch(goalRequest)
+        XCTAssertEqual(goals.count, 1, "Should have one goal after migration")
+        
+        if let goal = goals.first {
+            XCTAssertEqual(goal.lastUpdatedLocal.timeIntervalSince1970, TestData.goalLastModified.timeIntervalSince1970,
+                         accuracy: 0.001, "Goal date value should be preserved during migration")
+        }
+        
+        // Migration on DataPoint
+        let dataPointRequest = NSFetchRequest<DataPoint>(entityName: "DataPoint")
+        let dataPoints = try context.fetch(dataPointRequest)
+        XCTAssertEqual(dataPoints.count, 1, "Should have one data point after migration")
+        
+        if let dataPoint = dataPoints.first {
+            XCTAssertEqual(dataPoint.lastUpdatedLocal.timeIntervalSince1970, TestData.dataPointLastModified.timeIntervalSince1970,
+                         accuracy: 0.001, "DataPoint date value should be preserved during migration")
+        }
     }
 }
