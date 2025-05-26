@@ -6,7 +6,7 @@
         <attribute name="id" attributeType="String"/>
         <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978278400" usesScalarValueType="NO">
             <userInfo>
-                <entry key="renameFrom" value="lastModifiedLocal"/>
+                <entry key="renamingIdentifier" value="lastModifiedLocal"/>
             </userInfo>
         </attribute>
         <attribute name="requestid" optional="YES" attributeType="String"/>
@@ -27,7 +27,7 @@
         <attribute name="lastTouch" attributeType="String"/>
         <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978278400" usesScalarValueType="NO">
             <userInfo>
-                <entry key="renameFrom" value="lastModifiedLocal"/>
+                <entry key="renamingIdentifier" value="lastModifiedLocal"/>
             </userInfo>
         </attribute>
         <attribute name="leadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -55,7 +55,7 @@
         <attribute name="defaultLeadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978278400" usesScalarValueType="NO">
             <userInfo>
-                <entry key="renameFrom" value="lastModifiedLocal"/>
+                <entry key="renamingIdentifier" value="lastModifiedLocal"/>
             </userInfo>
         </attribute>
         <attribute name="timezone" attributeType="String"/>

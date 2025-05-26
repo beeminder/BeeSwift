@@ -103,6 +103,7 @@
 		E486DE2A29B0410A00F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2929B0410A00F338B2 /* OrderedCollections */; };
 		E48E2714296B75E4008013C0 /* TotalSleepMinutesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */; };
 		E48E27202973261F008013C0 /* BackgroundUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271F2973261F008013C0 /* BackgroundUpdates.swift */; };
+		E49127752DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E49127722DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld */; };
 		E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */; };
 		E4B0833B2934620500A71564 /* DatapointTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833A2934620500A71564 /* DatapointTableViewController.swift */; };
 		E4B0A32E28C194C800055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
@@ -110,7 +111,6 @@
 		E4B0A33128C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
-		E4D3A2BD2DC0948C00E16A1C /* BeeminderModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E4D3A2BA2DC0948C00E16A1C /* BeeminderModel.xcdatamodeld */; };
 		E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */; };
 		E4D5BD5F2C6709060007B0BE /* BeeminderSpotlightDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */; };
 		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
@@ -137,6 +137,7 @@
 		E5FEFB3824E6FAC800A076BB /* BeeSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FEFB3724E6FAC800A076BB /* BeeSwiftUITests.swift */; };
 		E5FEFB4124E6FAFC00A076BB /* LaunchScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */; };
 		E9D661EBFB2D8EEE8F8DEEA0 /* GoalManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4BF1F79738C8EB7F63CD31 /* GoalManagerTests.swift */; };
+		E9D661EC00000001F8DEEA0 /* MigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4BF1F800000001F63CD31 /* MigrationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -218,6 +219,7 @@
 
 /* Begin PBXFileReference section */
 		0E4BF1F79738C8EB7F63CD31 /* GoalManagerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoalManagerTests.swift; sourceTree = "<group>"; };
+		0E4BF1F800000001F63CD31 /* MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationTests.swift; sourceTree = "<group>"; };
 		9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkGenerator.swift; sourceTree = "<group>"; };
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshnessIndicatorView.swift; sourceTree = "<group>"; };
@@ -294,12 +296,12 @@
 		E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAsleepHealthKitMetric.swift; sourceTree = "<group>"; };
 		E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandHoursHealthKitMetric.swift; sourceTree = "<group>"; };
 		E48E271F2973261F008013C0 /* BackgroundUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundUpdates.swift; sourceTree = "<group>"; };
+		E49127732DC9E2C6000BFBFE /* BeeminderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel.xcdatamodel; sourceTree = "<group>"; };
+		E49127742DC9E2C6000BFBFE /* BeeminderModel2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel2.xcdatamodel; sourceTree = "<group>"; };
 		E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureHKMetricViewController.swift; sourceTree = "<group>"; };
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
-		E4D3A2BB2DC0948C00E16A1C /* BeeminderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel.xcdatamodel; sourceTree = "<group>"; };
-		E4D3A2BC2DC0948C00E16A1C /* BeeminderModel2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel2.xcdatamodel; sourceTree = "<group>"; };
 		E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricMonitor.swift; sourceTree = "<group>"; };
 		E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderSpotlightDelegate.swift; sourceTree = "<group>"; };
 		E4E43D8729F39CE800697116 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
@@ -563,7 +565,7 @@
 		E46070F62B3FEFB300305DB4 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				E4D3A2BA2DC0948C00E16A1C /* BeeminderModel.xcdatamodeld */,
+				E49127722DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld */,
 				9BB602A42D3A6D1900756109 /* DueBy */,
 				E46070F72B3FEFD400305DB4 /* BeeminderPersistentContainer.swift */,
 				E46070EE2B36A4D900305DB4 /* User.swift */,
@@ -669,6 +671,7 @@
 			children = (
 				E45470292B60E25C00EE648B /* DaystampTests.swift */,
 				0E4BF1F79738C8EB7F63CD31 /* GoalManagerTests.swift */,
+				0E4BF1F800000001F63CD31 /* MigrationTests.swift */,
 				E57BE6F12655EBE000BA540B /* Info.plist */,
 			);
 			path = BeeKitTests;
@@ -1093,8 +1096,8 @@
 				E5A80E6826598A370016D9A0 /* (null) in Sources */,
 				E57BE7042655EE1F00BA540B /* Config.swift in Sources */,
 				E458C80E2AD11C77000DCA5C /* HealthStoreManager.swift in Sources */,
+				E49127752DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld in Sources */,
 				E458C8062AD11BCD000DCA5C /* GoalManager.swift in Sources */,
-				E4D3A2BD2DC0948C00E16A1C /* BeeminderModel.xcdatamodeld in Sources */,
 				E458C8272AD11F81000DCA5C /* BSLabel.swift in Sources */,
 				E46071022B451FAC00305DB4 /* BeeminderPersistentContainer.swift in Sources */,
 				E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */,
@@ -1114,6 +1117,7 @@
 				E454702A2B60E25C00EE648B /* DaystampTests.swift in Sources */,
 				E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */,
 				E9D661EBFB2D8EEE8F8DEEA0 /* GoalManagerTests.swift in Sources */,
+				E9D661EC00000001F8DEEA0 /* MigrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1961,13 +1965,13 @@
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
-		E4D3A2BA2DC0948C00E16A1C /* BeeminderModel.xcdatamodeld */ = {
+		E49127722DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				E4D3A2BB2DC0948C00E16A1C /* BeeminderModel.xcdatamodel */,
-				E4D3A2BC2DC0948C00E16A1C /* BeeminderModel2.xcdatamodel */,
+				E49127732DC9E2C6000BFBFE /* BeeminderModel.xcdatamodel */,
+				E49127742DC9E2C6000BFBFE /* BeeminderModel2.xcdatamodel */,
 			);
-			currentVersion = E4D3A2BC2DC0948C00E16A1C /* BeeminderModel2.xcdatamodel */;
+			currentVersion = E49127742DC9E2C6000BFBFE /* BeeminderModel2.xcdatamodel */;
 			path = BeeminderModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
