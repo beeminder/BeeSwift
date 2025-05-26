@@ -4,19 +4,7 @@ import CoreData
 
 class MigrationTests: XCTestCase {
     
-    // MARK: - Test Data
-    
-    // Define test data once for use throughout the test
     private struct TestData {
-        static let username = "testuser"
-        static let timezone = "America/Los_Angeles"
-        static let goalSlug = "test-goal"
-        static let goalTitle = "Test Goal"
-        static let goalId = "test1"
-        static let dataPointId = "dp1"
-        static let dataPointDaystamp = "20230101"
-        static let dataPointValue = NSDecimalNumber(value: 1.0)
-
         static let userLastModified = Date(timeIntervalSince1970: 1600000000)
         static let goalLastModified = Date(timeIntervalSince1970: 1610000000)
         static let dataPointLastModified = Date(timeIntervalSince1970: 1620000000)
@@ -36,8 +24,6 @@ class MigrationTests: XCTestCase {
         }
     }
     
-    // MARK: - Helper Methods
-
     // Creates a CoreData store with the old model version (v1)
     private func createStoreWithOldModel() -> URL {
         let storeURL = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -70,17 +56,17 @@ class MigrationTests: XCTestCase {
             
             // Create user
             let user = NSEntityDescription.insertNewObject(forEntityName: "User", into: context)
-            user.setValue(TestData.username, forKey: "username")
-            user.setValue(TestData.timezone, forKey: "timezone")
+            user.setValue("testuser", forKey: "username")
+            user.setValue("America/Los_Angeles", forKey: "timezone")
             user.setValue(false, forKey: "deadbeat")
             user.setValue(Date(), forKey: "updatedAt")
             user.setValue(TestData.userLastModified, forKey: "lastModifiedLocal")
 
             // Create goal with minimal required fields
             let goal = NSEntityDescription.insertNewObject(forEntityName: "Goal", into: context)
-            goal.setValue(TestData.goalSlug, forKey: "slug")
-            goal.setValue(TestData.goalTitle, forKey: "title")
-            goal.setValue(TestData.goalId, forKey: "id")
+            goal.setValue("test-goal", forKey: "slug")
+            goal.setValue("Test Goal", forKey: "title")
+            goal.setValue("test1", forKey: "id")
             
             // Add placeholders for all required fields
             for field in ["graphUrl", "thumbUrl", "urgencyKey", "lastTouch", "limSum", "safeSum", "yAxis"] {
@@ -99,9 +85,9 @@ class MigrationTests: XCTestCase {
             
             // Create datapoint
             let dataPoint = NSEntityDescription.insertNewObject(forEntityName: "DataPoint", into: context)
-            dataPoint.setValue(TestData.dataPointId, forKey: "id")
-            dataPoint.setValue(TestData.dataPointDaystamp, forKey: "daystampRaw")
-            dataPoint.setValue(TestData.dataPointValue, forKey: "value")
+            dataPoint.setValue("dp1", forKey: "id")
+            dataPoint.setValue("20230101", forKey: "daystampRaw")
+            dataPoint.setValue(NSDecimalNumber(value: 1.0), forKey: "value")
             dataPoint.setValue(TestData.dataPointLastModified, forKey: "lastModifiedLocal")
             dataPoint.setValue(goal, forKey: "goal")
             
