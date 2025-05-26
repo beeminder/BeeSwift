@@ -4,7 +4,11 @@
         <attribute name="comment" optional="YES" attributeType="String"/>
         <attribute name="daystampRaw" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
-        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO" elementID="lastUpdatedLocal"/>
+        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
+            <userInfo>
+                <entry key="renamingIdentifier" value="lastModifiedLocal"/>
+            </userInfo>
+        </attribute>
         <attribute name="requestid" optional="YES" attributeType="String"/>
         <attribute name="updatedAt" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="value" attributeType="Decimal" defaultValueString="0.0"/>
@@ -20,8 +24,12 @@
         <attribute name="hhmmFormat" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="initDay" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO" elementID="lastUpdatedLocal"/>
         <attribute name="lastTouch" attributeType="String"/>
+        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
+            <userInfo>
+                <entry key="renamingIdentifier" value="lastModifiedLocal"/>
+            </userInfo>
+        </attribute>
         <attribute name="leadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="limSum" attributeType="String"/>
         <attribute name="pledge" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -45,7 +53,11 @@
         <attribute name="defaultAlertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="defaultDeadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="defaultLeadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO" elementID="lastUpdatedLocal"/>
+        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
+            <userInfo>
+                <entry key="renamingIdentifier" value="lastModifiedLocal"/>
+            </userInfo>
+        </attribute>
         <attribute name="timezone" attributeType="String"/>
         <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-978278400" usesScalarValueType="YES"/>
         <attribute name="username" attributeType="String"/>

@@ -24,6 +24,9 @@ public class BeeminderPersistentContainer: NSPersistentContainer, @unchecked Sen
         description.type = NSSQLiteStoreType
         description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
 
+        description.shouldMigrateStoreAutomatically = true
+        description.shouldInferMappingModelAutomatically = true
+
         container.loadPersistentStores { description, error in
             if let error = error {
                 fatalError("Unable to load persistent stores: \(error)")
