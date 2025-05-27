@@ -99,6 +99,7 @@
 		E462BA5329ADACAC00E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5229ADACAC00E80EF0 /* Alamofire */; };
 		E462BA5A29AEF02500E80EF0 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */; };
 		E46DC80F2AA58DF20059FDFE /* PullToRefreshHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */; };
+		E4866ED22DE5426900793D6A /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E4866ED12DE5426900793D6A /* SwiftyJSON */; };
 		E486DE2629B0403700F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2529B0403700F338B2 /* OrderedCollections */; };
 		E486DE2A29B0410A00F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2929B0410A00F338B2 /* OrderedCollections */; };
 		E48E2714296B75E4008013C0 /* TotalSleepMinutesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */; };
@@ -111,6 +112,7 @@
 		E4B0A33128C194C900055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = E540953B260FB6A100C30784 /* AddDataIntents.intentdefinition */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
+		E4D470D02D2FE25C00EE648B /* DataPointManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */; };
 		E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */; };
 		E4D5BD5F2C6709060007B0BE /* BeeminderSpotlightDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */; };
 		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
@@ -302,6 +304,7 @@
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
+		E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataPointManagerTests.swift; sourceTree = "<group>"; };
 		E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricMonitor.swift; sourceTree = "<group>"; };
 		E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderSpotlightDelegate.swift; sourceTree = "<group>"; };
 		E4E43D8729F39CE800697116 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
@@ -388,6 +391,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4866ED22DE5426900793D6A /* SwiftyJSON in Frameworks */,
 				E57BE6E92655EBE000BA540B /* BeeKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -669,6 +673,7 @@
 		E57BE6EE2655EBE000BA540B /* BeeKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */,
 				E45470292B60E25C00EE648B /* DaystampTests.swift */,
 				0E4BF1F79738C8EB7F63CD31 /* GoalManagerTests.swift */,
 				0E4BF1F800000001F63CD31 /* MigrationTests.swift */,
@@ -1114,6 +1119,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4D470D02D2FE25C00EE648B /* DataPointManagerTests.swift in Sources */,
 				E454702A2B60E25C00EE648B /* DaystampTests.swift in Sources */,
 				E4B0A33228C194CA00055EA7 /* AddDataIntents.intentdefinition in Sources */,
 				E9D661EBFB2D8EEE8F8DEEA0 /* GoalManagerTests.swift in Sources */,
@@ -1951,6 +1957,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E462BA5829AEF02500E80EF0 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
 			productName = IQKeyboardManagerSwift;
+		};
+		E4866ED12DE5426900793D6A /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3D29AC456500E80EF0 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
 		};
 		E486DE2529B0403700F338B2 /* OrderedCollections */ = {
 			isa = XCSwiftPackageProductDependency;
