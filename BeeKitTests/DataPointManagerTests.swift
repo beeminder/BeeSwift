@@ -80,213 +80,10 @@ class DataPointManagerTests: XCTestCase {
         goal = nil
         user = nil
     }
-    
-    func testHealthKitSyncFiltersDummyDatapoints() async throws {
-        // Create test datapoints with mixed isDummy values
-        let context = container.viewContext
-        
-        let normalDatapoint = DataPoint(
-            context: context,
-            goal: goal,
-            id: "normal1",
-            comment: "Normal datapoint",
-            daystamp: try Daystamp(fromString: "20221201"),
-            requestid: "",
-            value: NSNumber(value: 10),
-            updatedAt: 1000,
-            isDummy: false,
-            isInitial: false
-        )
-        
-        let dummyDatapoint = DataPoint(
-            context: context,
-            goal: goal,
-            id: "dummy1",
-            comment: "Dummy datapoint",
-            daystamp: try Daystamp(fromString: "20221202"),
-            requestid: "",
-            value: NSNumber(value: 20),
-            updatedAt: 2000,
-            isDummy: true,
-            isInitial: false
-        )
-        
-        try context.save()
-        
-        // Mock API response that includes both datapoints
-        let apiResponse = [
-            [
-                "id": "normal1",
-                "value": 10,
-                "daystamp": "20221201",
-                "comment": "Normal datapoint",
-                "updated_at": 1000,
-                "is_dummy": false,
-                "is_initial": false
-            ],
-            [
-                "id": "dummy1", 
-                "value": 20,
-                "daystamp": "20221202",
-                "comment": "Dummy datapoint",
-                "updated_at": 2000,
-                "is_dummy": true,
-                "is_initial": false
-            ]
-        ]
-        
-        mockRequestManager.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
-        
-        // Create mock HealthKit datapoint
-        let healthKitDatapoint = MockHealthKitDataPoint(
-            daystamp: try Daystamp(fromString: "20221201"),
-            value: NSNumber(value: 15),
-            comment: "Updated from HealthKit",
-            requestid: "hk_test"
-        )
-        
-        // Test the update method
-        try! await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: [healthKitDatapoint])
 
-        // Verify that the normal datapoint was updated, confirming dummy datapoints were filtered out
-        XCTAssertEqual(mockRequestManager.putCalls.count, 1)
-        XCTAssertTrue(mockRequestManager.putCalls[0].url.contains("normal1"))
-        XCTAssertEqual(mockRequestManager.putCalls[0].parameters["value"] as? String, "15")
-    }
-    
-    func testHealthKitSyncFiltersInitialDatapoints() async throws {
-        // Create test datapoints with mixed isInitial values  
-        let context = container.viewContext
-        
-        let normalDatapoint = DataPoint(
-            context: context,
-            goal: goal,
-            id: "normal2",
-            comment: "Normal datapoint",
-            daystamp: try Daystamp(fromString: "20221201"),
-            requestid: "",
-            value: NSNumber(value: 10),
-            updatedAt: 1000,
-            isDummy: false,
-            isInitial: false
-        )
-        
-        let initialDatapoint = DataPoint(
-            context: context,
-            goal: goal,
-            id: "initial1",
-            comment: "Initial datapoint",
-            daystamp: try Daystamp(fromString: "20221202"),
-            requestid: "",
-            value: NSNumber(value: 20),
-            updatedAt: 2000,
-            isDummy: false,
-            isInitial: true
-        )
-        
-        try context.save()
-        
-        // Mock API response that includes both datapoints
+    func testSynchronizesPoints() async throws {
         let apiResponse = [
-            [
-                "id": "normal2",
-                "value": 10,
-                "daystamp": "20221201",
-                "comment": "Normal datapoint",
-                "updated_at": 1000,
-                "is_dummy": false,
-                "is_initial": false
-            ],
-            [
-                "id": "initial1",
-                "value": 20,
-                "daystamp": "20221202", 
-                "comment": "Initial datapoint",
-                "updated_at": 2000,
-                "is_dummy": false,
-                "is_initial": true
-            ]
-        ]
-        
-        mockRequestManager.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
-        
-        // Create mock HealthKit datapoint
-        let healthKitDatapoint = MockHealthKitDataPoint(
-            daystamp: try Daystamp(fromString: "20221201"),
-            value: NSNumber(value: 15),
-            comment: "Updated from HealthKit",
-            requestid: "hk_test"
-        )
-        
-        // Test the update method
-        try! await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: [healthKitDatapoint])
-
-        // Verify that the normal datapoint was updated, confirming initial datapoints were filtered out
-        XCTAssertEqual(mockRequestManager.putCalls.count, 1)
-        XCTAssertTrue(mockRequestManager.putCalls[0].url.contains("normal2"))
-        XCTAssertEqual(mockRequestManager.putCalls[0].parameters["value"] as? String, "15")
-    }
-    
-    func testHealthKitSyncFiltersOutBothDummyAndInitial() async throws {
-        // Create test datapoints with all combinations
-        let context = container.viewContext
-        
-        let normalDatapoint = DataPoint(
-            context: context,
-            goal: goal,
-            id: "normal3",
-            comment: "Normal datapoint",
-            daystamp: try Daystamp(fromString: "20221201"),
-            requestid: "",
-            value: NSNumber(value: 10),
-            updatedAt: 1000,
-            isDummy: false,
-            isInitial: false
-        )
-        
-        let dummyDatapoint = DataPoint(
-            context: context,
-            goal: goal,
-            id: "dummy2",
-            comment: "Dummy datapoint",
-            daystamp: try Daystamp(fromString: "20221202"),
-            requestid: "",
-            value: NSNumber(value: 20),
-            updatedAt: 2000,
-            isDummy: true,
-            isInitial: false
-        )
-        
-        let initialDatapoint = DataPoint(
-            context: context,
-            goal: goal,
-            id: "initial2",
-            comment: "Initial datapoint", 
-            daystamp: try Daystamp(fromString: "20221203"),
-            requestid: "",
-            value: NSNumber(value: 30),
-            updatedAt: 3000,
-            isDummy: false,
-            isInitial: true
-        )
-        
-        let bothDatapoint = DataPoint(
-            context: context,
-            goal: goal,
-            id: "both1",
-            comment: "Both dummy and initial",
-            daystamp: try Daystamp(fromString: "20221204"),
-            requestid: "",
-            value: NSNumber(value: 40),
-            updatedAt: 4000,
-            isDummy: true,
-            isInitial: true
-        )
-        
-        try context.save()
-        
-        // Mock API response that includes all datapoints
-        let apiResponse = [
+            // Matching data point to be updated
             [
                 "id": "normal3",
                 "value": 10,
@@ -296,6 +93,7 @@ class DataPointManagerTests: XCTestCase {
                 "is_dummy": false,
                 "is_initial": false
             ],
+            // Metadata points which should be ignored
             [
                 "id": "dummy2",
                 "value": 20,
@@ -314,20 +112,20 @@ class DataPointManagerTests: XCTestCase {
                 "is_dummy": false,
                 "is_initial": true
             ],
+            // Additional datapoint that will be deleted (multiple datapoints for same daystamp)
             [
-                "id": "both1",
-                "value": 40,
-                "daystamp": "20221204",
-                "comment": "Both dummy and initial",
-                "updated_at": 4000,
-                "is_dummy": true,
-                "is_initial": true
-            ]
+                "id": "duplicate1",
+                "value": 11,
+                "daystamp": "20221201",
+                "comment": "Duplicate datapoint to be deleted",
+                "updated_at": 1001,
+                "is_dummy": false,
+                "is_initial": false
+            ],
         ]
         
         mockRequestManager.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
         
-        // Create mock HealthKit datapoint matching the normal one
         let healthKitDatapoint = MockHealthKitDataPoint(
             daystamp: try Daystamp(fromString: "20221201"),
             value: NSNumber(value: 15),
@@ -335,13 +133,29 @@ class DataPointManagerTests: XCTestCase {
             requestid: "hk_test"
         )
         
-        // Test the update method
-        try! await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: [healthKitDatapoint])
+        let newHealthKitDatapoint = MockHealthKitDataPoint(
+            daystamp: try Daystamp(fromString: "20221204"),
+            value: NSNumber(value: 25),
+            comment: "New HealthKit datapoint",
+            requestid: "hk_new"
+        )
+        
+        try! await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: [healthKitDatapoint, newHealthKitDatapoint])
 
-        // Verify that only the normal datapoint was considered for update
+        // Should update the matching data point
         XCTAssertEqual(mockRequestManager.putCalls.count, 1)
         XCTAssertTrue(mockRequestManager.putCalls[0].url.contains("normal3"))
         XCTAssertEqual(mockRequestManager.putCalls[0].parameters["value"] as? String, "15")
+        
+        // Should delete the duplicate data point
+        XCTAssertEqual(mockRequestManager.deleteCalls.count, 1)
+        XCTAssertTrue(mockRequestManager.deleteCalls[0].contains("duplicate1"))
+        
+        // Should create a new data point
+        XCTAssertEqual(mockRequestManager.addDatapointCalls.count, 1)
+        XCTAssertEqual(mockRequestManager.addDatapointCalls[0].urtext, "4 25 \"New HealthKit datapoint\"")
+        XCTAssertEqual(mockRequestManager.addDatapointCalls[0].slug, "test-goal")
+        XCTAssertEqual(mockRequestManager.addDatapointCalls[0].requestId, "hk_new")
     }
     
     private func createTestGoalJSON() -> JSON {
