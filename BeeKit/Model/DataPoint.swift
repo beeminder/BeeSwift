@@ -19,13 +19,17 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
     @NSManaged public var requestid: String
     // The value, e.g., how much you weighed on the day indicated by the timestamp.
     @NSManaged public var value: NSNumber
+    // Whether this is a dummy datapoint
+    @NSManaged public var isDummy: Bool
+    // Whether this is an initial datapoint
+    @NSManaged public var isInitial: Bool
 
     @NSManaged public var updatedAt: Int
 
     /// The last time this record in the CoreData store was updated
     @NSManaged public var lastUpdatedLocal: Date
 
-    public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String, value: NSNumber, updatedAt: Int) {
+    public init(context: NSManagedObjectContext, goal: Goal, id: String, comment: String, daystamp: Daystamp, requestid: String, value: NSNumber, updatedAt: Int, isDummy: Bool = false, isInitial: Bool = false) {
         let entity = NSEntityDescription.entity(forEntityName: "DataPoint", in: context)!
         super.init(entity: entity, insertInto: context)
         self.goal = goal
@@ -35,6 +39,8 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
         self.requestid = requestid
         self.value = value
         self.updatedAt = updatedAt
+        self.isDummy = isDummy
+        self.isInitial = isInitial
         lastUpdatedLocal = Date()
     }
 
@@ -83,6 +89,8 @@ public class DataPoint: NSManagedObject, BeeDataPoint {
         comment = json["comment"].stringValue
         requestid = json["requestid"].stringValue
         updatedAt = json["updated_at"].intValue
+        isDummy = json["is_dummy"].boolValue
+        isInitial = json["is_initial"].boolValue
         lastUpdatedLocal = Date()
     }
 

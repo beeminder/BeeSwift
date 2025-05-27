@@ -4,6 +4,8 @@
         <attribute name="comment" optional="YES" attributeType="String"/>
         <attribute name="daystampRaw" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
+        <attribute name="isDummy" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isInitial" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
             <userInfo>
                 <entry key="renamingIdentifier" value="lastModifiedLocal"/>
