@@ -33,7 +33,7 @@ struct AddData: AppIntent, WidgetConfigurationIntent, CustomIntentMigratedAppInt
         }
     }
 
-    func perform() async throws -> some IntentResult {
+    func perform() async throws -> some IntentResult & ProvidesDialog {
         guard let goalSlug = goal else {
             throw IntentError.noGoal
         }
