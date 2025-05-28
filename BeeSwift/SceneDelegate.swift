@@ -45,20 +45,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return ["identifier": goalIdentifier]
         }
         
-        var userInfoOfGoalFromIntent: [AnyHashable : Any]? {
-            guard let intent = userActivity.interaction?.intent as? AddDataIntent else { return nil }
-            guard let goalSlug = intent.goal else { return nil }
-            logger.info("\(#function): continuing from intent, found goal named: \(goalSlug)")
-            return ["slug": goalSlug]
-        }
-        
         var userInfoOfGoalFrom: [AnyHashable : Any]? {
             guard let goalname = userActivity.userInfo?["slug"] as? String else { return nil }
             logger.info("\(#function): continuing, found goal named: \(goalname)")
             return ["slug": goalname]
         }
         
-        if let userInfo = userInfoOfGoalFromSpotlight ?? userInfoOfGoalFromIntent ?? userInfoOfGoalFrom {
+        if let userInfo = userInfoOfGoalFromSpotlight ?? userInfoOfGoalFrom {
             logger.info("\(#function): opening goal")
             NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal,
                                             object: nil,
