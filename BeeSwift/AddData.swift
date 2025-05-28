@@ -5,6 +5,28 @@ import AppIntents
 import BeeKit
 
 @available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
+struct AddDataResult: AppEntity {
+    let id: String
+    let success: Bool
+    let message: String
+    
+    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Add Data Result"
+    
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "\(message)")
+    }
+    
+    static var defaultQuery = AddDataResultQuery()
+}
+
+@available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
+struct AddDataResultQuery: EntityQuery {
+    func entities(for identifiers: [String]) async throws -> [AddDataResult] {
+        [] // Not used for our purpose
+    }
+}
+
+@available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
 struct AddData: AppIntent, WidgetConfigurationIntent, CustomIntentMigratedAppIntent, PredictableIntent {
     static let intentClassName = "AddDataIntent"
 
@@ -33,21 +55,25 @@ struct AddData: AppIntent, WidgetConfigurationIntent, CustomIntentMigratedAppInt
         }
     }
 
-    func perform() async throws -> some IntentResult & ProvidesDialog {
+    func perform() async throws -> some IntentResult & ProvidesDialog & ReturnsValue<AddDataResult> {
         guard let goalSlug = goal else {
-            return .result(dialog: IntentDialog("No goal specified. Please provide a goal slug."))
+            let result = AddDataResult(id: UUID().uuidString, success: false, message: "No goal specified")
+            return .result(value: result, dialog: IntentDialog("No goal specified. Please provide a goal slug."))
         }
         guard let dataValue = value else {
-            return .result(dialog: IntentDialog("No value specified. Please provide a value for the datapoint."))
+            let result = AddDataResult(id: UUID().uuidString, success: false, message: "No value specified")
+            return .result(value: result, dialog: IntentDialog("No value specified. Please provide a value for the datapoint."))
         }
         
         let dataComment = comment ?? ""
         
         do {
             let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: "^ \(dataValue) \"\(dataComment)\"", slug: goalSlug)
-            return .result(dialog: .responseSuccess(goal: goalSlug, value: dataValue))
+            let result = AddDataResult(id: UUID().uuidString, success: true, message: "Added \(dataValue) to \(goalSlug)")
+            return .result(value: result, dialog: .responseSuccess(goal: goalSlug, value: dataValue))
         } catch {
-            return .result(dialog: .responseFailure(goal: goalSlug, error: error.localizedDescription))
+            let result = AddDataResult(id: UUID().uuidString, success: false, message: "Failed: \(error.localizedDescription)")
+            return .result(value: result, dialog: .responseFailure(goal: goalSlug, error: error.localizedDescription))
         }
     }
 }
