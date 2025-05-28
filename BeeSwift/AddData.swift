@@ -5,24 +5,20 @@ import AppIntents
 import BeeKit
 
 @available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
-struct AddDataResult: AppEntity {
-    let id: String
-    let success: Bool
-    let message: String
+enum AddDataError: LocalizedError {
+    case noGoal
+    case noValue
+    case apiError(String)
     
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Add Data Result"
-    
-    var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(message)")
-    }
-    
-    static var defaultQuery = AddDataResultQuery()
-}
-
-@available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
-struct AddDataResultQuery: EntityQuery {
-    func entities(for identifiers: [String]) async throws -> [AddDataResult] {
-        [] // Not used for our purpose
+    var errorDescription: String? {
+        switch self {
+        case .noGoal:
+            return "No goal specified. Please provide a goal slug."
+        case .noValue:
+            return "No value specified. Please provide a value for the datapoint."
+        case .apiError(let message):
+            return "Failed to add datapoint: \(message)"
+        }
     }
 }
 
@@ -55,25 +51,21 @@ struct AddData: AppIntent, WidgetConfigurationIntent, CustomIntentMigratedAppInt
         }
     }
 
-    func perform() async throws -> some IntentResult & ProvidesDialog & ReturnsValue<AddDataResult> {
+    func perform() async throws -> some IntentResult & ProvidesDialog {
         guard let goalSlug = goal else {
-            let result = AddDataResult(id: UUID().uuidString, success: false, message: "No goal specified")
-            return .result(value: result, dialog: IntentDialog("No goal specified. Please provide a goal slug."))
+            throw AddDataError.noGoal
         }
         guard let dataValue = value else {
-            let result = AddDataResult(id: UUID().uuidString, success: false, message: "No value specified")
-            return .result(value: result, dialog: IntentDialog("No value specified. Please provide a value for the datapoint."))
+            throw AddDataError.noValue
         }
         
         let dataComment = comment ?? ""
         
         do {
             let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: "^ \(dataValue) \"\(dataComment)\"", slug: goalSlug)
-            let result = AddDataResult(id: UUID().uuidString, success: true, message: "Added \(dataValue) to \(goalSlug)")
-            return .result(value: result, dialog: .responseSuccess(goal: goalSlug, value: dataValue))
+            return .result(dialog: .responseSuccess(goal: goalSlug, value: dataValue))
         } catch {
-            let result = AddDataResult(id: UUID().uuidString, success: false, message: "Failed: \(error.localizedDescription)")
-            return .result(value: result, dialog: .responseFailure(goal: goalSlug, error: error.localizedDescription))
+            throw AddDataError.apiError(error.localizedDescription)
         }
     }
 }
@@ -91,9 +83,6 @@ fileprivate extension IntentDialog {
     }
     static func responseSuccess(goal: String, value: Double) -> Self {
         "Added \(value) to \(goal)"
-    }
-    static func responseFailure(goal: String, error: String) -> Self {
-        "Failed to add data to \(goal): \(error)"
     }
 }
 
