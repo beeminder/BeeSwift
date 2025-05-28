@@ -86,7 +86,11 @@ fileprivate extension IntentDialog {
         "Which goal?"
     }
     static func responseSuccess(goal: String, value: Double) -> Self {
-        "Added \(value) to \(goal)"
+        let formatter = NumberFormatter()
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 5
+        let formattedValue = formatter.string(from: NSNumber(value: value)) ?? String(value)
+        return "Added \(formattedValue) to \(goal)"
     }
 }
 
