@@ -4,13 +4,15 @@ import Foundation
 import AppIntents
 import BeeKit
 
+typealias ServerError = BeeKit.ServerError
+
 @available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
-enum AddDataError: LocalizedError {
+enum AddDataError: Error, CustomLocalizedStringResourceConvertible {
     case noGoal
     case noValue
     case apiError(String)
     
-    var errorDescription: String? {
+    var localizedStringResource: LocalizedStringResource {
         switch self {
         case .noGoal:
             return "No goal specified. Please provide a goal slug."
@@ -64,6 +66,8 @@ struct AddData: AppIntent, WidgetConfigurationIntent, CustomIntentMigratedAppInt
         do {
             let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: "^ \(dataValue) \"\(dataComment)\"", slug: goalSlug)
             return .result(dialog: .responseSuccess(goal: goalSlug, value: dataValue))
+        } catch ServerError.notFound {
+            throw AddDataError.apiError("Goal '\(goalSlug)' not found")
         } catch {
             throw AddDataError.apiError(error.localizedDescription)
         }
