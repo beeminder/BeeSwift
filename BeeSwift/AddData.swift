@@ -35,10 +35,10 @@ struct AddData: AppIntent, WidgetConfigurationIntent, CustomIntentMigratedAppInt
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
         guard let goalSlug = goal else {
-            throw IntentError.noGoal
+            return .result(dialog: IntentDialog("No goal specified. Please provide a goal slug."))
         }
         guard let dataValue = value else {
-            throw IntentError.noValue
+            return .result(dialog: IntentDialog("No value specified. Please provide a value for the datapoint."))
         }
         
         let dataComment = comment ?? ""
@@ -47,25 +47,7 @@ struct AddData: AppIntent, WidgetConfigurationIntent, CustomIntentMigratedAppInt
             let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: "^ \(dataValue) \"\(dataComment)\"", slug: goalSlug)
             return .result(dialog: .responseSuccess(goal: goalSlug, value: dataValue))
         } catch {
-            throw IntentError.addDatapointFailed(goal: goalSlug)
-        }
-    }
-}
-
-@available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
-enum IntentError: LocalizedError {
-    case noGoal
-    case noValue
-    case addDatapointFailed(goal: String)
-    
-    var errorDescription: String? {
-        switch self {
-        case .noGoal:
-            return "No goal specified"
-        case .noValue:
-            return "No value specified"
-        case .addDatapointFailed(let goal):
-            return "Failed to add datapoint to \(goal)"
+            return .result(dialog: .responseFailure(goal: goalSlug, error: error.localizedDescription))
         }
     }
 }
@@ -84,8 +66,8 @@ fileprivate extension IntentDialog {
     static func responseSuccess(goal: String, value: Double) -> Self {
         "Added \(value) to \(goal)"
     }
-    static func responseFailure(goal: String) -> Self {
-        "Failed to add data to \(goal). Please check your connection and try again."
+    static func responseFailure(goal: String, error: String) -> Self {
+        "Failed to add data to \(goal): \(error)"
     }
 }
 
