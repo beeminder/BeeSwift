@@ -45,7 +45,7 @@ struct AddData: AppIntent, WidgetConfigurationIntent, CustomIntentMigratedAppInt
         
         do {
             let _ = try await ServiceLocator.requestManager.addDatapoint(urtext: "^ \(dataValue) \"\(dataComment)\"", slug: goalSlug)
-            return .result(dialog: .responseSuccess(goal: goalSlug))
+            return .result(dialog: .responseSuccess(goal: goalSlug, value: dataValue))
         } catch {
             throw IntentError.addDatapointFailed(goal: goalSlug)
         }
@@ -81,11 +81,11 @@ fileprivate extension IntentDialog {
     static var goalParameterPrompt: Self {
         "Which goal?"
     }
-    static func responseSuccess(goal: String) -> Self {
-        "Datapoint added to \(goal)."
+    static func responseSuccess(goal: String, value: Double) -> Self {
+        "Added \(value) to \(goal)"
     }
     static func responseFailure(goal: String) -> Self {
-        "Sorry, there was no goal that sounds like \(goal)."
+        "Failed to add data to \(goal). Please check your connection and try again."
     }
 }
 
