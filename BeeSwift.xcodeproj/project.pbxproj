@@ -95,6 +95,9 @@
 		E46DC80F2AA58DF20059FDFE /* PullToRefreshHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */; };
 		E4866ED22DE5426900793D6A /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E4866ED12DE5426900793D6A /* SwiftyJSON */; };
 		E4866EFE2DE577CB00793D6A /* AddData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4866EFD2DE577CB00793D6A /* AddData.swift */; };
+		47C4AD8C407A4D9E977AEF8B /* GoalEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */; };
+		FDC1E1A1A992425FBB98CE56 /* GoalEntityQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC1E1A1A992425FBB98CE57 /* GoalEntityQuery.swift */; };
+		46124622FCF84EB6A6E41C30 /* OpenGoalIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */; };
 		E486DE2629B0403700F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2529B0403700F338B2 /* OrderedCollections */; };
 		E48E2714296B75E4008013C0 /* TotalSleepMinutesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */; };
 		E48E27202973261F008013C0 /* BackgroundUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271F2973261F008013C0 /* BackgroundUpdates.swift */; };
@@ -261,6 +264,9 @@
 		E46070F72B3FEFD400305DB4 /* BeeminderPersistentContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderPersistentContainer.swift; sourceTree = "<group>"; };
 		E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshHint.swift; sourceTree = "<group>"; };
 		E4866EFD2DE577CB00793D6A /* AddData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddData.swift; sourceTree = "<group>"; };
+		47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEntity.swift; sourceTree = "<group>"; };
+		FDC1E1A1A992425FBB98CE57 /* GoalEntityQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEntityQuery.swift; sourceTree = "<group>"; };
+		46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGoalIntent.swift; sourceTree = "<group>"; };
 		E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutes.swift; sourceTree = "<group>"; };
 		E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutesTests.swift; sourceTree = "<group>"; };
 		E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAsleepHealthKitMetric.swift; sourceTree = "<group>"; };
@@ -448,6 +454,9 @@
 				A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */,
 				E4015D9E2D10DC4D00F58D94 /* SceneDelegate.swift */,
 				E4866EFD2DE577CB00793D6A /* AddData.swift */,
+				47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */,
+				FDC1E1A1A992425FBB98CE57 /* GoalEntityQuery.swift */,
+				46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */,
 			);
 			path = BeeSwift;
 			sourceTree = "<group>";
@@ -938,6 +947,9 @@
 				A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */,
 				A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */,
 				E4866EFE2DE577CB00793D6A /* AddData.swift in Sources */,
+				47C4AD8C407A4D9E977AEF8B /* GoalEntity.swift in Sources */,
+				FDC1E1A1A992425FBB98CE56 /* GoalEntityQuery.swift in Sources */,
+				46124622FCF84EB6A6E41C30 /* OpenGoalIntent.swift in Sources */,
 				A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */,
 				E48E27202973261F008013C0 /* BackgroundUpdates.swift in Sources */,
 				A149147F1BE7A5670060600A /* SettingsTableViewCell.swift in Sources */,
