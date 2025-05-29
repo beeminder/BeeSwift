@@ -10,9 +10,9 @@ struct AddData: DeprecatedAppIntent, CustomIntentMigratedAppIntent, PredictableI
     static var title: LocalizedStringResource = "Add Data"
     static var description = IntentDescription("Add data to a Beeminder goal")
     
-    static var deprecation: IntentDeprecation<AddDataPoint> {
+    static var deprecation: IntentDeprecation<AddDataPointIntent> {
         IntentDeprecation(
-            replacedBy: AddDataPoint.self
+            replacedBy: AddDataPointIntent.self
         )
     }
 

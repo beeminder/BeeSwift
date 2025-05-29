@@ -4,7 +4,7 @@ import Foundation
 import AppIntents
 import BeeKit
 
-struct AddDataPoint: AppIntent {
+struct AddDataPointIntent: AppIntent {
     static var title: LocalizedStringResource = "Add Data Point"
     static var description = IntentDescription("Add a data point to a Beeminder goal")
     
