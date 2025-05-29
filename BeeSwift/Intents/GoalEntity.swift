@@ -4,7 +4,6 @@ import Foundation
 import AppIntents
 import BeeKit
 
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
 struct GoalEntity: AppEntity, Equatable {
     static var typeDisplayRepresentation: TypeDisplayRepresentation = "Goal"
     static var defaultQuery = GoalEntityQuery()
@@ -16,9 +15,13 @@ struct GoalEntity: AppEntity, Equatable {
     
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(
-            title: "\(title)",
+            title: "\(displayTitle)",
             subtitle: "\(slug)"
         )
+    }
+    
+    var displayTitle: String {
+        return title.isEmpty ? slug : title
     }
     
     init(id: String, slug: String, title: String, thumbUrl: String? = nil) {

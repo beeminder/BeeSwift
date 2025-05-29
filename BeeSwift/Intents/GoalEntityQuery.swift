@@ -5,7 +5,6 @@ import AppIntents
 import CoreData
 import BeeKit
 
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
 struct GoalEntityQuery: EntityQuery {
     func entities(for identifiers: [String]) async throws -> [GoalEntity] {
         let container = ServiceLocator.persistentContainer

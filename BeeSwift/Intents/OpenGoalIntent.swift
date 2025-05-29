@@ -5,7 +5,6 @@ import AppIntents
 import UIKit
 import BeeKit
 
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
 struct OpenGoalIntent: AppIntent {
     static var title: LocalizedStringResource = "Open Goal"
     static var description = IntentDescription("Open Beeminder app to view a specific goal or the goal gallery")
@@ -32,7 +31,7 @@ struct OpenGoalIntent: AppIntent {
                     userInfo: ["slug": goal.slug]
                 )
             }
-            BeeSwift/GoalEntityQuery.swift}
+        }
         return .result()
     }
     
