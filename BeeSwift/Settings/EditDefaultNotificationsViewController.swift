@@ -60,27 +60,34 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         Task { @MainActor in
-            if self.timePickerEditingMode == .alertstart {
+            let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+            hud.mode = .indeterminate
+            
+            switch self.timePickerEditingMode {
+            case .alertstart:
                 self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
                 let params = ["default_alertstart" : self.midnightOffsetFromTimePickerView()]
                 do {
                     let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
                     try await goalManager.refreshGoals()
+                    hud.hide(animated: true, afterDelay: 0.5)
                 } catch {
                     logger.error("Error setting default alert start: \(error)")
-                    //foo
+                    hud.hide(animated: true)
                 }
-            }
-            if self.timePickerEditingMode == .deadline {
+            case .deadline:
                 self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
                 let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
                 do {
                     let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
                     try await goalManager.refreshGoals()
+                    hud.hide(animated: true, afterDelay: 0.5)
                 } catch {
                     logger.error("Error setting default deadline: \(error)")
-                    //foo
+                    hud.hide(animated: true, afterDelay: 0.5)
                 }
+            case .none:
+                hud.hide(animated: true)
             }
         }
     }
