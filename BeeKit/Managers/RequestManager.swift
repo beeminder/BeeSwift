@@ -11,17 +11,35 @@ import Alamofire
 import SwiftyJSON
 import OSLog
 
-struct ServerError: Error {
-    let message: String
-    let requestError: Error?
-
-    init(_ message: String, requestError: Error?) {
-        self.message = message
-        self.requestError = requestError
+public enum ServerError: LocalizedError {
+    case notFound
+    case unauthorized
+    case forbidden
+    case serverError(Int)
+    case custom(String, requestError: Error?)
+    
+    public var errorDescription: String? {
+        switch self {
+        case .notFound:
+            return "Not found"
+        case .unauthorized:
+            return "Unauthorized"
+        case .forbidden:
+            return "Permission denied"
+        case .serverError(let code):
+            return "Server error (\(code)). Please try again later"
+        case .custom(let message, _):
+            return message
+        }
     }
-
-    public var localizedDescription: String {
-        return message
+    
+    var requestError: Error? {
+        switch self {
+        case .custom(_, let error):
+            return error
+        default:
+            return nil
+        }
     }
 }
 
@@ -34,7 +52,7 @@ public class RequestManager {
         var urlWithSubstitutions = url
         if url.contains("{username}") {
             guard let username = await ServiceLocator.currentUserManager.username else {
-                throw ServerError("Attempted to make request to username-based URL \(url) while logged out", requestError: nil)
+                throw ServerError.custom("Attempted to make request to username-based URL \(url) while logged out", requestError: nil)
             }
             urlWithSubstitutions = urlWithSubstitutions.replacingOccurrences(of: "{username}", with: username)
         }
@@ -71,7 +89,25 @@ public class RequestManager {
             // If we receive an error message from the server use it as our user-visible error
             if let data = response.data,
                let errorMessage = try JSON(data: data)["error_message"].string {
-                throw ServerError(errorMessage, requestError: error)
+                throw ServerError.custom(errorMessage, requestError: error)
+            }
+
+            // Handle common HTTP errors with specific error types
+            if case .responseValidationFailed(let reason) = error {
+                if case .unacceptableStatusCode(let code) = reason {
+                    switch code {
+                    case 401:
+                        throw ServerError.unauthorized
+                    case 403:
+                        throw ServerError.forbidden
+                    case 404:
+                        throw ServerError.notFound
+                    case 500...599:
+                        throw ServerError.serverError(code)
+                    default:
+                        throw ServerError.custom("Request failed (error \(code))", requestError: error)
+                    }
+                }
             }
 
             throw error;

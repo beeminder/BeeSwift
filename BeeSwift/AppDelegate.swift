@@ -17,7 +17,7 @@ import AlamofireNetworkActivityIndicator
 import BeeKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
     let logger = Logger(subsystem: "com.beeminder.beeminder", category: "AppDelegate")
     let backgroundUpdates = BackgroundUpdates()
 
@@ -40,6 +40,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         NetworkActivityIndicatorManager.shared.isEnabled = true
+        
+        UNUserNotificationCenter.current().delegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsUpdated), name: GoalManager.NotificationName.goalsUpdated, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleUserSignedOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
@@ -82,32 +84,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillTerminate(_ application: UIApplication) {
         logger.notice("applicationWillTerminate")
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    }
-
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
-        logger.notice("application:open:options")
-        if url.scheme == "beeminder" {
-            if let query = url.query {
-                let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
-                let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
-
-                NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": slug])
-            }
-        }
-        return true
-    }
-
-    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-        logger.notice("application:open:sourceApplication:annotation")
-        if url.scheme == "beeminder" {
-            if let query = url.query {
-                let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
-                let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
-
-                NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": slug])
-            }
-        }
-        return true
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -161,12 +137,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
-    // MARK: - UNUserNotificationCenterDelegate
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.list, .banner, .sound, .badge])
-    }
-    
     private func resetStateIfUITesting() {
         if ProcessInfo.processInfo.arguments.contains("UI-Testing") {
             UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
@@ -175,5 +145,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     private func removeAllLocalNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    }
+}
+
+// MARK: - UNUserNotificationCenterDelegate
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
+        [.list, .banner, .sound, .badge]
     }
 }

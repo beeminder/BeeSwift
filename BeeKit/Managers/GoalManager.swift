@@ -57,58 +57,70 @@ public actor GoalManager {
     public func refreshGoals() async throws {
         guard let user = self.currentUserManager.user(context: modelContext) else { return }
         let goalsUnknown = user.goals.count == 0 || user.updatedAt.timeIntervalSince1970 < 24*60*60
-
-        let userResponse: JSON
-        let goalResponse: JSON
-
-        let deleteMissingGoals: Bool
-        let deletedGoals: JSON
-
-        if (goalsUnknown) {
-            logger.notice("Goals unknown, doing full fetch")
-            // We must fetch the user object first, and then fetch goals afterwards, to guarantee User.updated_at is
-            // a safe timestamp for future fetches without losing data
-            userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json")!)
-            goalResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}/goals.json")!)
-
-            deleteMissingGoals = true
-            deletedGoals = JSON(arrayLiteral: [])
+        
+        if goalsUnknown {
+            try await refreshGoalsFromScratch(user: user)
         } else {
-            // TODO: Use old data to find deleted goals
-            logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
-            userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1])!)
-            goalResponse = userResponse["goals"]
-
-            deleteMissingGoals = false
-            deletedGoals = userResponse["deleted_goals"]
+            try await refreshGoalsIncremental(user: user)
         }
-
+        
+        try modelContext.save()
+        await performPostGoalUpdateBookkeeping()
+    }
+    
+    /// Perform a full refresh of goals for initial loads
+    private func refreshGoalsFromScratch(user: User) async throws {
+        logger.notice("Goals unknown, doing full fetch")
+        // We must fetch the user object first, and then fetch goals afterwards, to guarantee User.updated_at is
+        // a safe timestamp for future fetches without losing data
+        let userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json")!)
+        let goalResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}/goals.json")!)
+        
         // The user may have logged out during the network operation. If so we have nothing to do
         modelContext.refreshAllObjects()
         guard let user = modelContext.object(with: user.objectID) as? User else { return }
-
+        
         user.updateToMatch(json: userResponse)
-
-        // For the incremental case, delete all goals marked as deleted
-        let deletedGoalIds = Set(deletedGoals.arrayValue.map { $0["id"].stringValue })
-        let goalsToDelete = user.goals.filter { deletedGoalIds.contains($0.id) }
-        for goal in goalsToDelete {
-            modelContext.delete(goal)
-        }
-
-        // For the non-incremental case, delete all goals which weren't in the response
-        if deleteMissingGoals, let goalsArray = goalResponse.array {
+        
+        // Delete all goals which weren't in the response
+        if let goalsArray = goalResponse.array {
             let allGoalIds = Set(goalsArray.map { $0["id"].stringValue })
             let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
             for goal in goalsToDelete {
                 modelContext.delete(goal)
             }
         }
-        self.updateGoalsFromJson(goalResponse)
-
-        try modelContext.save()
-
-        await performPostGoalUpdateBookkeeping()
+        
+        updateGoalsFromJson(goalResponse)
+    }
+    
+    /// Perform an incremental refresh of goals for regular updates
+    private func refreshGoalsIncremental(user: User) async throws {
+        logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
+        let userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1])!)
+        let goalResponse = userResponse["goals"]
+        let deletedGoals = userResponse["deleted_goals"]
+        
+        // The user may have logged out during the network operation. If so we have nothing to do
+        modelContext.refreshAllObjects()
+        guard let user = modelContext.object(with: user.objectID) as? User else { return }
+        
+        user.updateToMatch(json: userResponse)
+        
+        // Delete all goals marked as deleted
+        let deletedGoalIds = Set(deletedGoals.arrayValue.map { $0["id"].stringValue })
+        let goalsToDelete = user.goals.filter { deletedGoalIds.contains($0.id) }
+        for goal in goalsToDelete {
+            modelContext.delete(goal)
+        }
+        
+        updateGoalsFromJson(goalResponse)
+        
+        // Update lastUpdatedLocal for all goals, even those not in response
+        let now = Date()
+        for goal in user.goals {
+            goal.lastUpdatedLocal = now
+        }
     }
 
     public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
