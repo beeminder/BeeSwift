@@ -98,7 +98,7 @@ class GalleryViewController: UIViewController {
         let searchBar = UISearchBar()
         searchBar.accessibilityIdentifier = "searchBar"
         searchBar.delegate = self
-        searchBar.placeholder = "Filter goals by slug"
+        searchBar.placeholder = "Search goals"
         searchBar.isHidden = true
         searchBar.showsCancelButton = true
         return searchBar
@@ -339,7 +339,7 @@ class GalleryViewController: UIViewController {
     }
     
     @objc func updateLastUpdatedLabel() {
-        let lastUpdated = currentUserManager.user(context: viewContext)?.lastModifiedLocal ?? .distantPast
+        let lastUpdated = currentUserManager.user(context: viewContext)?.lastUpdatedLocal ?? .distantPast
         self.freshnessIndicator.update(with: lastUpdated)
     }
 
@@ -381,7 +381,11 @@ class GalleryViewController: UIViewController {
     
     func updateFilteredGoals() {
         if let searchText = searchBar.text, !searchText.isEmpty {
-            self.fetchedResultsController.fetchRequest.predicate = NSPredicate(format: "slug contains[cd] %@", searchText)
+            self.fetchedResultsController.fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates:
+                                                                                        [
+                                                                                            NSPredicate(format: "slug contains[cd] %@", searchText),
+                                                                                            NSPredicate(format: "title contains[cd] %@", searchText)
+                                                                                        ])
         } else {
             self.fetchedResultsController.fetchRequest.predicate = nil
         }
@@ -547,12 +551,12 @@ private extension GalleryViewController {
             ]
         case Constants.recentDataGoalSortString:
             return [
-                NSSortDescriptor(keyPath: \Goal.lastTouch, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.lastTouch, ascending: false),
                 NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
             ]
         case Constants.pledgeGoalSortString:
             return [
-                NSSortDescriptor(keyPath: \Goal.pledge, ascending: true),
+                NSSortDescriptor(keyPath: \Goal.pledge, ascending: false),
                 NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)
             ]
         default:
