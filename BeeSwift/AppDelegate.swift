@@ -85,32 +85,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         logger.notice("applicationWillTerminate")
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
-        logger.notice("application:open:options")
-        if url.scheme == "beeminder" {
-            if let query = url.query {
-                let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
-                let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
-
-                NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": slug])
-            }
-        }
-        return true
-    }
-
-    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-        logger.notice("application:open:sourceApplication:annotation")
-        if url.scheme == "beeminder" {
-            if let query = url.query {
-                let slugKeyIndex = query.components(separatedBy: "=").firstIndex(of: "slug")
-                let slug = query.components(separatedBy: "=")[(slugKeyIndex?.advanced(by: 1))!]
-
-                NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal, object: nil, userInfo: ["slug": slug])
-            }
-        }
-        return true
-    }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         logger.notice("application:didRegisterForRemoteNotificationsWithDeviceToken")
