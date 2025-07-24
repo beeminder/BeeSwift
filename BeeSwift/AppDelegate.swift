@@ -78,8 +78,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Task { @MainActor in
             let token = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
 
+            var parameters = ["device_token": token]
+            if isDevelopmentBuild() {
+                parameters["server"] = "development"
+                logger.notice("Registering device token for development APNS server")
+            }
+
             do {
-                let _ = try await ServiceLocator.signedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: ["device_token" : token])
+                let _ = try await ServiceLocator.signedRequestManager.signedPOST(url: "/api/private/device_tokens", parameters: parameters)
             } catch {
                 logger.error("Error sending device push token: \(error)")
             }
@@ -117,6 +123,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func removeAllLocalNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    }
+    
+    private func isDevelopmentBuild() -> Bool {
+        guard let resourcePath = Bundle.main.resourcePath else { return false }
+        let provisionPath = (resourcePath as NSString).appendingPathComponent("embedded.mobileprovision")
+        return FileManager.default.fileExists(atPath: provisionPath)
     }
 }
 
