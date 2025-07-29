@@ -12,4 +12,4 @@ eval_gemfile('fastlane/Pluginfile')
 
 gem "abbrev", "~> 0.1.2"
 
-gem "ostruct", "~> 0.6.2"
+gem "ostruct", "~> 0.6.3"
