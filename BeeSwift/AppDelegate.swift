@@ -126,6 +126,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func isDevelopmentBuild() -> Bool {
+        // Simulator builds are always development builds
+        if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
+            return true
+        }
+
+        // Check for a mobile provision
         guard let resourcePath = Bundle.main.resourcePath else { return false }
         let provisionPath = (resourcePath as NSString).appendingPathComponent("embedded.mobileprovision")
         return FileManager.default.fileExists(atPath: provisionPath)
