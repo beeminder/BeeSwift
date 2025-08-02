@@ -160,6 +160,7 @@ class GalleryViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsUpdated), name: GoalManager.NotificationName.goalsUpdated, object: nil)
         
         self.view.addSubview(self.stackView)
         stackView.snp.makeConstraints { (make) -> Void in
@@ -265,6 +266,7 @@ class GalleryViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        logger.info("viewWillAppear called")
         
         self.collectionView.snp.remakeConstraints { make in
             make.top.equalTo(self.searchBar.snp.bottom)
@@ -272,6 +274,10 @@ class GalleryViewController: UIViewController {
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(self.collectionView.keyboardLayoutGuide.snp.top)
         }
+        
+        // Refresh data to ensure we show the latest when returning to this view
+        logger.info("Refreshing goals data in viewWillAppear")
+        self.updateGoals()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -330,6 +336,14 @@ class GalleryViewController: UIViewController {
         self.present(signInVC, animated: true, completion: nil)
     }
     
+    @objc func handleGoalsUpdated() {
+        logger.info("Received goalsUpdated notification")
+        // Refresh the view context to see changes from background context
+        self.viewContext.refreshAllObjects()
+        logger.info("View context refreshed")
+        self.updateGoals()
+    }
+    
     func updateDeadbeatVisibility() {
         self.deadbeatView.isHidden = !isUserKnownDeadbeat
     }
@@ -354,15 +368,19 @@ class GalleryViewController: UIViewController {
     }
     
     @objc func fetchGoals() {
+        logger.info("fetchGoals called")
         Task { @MainActor in
             if self.filteredGoals.isEmpty {
                 MBProgressHUD.showAdded(to: self.view, animated: true)
             }
             
             do {
+                logger.info("Starting goalManager.refreshGoals()")
                 try await goalManager.refreshGoals()
+                logger.info("goalManager.refreshGoals() completed successfully")
                 self.updateGoals()
             } catch {
+                logger.error("Error in fetchGoals: \(error)")
                 if UIApplication.shared.applicationState == .active {
                     let alert = UIAlertController(title: "Error fetching goals", message: error.localizedDescription, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -375,12 +393,15 @@ class GalleryViewController: UIViewController {
     }
     
     func updateGoals() {
+        logger.info("updateGoals called")
         self.updateFilteredGoals()
         self.didUpdateGoals()
     }
     
     func updateFilteredGoals() {
+        logger.info("updateFilteredGoals called")
         if let searchText = searchBar.text, !searchText.isEmpty {
+            logger.info("Filtering goals with search text: \(searchText)")
             self.fetchedResultsController.fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates:
                                                                                         [
                                                                                             NSPredicate(format: "slug contains[cd] %@", searchText),
@@ -391,7 +412,12 @@ class GalleryViewController: UIViewController {
         }
         
         self.fetchedResultsController.fetchRequest.sortDescriptors = Self.preferredSort
-        try? self.fetchedResultsController.performFetch()
+        do {
+            try self.fetchedResultsController.performFetch()
+            logger.info("Fetched \(self.fetchedResultsController.fetchedObjects?.count ?? 0) goals")
+        } catch {
+            logger.error("Error performing fetch: \(error)")
+        }
     }
     
     private var filteredGoals: [Goal] {
@@ -399,6 +425,7 @@ class GalleryViewController: UIViewController {
     }
     
     @objc func didUpdateGoals() {
+        logger.info("didUpdateGoals called, goal count: \(self.filteredGoals.count)")
         self.setupHealthKit()
         self.collectionView.refreshControl?.endRefreshing()
         MBProgressHUD.hide(for: self.view, animated: true)
@@ -475,6 +502,7 @@ class GalleryViewController: UIViewController {
 
 extension GalleryViewController: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        logger.info("NSFetchedResultsController detected changes, applying snapshot")
         dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: false)
     }
 }

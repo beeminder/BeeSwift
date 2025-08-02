@@ -123,14 +123,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func refreshGoalsAndLogErrors() {
+        logger.info("refreshGoalsAndLogErrors called")
         Task { @MainActor in
             do {
+                logger.info("Starting healthkit update")
                 let _ = try await ServiceLocator.healthStoreManager.updateAllGoalsWithRecentData(days: 7)
+                logger.info("Healthkit update completed")
             } catch {
                 logger.error("Error updating from healthkit: \(error)")
             }
             do {
+                logger.info("Starting goal refresh")
                 try await ServiceLocator.goalManager.refreshGoals()
+                logger.info("Goal refresh completed")
             } catch {
                 logger.error("Error refreshing goals: \(error)")
             }
