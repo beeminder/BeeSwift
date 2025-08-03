@@ -181,7 +181,6 @@ class GalleryViewController: UIViewController {
         
         stackView.addArrangedSubview(self.freshnessIndicator)
         self.updateLastUpdatedLabel()
-        Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GalleryViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
         stackView.addArrangedSubview(self.deadbeatView)
         updateDeadbeatVisibility()
