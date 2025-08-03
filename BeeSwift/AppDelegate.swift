@@ -54,36 +54,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
         logger.notice("application:didReceiveRemoteNotification")
 
-        refreshGoalsAndLogErrors()
-    }
-
-    func applicationWillResignActive(_ application: UIApplication) {
-        logger.notice("applicationWillResignActive")
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-    }
-
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        logger.notice("applicationDidEnterBackground")
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    }
-
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        logger.notice("applicationWillEnterForeground")
-        // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-        NotificationCenter.default.post(name: UIApplication.willEnterForegroundNotification, object: nil)
-    }
-
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        logger.notice("applicationDidBecomeActive")
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        refreshGoalsAndLogErrors()
+        // Refresh goals when receiving remote notification
+        Task { @MainActor in
+            do {
+                let _ = try await ServiceLocator.healthStoreManager.updateAllGoalsWithRecentData(days: 7)
+            } catch {
+                logger.error("Error updating from healthkit: \(error)")
+            }
+            do {
+                try await ServiceLocator.goalManager.refreshGoals()
+            } catch {
+                logger.error("Error refreshing goals: \(error)")
+            }
+        }
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
         logger.notice("applicationWillTerminate")
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -120,26 +107,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         logger.notice("User signed out; updating Beemergency badge count to 0")
 
         UNUserNotificationCenter.current().setBadgeCount(0)
-    }
-
-    private func refreshGoalsAndLogErrors() {
-        logger.info("refreshGoalsAndLogErrors called")
-        Task { @MainActor in
-            do {
-                logger.info("Starting healthkit update")
-                let _ = try await ServiceLocator.healthStoreManager.updateAllGoalsWithRecentData(days: 7)
-                logger.info("Healthkit update completed")
-            } catch {
-                logger.error("Error updating from healthkit: \(error)")
-            }
-            do {
-                logger.info("Starting goal refresh")
-                try await ServiceLocator.goalManager.refreshGoals()
-                logger.info("Goal refresh completed")
-            } catch {
-                logger.error("Error refreshing goals: \(error)")
-            }
-        }
     }
     
     private func resetStateIfUITesting() {

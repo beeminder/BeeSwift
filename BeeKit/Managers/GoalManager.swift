@@ -55,11 +55,7 @@ public actor GoalManager {
 
     /// Fetch and return the latest set of goals from the server
     public func refreshGoals() async throws {
-        logger.info("refreshGoals called")
-        guard let user = self.currentUserManager.user(context: modelContext) else { 
-            logger.info("No user found, returning early")
-            return 
-        }
+        guard let user = self.currentUserManager.user(context: modelContext) else { return }
         let goalsUnknown = user.goals.count == 0 || user.updatedAt.timeIntervalSince1970 < 24*60*60
         
         if goalsUnknown {
@@ -181,10 +177,8 @@ public actor GoalManager {
 
         // Notify all listeners of the update
         await Task { @MainActor in
-            logger.info("Refreshing viewContext and posting goalsUpdated notification")
             modelContainer.viewContext.refreshAllObjects()
             NotificationCenter.default.post(name: GoalManager.NotificationName.goalsUpdated, object: self)
-            logger.info("goalsUpdated notification posted")
         }.value
     }
 

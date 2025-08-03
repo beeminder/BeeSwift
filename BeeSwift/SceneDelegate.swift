@@ -75,5 +75,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                         object: nil,
                                         userInfo: ["slug": goalname])
     }
+    
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        refreshGoalsAndLogErrors()
+    }
+    
+    private func refreshGoalsAndLogErrors() {
+        Task { @MainActor in
+            do {
+                let _ = try await ServiceLocator.healthStoreManager.updateAllGoalsWithRecentData(days: 7)
+            } catch {
+                logger.error("Error updating from healthkit: \(error)")
+            }
+            do {
+                try await ServiceLocator.goalManager.refreshGoals()
+            } catch {
+                logger.error("Error refreshing goals: \(error)")
+            }
+        }
+    }
 
 }
