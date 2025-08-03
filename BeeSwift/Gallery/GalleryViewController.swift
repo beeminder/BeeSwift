@@ -160,7 +160,7 @@ class GalleryViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
-        
+
         self.view.addSubview(self.stackView)
         stackView.snp.makeConstraints { (make) -> Void in
             make.top.left.right.equalToSuperview()
@@ -272,6 +272,8 @@ class GalleryViewController: UIViewController {
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(self.collectionView.keyboardLayoutGuide.snp.top)
         }
+        
+        self.updateGoals()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -476,6 +478,7 @@ class GalleryViewController: UIViewController {
 extension GalleryViewController: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: false)
+        didUpdateGoals()
     }
 }
 
