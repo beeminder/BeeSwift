@@ -4,32 +4,17 @@ import Foundation
 import AppIntents
 import BeeKit
 
-typealias ServerError = BeeKit.ServerError
-
-@available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
-enum AddDataError: Error, CustomLocalizedStringResourceConvertible {
-    case noGoal
-    case noValue
-    case apiError(String)
-    
-    var localizedStringResource: LocalizedStringResource {
-        switch self {
-        case .noGoal:
-            return "No goal specified. Please provide a goal slug."
-        case .noValue:
-            return "No value specified. Please provide a value for the datapoint."
-        case .apiError(let message):
-            return "Failed to add datapoint: \(message)"
-        }
-    }
-}
-
-@available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
-struct AddData: AppIntent, WidgetConfigurationIntent, CustomIntentMigratedAppIntent, PredictableIntent {
+struct AddData: DeprecatedAppIntent, CustomIntentMigratedAppIntent, PredictableIntent {
     static let intentClassName = "AddDataIntent"
 
     static var title: LocalizedStringResource = "Add Data"
     static var description = IntentDescription("Add data to a Beeminder goal")
+    
+    static var deprecation: IntentDeprecation<AddDataPointIntent> {
+        IntentDeprecation(
+            replacedBy: AddDataPointIntent.self
+        )
+    }
 
     @Parameter(title: "Value", default: 1)
     var value: Double?

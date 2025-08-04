@@ -23,6 +23,7 @@ class GalleryViewController: UIViewController {
     
     public enum NotificationName {
         public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
+        public static let navigateToGallery = Notification.Name(rawValue: "com.beeminder.navigateToGallery")
     }
     
     // Dependencies
@@ -160,6 +161,7 @@ class GalleryViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.navigateToGallery), name: GalleryViewController.NotificationName.navigateToGallery, object: nil)
 
         self.view.addSubview(self.stackView)
         stackView.snp.makeConstraints { (make) -> Void in
@@ -442,6 +444,10 @@ class GalleryViewController: UIViewController {
             self.navigationController?.popToRootViewController(animated: false)
             self.openGoal(matchingGoal!)
         }
+    }
+    
+    @objc func navigateToGallery() {
+        self.navigationController?.popToRootViewController(animated: true)
     }
     
     func openGoal(_ goal: Goal) {
