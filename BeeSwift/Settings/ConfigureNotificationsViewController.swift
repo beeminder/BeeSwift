@@ -188,13 +188,7 @@ class ConfigureNotificationsViewController: UIViewController {
                 try await self.goalManager.refreshGoals()
                 self.lastFetched = Date()
                 
-                // Update predicate in case user has changed
-                if let user = currentUserManager.user(context: viewContext) {
-                    fetchedResultsController.fetchRequest.predicate = NSPredicate(format: "owner == %@", user)
-                }
-                
-                try self.fetchedResultsController.performFetch()
-                self.applySnapshot(animatingDifferences: true)
+                // Goals will automatically update via NSFetchedResultsController
                 
                 MBProgressHUD.hide(for: self.view, animated: true)
             } catch {
