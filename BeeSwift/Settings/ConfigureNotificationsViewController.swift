@@ -57,7 +57,7 @@ class ConfigureNotificationsViewController: UIViewController {
         ]
         
         if let user = currentUserManager.user(context: viewContext) {
-            typedFetchRequest.predicate = NSPredicate(format: "user == %@", user)
+            typedFetchRequest.predicate = NSPredicate(format: "owner == %@", user)
         }
         
         self.fetchedResultsController = NSFetchedResultsController(
@@ -172,7 +172,7 @@ class ConfigureNotificationsViewController: UIViewController {
                 
                 // Update predicate in case user has changed
                 if let user = currentUserManager.user(context: viewContext) {
-                    fetchedResultsController.fetchRequest.predicate = NSPredicate(format: "user == %@", user)
+                    fetchedResultsController.fetchRequest.predicate = NSPredicate(format: "owner == %@", user)
                 }
                 
                 try self.fetchedResultsController.performFetch()
@@ -210,6 +210,7 @@ class ConfigureNotificationsViewController: UIViewController {
         }
         
         dataSource.defaultRowAnimation = .fade
+        self.tableView.dataSource = dataSource
     }
     
     private func applySnapshot(animatingDifferences: Bool = true) {
