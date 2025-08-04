@@ -70,7 +70,7 @@ class ConfigureNotificationsViewController: UIViewController {
         let fetchRequest = Goal.fetchRequest()
         let typedFetchRequest = fetchRequest as! NSFetchRequest<Goal>
         typedFetchRequest.sortDescriptors = [
-            NSSortDescriptor(key: "useDefaults", ascending: false), // false (customized) comes before true (defaults)
+            NSSortDescriptor(key: "useDefaults", ascending: true), // false (customized) comes before true (defaults)
             NSSortDescriptor(key: "slug", ascending: true)
         ]
         
