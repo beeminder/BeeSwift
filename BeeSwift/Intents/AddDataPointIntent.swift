@@ -14,7 +14,7 @@ struct AddDataPointIntent: AppIntent {
     @Parameter(title: "Value")
     var value: Double
     
-    @Parameter(title: "Comment", default: "Added via Beeminder")
+    @Parameter(title: "Comment", default: "Added via iOS Shortcut")
     var comment: String?
     
     static var parameterSummary: some ParameterSummary {

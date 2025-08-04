@@ -31,6 +31,13 @@ struct OpenGoalIntent: AppIntent {
                     userInfo: ["slug": goal.slug]
                 )
             }
+        } else {
+            await MainActor.run {
+                NotificationCenter.default.post(
+                    name: GalleryViewController.NotificationName.navigateToGallery,
+                    object: nil
+                )
+            }
         }
         return .result()
     }
