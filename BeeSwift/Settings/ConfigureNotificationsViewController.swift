@@ -37,7 +37,25 @@ class ConfigureNotificationsViewController: UIViewController {
     }
     
     private typealias NotificationsSnapshot = NSDiffableDataSourceSnapshot<Section, Item>
-    private typealias NotificationsDataSource = UITableViewDiffableDataSource<Section, Item>
+    
+    private class NotificationsDataSource: UITableViewDiffableDataSource<Section, Item> {
+        override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+            guard let sectionEnum = Section(rawValue: section) else { return nil }
+            let snapshot = self.snapshot()
+            
+            switch sectionEnum {
+            case .defaultSettings:
+                // Only show "Defaults" header if we have any goals
+                let hasGoals = snapshot.numberOfItems(inSection: .customizedGoals) > 0 ||
+                              snapshot.numberOfItems(inSection: .defaultGoals) > 0
+                return hasGoals ? "Defaults" : nil
+            case .customizedGoals:
+                return snapshot.numberOfItems(inSection: .customizedGoals) > 0 ? "Customized" : nil
+            case .defaultGoals:
+                return snapshot.numberOfItems(inSection: .defaultGoals) > 0 ? "Using Defaults" : nil
+            }
+        }
+    }
     
     private var dataSource: NotificationsDataSource!
     private var fetchedResultsController: NSFetchedResultsController<Goal>!
@@ -216,11 +234,13 @@ class ConfigureNotificationsViewController: UIViewController {
     private func applySnapshot(animatingDifferences: Bool = true) {
         var snapshot = NotificationsSnapshot()
         
-        // Add default settings section
-        snapshot.appendSections([.defaultSettings])
+        // Always add all sections in order to ensure consistent section indices
+        snapshot.appendSections([.defaultSettings, .customizedGoals, .defaultGoals])
+        
+        // Add default settings item
         snapshot.appendItems([.defaultSettings], toSection: .defaultSettings)
         
-        // Add goal sections based on fetched results controller sections
+        // Add goal items based on fetched results controller sections
         if let sections = fetchedResultsController.sections {
             for (index, sectionInfo) in sections.enumerated() {
                 guard let objects = sectionInfo.objects as? [Goal] else { continue }
@@ -231,7 +251,6 @@ class ConfigureNotificationsViewController: UIViewController {
                 let section: Section = (index == 0) ? .customizedGoals : .defaultGoals
                 
                 if !objects.isEmpty {
-                    snapshot.appendSections([section])
                     let items = objects.map { Item.goal($0.objectID) }
                     snapshot.appendItems(items, toSection: section)
                 }
@@ -244,25 +263,6 @@ class ConfigureNotificationsViewController: UIViewController {
 
 // MARK: - UITableViewDelegate
 extension ConfigureNotificationsViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let sectionEnum = Section(rawValue: section) else { return nil }
-        
-        switch sectionEnum {
-        case .defaultSettings:
-            return lastFetched != nil && hasAnyGoals() ? "Defaults" : nil
-        case .customizedGoals:
-            return dataSource.snapshot().numberOfItems(inSection: .customizedGoals) > 0 ? "Customized" : nil
-        case .defaultGoals:
-            return dataSource.snapshot().numberOfItems(inSection: .defaultGoals) > 0 ? "Using Defaults" : nil
-        }
-    }
-    
-    private func hasAnyGoals() -> Bool {
-        let snapshot = dataSource.snapshot()
-        return snapshot.numberOfItems(inSection: .customizedGoals) > 0 || 
-               snapshot.numberOfItems(inSection: .defaultGoals) > 0
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
