@@ -17,8 +17,6 @@ class ConfigureNotificationsViewController: UIViewController {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ConfigureNotificationsViewController")
     
     private var lastFetched : Date?
-    fileprivate var goals : [Goal] = []
-    fileprivate var cellReuseIdentifier = "configureNotificationsTableViewCell"
     fileprivate var tableView = UITableView()
     fileprivate let settingsButton = BSButton()
     private let goalManager: GoalManager
@@ -26,12 +24,52 @@ class ConfigureNotificationsViewController: UIViewController {
     private let currentUserManager: CurrentUserManager
     private let requestManager: RequestManager
     
+    // MARK: - Diffable Data Source Types
+    private enum Section: Int, CaseIterable {
+        case defaultSettings = 0
+        case customizedGoals = 1
+        case defaultGoals = 2
+    }
+    
+    private enum Item: Hashable {
+        case defaultSettings
+        case goal(NSManagedObjectID)
+    }
+    
+    private typealias NotificationsSnapshot = NSDiffableDataSourceSnapshot<Section, Item>
+    private typealias NotificationsDataSource = UITableViewDiffableDataSource<Section, Item>
+    
+    private var dataSource: NotificationsDataSource!
+    private var fetchedResultsController: NSFetchedResultsController<Goal>!
+    
     init(goalManager: GoalManager, viewContext: NSManagedObjectContext, currentUserManager: CurrentUserManager, requestManager: RequestManager) {
         self.goalManager = goalManager
         self.viewContext = viewContext
         self.currentUserManager = currentUserManager
         self.requestManager = requestManager
+        
+        // Set up fetched results controller
+        let fetchRequest = Goal.fetchRequest()
+        let typedFetchRequest = fetchRequest as! NSFetchRequest<Goal>
+        typedFetchRequest.sortDescriptors = [
+            NSSortDescriptor(key: "useDefaults", ascending: false), // false (customized) comes before true (defaults)
+            NSSortDescriptor(key: "slug", ascending: true)
+        ]
+        
+        if let user = currentUserManager.user(context: viewContext) {
+            typedFetchRequest.predicate = NSPredicate(format: "user == %@", user)
+        }
+        
+        self.fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: typedFetchRequest,
+            managedObjectContext: viewContext,
+            sectionNameKeyPath: "useDefaults",
+            cacheName: nil
+        )
+        
         super.init(nibName: nil, bundle: nil)
+        
+        self.fetchedResultsController.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -65,19 +103,37 @@ class ConfigureNotificationsViewController: UIViewController {
         }
         self.tableView.isHidden = true
         self.tableView.delegate = self
-        self.tableView.dataSource = self
         self.tableView.refreshControl = {
             let refresh = UIRefreshControl()
             refresh.addTarget(self, action: #selector(fetchGoals), for: .valueChanged)
             return refresh
         }()
         self.tableView.tableFooterView = UIView()
-        self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: self.cellReuseIdentifier)
+        self.tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: "configureNotificationsTableViewCell")
+        
+        // Configure data source
+        self.configureDataSource()
+        
+        // Perform initial fetch
+        do {
+            try self.fetchedResultsController.performFetch()
+            self.applySnapshot(animatingDifferences: false)
+        } catch {
+            logger.error("Failed to fetch goals: \(error)")
+        }
+        
         self.fetchGoals()
         self.updateHiddenElements()
         NotificationCenter.default.addObserver(self, selector: #selector(self.foregroundEntered), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Refresh the snapshot to ensure changes are reflected
+        applySnapshot(animatingDifferences: true)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -112,8 +168,16 @@ class ConfigureNotificationsViewController: UIViewController {
             MBProgressHUD.showAdded(to: self.view, animated: true)
             do {
                 try await self.goalManager.refreshGoals()
-                self.goals = self.goalManager.staleGoals(context: self.viewContext)?.sorted(by: { $0.slug < $1.slug }) ?? []
                 self.lastFetched = Date()
+                
+                // Update predicate in case user has changed
+                if let user = currentUserManager.user(context: viewContext) {
+                    fetchedResultsController.fetchRequest.predicate = NSPredicate(format: "user == %@", user)
+                }
+                
+                try self.fetchedResultsController.performFetch()
+                self.applySnapshot(animatingDifferences: true)
+                
                 MBProgressHUD.hide(for: self.view, animated: true)
             } catch {
                 logger.error("Failure fetching goals: \(error)")
@@ -125,93 +189,95 @@ class ConfigureNotificationsViewController: UIViewController {
                     self.present(alert, animated: true, completion: nil)
                 }
             }
-            self.tableView.reloadData()
-        }
-    }
-}
-
-private extension ConfigureNotificationsViewController {
-    var goalsUsingDefaultNotifications: [Goal] {
-        self.goals.filter { $0.useDefaults }
-    }
-    
-    var goalsUsingNonDefaultNotifications: [Goal] {
-        self.goals.filter { !$0.useDefaults }
-    }
-
-}
-
-extension ConfigureNotificationsViewController : UITableViewDataSource, UITableViewDelegate {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        guard lastFetched != nil else { return 0 }
-        return 3
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case 0:
-            return 1
-        case 1:
-            return self.goalsUsingDefaultNotifications.count
-        default:
-            return self.goalsUsingNonDefaultNotifications.count
         }
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case 0:
-            guard !goals.isEmpty else { return nil }
-            return "Defaults"
-        case 1:
-            guard !goalsUsingDefaultNotifications.isEmpty else { return nil }
-            return "Using Defaults"
-        default:
-            guard !goalsUsingNonDefaultNotifications.isEmpty else { return nil }
-            return "Customized"
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as? SettingsTableViewCell else {
-            return UITableViewCell()
+    // MARK: - Data Source Configuration
+    private func configureDataSource() {
+        dataSource = NotificationsDataSource(tableView: tableView) { [weak self] tableView, indexPath, item in
+            let cell = tableView.dequeueReusableCell(withIdentifier: "configureNotificationsTableViewCell", for: indexPath) as? SettingsTableViewCell ?? SettingsTableViewCell()
+            
+            switch item {
+            case .defaultSettings:
+                cell.title = "Default notification settings"
+            case .goal(let objectID):
+                if let goal = try? self?.viewContext.existingObject(with: objectID) as? Goal {
+                    cell.title = goal.slug
+                }
+            }
+            
+            return cell
         }
         
-        switch indexPath.section {
-        case 0:
-            cell.title = "Default notification settings"
-            return cell
-        case 1:
-            let goal = self.goalsUsingDefaultNotifications[indexPath.row]
-            cell.title = goal.slug
-            return cell
-        default:
-            let goal = self.goalsUsingNonDefaultNotifications[indexPath.row]
-            cell.title = goal.slug
-            return cell
+        dataSource.defaultRowAnimation = .fade
+    }
+    
+    private func applySnapshot(animatingDifferences: Bool = true) {
+        var snapshot = NotificationsSnapshot()
+        
+        // Add default settings section
+        snapshot.appendSections([.defaultSettings])
+        snapshot.appendItems([.defaultSettings], toSection: .defaultSettings)
+        
+        // Add goal sections based on fetched results controller sections
+        if let sections = fetchedResultsController.sections {
+            for (index, sectionInfo) in sections.enumerated() {
+                guard let objects = sectionInfo.objects as? [Goal] else { continue }
+                
+                // Map Core Data sections to our sections
+                // Section 0 (useDefaults = false) -> customizedGoals
+                // Section 1 (useDefaults = true) -> defaultGoals
+                let section: Section = (index == 0) ? .customizedGoals : .defaultGoals
+                
+                if !objects.isEmpty {
+                    snapshot.appendSections([section])
+                    let items = objects.map { Item.goal($0.objectID) }
+                    snapshot.appendItems(items, toSection: section)
+                }
+            }
         }
+        
+        dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension ConfigureNotificationsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let sectionEnum = Section(rawValue: section) else { return nil }
+        
+        switch sectionEnum {
+        case .defaultSettings:
+            return lastFetched != nil && hasAnyGoals() ? "Defaults" : nil
+        case .customizedGoals:
+            return dataSource.snapshot().numberOfItems(inSection: .customizedGoals) > 0 ? "Customized" : nil
+        case .defaultGoals:
+            return dataSource.snapshot().numberOfItems(inSection: .defaultGoals) > 0 ? "Using Defaults" : nil
+        }
+    }
+    
+    private func hasAnyGoals() -> Bool {
+        let snapshot = dataSource.snapshot()
+        return snapshot.numberOfItems(inSection: .customizedGoals) > 0 || 
+               snapshot.numberOfItems(inSection: .defaultGoals) > 0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
+        
         let editNotificationsVC: UIViewController
         
-        switch indexPath.section {
-        case 0:
+        switch item {
+        case .defaultSettings:
             editNotificationsVC = EditDefaultNotificationsViewController(
                 currentUserManager: currentUserManager,
                 requestManager: requestManager,
                 goalManager: goalManager,
                 viewContext: viewContext)
-        case 1:
-            let goal = self.goalsUsingDefaultNotifications[indexPath.row]
-            editNotificationsVC = EditGoalNotificationsViewController(
-                goal: goal,
-                currentUserManager: currentUserManager,
-                requestManager: requestManager,
-                goalManager: goalManager,
-                viewContext: viewContext)
-        default:
-            let goal = self.goalsUsingNonDefaultNotifications[indexPath.row]
+        case .goal(let objectID):
+            guard let goal = try? viewContext.existingObject(with: objectID) as? Goal else { return }
             editNotificationsVC = EditGoalNotificationsViewController(
                 goal: goal,
                 currentUserManager: currentUserManager,
@@ -221,6 +287,12 @@ extension ConfigureNotificationsViewController : UITableViewDataSource, UITableV
         }
         
         self.navigationController?.pushViewController(editNotificationsVC, animated: true)
-        self.tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+// MARK: - NSFetchedResultsControllerDelegate
+extension ConfigureNotificationsViewController: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        applySnapshot(animatingDifferences: true)
     }
 }
