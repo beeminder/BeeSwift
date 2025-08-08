@@ -35,19 +35,25 @@ public actor DataPointManager {
         if datapointValue == val {
             return
         }
-        let params = [
-            "value": "\(datapointValue)",
-            "comment": "Auto-updated via Apple Health",
-        ]
-        let _ = try await requestManager.put(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json", parameters: params)
+        try await ServiceLocator.activityIndicatorTracker.withActivityIndicator {
+            let params = [
+                "value": "\(datapointValue)",
+                "comment": "Auto-updated via Apple Health",
+            ]
+            let _ = try await requestManager.put(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json", parameters: params)
+        }
     }
 
     private func deleteDatapoint(goal: Goal, datapoint : DataPoint) async throws {
-        let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)")
+        try await ServiceLocator.activityIndicatorTracker.withActivityIndicator {
+            let _ = try await requestManager.delete(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)")
+        }
     }
 
     private func postDatapoint(goal : Goal, urText: String, requestId: String) async throws {
-        let _ = try await requestManager.addDatapoint(urtext: urText, slug: goal.slug, requestId: requestId)
+        try await ServiceLocator.activityIndicatorTracker.withActivityIndicator {
+            let _ = try await requestManager.addDatapoint(urtext: urText, slug: goal.slug, requestId: requestId)
+        }
     }
 
     private func fetchDatapoints(goal: Goal, sort: String, per: Int, page: Int) async throws -> [DataPoint] {
@@ -97,14 +103,16 @@ public actor DataPointManager {
     }
 
     public func updateToMatchDataPoints(goalID: NSManagedObjectID, healthKitDataPoints : [BeeDataPoint]) async throws {
-        let goal = try modelContext.existingObject(with: goalID) as! Goal
-        guard let firstDaystamp = healthKitDataPoints.map({ point in point.daystamp }).min() else { return }
+        try await ServiceLocator.activityIndicatorTracker.withActivityIndicator {
+            let goal = try modelContext.existingObject(with: goalID) as! Goal
+            guard let firstDaystamp = healthKitDataPoints.map({ point in point.daystamp }).min() else { return }
 
-        let datapoints = try await datapointsSince(goal: goal, daystamp: try! Daystamp(fromString: firstDaystamp.description))
-        let realDatapoints = datapoints.filter{ !$0.isDummy && !$0.isInitial }
+            let datapoints = try await datapointsSince(goal: goal, daystamp: try! Daystamp(fromString: firstDaystamp.description))
+            let realDatapoints = datapoints.filter{ !$0.isDummy && !$0.isInitial }
 
-        for newDataPoint in healthKitDataPoints {
-            try await self.updateToMatchDataPoint(goal: goal, newDataPoint: newDataPoint, recentDatapoints: realDatapoints)
+            for newDataPoint in healthKitDataPoints {
+                try await self.updateToMatchDataPoint(goal: goal, newDataPoint: newDataPoint, recentDatapoints: realDatapoints)
+            }
         }
     }
 

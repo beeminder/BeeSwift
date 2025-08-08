@@ -55,17 +55,19 @@ public actor GoalManager {
 
     /// Fetch and return the latest set of goals from the server
     public func refreshGoals() async throws {
-        guard let user = self.currentUserManager.user(context: modelContext) else { return }
-        let goalsUnknown = user.goals.count == 0 || user.updatedAt.timeIntervalSince1970 < 24*60*60
-        
-        if goalsUnknown {
-            try await refreshGoalsFromScratch(user: user)
-        } else {
-            try await refreshGoalsIncremental(user: user)
+        try await ServiceLocator.activityIndicatorTracker.withActivityIndicator {
+            guard let user = self.currentUserManager.user(context: modelContext) else { return }
+            let goalsUnknown = user.goals.count == 0 || user.updatedAt.timeIntervalSince1970 < 24*60*60
+            
+            if goalsUnknown {
+                try await refreshGoalsFromScratch(user: user)
+            } else {
+                try await refreshGoalsIncremental(user: user)
+            }
+            
+            try modelContext.save()
+            await performPostGoalUpdateBookkeeping()
         }
-        
-        try modelContext.save()
-        await performPostGoalUpdateBookkeeping()
     }
     
     /// Perform a full refresh of goals for initial loads
@@ -124,19 +126,21 @@ public actor GoalManager {
     }
 
     public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
-        let goal = try modelContext.existingObject(with: goalID) as! Goal
+        try await ServiceLocator.activityIndicatorTracker.withActivityIndicator {
+            let goal = try modelContext.existingObject(with: goalID) as! Goal
 
-        let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)",
-                                                          parameters: ["datapoints_count": "5", "emaciated": "true"])
-        let goalJSON = JSON(responseObject!)
+            let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)",
+                                                              parameters: ["datapoints_count": "5", "emaciated": "true"])
+            let goalJSON = JSON(responseObject!)
 
-        // The goal may have changed during the network operation, reload latest version
-        modelContext.refresh(goal, mergeChanges: false)
-        goal.updateToMatch(json: goalJSON)
+            // The goal may have changed during the network operation, reload latest version
+            modelContext.refresh(goal, mergeChanges: false)
+            goal.updateToMatch(json: goalJSON)
 
-        try modelContext.save()
+            try modelContext.save()
 
-        await performPostGoalUpdateBookkeeping()
+            await performPostGoalUpdateBookkeeping()
+        }
     }
 
     public func forceAutodataRefresh(_ goal: Goal) async throws {

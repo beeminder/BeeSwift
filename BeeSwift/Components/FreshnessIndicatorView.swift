@@ -4,6 +4,13 @@ import UIKit
 import BeeKit
 
 class FreshnessIndicatorView: UIView {
+    private let activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
+    
     private let label: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -14,6 +21,8 @@ class FreshnessIndicatorView: UIView {
     
     private var updateTimer: Timer?
     private var lastUpdateDate: Date?
+    private var leadingLabelConstraint: NSLayoutConstraint?
+    private var leadingIndicatorConstraint: NSLayoutConstraint?
     
     // Time thresholds for different styles (in seconds)
     private struct TimeThreshold {
@@ -50,17 +59,27 @@ class FreshnessIndicatorView: UIView {
     
     deinit {
         updateTimer?.invalidate()
+        NotificationCenter.default.removeObserver(self)
     }
     
     private func setupView() {
+        addSubview(activityIndicator)
         addSubview(label)
         
+        leadingLabelConstraint = label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8)
+        leadingIndicatorConstraint = label.leadingAnchor.constraint(equalTo: activityIndicator.trailingAnchor, constant: 8)
+        
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            activityIndicator.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
+            leadingLabelConstraint!,
             label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             label.topAnchor.constraint(equalTo: topAnchor, constant: 4),
             label.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4)
         ])
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(activityDidStart), name: ActivityIndicatorTracker.NotificationName.activityDidStart, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(activityDidEnd), name: ActivityIndicatorTracker.NotificationName.activityDidEnd, object: nil)
     }
     
     private func fuzzyTimeString(for elapsed: TimeInterval) -> String {
@@ -129,5 +148,23 @@ class FreshnessIndicatorView: UIView {
     func update(with date: Date) {
         lastUpdateDate = date
         updateDisplay(for: date)
+    }
+    
+    @objc private func activityDidStart() {
+        activityIndicator.startAnimating()
+        UIView.animate(withDuration: 0.2) {
+            self.leadingLabelConstraint?.isActive = false
+            self.leadingIndicatorConstraint?.isActive = true
+            self.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func activityDidEnd() {
+        activityIndicator.stopAnimating()
+        UIView.animate(withDuration: 0.2) {
+            self.leadingIndicatorConstraint?.isActive = false
+            self.leadingLabelConstraint?.isActive = true
+            self.layoutIfNeeded()
+        }
     }
 }

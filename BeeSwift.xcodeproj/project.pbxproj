@@ -111,6 +111,7 @@
 		E4D5BD5F2C6709060007B0BE /* BeeminderSpotlightDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */; };
 		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
 		E4E63C6D2C3F9083005E00DA /* DataPointManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */; };
+		D06267E5F39343DB94E202C9 /* ActivityIndicatorTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D06267E4F39343DB94E202C9 /* ActivityIndicatorTracker.swift */; };
 		E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */; };
 		E4E8DD3B2BE87F890059C64F /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8DD3A2BE87F890059C64F /* Goal.swift */; };
 		E4E8DD3D2BE881440059C64F /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8DD3C2BE881440059C64F /* DataPoint.swift */; };
@@ -286,6 +287,7 @@
 		E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderSpotlightDelegate.swift; sourceTree = "<group>"; };
 		E4E43D8729F39CE800697116 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
 		E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPointManager.swift; sourceTree = "<group>"; };
+		D06267E4F39343DB94E202C9 /* ActivityIndicatorTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorTracker.swift; sourceTree = "<group>"; };
 		E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalExtensions.swift; sourceTree = "<group>"; };
 		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityHealthKitMetric.swift; sourceTree = "<group>"; };
@@ -389,6 +391,7 @@
 				E5C161932423CE9F0045C90D /* VersionManager.swift */,
 				E44CE782299338C500394E87 /* GoalManager.swift */,
 				E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */,
+				D06267E4F39343DB94E202C9 /* ActivityIndicatorTracker.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1030,6 +1033,7 @@
 				E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */,
 				E458C8252AD11E01000DCA5C /* BSButton.swift in Sources */,
 				E4E63C6D2C3F9083005E00DA /* DataPointManager.swift in Sources */,
+				D06267E5F39343DB94E202C9 /* ActivityIndicatorTracker.swift in Sources */,
 				E458C8172AD11CA7000DCA5C /* TotalSleepMinutes.swift in Sources */,
 				E4E8DD3B2BE87F890059C64F /* Goal.swift in Sources */,
 				E458C80D2AD11C64000DCA5C /* Crypto.swift in Sources */,
