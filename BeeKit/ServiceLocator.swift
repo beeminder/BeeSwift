@@ -21,4 +21,5 @@ public class ServiceLocator {
     public static let dataPointManager = DataPointManager(requestManager: requestManager, container: persistentContainer)
     public static let healthStoreManager = HealthStoreManager(goalManager: goalManager, container: persistentContainer)
     public static let versionManager = VersionManager(requestManager: requestManager)
+    public static let activityIndicatorTracker = ActivityIndicatorTracker()
 }

@@ -93,33 +93,37 @@ public actor HealthStoreManager {
     ///   - goal: The healthkit-connected goal to be updated
     ///   - days: How many days of history to update. Supplying 1 will update the current day.
     public func updateWithRecentData(goalID: NSManagedObjectID, days: Int) async throws {
-        let goal = try modelContext.existingObject(with: goalID) as! Goal
-        modelContext.refresh(goal, mergeChanges: false)
-        try await updateWithRecentData(goal: goal, days: days)
-        try await goalManager.refreshGoal(goalID)
+        try await ServiceLocator.activityIndicatorTracker.withActivityIndicator {
+            let goal = try modelContext.existingObject(with: goalID) as! Goal
+            modelContext.refresh(goal, mergeChanges: false)
+            try await updateWithRecentData(goal: goal, days: days)
+            try await goalManager.refreshGoal(goalID)
+        }
     }
 
     /// Immediately update all known goals based on HealthKit's data record
     public func updateAllGoalsWithRecentData(days: Int) async throws {
-        logger.notice("Updating all goals with recent day for last \(days, privacy: .public) days")
+        try await ServiceLocator.activityIndicatorTracker.withActivityIndicator {
+            logger.notice("Updating all goals with recent day for last \(days, privacy: .public) days")
 
-        // We must create this context in a backgrounfd thread as it will be used in background threads
-        modelContext.refreshAllObjects()
-        guard let goals = goalManager.staleGoals(context: modelContext) else { return }
-        let goalsWithHealthData = goals.filter { $0.healthKitMetric != nil && $0.healthKitMetric != "" }
+            // We must create this context in a backgrounfd thread as it will be used in background threads
+            modelContext.refreshAllObjects()
+            guard let goals = goalManager.staleGoals(context: modelContext) else { return }
+            let goalsWithHealthData = goals.filter { $0.healthKitMetric != nil && $0.healthKitMetric != "" }
 
-        try await withThrowingTaskGroup(of: Void.self) { group in
-            for goal in goalsWithHealthData {
-                let goalID = goal.objectID
-                group.addTask {
-                    // This is a new thread, so we are not allowed to use the goal object from CoreData
-                    // TODO: This will generate lots of unneccesary reloads
-                    try await self.updateWithRecentData(goalID: goalID, days: days)
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                for goal in goalsWithHealthData {
+                    let goalID = goal.objectID
+                    group.addTask {
+                        // This is a new thread, so we are not allowed to use the goal object from CoreData
+                        // TODO: This will generate lots of unneccesary reloads
+                        try await self.updateWithRecentData(goalID: goalID, days: days)
+                    }
                 }
+                try await group.waitForAll()
             }
-            try await group.waitForAll()
+            try await goalManager.refreshGoals()
         }
-        try await goalManager.refreshGoals()
     }
 
     private func ensureUpdatesRegularly(metricNames: any Sequence<String>, removeMissing: Bool) async throws {
@@ -195,15 +199,17 @@ public actor HealthStoreManager {
     }
 
     private func updateWithRecentData(goal: Goal, days: Int) async throws {
-        guard
-            let metric = HealthKitConfig.metrics.first(where: { $0.databaseString == goal.healthKitMetric })
-        else {
-            throw HealthKitError("No metric found for goal \(goal.slug) with metric \(goal.healthKitMetric ?? "nil")")
+        try await ServiceLocator.activityIndicatorTracker.withActivityIndicator {
+            guard
+                let metric = HealthKitConfig.metrics.first(where: { $0.databaseString == goal.healthKitMetric })
+            else {
+                throw HealthKitError("No metric found for goal \(goal.slug) with metric \(goal.healthKitMetric ?? "nil")")
+            }
+            let newDataPoints = try await metric.recentDataPoints(days: days, deadline: goal.deadline, healthStore: healthStore)
+            // TODO: In the future we should gain confidence this code is correct and remove the filter so we handle deleted data better
+            let nonZeroDataPoints = newDataPoints.filter { dataPoint in dataPoint.value != 0 }
+            logger.notice("Updating \(metric.databaseString, privacy: .public) goal with \(nonZeroDataPoints.count, privacy: .public) datapoints. Skipped \(newDataPoints.count - nonZeroDataPoints.count, privacy: .public) empty points.")
+            try await ServiceLocator.dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: nonZeroDataPoints)
         }
-        let newDataPoints = try await metric.recentDataPoints(days: days, deadline: goal.deadline, healthStore: healthStore)
-        // TODO: In the future we should gain confidence this code is correct and remove the filter so we handle deleted data better
-        let nonZeroDataPoints = newDataPoints.filter { dataPoint in dataPoint.value != 0 }
-        logger.notice("Updating \(metric.databaseString, privacy: .public) goal with \(nonZeroDataPoints.count, privacy: .public) datapoints. Skipped \(newDataPoints.count - nonZeroDataPoints.count, privacy: .public) empty points.")
-        try await ServiceLocator.dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: nonZeroDataPoints)
     }
 }
