@@ -542,7 +542,9 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
 
 extension GalleryViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        logger.info("Tapped goal at index \(indexPath, privacy: .public)")
         let goal = fetchedResultsController.object(at: indexPath)
+        logger.info("... Goal is \(goal.id, privacy: .public)")
         self.openGoal(goal)
     }
 }
