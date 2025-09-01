@@ -109,7 +109,6 @@ public actor DataPointManager {
         let datapoints = try await datapointsSince(goal: goal, daystamp: try! Daystamp(fromString: firstDaystamp.description))
         let realDatapoints = datapoints.filter{ !$0.isDummy && !$0.isInitial }
 
-        // Group healthkit datapoints by day to handle deletion properly
         let healthKitDataPointsByDay = Dictionary(grouping: healthKitDataPoints) { $0.daystamp }
         
         for (daystamp, dayDataPoints) in healthKitDataPointsByDay {
@@ -121,7 +120,6 @@ public actor DataPointManager {
         let existingDatapointsForDay = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: daystamp)
         var processedDatapoints: Set<String> = []
         
-        // Process each new datapoint, matching by requestId if possible
         for newDataPoint in newDataPoints {
             if newDataPoint.daystamp < goal.initDaystamp {
                 continue
@@ -130,21 +128,18 @@ public actor DataPointManager {
             let matchingDatapoint = existingDatapointsForDay.first { $0.requestid == newDataPoint.requestid }
             
             if let existingDatapoint = matchingDatapoint {
-                // Update existing datapoint if value or comment changed
                 if !isApproximatelyEqual(existingDatapoint.value.doubleValue, newDataPoint.value.doubleValue) || existingDatapoint.comment != newDataPoint.comment {
                     logger.notice("Updating datapoint for \(goal.id) with requestId \(newDataPoint.requestid, privacy: .public) from \(existingDatapoint.value) to \(newDataPoint.value)")
                     try await updateDatapoint(goal: goal, datapoint: existingDatapoint, datapointValue: newDataPoint.value, comment: newDataPoint.comment)
                 }
                 processedDatapoints.insert(existingDatapoint.requestid)
             } else {
-                // Create new datapoint
                 let urText = "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\""
                 logger.notice("Creating new datapoint for \(goal.id, privacy: .public) with requestId \(newDataPoint.requestid, privacy: .public): \(newDataPoint.value, privacy: .private)")
                 try await postDatapoint(goal: goal, urText: urText, requestId: newDataPoint.requestid)
             }
         }
         
-        // Delete any existing datapoints for this day that weren't matched
         for existingDatapoint in existingDatapointsForDay {
             if !processedDatapoints.contains(existingDatapoint.requestid) {
                 logger.notice("Deleting obsolete datapoint for \(goal.id) with requestId \(existingDatapoint.requestid, privacy: .public)")
