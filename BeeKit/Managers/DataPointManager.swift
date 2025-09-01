@@ -29,12 +29,6 @@ public actor DataPointManager {
             return daystamp == datapoint.daystamp
         }
     }
-    
-    private func datapointsMatchingRequestId(datapoints : [DataPoint], requestId : String) -> [DataPoint] {
-        datapoints.filter { (datapoint) -> Bool in
-            return requestId == datapoint.requestid
-        }
-    }
 
     private func updateDatapoint(goal : Goal, datapoint : DataPoint, datapointValue : NSNumber, comment: String) async throws {
         let val = datapoint.value
