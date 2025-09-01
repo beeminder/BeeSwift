@@ -36,14 +36,14 @@ public actor DataPointManager {
         }
     }
 
-    private func updateDatapoint(goal : Goal, datapoint : DataPoint, datapointValue : NSNumber) async throws {
+    private func updateDatapoint(goal : Goal, datapoint : DataPoint, datapointValue : NSNumber, comment: String) async throws {
         let val = datapoint.value
-        if datapointValue == val {
+        if datapointValue == val && comment == datapoint.comment {
             return
         }
         let params = [
             "value": "\(datapointValue)",
-            "comment": "Auto-updated via Apple Health",
+            "comment": comment,
         ]
         let _ = try await requestManager.put(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json", parameters: params)
     }
@@ -136,10 +136,10 @@ public actor DataPointManager {
                 try await deleteDatapoint(goal: goal, datapoint: datapoint)
             }
 
-            if !isApproximatelyEqual(firstDatapoint.value.doubleValue, newDataPoint.value.doubleValue) {
+            if !isApproximatelyEqual(firstDatapoint.value.doubleValue, newDataPoint.value.doubleValue) || firstDatapoint.comment != newDataPoint.comment {
                 logger.notice("Updating datapoint for \(goal.id) with requestId \(newDataPoint.requestid, privacy: .public) from \(firstDatapoint.value) to \(newDataPoint.value)")
 
-                try await updateDatapoint(goal: goal, datapoint: firstDatapoint, datapointValue: newDataPoint.value)
+                try await updateDatapoint(goal: goal, datapoint: firstDatapoint, datapointValue: newDataPoint.value, comment: newDataPoint.comment)
             }
         }
     }
