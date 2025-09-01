@@ -130,14 +130,10 @@ public actor DataPointManager {
                         }
                     }
                     processedDatapoints.insert(existingDatapoint.requestid)
-                } else {
+                } else if newDataPoint.daystamp >= goal.initDaystamp {
                     // If there are not already data points for this requestId, do not add points
                     // from before the creation of the goal. This avoids immediate derailment
                     // on do less goals, and excessive safety buffer on do-more goals.
-                    if newDataPoint.daystamp < goal.initDaystamp {
-                        continue
-                    }
-                    
                     group.addTask {
                         let urText = "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\""
                         self.logger.notice("Creating new datapoint for \(goal.id, privacy: .public) with requestId \(newDataPoint.requestid, privacy: .public): \(newDataPoint.value, privacy: .private)")
