@@ -148,36 +148,6 @@ public actor DataPointManager {
         }
     }
 
-    private func updateToMatchDataPoint(goal: Goal, newDataPoint : BeeDataPoint, recentDatapoints: [DataPoint]) async throws {
-        var matchingDatapoints = datapointsMatchingRequestId(datapoints: recentDatapoints, requestId: newDataPoint.requestid)
-        if matchingDatapoints.count == 0 {
-            // If there are not already data points for this requestId, do not add points
-            // from before the creation of the goal. This avoids immediate derailment
-            //on do less goals, and excessive safety buffer on do-more goals.
-            if newDataPoint.daystamp < goal.initDaystamp {
-                return
-            }
-
-            let urText = "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\""
-            let requestId = newDataPoint.requestid
-
-            logger.notice("Creating new datapoint for \(goal.id, privacy: .public) with requestId \(requestId, privacy: .public): \(newDataPoint.value, privacy: .private)")
-
-            try await postDatapoint(goal: goal, urText: urText, requestId: requestId)
-        } else if matchingDatapoints.count >= 1 {
-            let firstDatapoint = matchingDatapoints.remove(at: 0)
-            for datapoint in matchingDatapoints {
-                try await deleteDatapoint(goal: goal, datapoint: datapoint)
-            }
-
-            if !isApproximatelyEqual(firstDatapoint.value.doubleValue, newDataPoint.value.doubleValue) || firstDatapoint.comment != newDataPoint.comment {
-                logger.notice("Updating datapoint for \(goal.id) with requestId \(newDataPoint.requestid, privacy: .public) from \(firstDatapoint.value) to \(newDataPoint.value)")
-
-                try await updateDatapoint(goal: goal, datapoint: firstDatapoint, datapointValue: newDataPoint.value, comment: newDataPoint.comment)
-            }
-        }
-    }
-
     /// Compares two datapoint values for equality, allowing a certain epsilon
     private func isApproximatelyEqual(_ first: Double, _ second: Double) -> Bool {
         // Zero is never approximately equal to another number (as a relative different makes no sense)
