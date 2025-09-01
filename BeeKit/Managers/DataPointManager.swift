@@ -115,10 +115,6 @@ public actor DataPointManager {
         var processedDatapoints: Set<String> = []
         
         for newDataPoint in newDataPoints {
-            if newDataPoint.daystamp < goal.initDaystamp {
-                continue
-            }
-            
             let matchingDatapoint = existingDatapoints.first { $0.requestid == newDataPoint.requestid }
             
             if let existingDatapoint = matchingDatapoint {
@@ -128,6 +124,13 @@ public actor DataPointManager {
                 }
                 processedDatapoints.insert(existingDatapoint.requestid)
             } else {
+                // If there are not already data points for this requestId, do not add points
+                // from before the creation of the goal. This avoids immediate derailment
+                // on do less goals, and excessive safety buffer on do-more goals.
+                if newDataPoint.daystamp < goal.initDaystamp {
+                    continue
+                }
+                
                 let urText = "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\""
                 logger.notice("Creating new datapoint for \(goal.id, privacy: .public) with requestId \(newDataPoint.requestid, privacy: .public): \(newDataPoint.value, privacy: .private)")
                 try await postDatapoint(goal: goal, urText: urText, requestId: newDataPoint.requestid)
