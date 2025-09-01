@@ -81,17 +81,29 @@ class DataPointManagerTests: XCTestCase {
         user = nil
     }
 
-    func testSynchronizesPoints() async throws {
+    func testSynchronizesPointsByRequestId() async throws {
         let apiResponse = [
-            // Matching data point to be updated
+            // Existing datapoint with requestId that should be updated
             [
-                "id": "normal3",
+                "id": "existing1",
                 "value": 10,
                 "daystamp": "20221201",
-                "comment": "Normal datapoint",
+                "comment": "Old comment",
                 "updated_at": 1000,
                 "is_dummy": false,
-                "is_initial": false
+                "is_initial": false,
+                "requestid": "hk_workout_1"
+            ],
+            // Existing datapoint without matching requestId that should be deleted
+            [
+                "id": "obsolete1",
+                "value": 20,
+                "daystamp": "20221201",
+                "comment": "Should be deleted",
+                "updated_at": 1001,
+                "is_dummy": false,
+                "is_initial": false,
+                "requestid": "hk_workout_old"
             ],
             // Metadata points which should be ignored
             [
@@ -102,60 +114,151 @@ class DataPointManagerTests: XCTestCase {
                 "updated_at": 2000,
                 "is_dummy": true,
                 "is_initial": false
-            ],
-            [
-                "id": "initial2",
-                "value": 30,
-                "daystamp": "20221203",
-                "comment": "Initial datapoint",
-                "updated_at": 3000,
-                "is_dummy": false,
-                "is_initial": true
-            ],
-            // Additional datapoint that will be deleted (multiple datapoints for same daystamp)
-            [
-                "id": "duplicate1",
-                "value": 11,
-                "daystamp": "20221201",
-                "comment": "Duplicate datapoint to be deleted",
-                "updated_at": 1001,
-                "is_dummy": false,
-                "is_initial": false
-            ],
+            ]
         ]
         
         mockRequestManager.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
         
-        let healthKitDatapoint = MockHealthKitDataPoint(
+        let updatedHealthKitDatapoint = MockHealthKitDataPoint(
             daystamp: try Daystamp(fromString: "20221201"),
             value: NSNumber(value: 15),
-            comment: "Updated from HealthKit",
-            requestid: "hk_test"
+            comment: "Updated workout comment",
+            requestid: "hk_workout_1"
         )
         
         let newHealthKitDatapoint = MockHealthKitDataPoint(
-            daystamp: try Daystamp(fromString: "20221204"),
+            daystamp: try Daystamp(fromString: "20221201"),
             value: NSNumber(value: 25),
-            comment: "New HealthKit datapoint",
-            requestid: "hk_new"
+            comment: "New workout",
+            requestid: "hk_workout_2"
         )
         
-        try! await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: [healthKitDatapoint, newHealthKitDatapoint])
+        try! await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: [updatedHealthKitDatapoint, newHealthKitDatapoint])
 
-        // Should update the matching data point
+        // Should update the existing datapoint by requestId
         XCTAssertEqual(mockRequestManager.putCalls.count, 1)
-        XCTAssertTrue(mockRequestManager.putCalls[0].url.contains("normal3"))
+        XCTAssertTrue(mockRequestManager.putCalls[0].url.contains("existing1"))
         XCTAssertEqual(mockRequestManager.putCalls[0].parameters["value"] as? String, "15")
+        XCTAssertEqual(mockRequestManager.putCalls[0].parameters["comment"] as? String, "Updated workout comment")
         
-        // Should delete the duplicate data point
+        // Should delete the obsolete datapoint
         XCTAssertEqual(mockRequestManager.deleteCalls.count, 1)
-        XCTAssertTrue(mockRequestManager.deleteCalls[0].contains("duplicate1"))
+        XCTAssertTrue(mockRequestManager.deleteCalls[0].contains("obsolete1"))
         
-        // Should create a new data point
+        // Should create a new datapoint
         XCTAssertEqual(mockRequestManager.addDatapointCalls.count, 1)
-        XCTAssertEqual(mockRequestManager.addDatapointCalls[0].urtext, "4 25 \"New HealthKit datapoint\"")
+        XCTAssertEqual(mockRequestManager.addDatapointCalls[0].urtext, "1 25 \"New workout\"")
         XCTAssertEqual(mockRequestManager.addDatapointCalls[0].slug, "test-goal")
-        XCTAssertEqual(mockRequestManager.addDatapointCalls[0].requestId, "hk_new")
+        XCTAssertEqual(mockRequestManager.addDatapointCalls[0].requestId, "hk_workout_2")
+    }
+    
+    func testDeletesRemovedWorkouts() async throws {
+        let apiResponse = [
+            [
+                "id": "workout1",
+                "value": 30,
+                "daystamp": "20221201",
+                "comment": "Morning run",
+                "updated_at": 1000,
+                "is_dummy": false,
+                "is_initial": false,
+                "requestid": "hk_workout_uuid_1"
+            ],
+            [
+                "id": "workout2", 
+                "value": 45,
+                "daystamp": "20221201",
+                "comment": "Evening bike",
+                "updated_at": 1001,
+                "is_dummy": false,
+                "is_initial": false,
+                "requestid": "hk_workout_uuid_2"
+            ]
+        ]
+        
+        mockRequestManager.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
+        
+        // Only one workout remains in HealthKit
+        let remainingWorkout = MockHealthKitDataPoint(
+            daystamp: try Daystamp(fromString: "20221201"),
+            value: NSNumber(value: 30),
+            comment: "Morning run",
+            requestid: "hk_workout_uuid_1"
+        )
+        
+        try! await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: [remainingWorkout])
+
+        // Should not update the matching workout (same value/comment)
+        XCTAssertEqual(mockRequestManager.putCalls.count, 0)
+        
+        // Should delete the removed workout
+        XCTAssertEqual(mockRequestManager.deleteCalls.count, 1)
+        XCTAssertTrue(mockRequestManager.deleteCalls[0].contains("workout2"))
+        
+        // Should not create any new datapoints
+        XCTAssertEqual(mockRequestManager.addDatapointCalls.count, 0)
+    }
+    
+    func testMultipleDaysWithMultipleWorkouts() async throws {
+        let apiResponse = [
+            [
+                "id": "day1_workout1",
+                "value": 30,
+                "daystamp": "20221201",
+                "comment": "Run",
+                "updated_at": 1000,
+                "is_dummy": false,
+                "is_initial": false,
+                "requestid": "uuid_1"
+            ],
+            [
+                "id": "day2_workout1",
+                "value": 45,
+                "daystamp": "20221202", 
+                "comment": "Bike",
+                "updated_at": 1001,
+                "is_dummy": false,
+                "is_initial": false,
+                "requestid": "uuid_2"
+            ]
+        ]
+        
+        mockRequestManager.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
+        
+        let day1Workouts = [
+            MockHealthKitDataPoint(
+                daystamp: try Daystamp(fromString: "20221201"),
+                value: NSNumber(value: 30),
+                comment: "Run",
+                requestid: "uuid_1"
+            ),
+            MockHealthKitDataPoint(
+                daystamp: try Daystamp(fromString: "20221201"),
+                value: NSNumber(value: 20),
+                comment: "Yoga",
+                requestid: "uuid_3"
+            )
+        ]
+        
+        let day2Workouts = [
+            MockHealthKitDataPoint(
+                daystamp: try Daystamp(fromString: "20221202"),
+                value: NSNumber(value: 60),
+                comment: "Long bike ride",
+                requestid: "uuid_4"
+            )
+        ]
+        
+        try! await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: day1Workouts + day2Workouts)
+
+        // Should delete day2 old workout, but not update day1 unchanged workout
+        XCTAssertEqual(mockRequestManager.deleteCalls.count, 1)
+        XCTAssertTrue(mockRequestManager.deleteCalls[0].contains("day2_workout1"))
+        
+        // Should create 2 new workouts (day1 yoga, day2 bike)
+        XCTAssertEqual(mockRequestManager.addDatapointCalls.count, 2)
+        XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.requestId == "uuid_3" })
+        XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.requestId == "uuid_4" })
     }
     
     private func createTestGoalJSON() -> JSON {
