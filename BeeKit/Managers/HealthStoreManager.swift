@@ -200,7 +200,7 @@ public actor HealthStoreManager {
         else {
             throw HealthKitError("No metric found for goal \(goal.slug) with metric \(goal.healthKitMetric ?? "nil")")
         }
-        let newDataPoints = try await metric.recentDataPoints(days: days, deadline: goal.deadline, healthStore: healthStore)
+        let newDataPoints = try await metric.recentDataPoints(days: days, deadline: goal.deadline, healthStore: healthStore, autodataConfig: goal.autodataConfig)
         // TODO: In the future we should gain confidence this code is correct and remove the filter so we handle deleted data better
         let nonZeroDataPoints = newDataPoints.filter { dataPoint in dataPoint.value != 0 }
         logger.notice("Updating \(metric.databaseString, privacy: .public) goal with \(nonZeroDataPoints.count, privacy: .public) datapoints. Skipped \(newDataPoints.count - nonZeroDataPoints.count, privacy: .public) empty points.")

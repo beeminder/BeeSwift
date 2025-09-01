@@ -20,6 +20,7 @@ class ConfigureHKMetricViewController : UIViewController {
     let previewDescriptionLabel = BSLabel()
     fileprivate var datapointTableController = DatapointTableViewController()
     fileprivate let noDataFoundLabel = BSLabel()
+    private var workoutConfigViewController: WorkoutConfigurationViewController?
     let saveButton = BSButton()
 
     init(goal: Goal, metric: HealthKitMetric, healthStoreManager: HealthStoreManager, requestManager: RequestManager) {
@@ -40,6 +41,9 @@ class ConfigureHKMetricViewController : UIViewController {
         self.title = self.metric.humanText
         self.view.backgroundColor = UIColor.systemBackground
 
+        if metric is WorkoutMinutesHealthKitMetric {
+            setupWorkoutConfiguration()
+        }
 
         self.view.addSubview(previewDescriptionLabel)
         previewDescriptionLabel.attributedText = {
@@ -52,7 +56,11 @@ class ConfigureHKMetricViewController : UIViewController {
         previewDescriptionLabel.textAlignment = .left
         previewDescriptionLabel.numberOfLines = 0
         previewDescriptionLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(componentMargin)
+            if let workoutConfig = workoutConfigViewController {
+                make.top.equalTo(workoutConfig.view.snp.bottom).offset(componentMargin)
+            } else {
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(componentMargin)
+            }
             make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(componentMargin)
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
         }
@@ -104,7 +112,12 @@ class ConfigureHKMetricViewController : UIViewController {
 
         self.datapointTableController.hhmmformat = self.goal.hhmmFormat
         Task { @MainActor in
-            let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline, healthStore: self.healthStoreManager.healthStore)
+            let datapoints: [BeeDataPoint]
+            
+            let currentConfig = workoutConfigViewController?.getCurrentConfig() ?? goal.autodataConfig ?? [:]
+            
+            datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline, healthStore: self.healthStoreManager.healthStore, autodataConfig: currentConfig)
+            
             self.datapointTableController.datapoints = datapoints
 
             if datapoints.isEmpty {
@@ -157,8 +170,17 @@ class ConfigureHKMetricViewController : UIViewController {
                 return
             }
 
-            var params : [String : [String : String]] = [:]
-            params = ["ii_params" : ["name" : "apple", "metric" : self.goal.healthKitMetric!]]
+            var params : [String : Any] = [:]
+            var iiParams: [String : Any] = ["name" : "apple", "metric" : self.goal.healthKitMetric!]
+
+            if let workoutConfig = workoutConfigViewController {
+                let configParams = workoutConfig.getConfigParameters()
+                for (key, value) in configParams {
+                    iiParams[key] = value
+                }
+            }
+
+            params = ["ii_params" : iiParams]
 
             do {
                 let _ = try await self.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
@@ -186,6 +208,31 @@ class ConfigureHKMetricViewController : UIViewController {
                 saveButton.isUserInteractionEnabled = true
             }
         }
+    }
+
+    private func setupWorkoutConfiguration() {
+        let workoutConfig = WorkoutConfigurationViewController(goal: goal)
+        workoutConfigViewController = workoutConfig
+        
+        addChild(workoutConfig)
+        view.addSubview(workoutConfig.view)
+        
+        workoutConfig.view.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.topMargin).offset(componentMargin)
+            make.left.equalTo(view.safeAreaLayoutGuide.snp.leftMargin).offset(componentMargin)
+            make.right.equalTo(view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
+        }
+        
+        workoutConfig.onConfigurationChanged = { [weak self] in
+            Task { @MainActor in
+                guard let self = self else { return }
+                let currentConfig = self.workoutConfigViewController?.getCurrentConfig() ?? [:]
+                let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline, healthStore: self.healthStoreManager.healthStore, autodataConfig: currentConfig)
+                self.datapointTableController.datapoints = datapoints
+            }
+        }
+        
+        workoutConfig.didMove(toParent: self)
     }
 
 }

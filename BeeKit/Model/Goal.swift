@@ -19,6 +19,7 @@ public class Goal: NSManagedObject {
     @NSManaged public var graphUrl: String
     /// The internal app identifier for the healthkit metric to sync to this goal
     @NSManaged public var healthKitMetric: String?
+    @NSManaged public var autodataConfig: [String: Any]?
     /// Whether to show data in a "timey" way, with colons. For example, this would make a 1.5 show up as 1:30.
     @NSManaged public var hhmmFormat: Bool
     /// Unix timestamp (in seconds) of the start of the bright red line.
@@ -154,6 +155,7 @@ public class Goal: NSManagedObject {
 
         self.alertStart = json["alertstart"].intValue
         self.autodata = json["autodata"].string
+        self.autodataConfig = json["autodata_config"].dictionaryObject
         self.deadline = json["deadline"].intValue
         self.graphUrl = json["graph_url"].stringValue
         self.healthKitMetric = json["healthkitmetric"].string
