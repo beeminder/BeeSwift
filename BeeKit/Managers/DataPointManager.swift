@@ -29,6 +29,12 @@ public actor DataPointManager {
             return daystamp == datapoint.daystamp
         }
     }
+    
+    private func datapointsMatchingRequestId(datapoints : [DataPoint], requestId : String) -> [DataPoint] {
+        datapoints.filter { (datapoint) -> Bool in
+            return requestId == datapoint.requestid
+        }
+    }
 
     private func updateDatapoint(goal : Goal, datapoint : DataPoint, datapointValue : NSNumber) async throws {
         let val = datapoint.value
@@ -109,9 +115,9 @@ public actor DataPointManager {
     }
 
     private func updateToMatchDataPoint(goal: Goal, newDataPoint : BeeDataPoint, recentDatapoints: [DataPoint]) async throws {
-        var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: newDataPoint.daystamp)
+        var matchingDatapoints = datapointsMatchingRequestId(datapoints: recentDatapoints, requestId: newDataPoint.requestid)
         if matchingDatapoints.count == 0 {
-            // If there are not already data points for this day, do not add points
+            // If there are not already data points for this requestId, do not add points
             // from before the creation of the goal. This avoids immediate derailment
             //on do less goals, and excessive safety buffer on do-more goals.
             if newDataPoint.daystamp < goal.initDaystamp {
@@ -121,7 +127,7 @@ public actor DataPointManager {
             let urText = "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\""
             let requestId = newDataPoint.requestid
 
-            logger.notice("Creating new datapoint for \(goal.id, privacy: .public) on \(newDataPoint.daystamp, privacy: .public): \(newDataPoint.value, privacy: .private)")
+            logger.notice("Creating new datapoint for \(goal.id, privacy: .public) with requestId \(requestId, privacy: .public): \(newDataPoint.value, privacy: .private)")
 
             try await postDatapoint(goal: goal, urText: urText, requestId: requestId)
         } else if matchingDatapoints.count >= 1 {
@@ -131,7 +137,7 @@ public actor DataPointManager {
             }
 
             if !isApproximatelyEqual(firstDatapoint.value.doubleValue, newDataPoint.value.doubleValue) {
-                logger.notice("Updating datapoint for \(goal.id) on \(firstDatapoint.daystamp, privacy: .public) from \(firstDatapoint.value) to \(newDataPoint.value)")
+                logger.notice("Updating datapoint for \(goal.id) with requestId \(newDataPoint.requestid, privacy: .public) from \(firstDatapoint.value) to \(newDataPoint.value)")
 
                 try await updateDatapoint(goal: goal, datapoint: firstDatapoint, datapointValue: newDataPoint.value)
             }
