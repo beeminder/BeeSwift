@@ -105,42 +105,54 @@ public actor DataPointManager {
 
         let healthKitDataPointsByDay = Dictionary(grouping: healthKitDataPoints) { $0.daystamp }
         
-        for (daystamp, dayDataPoints) in healthKitDataPointsByDay {
-            let existingDatapointsForDay = datapointsMatchingDaystamp(datapoints: realDatapoints, daystamp: daystamp)
-            try await self.updateToMatchDataPointsForDay(goal: goal, newDataPoints: dayDataPoints, existingDatapoints: existingDatapointsForDay)
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for (daystamp, dayDataPoints) in healthKitDataPointsByDay {
+                group.addTask {
+                    let existingDatapointsForDay = await self.datapointsMatchingDaystamp(datapoints: realDatapoints, daystamp: daystamp)
+                    try await self.updateToMatchDataPointsForDay(goal: goal, newDataPoints: dayDataPoints, existingDatapoints: existingDatapointsForDay)
+                }
+            }
         }
     }
 
     private func updateToMatchDataPointsForDay(goal: Goal, newDataPoints: [BeeDataPoint], existingDatapoints: [DataPoint]) async throws {
-        var processedDatapoints: Set<String> = []
-        
-        for newDataPoint in newDataPoints {
-            let matchingDatapoint = existingDatapoints.first { $0.requestid == newDataPoint.requestid }
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            var processedDatapoints: Set<String> = []
             
-            if let existingDatapoint = matchingDatapoint {
-                if !isApproximatelyEqual(existingDatapoint.value.doubleValue, newDataPoint.value.doubleValue) || existingDatapoint.comment != newDataPoint.comment {
-                    logger.notice("Updating datapoint for \(goal.id) with requestId \(newDataPoint.requestid, privacy: .public) from \(existingDatapoint.value) to \(newDataPoint.value)")
-                    try await updateDatapoint(goal: goal, datapoint: existingDatapoint, datapointValue: newDataPoint.value, comment: newDataPoint.comment)
-                }
-                processedDatapoints.insert(existingDatapoint.requestid)
-            } else {
-                // If there are not already data points for this requestId, do not add points
-                // from before the creation of the goal. This avoids immediate derailment
-                // on do less goals, and excessive safety buffer on do-more goals.
-                if newDataPoint.daystamp < goal.initDaystamp {
-                    continue
-                }
+            for newDataPoint in newDataPoints {
+                let matchingDatapoint = existingDatapoints.first { $0.requestid == newDataPoint.requestid }
                 
-                let urText = "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\""
-                logger.notice("Creating new datapoint for \(goal.id, privacy: .public) with requestId \(newDataPoint.requestid, privacy: .public): \(newDataPoint.value, privacy: .private)")
-                try await postDatapoint(goal: goal, urText: urText, requestId: newDataPoint.requestid)
+                if let existingDatapoint = matchingDatapoint {
+                    if !isApproximatelyEqual(existingDatapoint.value.doubleValue, newDataPoint.value.doubleValue) || existingDatapoint.comment != newDataPoint.comment {
+                        group.addTask {
+                            self.logger.notice("Updating datapoint for \(goal.id) with requestId \(newDataPoint.requestid, privacy: .public) from \(existingDatapoint.value) to \(newDataPoint.value)")
+                            try await self.updateDatapoint(goal: goal, datapoint: existingDatapoint, datapointValue: newDataPoint.value, comment: newDataPoint.comment)
+                        }
+                    }
+                    processedDatapoints.insert(existingDatapoint.requestid)
+                } else {
+                    // If there are not already data points for this requestId, do not add points
+                    // from before the creation of the goal. This avoids immediate derailment
+                    // on do less goals, and excessive safety buffer on do-more goals.
+                    if newDataPoint.daystamp < goal.initDaystamp {
+                        continue
+                    }
+                    
+                    group.addTask {
+                        let urText = "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\""
+                        self.logger.notice("Creating new datapoint for \(goal.id, privacy: .public) with requestId \(newDataPoint.requestid, privacy: .public): \(newDataPoint.value, privacy: .private)")
+                        try await self.postDatapoint(goal: goal, urText: urText, requestId: newDataPoint.requestid)
+                    }
+                }
             }
-        }
-        
-        for existingDatapoint in existingDatapoints {
-            if !processedDatapoints.contains(existingDatapoint.requestid) {
-                logger.notice("Deleting obsolete datapoint for \(goal.id) with requestId \(existingDatapoint.requestid, privacy: .public)")
-                try await deleteDatapoint(goal: goal, datapoint: existingDatapoint)
+            
+            for existingDatapoint in existingDatapoints {
+                if !processedDatapoints.contains(existingDatapoint.requestid) {
+                    group.addTask {
+                        self.logger.notice("Deleting obsolete datapoint for \(goal.id) with requestId \(existingDatapoint.requestid, privacy: .public)")
+                        try await self.deleteDatapoint(goal: goal, datapoint: existingDatapoint)
+                    }
+                }
             }
         }
     }
