@@ -112,12 +112,12 @@ public actor DataPointManager {
         let healthKitDataPointsByDay = Dictionary(grouping: healthKitDataPoints) { $0.daystamp }
         
         for (daystamp, dayDataPoints) in healthKitDataPointsByDay {
-            try await self.updateToMatchDataPointsForDay(goal: goal, daystamp: daystamp, newDataPoints: dayDataPoints, recentDatapoints: realDatapoints)
+            let existingDatapointsForDay = datapointsMatchingDaystamp(datapoints: realDatapoints, daystamp: daystamp)
+            try await self.updateToMatchDataPointsForDay(goal: goal, newDataPoints: dayDataPoints, existingDatapoints: existingDatapointsForDay)
         }
     }
 
-    private func updateToMatchDataPointsForDay(goal: Goal, daystamp: Daystamp, newDataPoints: [BeeDataPoint], recentDatapoints: [DataPoint]) async throws {
-        let existingDatapointsForDay = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: daystamp)
+    private func updateToMatchDataPointsForDay(goal: Goal, newDataPoints: [BeeDataPoint], existingDatapoints: [DataPoint]) async throws {
         var processedDatapoints: Set<String> = []
         
         for newDataPoint in newDataPoints {
@@ -125,7 +125,7 @@ public actor DataPointManager {
                 continue
             }
             
-            let matchingDatapoint = existingDatapointsForDay.first { $0.requestid == newDataPoint.requestid }
+            let matchingDatapoint = existingDatapoints.first { $0.requestid == newDataPoint.requestid }
             
             if let existingDatapoint = matchingDatapoint {
                 if !isApproximatelyEqual(existingDatapoint.value.doubleValue, newDataPoint.value.doubleValue) || existingDatapoint.comment != newDataPoint.comment {
@@ -140,7 +140,7 @@ public actor DataPointManager {
             }
         }
         
-        for existingDatapoint in existingDatapointsForDay {
+        for existingDatapoint in existingDatapoints {
             if !processedDatapoints.contains(existingDatapoint.requestid) {
                 logger.notice("Deleting obsolete datapoint for \(goal.id) with requestId \(existingDatapoint.requestid, privacy: .public)")
                 try await deleteDatapoint(goal: goal, datapoint: existingDatapoint)
