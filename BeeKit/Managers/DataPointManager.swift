@@ -29,7 +29,6 @@ public actor DataPointManager {
             return daystamp == datapoint.daystamp
         }
     }
-    
 
     private func updateDatapoint(goal : Goal, datapoint : DataPoint, datapointValue : NSNumber, comment: String) async throws {
         let val = datapoint.value
