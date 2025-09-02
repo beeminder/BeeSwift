@@ -27,7 +27,7 @@ class WorkoutConfigurationViewController: UIViewController {
     private func setupSegmentedControl() {
         view.addSubview(syncModeSegmentedControl)
         
-        let dailyAggregate = goal.autodataConfig?["daily_aggregate"] as? Bool ?? true
+        let dailyAggregate = goal.autodataConfig["daily_aggregate"] as? Bool ?? true
         syncModeSegmentedControl.selectedSegmentIndex = dailyAggregate ? 0 : 1
         
         syncModeSegmentedControl.snp.makeConstraints { make in
@@ -46,7 +46,7 @@ class WorkoutConfigurationViewController: UIViewController {
     }
     
     func getCurrentConfig() -> [String: Any] {
-        var config = goal.autodataConfig ?? [:]
+        var config = goal.autodataConfig
         let dailyAggregate = syncModeSegmentedControl.selectedSegmentIndex == 0
         config["daily_aggregate"] = dailyAggregate
         return config

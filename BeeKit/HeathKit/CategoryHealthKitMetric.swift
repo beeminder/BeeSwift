@@ -31,7 +31,7 @@ public class CategoryHealthKitMetric : HealthKitMetric {
         return hkSampleType
     }
 
-    public func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore, autodataConfig: [String: Any]?) async throws -> [BeeDataPoint] {
+    public func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore, autodataConfig: [String: Any]) async throws -> [BeeDataPoint] {
         let today = Daystamp.now(deadline: deadline)
         let startDate = today - days
 

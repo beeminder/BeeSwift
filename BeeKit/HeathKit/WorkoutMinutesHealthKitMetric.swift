@@ -19,8 +19,8 @@ public class WorkoutMinutesHealthKitMetric : CategoryHealthKitMetric {
         return Double(workoutMinutes)
     }
     
-    public override func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore, autodataConfig: [String: Any]?) async throws -> [BeeDataPoint] {
-        let dailyAggregate = autodataConfig?["daily_aggregate"] as? Bool ?? true
+    public override func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore, autodataConfig: [String: Any]) async throws -> [BeeDataPoint] {
+        let dailyAggregate = autodataConfig["daily_aggregate"] as? Bool ?? true
         
         if !dailyAggregate {
             return try await individualWorkoutDataPoints(days: days, deadline: deadline, healthStore: healthStore)
