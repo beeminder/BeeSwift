@@ -151,4 +151,33 @@ class MigrationTests: XCTestCase {
                          accuracy: 0.001, "DataPoint date value should be preserved during migration")
         }
     }
+    
+    func testAutodataConfigMigration() throws {
+        DueByTableValueTransformer.register()
+
+        let storeURL = createStoreWithOldModel()
+        
+        let container = BeeminderPersistentContainer(name: "BeeminderModel")
+        let description = NSPersistentStoreDescription(url: storeURL)
+        container.persistentStoreDescriptions = [description]
+        
+        let expectation = XCTestExpectation(description: "Load store")
+        var loadError: Error?
+        container.loadPersistentStores { _, error in
+            loadError = error
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5.0)
+        XCTAssertNil(loadError, "Migration should succeed")
+        
+        let context = container.viewContext
+        
+        let goalRequest = NSFetchRequest<Goal>(entityName: "Goal")
+        let goals = try context.fetch(goalRequest)
+        XCTAssertEqual(goals.count, 1, "Should have one goal after migration")
+        
+        let goal: Goal! = goals.first
+        XCTAssertNotNil(goal.autodataConfig, "autodataConfig should not be nil after migration")
+        XCTAssertTrue(goal.autodataConfig.isEmpty, "autodataConfig should be empty dict for migrated goals")
+    }
 }

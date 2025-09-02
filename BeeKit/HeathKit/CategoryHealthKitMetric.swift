@@ -8,12 +8,12 @@ import Foundation
 import HealthKit
 import OSLog
 
-class CategoryHealthKitMetric : HealthKitMetric {
+public class CategoryHealthKitMetric : HealthKitMetric {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CategoryHealthKitMetric")
 
-    let humanText : String
-    let databaseString : String
-    let category : HealthKitCategory
+    public let humanText : String
+    public let databaseString : String
+    public let category : HealthKitCategory
     let hkSampleType : HKSampleType
 
     internal init(humanText: String, databaseString: String, category : HealthKitCategory, hkSampleType: HKSampleType) {
@@ -23,15 +23,15 @@ class CategoryHealthKitMetric : HealthKitMetric {
         self.hkSampleType = hkSampleType
     }
 
-    func sampleType() -> HKSampleType {
+    public func sampleType() -> HKSampleType {
         return hkSampleType
     }
 
-    func permissionType() -> HKObjectType {
+    public func permissionType() -> HKObjectType {
         return hkSampleType
     }
 
-    func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [BeeDataPoint] {
+    public func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore, autodataConfig: [String: Any]) async throws -> [BeeDataPoint] {
         let today = Daystamp.now(deadline: deadline)
         let startDate = today - days
 
@@ -42,7 +42,7 @@ class CategoryHealthKitMetric : HealthKitMetric {
         return results
     }
 
-    func units(healthStore : HKHealthStore) async throws -> HKUnit {
+    public func units(healthStore : HKHealthStore) async throws -> HKUnit {
         return HKUnit.count()
     }
 
