@@ -114,7 +114,13 @@ class ConfigureHKMetricViewController : UIViewController {
         Task { @MainActor in
             let datapoints: [BeeDataPoint]
             
-            let currentConfig = workoutConfigViewController?.getCurrentConfig() ?? goal.autodataConfig ?? [:]
+            var currentConfig = goal.autodataConfig
+            if let workoutConfig = workoutConfigViewController {
+                let configParams = workoutConfig.getConfigParameters()
+                for (key, value) in configParams {
+                    currentConfig[key] = value
+                }
+            }
             
             datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline, healthStore: self.healthStoreManager.healthStore, autodataConfig: currentConfig)
             
@@ -211,7 +217,7 @@ class ConfigureHKMetricViewController : UIViewController {
     }
 
     private func setupWorkoutConfiguration() {
-        let workoutConfig = WorkoutConfigurationViewController(goal: goal)
+        let workoutConfig = WorkoutConfigurationViewController()
         workoutConfigViewController = workoutConfig
         
         addChild(workoutConfig)
@@ -226,7 +232,13 @@ class ConfigureHKMetricViewController : UIViewController {
         workoutConfig.onConfigurationChanged = { [weak self] in
             Task { @MainActor in
                 guard let self = self else { return }
-                let currentConfig = self.workoutConfigViewController?.getCurrentConfig() ?? [:]
+                var currentConfig = self.goal.autodataConfig
+                if let workoutConfig = self.workoutConfigViewController {
+                    let configParams = workoutConfig.getConfigParameters()
+                    for (key, value) in configParams {
+                        currentConfig[key] = value
+                    }
+                }
                 let datapoints = try await self.metric.recentDataPoints(days: 5, deadline: self.goal.deadline, healthStore: self.healthStoreManager.healthStore, autodataConfig: currentConfig)
                 self.datapointTableController.datapoints = datapoints
             }

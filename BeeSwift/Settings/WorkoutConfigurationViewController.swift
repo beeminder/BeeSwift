@@ -5,12 +5,10 @@ import BeeKit
 
 class WorkoutConfigurationViewController: UIViewController {
     
-    private let goal: Goal
     let syncModeSegmentedControl = UISegmentedControl(items: ["Daily Total", "Individual Workouts"])
     var onConfigurationChanged: (() -> Void)?
     
-    init(goal: Goal) {
-        self.goal = goal
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -27,8 +25,7 @@ class WorkoutConfigurationViewController: UIViewController {
     private func setupSegmentedControl() {
         view.addSubview(syncModeSegmentedControl)
         
-        let dailyAggregate = goal.autodataConfig["daily_aggregate"] as? Bool ?? true
-        syncModeSegmentedControl.selectedSegmentIndex = dailyAggregate ? 0 : 1
+        syncModeSegmentedControl.selectedSegmentIndex = 0
         
         syncModeSegmentedControl.snp.makeConstraints { make in
             make.top.equalTo(view.snp.top)
@@ -43,13 +40,6 @@ class WorkoutConfigurationViewController: UIViewController {
     
     @objc private func syncModeChanged() {
         onConfigurationChanged?()
-    }
-    
-    func getCurrentConfig() -> [String: Any] {
-        var config = goal.autodataConfig
-        let dailyAggregate = syncModeSegmentedControl.selectedSegmentIndex == 0
-        config["daily_aggregate"] = dailyAggregate
-        return config
     }
     
     func getConfigParameters() -> [String: Any] {

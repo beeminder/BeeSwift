@@ -151,7 +151,6 @@ public class Goal: NSManagedObject {
     
     public override func awakeFromFetch() {
         super.awakeFromFetch()
-        // Handle migration for existing goals that don't have autodataConfig
         if primitiveValue(forKey: "autodataConfig") == nil {
             setPrimitiveValue([:], forKey: "autodataConfig")
         }
