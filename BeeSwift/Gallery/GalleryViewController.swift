@@ -23,6 +23,7 @@ class GalleryViewController: UIViewController {
     
     public enum NotificationName {
         public static let openGoal = Notification.Name(rawValue: "com.beeminder.openGoal")
+        public static let navigateToGallery = Notification.Name(rawValue: "com.beeminder.navigateToGallery")
     }
     
     // Dependencies
@@ -160,7 +161,8 @@ class GalleryViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignIn), name: CurrentUserManager.NotificationName.signedIn, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openGoalFromNotification(_:)), name: GalleryViewController.NotificationName.openGoal, object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.navigateToGallery), name: GalleryViewController.NotificationName.navigateToGallery, object: nil)
+
         self.view.addSubview(self.stackView)
         stackView.snp.makeConstraints { (make) -> Void in
             make.top.left.right.equalToSuperview()
@@ -181,7 +183,6 @@ class GalleryViewController: UIViewController {
         
         stackView.addArrangedSubview(self.freshnessIndicator)
         self.updateLastUpdatedLabel()
-        Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GalleryViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
         stackView.addArrangedSubview(self.deadbeatView)
         updateDeadbeatVisibility()
@@ -272,6 +273,8 @@ class GalleryViewController: UIViewController {
             make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
             make.bottom.equalTo(self.collectionView.keyboardLayoutGuide.snp.top)
         }
+        
+        self.updateGoals()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -443,6 +446,10 @@ class GalleryViewController: UIViewController {
         }
     }
     
+    @objc func navigateToGallery() {
+        self.navigationController?.popToRootViewController(animated: true)
+    }
+    
     func openGoal(_ goal: Goal) {
         let goalViewController = GoalViewController(
             goal: goal,
@@ -476,6 +483,7 @@ class GalleryViewController: UIViewController {
 extension GalleryViewController: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: false)
+        didUpdateGoals()
     }
 }
 
@@ -534,7 +542,9 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
 
 extension GalleryViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        logger.info("Tapped goal at index \(indexPath, privacy: .public)")
         let goal = fetchedResultsController.object(at: indexPath)
+        logger.info("... Goal is \(goal.id, privacy: .public)")
         self.openGoal(goal)
     }
 }

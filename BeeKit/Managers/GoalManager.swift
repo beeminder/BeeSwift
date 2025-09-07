@@ -74,8 +74,8 @@ public actor GoalManager {
         // We must fetch the user object first, and then fetch goals afterwards, to guarantee User.updated_at is
         // a safe timestamp for future fetches without losing data
         let userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json")!)
-        let goalResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}/goals.json")!)
-        
+        let goalResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}/goals.json", parameters: ["emaciated": "true"])!)
+
         // The user may have logged out during the network operation. If so we have nothing to do
         modelContext.refreshAllObjects()
         guard let user = modelContext.object(with: user.objectID) as? User else { return }
@@ -97,7 +97,7 @@ public actor GoalManager {
     /// Perform an incremental refresh of goals for regular updates
     private func refreshGoalsIncremental(user: User) async throws {
         logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
-        let userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1])!)
+        let userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json", parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1, "emaciated": "true"])!)
         let goalResponse = userResponse["goals"]
         let deletedGoals = userResponse["deleted_goals"]
         
@@ -126,7 +126,8 @@ public actor GoalManager {
     public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
         let goal = try modelContext.existingObject(with: goalID) as! Goal
 
-        let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)?datapoints_count=5")
+        let responseObject = try await requestManager.get(url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)",
+                                                          parameters: ["datapoints_count": "5", "emaciated": "true"])
         let goalJSON = JSON(responseObject!)
 
         // The goal may have changed during the network operation, reload latest version

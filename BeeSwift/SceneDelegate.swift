@@ -75,5 +75,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                         object: nil,
                                         userInfo: ["slug": goalname])
     }
+    
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        logger.info("\(#function)")
+        Task { @MainActor in
+            await ServiceLocator.refreshManager.refreshGoalsAndHealthKitData()
+        }
+    }
 
 }

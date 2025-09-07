@@ -30,14 +30,14 @@ public actor DataPointManager {
         }
     }
 
-    private func updateDatapoint(goal : Goal, datapoint : DataPoint, datapointValue : NSNumber) async throws {
+    private func updateDatapoint(goal : Goal, datapoint : DataPoint, datapointValue : NSNumber, comment: String) async throws {
         let val = datapoint.value
-        if datapointValue == val {
+        if datapointValue == val && comment == datapoint.comment {
             return
         }
         let params = [
             "value": "\(datapointValue)",
-            "comment": "Auto-updated via Apple Health",
+            "comment": comment,
         ]
         let _ = try await requestManager.put(url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json", parameters: params)
     }
@@ -103,37 +103,52 @@ public actor DataPointManager {
         let datapoints = try await datapointsSince(goal: goal, daystamp: try! Daystamp(fromString: firstDaystamp.description))
         let realDatapoints = datapoints.filter{ !$0.isDummy && !$0.isInitial }
 
-        for newDataPoint in healthKitDataPoints {
-            try await self.updateToMatchDataPoint(goal: goal, newDataPoint: newDataPoint, recentDatapoints: realDatapoints)
+        let healthKitDataPointsByDay = Dictionary(grouping: healthKitDataPoints) { $0.daystamp }
+        
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for (daystamp, dayDataPoints) in healthKitDataPointsByDay {
+                group.addTask {
+                    let existingDatapointsForDay = await self.datapointsMatchingDaystamp(datapoints: realDatapoints, daystamp: daystamp)
+                    try await self.updateToMatchDataPointsForDay(goal: goal, newDataPoints: dayDataPoints, existingDatapoints: existingDatapointsForDay)
+                }
+            }
         }
     }
 
-    private func updateToMatchDataPoint(goal: Goal, newDataPoint : BeeDataPoint, recentDatapoints: [DataPoint]) async throws {
-        var matchingDatapoints = datapointsMatchingDaystamp(datapoints: recentDatapoints, daystamp: newDataPoint.daystamp)
-        if matchingDatapoints.count == 0 {
-            // If there are not already data points for this day, do not add points
-            // from before the creation of the goal. This avoids immediate derailment
-            //on do less goals, and excessive safety buffer on do-more goals.
-            if newDataPoint.daystamp < goal.initDaystamp {
-                return
+    private func updateToMatchDataPointsForDay(goal: Goal, newDataPoints: [BeeDataPoint], existingDatapoints: [DataPoint]) async throws {
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            var processedDatapoints: Set<String> = []
+            
+            for newDataPoint in newDataPoints {
+                let matchingDatapoint = existingDatapoints.first { $0.requestid == newDataPoint.requestid }
+                
+                if let existingDatapoint = matchingDatapoint {
+                    if !isApproximatelyEqual(existingDatapoint.value.doubleValue, newDataPoint.value.doubleValue) || existingDatapoint.comment != newDataPoint.comment {
+                        group.addTask {
+                            self.logger.notice("Updating datapoint for \(goal.id) with requestId \(newDataPoint.requestid, privacy: .public) from \(existingDatapoint.value) to \(newDataPoint.value)")
+                            try await self.updateDatapoint(goal: goal, datapoint: existingDatapoint, datapointValue: newDataPoint.value, comment: newDataPoint.comment)
+                        }
+                    }
+                    processedDatapoints.insert(existingDatapoint.requestid)
+                } else if newDataPoint.daystamp >= goal.initDaystamp {
+                    // If there are not already data points for this requestId, do not add points
+                    // from before the creation of the goal. This avoids immediate derailment
+                    // on do less goals, and excessive safety buffer on do-more goals.
+                    group.addTask {
+                        let urText = "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\""
+                        self.logger.notice("Creating new datapoint for \(goal.id, privacy: .public) with requestId \(newDataPoint.requestid, privacy: .public): \(newDataPoint.value, privacy: .private)")
+                        try await self.postDatapoint(goal: goal, urText: urText, requestId: newDataPoint.requestid)
+                    }
+                }
             }
-
-            let urText = "\(newDataPoint.daystamp.day) \(newDataPoint.value) \"\(newDataPoint.comment)\""
-            let requestId = newDataPoint.requestid
-
-            logger.notice("Creating new datapoint for \(goal.id, privacy: .public) on \(newDataPoint.daystamp, privacy: .public): \(newDataPoint.value, privacy: .private)")
-
-            try await postDatapoint(goal: goal, urText: urText, requestId: requestId)
-        } else if matchingDatapoints.count >= 1 {
-            let firstDatapoint = matchingDatapoints.remove(at: 0)
-            for datapoint in matchingDatapoints {
-                try await deleteDatapoint(goal: goal, datapoint: datapoint)
-            }
-
-            if !isApproximatelyEqual(firstDatapoint.value.doubleValue, newDataPoint.value.doubleValue) {
-                logger.notice("Updating datapoint for \(goal.id) on \(firstDatapoint.daystamp, privacy: .public) from \(firstDatapoint.value) to \(newDataPoint.value)")
-
-                try await updateDatapoint(goal: goal, datapoint: firstDatapoint, datapointValue: newDataPoint.value)
+            
+            for existingDatapoint in existingDatapoints {
+                if !processedDatapoints.contains(existingDatapoint.requestid) {
+                    group.addTask {
+                        self.logger.notice("Deleting obsolete datapoint for \(goal.id) with requestId \(existingDatapoint.requestid, privacy: .public)")
+                        try await self.deleteDatapoint(goal: goal, datapoint: existingDatapoint)
+                    }
+                }
             }
         }
     }
