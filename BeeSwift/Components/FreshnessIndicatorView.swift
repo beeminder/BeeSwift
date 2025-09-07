@@ -12,11 +12,8 @@ class FreshnessIndicatorView: UIView {
         return label
     }()
     
-    private let formatter: RelativeDateTimeFormatter = {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.dateTimeStyle = .named
-        return formatter
-    }()
+    private var updateTimer: Timer?
+    private var lastUpdateDate: Date?
     
     // Time thresholds for different styles (in seconds)
     private struct TimeThreshold {
@@ -51,6 +48,10 @@ class FreshnessIndicatorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        updateTimer?.invalidate()
+    }
+    
     private func setupView() {
         addSubview(label)
         
@@ -62,20 +63,71 @@ class FreshnessIndicatorView: UIView {
         ])
     }
     
-    func update(with date: Date) {
+    private func fuzzyTimeString(for elapsed: TimeInterval) -> String {
+        let minute: TimeInterval = 60
+        let hour: TimeInterval = 60 * 60
+        let day: TimeInterval = 24 * 60 * 60
+        
+        switch elapsed {
+        case 0..<minute:
+            return "Less than a minute ago"
+        case minute..<(2 * minute):
+            return "Less than 2 minutes ago"
+        case (2 * minute)..<(5 * minute):
+            return "Less than 5 minutes ago"
+        case (5 * minute)..<(10 * minute):
+            return "Less than 10 minutes ago"
+        case (10 * minute)..<(15 * minute):
+            return "Less than 15 minutes ago"
+        case (15 * minute)..<(30 * minute):
+            return "Less than 30 minutes ago"
+        case (30 * minute)..<hour:
+            return "Less than an hour ago"
+        case hour..<(2 * hour):
+            return "Less than 2 hours ago"
+        case (2 * hour)..<day:
+            let hours = Int(elapsed / hour) + 1
+            return "Less than \(hours) hours ago"
+        default:
+            let days = Int(elapsed / day)
+            if days == 1 {
+                return "1 day ago"
+            } else {
+                return "\(days) days ago"
+            }
+        }
+    }
+    
+    
+    @objc private func timerFired() {
+        if let date = lastUpdateDate {
+            updateDisplay(for: date)
+        }
+    }
+    
+    private func updateDisplay(for date: Date) {
         let elapsed = -date.timeIntervalSinceNow
         let style: Style = {
             let index = elapsed < TimeThreshold.recent ? 0 : 1
             return styles[index]
         }()
 
-        let relativeDuration = formatter.localizedString(for: date, relativeTo: Date())
-        let labelText = "Last updated: \(relativeDuration)"
+        let labelText = "Last updated: \(fuzzyTimeString(for: elapsed))"
         
         UIView.animate(withDuration: 0.2) {
             self.backgroundColor = style.backgroundColor
             self.label.textColor = style.textColor
             self.label.text = labelText
         }
+        
+        // Schedule next update: every second for first minute, then every minute
+        updateTimer?.invalidate()
+        let interval: TimeInterval = elapsed < 125 ? 1.0 : 60.0
+        updateTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(timerFired), userInfo: nil, repeats: false)
+    }
+    
+    func update(with date: Date) {
+        lastUpdateDate = date
+        updateDisplay(for: date)
     }
 }

@@ -134,10 +134,10 @@ final class GoalTests: XCTestCase {
     func testSuggestedNextValueIgnoresDerailsAndSelfDestructs() throws {
         var testJSON = requiredGoalJson()
         testJSON["recent_data"] = [
-            ["id": "101", "value": 0, "daystamp": "20221131", "updated_at": 600, "comment": "Goal #RESTART Point"],
-            ["id": "102", "value": 0, "daystamp": "20221131", "updated_at": 500, "comment": "This will #SELFDESTRUCT"],
-            ["id": "103", "value": 0, "daystamp": "20221131", "updated_at": 400, "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT"],
-            ["id": "104", "value": 0, "daystamp": "20221130", "updated_at": 300, "comment": "#DERAIL ON THE 1st"],
+            ["id": "101", "value": 0, "daystamp": "20221131", "updated_at": 600, "comment": "Goal #RESTART Point", "is_dummy": true],
+            ["id": "102", "value": 0, "daystamp": "20221131", "updated_at": 500, "comment": "This will #SELFDESTRUCT", "is_dummy": true],
+            ["id": "103", "value": 0, "daystamp": "20221131", "updated_at": 400, "comment": "PESSIMISTIC PRESUMPTION #THISWILLSELFDESTRUCT", "is_dummy": true],
+            ["id": "104", "value": 0, "daystamp": "20221130", "updated_at": 300, "comment": "#DERAIL ON THE 1st", "is_dummy": true],
             ["id": "105", "value": 2, "daystamp": "20221126", "updated_at": 200],
             ["id": "106", "value": 3.5, "daystamp": "20221125", "updated_at": 100],
         ]
@@ -145,6 +145,17 @@ final class GoalTests: XCTestCase {
         let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
 
         XCTAssertEqual(goal.suggestedNextValue, 2)
+    }
+    
+    func testSuggestedNextValueIncludesInitialDatapoints() throws {
+        var testJSON = requiredGoalJson()
+        testJSON["recent_data"] = [
+            ["id": "101", "value": 15, "daystamp": "20221131", "updated_at": 600, "is_initial": true],
+        ]
+
+        let goal = Goal(context: container.viewContext, owner: user, json: testJSON)
+
+        XCTAssertEqual(goal.suggestedNextValue, 15)
     }
 
     func createTestUser(context: NSManagedObjectContext) -> User {

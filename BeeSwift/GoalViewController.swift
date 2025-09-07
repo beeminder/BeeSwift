@@ -42,7 +42,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var valueStepper = UIStepper()
     fileprivate var valueDecimalRemnant : Double = 0.0
     fileprivate var goalImageScrollView = UIScrollView()
-    fileprivate var lastUpdatedTimer: Timer?
     fileprivate var countdownLabel = BSLabel()
     
     private lazy var deltasLabel: BSLabel = {
@@ -98,7 +97,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         
         self.updateLastUpdatedLabel()
-        lastUpdatedTimer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GoalViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
@@ -345,8 +343,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        lastUpdatedTimer?.invalidate()
-        lastUpdatedTimer = nil
     }
 
     @objc func onGoalsUpdatedNotification() {
@@ -555,7 +551,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     @objc func updateLastUpdatedLabel() {
-        let lastUpdated = self.goal.lastModifiedLocal
+        let lastUpdated = self.goal.lastUpdatedLocal
         
         self.timeElapsedView.update(with: lastUpdated)
     }
