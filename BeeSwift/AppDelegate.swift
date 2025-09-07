@@ -114,8 +114,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         let userInfo = response.notification.request.content.userInfo
-        guard let slug = userInfo["goalname"] as? String else {
-            logger.error("could not find a goalname in the notification's userInfo: \(userInfo)")
+        guard let slug = userInfo["slug"] as? String else {
+            logger.error("could not find a goal name under key slug in the notification's userInfo: \(userInfo)")
             completionHandler()
             return
         }
