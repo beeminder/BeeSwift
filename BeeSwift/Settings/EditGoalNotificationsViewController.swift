@@ -49,7 +49,7 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "\(self.goal.title) Notifications"
+        self.title = self.goal.slug
         
         let useDefaultsLabel = BSLabel()
         useDefaultsLabel.text = "Use defaults"
@@ -93,6 +93,9 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         Task { @MainActor in
+            let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+            hud.mode = .indeterminate
+            
             if self.timePickerEditingMode == .alertstart {
                 self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
                 do {
@@ -101,9 +104,11 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     try await self.goalManager.refreshGoal(self.goal.objectID)
 
                     self.useDefaultsSwitch.isOn = false
+                    hud.hide(animated: true, afterDelay: 0.5)
                 } catch {
                     logger.error("Error setting alert start \(error)")
                     //foo
+                    hud.hide(animated: true)
                 }
             }
             if self.timePickerEditingMode == .deadline {
@@ -114,12 +119,14 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
                     try await self.goalManager.refreshGoal(self.goal.objectID)
 
                     self.useDefaultsSwitch.isOn = false
+                    hud.hide(animated: true, afterDelay: 0.5)
                 } catch {
                     let errorString = error.localizedDescription
                     MBProgressHUD.hide(for: self.view, animated: true)
                     let alert = UIAlertController(title: "Error saving to Beeminder", message: errorString, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alert, animated: true, completion: nil)
+                    hud.hide(animated: true)
                 }
             }
         }
@@ -127,24 +134,31 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
     
     @objc func useDefaultsSwitchValueChanged() {
         if self.useDefaultsSwitch.isOn {
-            let alertController = UIAlertController(title: "Confirm", message: "This will wipe out your current settings for this goal. Are you sure?", preferredStyle: .alert)
+            let alertController = UIAlertController(title: "Confirm", message: "This will set this goal's notification settings to your default ones. Are you sure?", preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                 Task { @MainActor in
+                    let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+                    hud.mode = .indeterminate
+                    
                     do {
                         let params = ["use_defaults" : true]
                         let _ = try await self.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
                         try await self.goalManager.refreshGoal(self.goal.objectID)
+                        hud.hide(animated: true, afterDelay: 0.5)
                     } catch {
                         self.logger.error("Error setting goal to use defaults: \(error)")
                         // TODO: Show UI failure
+                        hud.hide(animated: true)
                         return
                     }
 
                     do {
                         try await self.goalManager.refreshGoals()
+                        hud.hide(animated: true, afterDelay: 0.5)
                     } catch {
                         self.logger.error("Error syncing notification defaults")
                         // TODO: Show UI failure
+                        hud.hide(animated: true)
                         return
                     }
 
@@ -162,13 +176,18 @@ class EditGoalNotificationsViewController : EditNotificationsViewController {
         }
         else {
             Task { @MainActor in
+                let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+                hud.mode = .indeterminate
+                
                 do {
                     let params = ["use_defaults" : false]
                     let _ = try await self.requestManager.put(url: "api/v1/users/{username}/goals/\(self.goal.slug).json", parameters: params)
                     try await self.goalManager.refreshGoal(self.goal.objectID)
+                    hud.hide(animated: true, afterDelay: 0.5)
                 } catch {
                     logger.error("Error setting goal to NOT use defaults: \(error)")
                     // foo
+                    hud.hide(animated: true)
                 }
             }
         }
