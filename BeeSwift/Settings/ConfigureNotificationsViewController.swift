@@ -23,16 +23,22 @@ class ConfigureNotificationsViewController: UIViewController {
     private let viewContext: NSManagedObjectContext
     private let currentUserManager: CurrentUserManager
     private let requestManager: RequestManager
+    private weak var coordinator: MainCoordinator?
     
     private lazy var dataSource: NotificationsTableViewDiffibleDataSource = {
         NotificationsTableViewDiffibleDataSource(goals: [], tableView: tableView)
     }()
     
-    init(goalManager: GoalManager, viewContext: NSManagedObjectContext, currentUserManager: CurrentUserManager, requestManager: RequestManager) {
+    init(goalManager: GoalManager,
+         viewContext: NSManagedObjectContext,
+         currentUserManager: CurrentUserManager,
+         requestManager: RequestManager,
+         coordinator: MainCoordinator) {
         self.goalManager = goalManager
         self.viewContext = viewContext
         self.currentUserManager = currentUserManager
         self.requestManager = requestManager
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -240,27 +246,12 @@ extension ConfigureNotificationsViewController: UITableViewDelegate {
             return
         }
         
-        var editNotificationsVC: UIViewController? {
-            switch section {
-            case .defaultNotificationSettings:
-                return EditDefaultNotificationsViewController(
-                    currentUserManager: currentUserManager,
-                    requestManager: requestManager,
-                    goalManager: goalManager,
-                    viewContext: viewContext)
-            case .goalsUsingDefaults, .goalsUsingCustomSettings:
-                guard let goal = self.dataSource.goalAtIndexPath(indexPath) else { return nil }
-                return EditGoalNotificationsViewController(
-                    goal: goal,
-                    currentUserManager: currentUserManager,
-                    requestManager: requestManager,
-                    goalManager: goalManager,
-                    viewContext: viewContext)
-            }
-        }
-        
-        if let editNotificationsVC {
-            self.navigationController?.pushViewController(editNotificationsVC, animated: true)
+        switch section {
+        case .defaultNotificationSettings:
+            coordinator?.showConfigureDefaultNotifications()
+        case .goalsUsingDefaults, .goalsUsingCustomSettings:
+            guard let goal = self.dataSource.goalAtIndexPath(indexPath) else { return }
+            coordinator?.showConfigureNotificationsForGoal(goal)
         }
     }
 }
