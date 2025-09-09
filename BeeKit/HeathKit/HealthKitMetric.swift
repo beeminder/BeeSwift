@@ -20,6 +20,7 @@ public protocol HealthKitMetric {
     var humanText : String { get }
     var databaseString : String { get }
     var category : HealthKitCategory { get }
+    var precision : [HKUnit: Int] { get }
 
     /// The permission required for this connection to read data from HealthKit
     func permissionType() -> HKObjectType
@@ -40,4 +41,16 @@ public protocol HealthKitMetric {
 
     /// The units this metric returns its datapoint values in
     func units(healthStore : HKHealthStore) async throws -> HKUnit
+}
+
+extension HealthKitMetric {
+    var precision: [HKUnit: Int] { return [:] }
+    
+    func applyPrecision(value: Double, unit: HKUnit) -> Double {
+        if let unitPrecision = precision[unit] {
+            let roundingFactor = pow(10.0, Double(unitPrecision))
+            return round(value * roundingFactor) / roundingFactor
+        }
+        return value
+    }
 }
