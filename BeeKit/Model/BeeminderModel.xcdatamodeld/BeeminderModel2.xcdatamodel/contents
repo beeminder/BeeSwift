@@ -19,6 +19,7 @@
     <entity name="Goal" representedClassName="Goal" syncable="YES" coreSpotlightDisplayNameExpression="slug">
         <attribute name="alertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="autodata" optional="YES" attributeType="String"/>
+        <attribute name="autodataConfig" optional="YES" attributeType="Transformable" customClassName="NSDictionary"/>
         <attribute name="deadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="dueBy" optional="YES" attributeType="Transformable" valueTransformerName="DueByTableValueTransformer" customClassName="NSDictionary"/>
         <attribute name="graphUrl" attributeType="String"/>
