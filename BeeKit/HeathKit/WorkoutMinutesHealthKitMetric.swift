@@ -6,7 +6,7 @@ public class WorkoutMinutesHealthKitMetric : CategoryHealthKitMetric {
     private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "WorkoutMinutesHealthKitMetric")
     let minuteInSeconds = 60.0
     
-    public var precision: [HKUnit: Int] { return [HKUnit.minute(): 1] }
+    public override var precision: [HKUnit: Int] { return [HKUnit.minute(): 1] }
 
 
     init(humanText: String, databaseString: String, category: HealthKitCategory) {
