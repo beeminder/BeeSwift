@@ -44,9 +44,9 @@ public protocol HealthKitMetric {
 }
 
 extension HealthKitMetric {
-    var precision: [HKUnit: Int] { return [:] }
+    public var precision: [HKUnit: Int] { return [:] }
     
-    func applyPrecision(value: Double, unit: HKUnit) -> Double {
+    public func applyPrecision(value: Double, unit: HKUnit) -> Double {
         if let unitPrecision = precision[unit] {
             let roundingFactor = pow(10.0, Double(unitPrecision))
             return round(value * roundingFactor) / roundingFactor
