@@ -53,6 +53,15 @@ platform :ios do
     # Ensure that your git status is not dirty
     ensure_git_status_clean
 
+    app_store_connect_api_key(
+      key_id: "DL3L84F9JY",
+      issuer_id: "69a6de78-3567-47e3-e053-5b8c7c11a4d1",
+      key_filepath: "fastlane/AuthKey_DL3L84F9JY.p8",
+      duration: 1200,
+      in_house: false
+    )
+
+
     # Increment the build number (not the version number)
     # Providing the xcodeproj is optional
     increment_build_number(

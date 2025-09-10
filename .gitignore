@@ -24,6 +24,8 @@ BeeSwift/GoogleService-Info.plist
 BeeSwift/Sentry.sh
 fastlane/test_output/*
 fastlane/report.xml
+# Fastlane app store api credentials
+fastlane/*.p8
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/fastlane,xcode,macos,swift,ruby

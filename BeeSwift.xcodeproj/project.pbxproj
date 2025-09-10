@@ -13,6 +13,7 @@
 		8646D674ADB842B797E2F98D /* AddDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8646D674ADB842B797E2F98E /* AddDataError.swift */; };
 		9B65F2322CFA6427009674A7 /* DeeplinkGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */; };
 		9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */; };
+		9BD4C4E82D45A09F00B03E99 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */; };
 		9BFB27E92CFE770F0056D10D /* FreshnessIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */; };
 		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
 		A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */; };
@@ -104,6 +105,7 @@
 		E48E27202973261F008013C0 /* BackgroundUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271F2973261F008013C0 /* BackgroundUpdates.swift */; };
 		E49127752DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E49127722DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld */; };
 		E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */; };
+		E4B083402932F90400A71565 /* WorkoutConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */; };
 		E4B0833B2934620500A71564 /* DatapointTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833A2934620500A71564 /* DatapointTableViewController.swift */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
 		E4D470D02D2FE25C00EE648B /* DataPointManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */; };
@@ -202,6 +204,7 @@
 		8646D674ADB842B797E2F98E /* AddDataError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataError.swift; sourceTree = "<group>"; };
 		9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkGenerator.swift; sourceTree = "<group>"; };
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
 		9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshnessIndicatorView.swift; sourceTree = "<group>"; };
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
 		A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveHKMetricViewController.swift; sourceTree = "<group>"; };
@@ -279,6 +282,7 @@
 		E49127732DC9E2C6000BFBFE /* BeeminderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel.xcdatamodel; sourceTree = "<group>"; };
 		E49127742DC9E2C6000BFBFE /* BeeminderModel2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel2.xcdatamodel; sourceTree = "<group>"; };
 		E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureHKMetricViewController.swift; sourceTree = "<group>"; };
+		E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutConfigurationViewController.swift; sourceTree = "<group>"; };
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
@@ -445,6 +449,7 @@
 		A196CB161AE4142E00B90A3E /* BeeSwift */ = {
 			isa = PBXGroup;
 			children = (
+				9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */,
 				9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */,
 				A1E618E51E79E01900D8ED93 /* Cells */,
 				E46071002B43DA7100305DB4 /* Gallery */,
@@ -559,6 +564,7 @@
 			children = (
 				A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */,
 				E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */,
+				E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */,
 				A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */,
 				A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */,
 				A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */,
@@ -943,6 +949,7 @@
 				A1453B3F1AEDFCC8006F48DA /* SignInViewController.swift in Sources */,
 				A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */,
 				E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */,
+				E4B083402932F90400A71565 /* WorkoutConfigurationViewController.swift in Sources */,
 				E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */,
 				9B65F2322CFA6427009674A7 /* DeeplinkGenerator.swift in Sources */,
 				A196CB1F1AE4142F00B90A3E /* GalleryViewController.swift in Sources */,
@@ -955,6 +962,7 @@
 				A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */,
 				E412DAE12B86A8F70099E483 /* GoalImageView.swift in Sources */,
 				A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */,
+				9BD4C4E82D45A09F00B03E99 /* MainCoordinator.swift in Sources */,
 				A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */,
 				E46DC80F2AA58DF20059FDFE /* PullToRefreshHint.swift in Sources */,
 				A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */,

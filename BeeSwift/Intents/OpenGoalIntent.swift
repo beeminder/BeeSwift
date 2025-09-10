@@ -9,7 +9,7 @@ struct OpenGoalIntent: AppIntent {
     static var title: LocalizedStringResource = "Open Goal"
     static var description = IntentDescription("Open Beeminder app to view a specific goal or the goal gallery")
 
-    @Parameter(title: "Goal", optionsProvider: GoalOptionsProvider())
+    @Parameter(title: "Goal")
     var goal: GoalEntity?
     
     static var parameterSummary: some ParameterSummary {
@@ -40,11 +40,5 @@ struct OpenGoalIntent: AppIntent {
             }
         }
         return .result()
-    }
-    
-    private struct GoalOptionsProvider: DynamicOptionsProvider {
-        func results() async throws -> [GoalEntity] {
-            return try await GoalEntityQuery().suggestedEntities()
-        }
     }
 }

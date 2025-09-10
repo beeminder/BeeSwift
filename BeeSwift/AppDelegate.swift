@@ -42,7 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NetworkActivityIndicatorManager.shared.isEnabled = true
         
         UNUserNotificationCenter.current().delegate = self
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleGoalsUpdated), name: GoalManager.NotificationName.goalsUpdated, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleUserSignedOut), name: CurrentUserManager.NotificationName.signedOut, object: nil)
 
@@ -104,6 +104,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         logger.notice("User signed out; updating Beemergency badge count to 0")
 
         UNUserNotificationCenter.current().setBadgeCount(0)
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        logger.notice("\(#function)")
+        guard response.actionIdentifier == UNNotificationDefaultActionIdentifier else {
+            completionHandler()
+            return
+        }
+
+        let userInfo = response.notification.request.content.userInfo
+        guard let slug = userInfo["slug"] as? String else {
+            logger.error("could not find a goal name under key slug in the notification's userInfo: \(userInfo)")
+            completionHandler()
+            return
+        }
+
+        logger.info("found slug: \(slug)")
+        
+        NotificationCenter.default.post(name: GalleryViewController.NotificationName.openGoal,
+                                        object: nil,
+                                        userInfo: ["slug": slug])
+
+        completionHandler()
     }
     
     private func resetStateIfUITesting() {
