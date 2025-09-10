@@ -73,11 +73,14 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                     hud.hide(animated: true, afterDelay: 0.5)
                 } catch {
                     logger.error("Error setting default alert start: \(error)")
-                    hud.hide(animated: true)
+                    hud.hide(animated: true, afterDelay: 0.5)
                 }
+
             case .deadline:
-                self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
-                let params = ["default_deadline" : self.midnightOffsetFromTimePickerView()]
+                let deadline = self.midnightOffsetFromTimePickerView()
+                self.updateDeadlineLabel(deadline)
+                let params = ["default_deadline" : deadline]
+
                 do {
                     let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
                     try await goalManager.refreshGoals()
@@ -86,6 +89,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
                     logger.error("Error setting default deadline: \(error)")
                     hud.hide(animated: true, afterDelay: 0.5)
                 }
+              
             case .none:
                 hud.hide(animated: true)
             }
