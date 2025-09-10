@@ -5,7 +5,7 @@ import AppIntents
 import CoreData
 import BeeKit
 
-struct GoalEntityQuery: EntityQuery {
+struct GoalEntityQuery: EntityStringQuery {
     func entities(for identifiers: [String]) async throws -> [GoalEntity] {
         let container = ServiceLocator.persistentContainer
         let context = container.viewContext
@@ -17,7 +17,7 @@ struct GoalEntityQuery: EntityQuery {
         return try await context.perform {
             let request = NSFetchRequest<Goal>(entityName: "Goal")
             request.predicate = NSPredicate(format: "owner == %@ AND id IN %@", currentUser, identifiers)
-            
+
             let goals = try context.fetch(request)
             return goals.map { GoalEntity(from: $0) }
         }
@@ -35,7 +35,6 @@ struct GoalEntityQuery: EntityQuery {
             let request = NSFetchRequest<Goal>(entityName: "Goal")
             request.predicate = NSPredicate(format: "owner == %@", currentUser)
             request.sortDescriptors = [NSSortDescriptor(key: "urgencyKey", ascending: true)]
-            request.fetchLimit = 20
             
             let goals = try context.fetch(request)
             return goals.map { GoalEntity(from: $0) }
