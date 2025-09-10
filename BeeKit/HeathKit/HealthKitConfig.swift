@@ -15,7 +15,7 @@ public enum HealthKitConfig {
             // Activity
             QuantityHealthKitMetric(humanText: "Active energy", databaseString: "activeEnergy", category: .Activity, hkQuantityTypeIdentifier: .activeEnergyBurned, precision: [HKUnit.largeCalorie(): 0]),
             QuantityHealthKitMetric(humanText: "Cycling distance", databaseString: "cyclingDistance", category: .Activity, hkQuantityTypeIdentifier: .distanceCycling),
-            QuantityHealthKitMetric(humanText: "Exercise time", databaseString: "exerciseTime", category: .Activity, hkQuantityTypeIdentifier: .appleExerciseTime),
+            QuantityHealthKitMetric(humanText: "Exercise time", databaseString: "exerciseTime", category: .Activity, hkQuantityTypeIdentifier: .appleExerciseTime, precision: [HKUnit.minute(): 1]),
             QuantityHealthKitMetric(humanText: "Nike Fuel", databaseString: "nikeFuel", category: .Activity, hkQuantityTypeIdentifier: .nikeFuel),
             QuantityHealthKitMetric(humanText: "Resting energy", databaseString: "basalEnergy", category: .Activity, hkQuantityTypeIdentifier: .basalEnergyBurned, precision: [HKUnit.largeCalorie(): 0]),
             StandHoursHealthKitMetric(humanText: "Stand hours", databaseString: "standHour", category: .Activity),
@@ -49,7 +49,7 @@ public enum HealthKitConfig {
             QuantityHealthKitMetric(humanText: "Vitamin D", databaseString: "dietaryVitaminD", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminD),
             QuantityHealthKitMetric(humanText: "Vitamin E", databaseString: "dietaryVitaminE", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminE),
             QuantityHealthKitMetric(humanText: "Vitamin K", databaseString: "dietaryVitaminK", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryVitaminK),
-            QuantityHealthKitMetric(humanText: "Water", databaseString: "water", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryWater),
+            QuantityHealthKitMetric(humanText: "Water", databaseString: "water", category: .Nutrition, hkQuantityTypeIdentifier: .dietaryWater, precision: [HKUnit.fluidOunceUS(): 1]),
             
             // Sleep
             TimeInBedHealthKitMetric(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep),
