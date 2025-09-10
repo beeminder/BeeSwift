@@ -15,167 +15,171 @@ import SwiftyJSON
 
 @NSModelActor(disableGenerateInit: true)
 public actor CurrentUserManager {
-    let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CurrentUserManager")
+  let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CurrentUserManager")
 
-    public enum NotificationName {
-        public static let signedIn     = NSNotification.Name(rawValue: "com.beeminder.signedInNotification")
-        public static let willSignOut  = NSNotification.Name(rawValue: "com.beeminder.willSignOutNotification")
-        public static let failedSignIn = NSNotification.Name(rawValue: "com.beeminder.failedSignInNotification")
-        public static let signedOut    = NSNotification.Name(rawValue: "com.beeminder.signedOutNotification")
-        public static let healthKitMetricRemoved = NSNotification.Name(rawValue: "com.beeminder.healthKitMetricRemovedNotification")
-    }
-    
-    fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
-    
-    internal static let accessTokenKey = "access_token"
-    internal static let usernameKey = "username"
-    internal static let deadbeatKey = "deadbeat"
-    internal static let defaultLeadtimeKey = "default_leadtime"
-    internal static let defaultAlertstartKey = "default_alertstart"
-    internal static let defaultDeadlineKey = "default_deadline"
-    internal static let beemTZKey = "timezone"
+  public enum NotificationName {
+    public static let signedIn = NSNotification.Name(rawValue: "com.beeminder.signedInNotification")
+    public static let willSignOut = NSNotification.Name(rawValue: "com.beeminder.willSignOutNotification")
+    public static let failedSignIn = NSNotification.Name(rawValue: "com.beeminder.failedSignInNotification")
+    public static let signedOut = NSNotification.Name(rawValue: "com.beeminder.signedOutNotification")
+    public static let healthKitMetricRemoved = NSNotification.Name(
+      rawValue: "com.beeminder.healthKitMetricRemovedNotification")
+  }
 
-    internal static let keychainPrefix = "CurrentUserManager_"
+  fileprivate let beemiosSecret = "C0QBFPWqDykIgE6RyQ2OJJDxGxGXuVA2CNqcJM185oOOl4EQTjmpiKgcwjki"
 
-    private let requestManager: RequestManager
+  internal static let accessTokenKey = "access_token"
+  internal static let usernameKey = "username"
+  internal static let deadbeatKey = "deadbeat"
+  internal static let defaultLeadtimeKey = "default_leadtime"
+  internal static let defaultAlertstartKey = "default_alertstart"
+  internal static let defaultDeadlineKey = "default_deadline"
+  internal static let beemTZKey = "timezone"
 
-    fileprivate static var allKeys: [String] {
-        [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
-    }
-    
+  internal static let keychainPrefix = "CurrentUserManager_"
 
-    init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
-        self.requestManager = requestManager
-        self.modelContainer = container
-        let context = container.newBackgroundContext()
-        context.name = "CurrentUserManager"
-        self.modelExecutor = .init(context: context)
+  private let requestManager: RequestManager
 
-        migrateValuesToCoreData()
-        cleanUpUserDefaults()
-    }
+  fileprivate static var allKeys: [String] {
+    [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
+  }
 
-    // If there is an existing session based on UserDefaults, create a new User object
-    private nonisolated func migrateValuesToCoreData() {
-        let context = modelContainer.newBackgroundContext()
-        let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
+  init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
+    self.requestManager = requestManager
+    self.modelContainer = container
+    let context = container.newBackgroundContext()
+    context.name = "CurrentUserManager"
+    self.modelExecutor = .init(context: context)
 
-        // If there is already a session do nothing
-        if user(context: context) != nil {
-            return
-        }
+    migrateValuesToCoreData()
+    cleanUpUserDefaults()
+  }
 
-        // If we are logged out, do nothing
-        if accessToken == nil || userDefaults.object(forKey: CurrentUserManager.usernameKey) == nil {
-            return
-        }
+  // If there is an existing session based on UserDefaults, create a new User object
+  private nonisolated func migrateValuesToCoreData() {
+    let context = modelContainer.newBackgroundContext()
+    let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
 
-        // Create a new user
-        let _ = User(context: context,
-            username: userDefaults.object(forKey: CurrentUserManager.usernameKey) as! String,
-            deadbeat: userDefaults.object(forKey: CurrentUserManager.deadbeatKey) != nil,
-            timezone: userDefaults.object(forKey: CurrentUserManager.beemTZKey) as? String ?? "Unknown",
-            updatedAt: Date(timeIntervalSince1970: 0),
-            defaultAlertStart: (userDefaults.object(forKey: CurrentUserManager.defaultAlertstartKey) ?? 0) as! Int,
-            defaultDeadline: (userDefaults.object(forKey: CurrentUserManager.defaultDeadlineKey) ?? 0) as! Int,
-            defaultLeadTime: (userDefaults.object(forKey: CurrentUserManager.defaultLeadtimeKey) ?? 0) as! Int
-       )
-        try! context.save()
+    // If there is already a session do nothing
+    if user(context: context) != nil {
+      return
     }
 
-    private nonisolated func cleanUpUserDefaults() {
-        let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
-        for key in CurrentUserManager.allKeys {
-            userDefaults.removeObject(forKey: key)
-        }
+    // If we are logged out, do nothing
+    if accessToken == nil || userDefaults.object(forKey: CurrentUserManager.usernameKey) == nil {
+      return
     }
 
+    // Create a new user
+    let _ = User(
+      context: context,
+      username: userDefaults.object(forKey: CurrentUserManager.usernameKey) as! String,
+      deadbeat: userDefaults.object(forKey: CurrentUserManager.deadbeatKey) != nil,
+      timezone: userDefaults.object(forKey: CurrentUserManager.beemTZKey) as? String ?? "Unknown",
+      updatedAt: Date(timeIntervalSince1970: 0),
+      defaultAlertStart: (userDefaults.object(forKey: CurrentUserManager.defaultAlertstartKey) ?? 0) as! Int,
+      defaultDeadline: (userDefaults.object(forKey: CurrentUserManager.defaultDeadlineKey) ?? 0) as! Int,
+      defaultLeadTime: (userDefaults.object(forKey: CurrentUserManager.defaultLeadtimeKey) ?? 0) as! Int
+    )
+    try! context.save()
+  }
 
-    // MARK: - User Management
-
-    public nonisolated func user(context: NSManagedObjectContext) -> User? {
-        do {
-            let request = NSFetchRequest<User>(entityName: "User")
-            let users = try context.fetch(request)
-            return users.first
-        } catch {
-            logger.error("Unable to fetch users \(error)")
-            return nil
-        }
+  private nonisolated func cleanUpUserDefaults() {
+    let userDefaults = UserDefaults(suiteName: Constants.appGroupIdentifier)!
+    for key in CurrentUserManager.allKeys {
+      userDefaults.removeObject(forKey: key)
     }
+  }
 
-    public var username: String? {
-        return user(context: modelContext)?.username
+  // MARK: - User Management
+
+  public nonisolated func user(context: NSManagedObjectContext) -> User? {
+    do {
+      let request = NSFetchRequest<User>(entityName: "User")
+      let users = try context.fetch(request)
+      return users.first
+    } catch {
+      logger.error("Unable to fetch users \(error)")
+      return nil
     }
+  }
 
-    private func deleteUser() throws {
-        // Delete any existing users. We expect at most one, but delete all to be safe.
-        modelContext.refreshAllObjects()
-        while let user = self.user(context: modelContext) {
-            modelContext.delete(user)
-        }
-        try modelContext.save()
+  public var username: String? {
+    return user(context: modelContext)?.username
+  }
+
+  private func deleteUser() throws {
+    // Delete any existing users. We expect at most one, but delete all to be safe.
+    modelContext.refreshAllObjects()
+    while let user = self.user(context: modelContext) {
+      modelContext.delete(user)
     }
+    try modelContext.save()
+  }
 
-    // MARK: - Keychain Management
+  // MARK: - Keychain Management
 
-    nonisolated func setAccessToken(_ accessToken: String) {
-        let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
-        keychain.set(accessToken, forKey: CurrentUserManager.accessTokenKey, withAccess: .accessibleAfterFirstUnlock)
+  nonisolated func setAccessToken(_ accessToken: String) {
+    let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
+    keychain.set(accessToken, forKey: CurrentUserManager.accessTokenKey, withAccess: .accessibleAfterFirstUnlock)
+  }
+
+  public nonisolated var accessToken: String? {
+    let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
+    return keychain.get(CurrentUserManager.accessTokenKey)
+  }
+
+  // MARK: - Authentication
+
+  public nonisolated func signedIn(context: NSManagedObjectContext) -> Bool {
+    return self.accessToken != nil && self.user(context: context)?.username != nil
+  }
+
+  public func signInWithEmail(_ email: String, password: String) async {
+    do {
+      let response = try await requestManager.post(
+        url: "api/private/sign_in",
+        parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret]
+          as [String: Any])
+      try! await self.handleSuccessfulSignin(JSON(response!))
+    } catch {
+      try! await self.handleFailedSignin(error, errorMessage: error.localizedDescription)
     }
-    
-    public nonisolated var accessToken: String? {
-        let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
-        return keychain.get(CurrentUserManager.accessTokenKey)
-    }
+  }
 
-    // MARK: - Authentication
+  func handleSuccessfulSignin(_ responseJSON: JSON) async throws {
+    try deleteUser()
 
-    public nonisolated func signedIn(context: NSManagedObjectContext) -> Bool {
-        return self.accessToken != nil && self.user(context: context)?.username != nil
-    }
-    
-    public func signInWithEmail(_ email: String, password: String) async {
-        do {
-            let response = try await requestManager.post(url: "api/private/sign_in", parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret] as Dictionary<String, Any>)
-            try! await self.handleSuccessfulSignin(JSON(response!))
-        } catch {
-            try! await self.handleFailedSignin(error, errorMessage: error.localizedDescription)
-        }
-    }
-    
-    func handleSuccessfulSignin(_ responseJSON: JSON) async throws {
-        try deleteUser()
+    let _ = User(context: modelContext, json: responseJSON)
+    try modelContext.save()
 
-        let _ = User(context: modelContext, json: responseJSON)
-        try modelContext.save()
+    self.setAccessToken(responseJSON[CurrentUserManager.accessTokenKey].string!)
 
-        self.setAccessToken(responseJSON[CurrentUserManager.accessTokenKey].string!)
-        
-        await Task { @MainActor in
-            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedIn, object: self)
-        }.value
-    }
-    
-    func handleFailedSignin(_ responseError: Error, errorMessage : String?) async throws {
-        await Task { @MainActor in
-            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.failedSignIn, object: self, userInfo: ["error" : responseError])
-        }.value
-        try await self.signOut()
-    }
-    
-    public func signOut() async throws {
-        await Task { @MainActor in
-            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.willSignOut, object: self)
-        }.value
+    await Task { @MainActor in
+      NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedIn, object: self)
+    }.value
+  }
 
-        try deleteUser()
+  func handleFailedSignin(_ responseError: Error, errorMessage: String?) async throws {
+    await Task { @MainActor in
+      NotificationCenter.default.post(
+        name: CurrentUserManager.NotificationName.failedSignIn, object: self, userInfo: ["error": responseError])
+    }.value
+    try await self.signOut()
+  }
 
-        let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
-        keychain.delete(CurrentUserManager.accessTokenKey)
+  public func signOut() async throws {
+    await Task { @MainActor in
+      NotificationCenter.default.post(name: CurrentUserManager.NotificationName.willSignOut, object: self)
+    }.value
 
-        await Task { @MainActor in
-            NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: self)
-        }.value
-    }
+    try deleteUser()
+
+    let keychain = KeychainSwift(keyPrefix: CurrentUserManager.keychainPrefix)
+    keychain.delete(CurrentUserManager.accessTokenKey)
+
+    await Task { @MainActor in
+      NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: self)
+    }.value
+  }
 }

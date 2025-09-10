@@ -21,4 +21,3 @@ import Foundation
 //    static let requestSigningKey = ""
 //    static let baseURLString = "https://www.beeminder.com"
 //}
-
