@@ -33,7 +33,7 @@ platform :ios do
     sh("xcrun simctl list devicetypes")
     sh("xcrun simctl list runtimes")
     
-    sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro com.apple.CoreSimulator.SimRuntime.iOS-18-0")
+    sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro com.apple.CoreSimulator.SimRuntime.iOS-18-6")
     sleep 5
     sh("xcrun simctl list devices")
     
@@ -52,6 +52,15 @@ platform :ios do
   lane :beta do
     # Ensure that your git status is not dirty
     ensure_git_status_clean
+
+    app_store_connect_api_key(
+      key_id: "DL3L84F9JY",
+      issuer_id: "69a6de78-3567-47e3-e053-5b8c7c11a4d1",
+      key_filepath: "fastlane/AuthKey_DL3L84F9JY.p8",
+      duration: 1200,
+      in_house: false
+    )
+
 
     # Increment the build number (not the version number)
     # Providing the xcodeproj is optional

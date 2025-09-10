@@ -19,11 +19,13 @@ class ChooseHKMetricViewController: UIViewController {
     let goal: Goal
     private let healthStoreManager: HealthStoreManager
     private let requestManager: RequestManager
+    private weak var coordinator: MainCoordinator?
     
-    init(goal: Goal, healthStoreManager: HealthStoreManager, requestManager: RequestManager) {
+    init(goal: Goal, healthStoreManager: HealthStoreManager, requestManager: RequestManager, coordinator: MainCoordinator) {
         self.goal = goal
         self.healthStoreManager = healthStoreManager
         self.requestManager = requestManager
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -142,14 +144,7 @@ extension ChooseHKMetricViewController : UITableViewDelegate, UITableViewDataSou
                 return
             }
 
-            self.navigationController?.pushViewController(
-                ConfigureHKMetricViewController(
-                    goal: self.goal,
-                    metric: metric,
-                    healthStoreManager: self.healthStoreManager,
-                    requestManager: self.requestManager
-                ),
-                animated: true)
+            coordinator?.showConfigureHKMetricForGoal(goal, metric)
         }
     }
     

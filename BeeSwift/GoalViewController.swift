@@ -31,6 +31,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     private let requestManager: RequestManager
     private let currentUserManager: CurrentUserManager
     private let viewContext: NSManagedObjectContext
+    private weak var coordinator: MainCoordinator?
     
     private let timeElapsedView = FreshnessIndicatorView()
     fileprivate var goalImageView = GoalImageView(isThumbnail: false)
@@ -42,7 +43,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     fileprivate var valueStepper = UIStepper()
     fileprivate var valueDecimalRemnant : Double = 0.0
     fileprivate var goalImageScrollView = UIScrollView()
-    fileprivate var lastUpdatedTimer: Timer?
     fileprivate var countdownLabel = BSLabel()
     
     private lazy var deltasLabel: BSLabel = {
@@ -65,13 +65,15 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
          goalManager: GoalManager,
          requestManager: RequestManager,
          currentUserManager: CurrentUserManager,
-         viewContext: NSManagedObjectContext) {
+         viewContext: NSManagedObjectContext,
+         coordinator: MainCoordinator) {
         self.goal = goal
         self.healthStoreManager = healthStoreManager
         self.goalManager = goalManager
         self.requestManager = requestManager
         self.currentUserManager = currentUserManager
         self.viewContext = viewContext
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -98,7 +100,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         }
         
         self.updateLastUpdatedLabel()
-        lastUpdatedTimer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(GoalViewController.updateLastUpdatedLabel), userInfo: nil, repeats: true)
         
         self.view.addSubview(self.scrollView)
         self.scrollView.snp.makeConstraints { (make) -> Void in
@@ -345,8 +346,6 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        lastUpdatedTimer?.invalidate()
-        lastUpdatedTimer = nil
     }
 
     @objc func onGoalsUpdatedNotification() {
@@ -365,9 +364,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     @objc func timerButtonPressed() {
-        let controller = TimerViewController(goal: self.goal, requestManager: self.requestManager)
-        controller.modalPresentationStyle = .fullScreen
-        self.present(controller, animated: true, completion: nil)
+        coordinator?.showTimerForGoal(goal)
     }
     
     @objc func refreshButtonPressed() {
@@ -405,10 +402,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
         guard !self.goal.hideDataEntry else { return }
         guard let existingDatapoint = datapoint as? DataPoint else { return }
 
-        let editDatapointViewController = EditDatapointViewController(goal: goal, datapoint: existingDatapoint, requestManager: self.requestManager, goalManager: self.goalManager)
-        let navigationController = UINavigationController(rootViewController: editDatapointViewController)
-        navigationController.modalPresentationStyle = .formSheet
-        self.present(navigationController, animated: true, completion: nil)
+        coordinator?.showEditDatapointForGoal(goal: goal, datapoint: existingDatapoint)
     }
 
     @objc func dateStepperValueChanged() {
@@ -555,7 +549,7 @@ class GoalViewController: UIViewController,  UIScrollViewDelegate, DatapointTabl
     }
     
     @objc func updateLastUpdatedLabel() {
-        let lastUpdated = self.goal.lastModifiedLocal
+        let lastUpdated = self.goal.lastUpdatedLocal
         
         self.timeElapsedView.update(with: lastUpdated)
     }

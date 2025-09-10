@@ -33,7 +33,7 @@ class QuantityHealthKitMetric : HealthKitMetric {
         return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)!
     }
 
-    func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore) async throws -> [BeeDataPoint] {
+    func recentDataPoints(days : Int, deadline : Int, healthStore : HKHealthStore, autodataConfig: [String: Any]) async throws -> [BeeDataPoint] {
         guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {
             throw HealthKitError("Unable to look up a quantityType")
         }

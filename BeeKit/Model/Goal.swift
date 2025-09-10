@@ -19,6 +19,7 @@ public class Goal: NSManagedObject {
     @NSManaged public var graphUrl: String
     /// The internal app identifier for the healthkit metric to sync to this goal
     @NSManaged public var healthKitMetric: String?
+    @NSManaged public var autodataConfig: [String: Any]
     /// Whether to show data in a "timey" way, with colons. For example, this would make a 1.5 show up as 1:30.
     @NSManaged public var hhmmFormat: Bool
     /// Unix timestamp (in seconds) of the start of the bright red line.
@@ -66,7 +67,7 @@ public class Goal: NSManagedObject {
     @NSManaged public var dueBy: DueByDictionary
 
     /// The last time this record in the CoreData store was updated
-    @NSManaged public var lastModifiedLocal: Date
+    @NSManaged public var lastUpdatedLocal: Date
 
     public init(
         context: NSManagedObjectContext,
@@ -122,7 +123,7 @@ public class Goal: NSManagedObject {
         self.won = won
         self.yAxis = yAxis
 
-        lastModifiedLocal = Date()
+        lastUpdatedLocal = Date()
     }
 
     public init(context: NSManagedObjectContext, owner: User, json: JSON) {
@@ -148,12 +149,21 @@ public class Goal: NSManagedObject {
         super.init(entity: entity, insertInto: insertInto)
     }
     
+    public override func awakeFromFetch() {
+        super.awakeFromFetch()
+        if primitiveValue(forKey: "autodataConfig") == nil {
+            setPrimitiveValue([:], forKey: "autodataConfig")
+        }
+    }
+    
+    
     // Question: Should this type know about JSON, or should there be an adapter / extension?
     public func updateToMatch(json: JSON) {
         self.slug = json["slug"].string!
 
         self.alertStart = json["alertstart"].intValue
         self.autodata = json["autodata"].string
+        self.autodataConfig = json["autodata_config"].dictionaryObject ?? [:]
         self.deadline = json["deadline"].intValue
         self.graphUrl = json["graph_url"].stringValue
         self.healthKitMetric = json["healthkitmetric"].string
@@ -184,6 +194,6 @@ public class Goal: NSManagedObject {
         removeFromRecentData(recentData)
         addToRecentData(newRecentData)
 
-        lastModifiedLocal = Date()
+        lastUpdatedLocal = Date()
     }
 }

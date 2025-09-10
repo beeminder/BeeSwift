@@ -27,15 +27,18 @@ class HealthKitConfigViewController: UIViewController {
     private let viewContext: NSManagedObjectContext
     private let healthStoreManager: HealthStoreManager
     private let requestManager: RequestManager
+    private weak var coordinator: MainCoordinator?
     
     init(goalManager: GoalManager,
          viewContext: NSManagedObjectContext,
          healthStoreManager: HealthStoreManager,
-         requestManager: RequestManager) {
+         requestManager: RequestManager,
+         coordinator: MainCoordinator) {
         self.goalManager = goalManager
         self.viewContext = viewContext
         self.healthStoreManager = healthStoreManager
         self.requestManager = requestManager
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -166,17 +169,9 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
         let goal = self.goalAt(indexPath)
         
         if !goal.isDataProvidedAutomatically {
-            let chooseHKMetricViewController = ChooseHKMetricViewController(
-                goal: goal,
-                healthStoreManager: healthStoreManager,
-                requestManager: requestManager)
-            self.navigationController?.pushViewController(chooseHKMetricViewController, animated: true)
+            coordinator?.showAssociateHealthKitWithGoal(goal)
         } else if goal.autodata == "apple" {
-            let controller = RemoveHKMetricViewController(
-                goal: goal,
-                requestManager: requestManager,
-                goalManager: goalManager)
-            self.navigationController?.pushViewController(controller, animated: true)
+            coordinator?.showRemoveHealthKitIntegrationFromGoal(goal)
         } else {
             let alert: UIAlertController = {
                 let alert = UIAlertController(title: "Autodata Goal", message: "At the moment we don't have a way for you to swap data sources here yourself for autodata goals", preferredStyle: .alert)
