@@ -8,7 +8,7 @@ struct AddDataPointIntent: AppIntent {
     static var title: LocalizedStringResource = "Add Data Point"
     static var description = IntentDescription("Add a data point to a Beeminder goal")
     
-    @Parameter(title: "Goal", optionsProvider: GoalOptionsProvider())
+    @Parameter(title: "Goal")
     var goal: GoalEntity
     
     @Parameter(title: "Value")
@@ -46,9 +46,4 @@ struct AddDataPointIntent: AppIntent {
         }
     }
     
-    private struct GoalOptionsProvider: DynamicOptionsProvider {
-        func results() async throws -> [GoalEntity] {
-            return try await GoalEntityQuery().suggestedEntities()
-        }
-    }
 }

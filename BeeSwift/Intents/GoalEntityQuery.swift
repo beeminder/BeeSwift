@@ -35,7 +35,8 @@ struct GoalEntityQuery: EntityStringQuery {
             let request = NSFetchRequest<Goal>(entityName: "Goal")
             request.predicate = NSPredicate(format: "owner == %@", currentUser)
             request.sortDescriptors = [NSSortDescriptor(key: "urgencyKey", ascending: true)]
-            
+            request.fetchLimit = 20
+
             let goals = try context.fetch(request)
             return goals.map { GoalEntity(from: $0) }
         }
