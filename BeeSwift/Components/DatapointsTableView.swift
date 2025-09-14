@@ -8,15 +8,10 @@
 
 import Foundation
 
-class DatapointsTableView : UITableView {
-    override var contentSize:CGSize {
-        didSet {
-            invalidateIntrinsicContentSize()
-        }
-    }
-    
-    override var intrinsicContentSize : CGSize {
-        self.layoutIfNeeded()
-        return CGSize(width: UIView.noIntrinsicMetric, height: self.contentSize.height)
-    }
+class DatapointsTableView: UITableView {
+  override var contentSize: CGSize { didSet { invalidateIntrinsicContentSize() } }
+  override var intrinsicContentSize: CGSize {
+    self.layoutIfNeeded()
+    return CGSize(width: UIView.noIntrinsicMetric, height: self.contentSize.height)
+  }
 }
