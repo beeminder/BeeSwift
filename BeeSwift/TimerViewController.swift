@@ -9,10 +9,13 @@
 import UIKit
 import SnapKit
 import MBProgressHUD
+import OSLog
 
 import BeeKit
 
 class TimerViewController: UIViewController {
+    let logger = Logger(subsystem: "com.beeminder.beeminder", category: "TimerViewController")
+
     private enum TimerUnit {
         case hours, minutes
     }
@@ -26,6 +29,11 @@ class TimerViewController: UIViewController {
     private let requestManager: RequestManager
 
     var accumulatedSeconds = 0
+    
+    private var idleTimer: Timer?
+    private var defaultBrightnessLevel: CGFloat = UIScreen.main.brightness
+    private let dimmedBrightnessLevel: CGFloat = 0.2
+    private let idleTimeout: TimeInterval = 10
     
     init(goal: Goal, requestManager: RequestManager) {
         self.goal = goal
@@ -98,6 +106,16 @@ class TimerViewController: UIViewController {
         resetButton.setTitle("Reset", for: .normal)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        logger.info("(re-)enabling app idle timer, restoring screen brightness")
+        UIApplication.shared.isIdleTimerDisabled = false
+        UIScreen.main.brightness = defaultBrightnessLevel
+        idleTimer?.invalidate()
+        idleTimer = nil
+    }
+    
     @objc func exitButtonPressed() {
         self.presentingViewController?.dismiss(animated: true, completion: nil)
     }
@@ -123,6 +141,10 @@ class TimerViewController: UIViewController {
     
     @objc func startStopButtonPressed() {
         if self.timingSince == nil {
+            if accumulatedSeconds == 0 {
+                logger.info("disabling app idle timer, keeping screen awake while timer running")
+                UIApplication.shared.isIdleTimerDisabled = true
+            }
             self.timingSince = Date()
             self.startStopButton.setTitle("Stop", for: .normal)
             self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateTimerLabel), userInfo: nil, repeats: true)
@@ -133,6 +155,8 @@ class TimerViewController: UIViewController {
             self.timer = nil
             self.timingSince = nil
         }
+        
+        resetIdleTimer()
     }
     
     @objc func resetButtonPressed() {
@@ -142,6 +166,9 @@ class TimerViewController: UIViewController {
         self.timingSince = nil
         self.accumulatedSeconds = 0
         self.updateTimerLabel()
+        
+        UIApplication.shared.isIdleTimerDisabled = false
+        resetIdleTimer()
     }
     
     func urtext() -> String {
@@ -185,6 +212,38 @@ class TimerViewController: UIViewController {
             }
         }
     }
+    
+    
+    fileprivate func restoreBrightness() {
+        guard UIScreen.main.brightness < defaultBrightnessLevel else { return }
+
+        UIScreen.main.brightness = defaultBrightnessLevel
+    }
+    
+    // Reset idle timer, call whenever the user interacts
+    private func resetIdleTimer() {
+        logger.info("restoring screen brightness and starting a new idle timer for screen dimming")
+        
+        idleTimer?.invalidate()
+        
+        restoreBrightness()
+
+        idleTimer = Timer.scheduledTimer(timeInterval: idleTimeout, target: self, selector: #selector(dimScreen), userInfo: nil, repeats: false)
+    }
+    
+    @objc private func dimScreen() {
+        logger.info("dimming screen")
+        UIScreen.main.brightness = dimmedBrightnessLevel
+    }
+    
+    // Detect touches on the VC to reset idle timer and brighten screen
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        logger.info("touch detected")
+        resetIdleTimer()
+    }
+    
+
 }
 
 private extension TimerViewController {
