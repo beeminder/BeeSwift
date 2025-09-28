@@ -9,17 +9,14 @@
 import Foundation
 import UIKit
 
-public class BSLabel : UILabel {
+public class BSLabel: UILabel {
 
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        self.font = UIFont.beeminder.defaultFont
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.font = UIFont.beeminder.defaultFont
-    }
-    
-    
+  required init?(coder aDecoder: NSCoder) {
+    super.init(coder: aDecoder)
+    self.font = UIFont.beeminder.defaultFont
+  }
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+    self.font = UIFont.beeminder.defaultFont
+  }
 }

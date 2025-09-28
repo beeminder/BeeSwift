@@ -9,13 +9,9 @@
 import Foundation
 
 struct HealthKitError: Error {
-    let message: String
+  let message: String
 
-    init(_ message: String) {
-        self.message = message
-    }
+  init(_ message: String) { self.message = message }
 
-    public var localizedDescription: String {
-        return message
-    }
+  public var localizedDescription: String { return message }
 }

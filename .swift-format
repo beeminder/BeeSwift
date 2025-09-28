@@ -1,0 +1,7 @@
+{
+  "lineLength" : 120,
+  "respectsExistingLineBreaks": false,
+  "lineBreakBeforeEachArgument": true,
+  "multilineTrailingCommaBehavior": "alwaysUsed",
+  "reflowMultilineStringLiterals": { "onlyLinesOverLength": {} }
+}

@@ -1,0 +1,30 @@
+name: Pre-commit Check
+permissions:
+  contents: read
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit-check:
+    runs-on: macos-15
+
+    steps:
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+    - uses: actions/checkout@v5
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    - name: Install pre-commit
+      run: pip install pre-commit
+    - name: Run pre-commit checks
+      run: pre-commit run --all-files
