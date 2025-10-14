@@ -12,6 +12,12 @@ jobs:
     runs-on: macos-15
 
     steps:
+    - uses: actions/cache@v2
+      with:
+        path: /Users/runner/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts 
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: latest-stable
