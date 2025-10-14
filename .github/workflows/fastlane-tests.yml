@@ -12,9 +12,9 @@ jobs:
     runs-on: macos-15
 
     steps:
-    - uses: actions/cache@v2
+    - uses: actions/cache@v4
       with:
-        path: /Users/runner/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts 
+        path: /Users/runner/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
         key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
