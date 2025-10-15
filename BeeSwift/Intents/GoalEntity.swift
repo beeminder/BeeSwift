@@ -8,8 +8,8 @@ struct GoalEntity: AppEntity, Equatable {
   static var typeDisplayRepresentation: TypeDisplayRepresentation = "Goal"
   static var defaultQuery = GoalEntityQuery()
   var id: String
-  var slug: String
-  var title: String
+  @Property(title: "Slug") var slug: String
+  @Property(title: "Title") var title: String
   var thumbUrl: String?
   var displayRepresentation: DisplayRepresentation {
     DisplayRepresentation(title: "\(displayTitle)", subtitle: "\(slug)")
@@ -26,5 +26,9 @@ struct GoalEntity: AppEntity, Equatable {
     self.slug = goal.slug
     self.title = goal.title
     self.thumbUrl = goal.thumbUrl
+  }
+
+  static func == (lhs: GoalEntity, rhs: GoalEntity) -> Bool {
+    return lhs.id == rhs.id && lhs.slug == rhs.slug && lhs.title == rhs.title && lhs.thumbUrl == rhs.thumbUrl
   }
 }
