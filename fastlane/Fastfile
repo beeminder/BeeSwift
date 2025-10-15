@@ -24,12 +24,6 @@ platform :ios do
     )
   end
   lane :ci do
-    sh("xcrun simctl list devices")
-    sleep 1
-    
-    sh("xcrun simctl delete all")
-    sleep 5
-    
     sh("xcrun simctl list devicetypes")
     sh("xcrun simctl list runtimes")
     
@@ -43,7 +37,7 @@ platform :ios do
         include_simulator_logs: true,
         buildlog_path: "fastlane/test_output",
         xcodebuild_formatter: "xcpretty",
-	destination: "platform=iOS Simulator,name=Test-iPhone",
+	destination: "platform=iOS Simulator,OS=18.6,name=Test-iPhone",
         ensure_devices_found: true,
     )
   end
