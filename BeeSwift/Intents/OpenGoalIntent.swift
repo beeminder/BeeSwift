@@ -11,10 +11,10 @@ struct OpenGoalIntent: AppIntent {
 
   @Parameter(title: "Goal") var goal: GoalEntity?
   static var parameterSummary: some ParameterSummary {
-    When(\OpenGoalIntent.$goal, .equalTo, nil) {
-      Summary("Open Beeminder")
-    } otherwise: {
+    When(\OpenGoalIntent.$goal, .hasAnyValue) {
       Summary("Open \(\OpenGoalIntent.$goal) in Beeminder")
+    } otherwise: {
+      Summary("Open Beeminder")
     }
   }
   static var openAppWhenRun: Bool = true
