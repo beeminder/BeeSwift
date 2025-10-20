@@ -37,13 +37,13 @@
         "version" : "0.4.2"
       }
     },
-    {
+{
       "identity" : "iqkeyboardcore",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hackiftekhar/IQKeyboardCore.git",
       "state" : {
-        "revision" : "ae9d197f1d8c491b312e30eafb0193d164519c5a",
-        "version" : "1.0.7"
+        "revision" : "6501e93b03161ce1c9355d2d689bad91c534104e",
+        "version" : "1.0.8"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hackiftekhar/IQKeyboardManager.git",
       "state" : {
-        "revision" : "42e0d94355eba5448fd250f7229d150d268dc3ab",
-        "version" : "8.0.0"
+        "revision" : "555472fdb20a96127643d48d101ef981a40993b6",
+        "version" : "8.0.1"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hackiftekhar/IQKeyboardNotification.git",
       "state" : {
-        "revision" : "25c6a83380042141d9a2f80cdb2832595a7bf6bc",
-        "version" : "1.0.5"
+        "revision" : "08bdc90e7db64ac88f51da5dc9e82f4c247e7057",
+        "version" : "1.0.6"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hackiftekhar/IQKeyboardReturnManager.git",
       "state" : {
-        "revision" : "bc5c272e4d37cc217a3d10d052557a1916c09cf9",
-        "version" : "1.0.5"
+        "revision" : "495f694a6e62e431d776b4926a18fc26c62db317",
+        "version" : "1.0.6"
       }
     },
     {
@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hackiftekhar/IQKeyboardToolbar.git",
       "state" : {
-        "revision" : "78ccb63857a03334ecfcba566f8f504015965ee3",
-        "version" : "1.1.1"
+        "revision" : "fbf91109cbc00e295d52c50e4b6dd8fa98f08ca5",
+        "version" : "1.1.2"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hackiftekhar/IQKeyboardToolbarManager.git",
       "state" : {
-        "revision" : "298c128c8f58776bb72de7b0259c9a5b9b157d61",
-        "version" : "1.1.2"
+        "revision" : "ebbb417870237c4ed8d7a4876c18970c3ae54264",
+        "version" : "1.1.4"
       }
     },
     {
@@ -96,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hackiftekhar/IQTextInputViewNotification.git",
       "state" : {
-        "revision" : "4347f8eb6bf8880014606684105e447229cc29ea",
-        "version" : "1.0.8"
+        "revision" : "723784a2197121bb76a940cc6d79fd2fa6c23f43",
+        "version" : "1.0.9"
       }
     },
     {
