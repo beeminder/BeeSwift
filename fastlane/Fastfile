@@ -33,7 +33,7 @@ platform :ios do
     sh("xcrun simctl list devicetypes")
     sh("xcrun simctl list runtimes")
     
-    sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro com.apple.CoreSimulator.SimRuntime.iOS-18-6")
+    sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-0")
     sleep 5
     sh("xcrun simctl list devices")
     
