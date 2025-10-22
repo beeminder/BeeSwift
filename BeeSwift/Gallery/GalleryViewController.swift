@@ -154,6 +154,18 @@ class GalleryViewController: UIViewController {
       name: CurrentUserManager.NotificationName.signedIn,
       object: nil
     )
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(self.keyboardWillShow),
+      name: UIResponder.keyboardWillShowNotification,
+      object: nil
+    )
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(self.keyboardWillHide),
+      name: UIResponder.keyboardWillHideNotification,
+      object: nil
+    )
     self.view.addSubview(self.stackView)
     stackView.snp.makeConstraints { (make) -> Void in
       make.top.left.right.equalToSuperview()
@@ -460,5 +472,24 @@ extension GalleryViewController {
       ]
     default: return [NSSortDescriptor(keyPath: \Goal.urgencyKey, ascending: true)]
     }
+  }
+}
+
+extension GalleryViewController {
+  @objc fileprivate func keyboardWillShow(_ notification: Notification) {
+    guard self.searchBar.searchTextField.isEditing else { return }
+    moveViewWithKeyboard(notification: notification, keyboardWillShow: true)
+  }
+  fileprivate func moveViewWithKeyboard(notification: Notification, keyboardWillShow: Bool) {
+    guard let userInfo = notification.userInfo else { return }
+    guard let keyboardDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
+    guard let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else { return }
+    let animationOptions = UIView.AnimationOptions(rawValue: curve)
+    UIView.animate(withDuration: keyboardDuration, delay: 0, options: animationOptions) { [weak self] in
+      self?.view.layoutIfNeeded()
+    }
+  }
+  @objc fileprivate func keyboardWillHide(_ notification: Notification) {
+    moveViewWithKeyboard(notification: notification, keyboardWillShow: false)
   }
 }
