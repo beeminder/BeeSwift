@@ -155,10 +155,21 @@ class GalleryViewController: UIViewController {
       object: nil
     )
     self.view.addSubview(self.stackView)
-    stackView.snp.makeConstraints { (make) -> Void in
-      make.top.left.right.equalToSuperview()
-      make.bottom.equalTo(stackView.keyboardLayoutGuide.snp.top)
-    }
+    stackView.snp.makeConstraints { (make) -> Void in make.edges.equalToSuperview() }
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(self.keyboardWillShow),
+      name: UIResponder.keyboardWillShowNotification,
+      object: nil
+    )
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(self.keyboardWillHide),
+      name: UIResponder.keyboardWillHideNotification,
+      object: nil
+    )
+
     configureDataSource()
     self.view.backgroundColor = .systemBackground
     self.title = "Goals"
@@ -244,12 +255,6 @@ class GalleryViewController: UIViewController {
   }
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    self.collectionView.snp.remakeConstraints { make in
-      make.top.equalTo(self.searchBar.snp.bottom)
-      make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin)
-      make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin)
-      make.bottom.equalTo(self.collectionView.keyboardLayoutGuide.snp.top)
-    }
     self.updateGoals()
   }
   @objc func settingsButtonPressed() { coordinator?.showSettings() }
@@ -355,6 +360,45 @@ class GalleryViewController: UIViewController {
     )
   }
   func openGoal(_ goal: Goal) { coordinator?.showGoal(goal) }
+
+  @objc private func keyboardWillShow(_ notification: Notification) {
+    guard let userInfo = notification.userInfo,
+      let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+      let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
+      let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt
+    else { return }
+
+    let keyboardHeight = keyboardFrame.height
+    let bottomInset = keyboardHeight - view.safeAreaInsets.bottom
+
+    UIView.animate(
+      withDuration: duration,
+      delay: 0,
+      options: UIView.AnimationOptions(rawValue: curve << 16),
+      animations: {
+        self.collectionView.contentInset.bottom = bottomInset
+        self.collectionView.verticalScrollIndicatorInsets.bottom = bottomInset
+      }
+    )
+  }
+
+  @objc private func keyboardWillHide(_ notification: Notification) {
+    guard let userInfo = notification.userInfo,
+      let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
+      let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt
+    else { return }
+
+    UIView.animate(
+      withDuration: duration,
+      delay: 0,
+      options: UIView.AnimationOptions(rawValue: curve << 16),
+      animations: {
+        self.collectionView.contentInset.bottom = 0
+        self.collectionView.verticalScrollIndicatorInsets.bottom = 0
+      }
+    )
+  }
+
   private func configureDataSource() {
     let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, NSManagedObjectID> {
       [weak self] cell, indexPath, goalObjectId in
