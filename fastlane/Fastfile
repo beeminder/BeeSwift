@@ -45,6 +45,7 @@ platform :ios do
         xcodebuild_formatter: "xcpretty",
         ensure_devices_found: true,
         force_quit_simulator: true,
+        prelaunch_simulator: true,
     )
   end
   lane :build do
