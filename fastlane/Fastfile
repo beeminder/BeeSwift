@@ -39,11 +39,11 @@ platform :ios do
     sleep 5
     
     run_tests(
-        scheme: "BeeSwift",
         buildlog_path: "fastlane/test_output",
-        xcodebuild_formatter: "xcpretty",
         include_simulator_logs: true,
         reinstall_app: true,
+        scheme: "BeeSwift",
+        xcodebuild_formatter: "xcpretty",
     )
   end
   lane :build do
