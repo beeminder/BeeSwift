@@ -42,10 +42,7 @@ platform :ios do
         scheme: "BeeSwift",
         buildlog_path: "fastlane/test_output",
         xcodebuild_formatter: "xcpretty",
-        ensure_devices_found: true,
-        force_quit_simulator: true,
         include_simulator_logs: true,
-        prelaunch_simulator: true,
     )
   end
   lane :build do
