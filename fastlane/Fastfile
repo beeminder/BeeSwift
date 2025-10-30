@@ -43,6 +43,7 @@ platform :ios do
         buildlog_path: "fastlane/test_output",
         xcodebuild_formatter: "xcpretty",
         include_simulator_logs: true,
+        reinstall_app: true,
     )
   end
   lane :build do
