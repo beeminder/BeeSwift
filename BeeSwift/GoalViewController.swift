@@ -339,9 +339,9 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
 
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(onGoalsUpdatedNotification),
-      name: GoalManager.NotificationName.goalsUpdated,
-      object: nil
+      selector: #selector(managedObjectContextObjectsDidChange),
+      name: .NSManagedObjectContextObjectsDidChange,
+      object: viewContext
     )
 
     setValueTextField()
@@ -358,7 +358,9 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
 
   override func viewDidDisappear(_ animated: Bool) { super.viewDidDisappear(animated) }
 
-  @objc func onGoalsUpdatedNotification() { updateInterfaceToMatchGoal() }
+  @objc func managedObjectContextObjectsDidChange(_ notification: Notification) {
+    updateInterfaceToMatchGoal()
+  }
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)

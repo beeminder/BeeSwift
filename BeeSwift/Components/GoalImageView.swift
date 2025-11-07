@@ -49,10 +49,12 @@ class GoalImageView: UIView {
     beeLemniscateView.isHidden = true
 
     NotificationCenter.default.addObserver(
-      forName: GoalManager.NotificationName.goalsUpdated,
-      object: nil,
+      forName: .NSManagedObjectContextObjectsDidChange,
+      object: ServiceLocator.persistentContainer.viewContext,
       queue: OperationQueue.main
-    ) { [weak self] _ in DispatchQueue.main.async { self?.refresh() } }
+    ) { [weak self] _ in
+      DispatchQueue.main.async { self?.refresh() }
+    }
     refresh()
   }
 

@@ -48,9 +48,9 @@ import UIKit
 
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(self.handleGoalsUpdated),
-      name: GoalManager.NotificationName.goalsUpdated,
-      object: nil
+      selector: #selector(self.handleManagedObjectContextObjectsDidChange),
+      name: .NSManagedObjectContextObjectsDidChange,
+      object: ServiceLocator.persistentContainer.viewContext
     )
     NotificationCenter.default.addObserver(
       self,
@@ -95,7 +95,7 @@ import UIKit
     logger.notice("application:didFailToRegisterForRemoteNotificationsWithError")
   }
 
-  @objc private func handleGoalsUpdated() {
+  @objc private func handleManagedObjectContextObjectsDidChange(_ notification: Notification) {
     assert(Thread.isMainThread, "\(#function) must be run on the main thread")
 
     let context = ServiceLocator.persistentContainer.viewContext
