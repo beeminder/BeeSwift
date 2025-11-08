@@ -37,13 +37,14 @@ public enum ServerError: LocalizedError {
 public class RequestManager {
   public let baseURLString = Config().baseURLString
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
+  weak var currentUserManager: CurrentUserManager?
   func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders) async throws
     -> Any?
   {
 
     var urlWithSubstitutions = url
     if url.contains("{username}") {
-      guard let username = await ServiceLocator.currentUserManager.username else {
+      guard let username = await currentUserManager?.username else {
         throw ServerError.custom(
           "Attempted to make request to username-based URL \(url) while logged out",
           requestError: nil
@@ -72,7 +73,7 @@ public class RequestManager {
       // Log out the user on an unauthorized response
       if case .responseValidationFailed(let reason) = error {
         if case .unacceptableStatusCode(let code) = reason {
-          if code == 401 { try? await ServiceLocator.currentUserManager.signOut() }
+          if code == 401 { try? await currentUserManager?.signOut() }
         }
       }
 
@@ -110,7 +111,7 @@ public class RequestManager {
     return try await rawRequest(url: url, method: .delete, parameters: parameters, headers: authenticationHeaders())
   }
   func authenticationHeaders() -> HTTPHeaders {
-    guard let accessToken = ServiceLocator.currentUserManager.accessToken else { return HTTPHeaders() }
+    guard let accessToken = currentUserManager?.accessToken else { return HTTPHeaders() }
     return HTTPHeaders([HTTPHeader(name: "Authorization", value: "Bearer " + accessToken)])
   }
 
