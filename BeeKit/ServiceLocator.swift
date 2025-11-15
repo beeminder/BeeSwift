@@ -14,8 +14,7 @@ public class ServiceLocator {
 
   public static let persistentContainer = BeeminderPersistentContainer.create()
 
-  // RequestManager and CurrentUserManager have a circular dependency
-  // We break it by creating both together and using property injection
+  // Break circular dependency between RequestManager and CurrentUserManager
   private static func createRequestManagerAndCurrentUserManager() -> (RequestManager, CurrentUserManager) {
     let requestManager = RequestManager()
     let currentUserManager = CurrentUserManager(requestManager: requestManager, container: persistentContainer)
