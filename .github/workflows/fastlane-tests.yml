@@ -29,7 +29,7 @@ jobs:
     - name: Run tests
       run: bundle exec fastlane ci
     - name: Upload report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       if: always() # always run even if the previous step fails
       with:
         name: test-output
