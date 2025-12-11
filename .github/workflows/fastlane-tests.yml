@@ -16,7 +16,7 @@ jobs:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: latest-stable
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Use sample configuration
       run: cp BeeKit/Config.swift.sample BeeKit/Config.swift
     - name: Setup ruby and install gems
