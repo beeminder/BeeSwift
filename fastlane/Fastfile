@@ -42,6 +42,7 @@ platform :ios do
         buildlog_path: "fastlane/test_output",
         include_simulator_logs: true,
         reinstall_app: true,
+        reset_simulator: true,
         scheme: "BeeSwift",
         xcodebuild_formatter: "xcpretty",
     )
