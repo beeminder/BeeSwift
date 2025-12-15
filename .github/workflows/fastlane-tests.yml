@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  XCODE_VERSION: '26.1'
+
 jobs:
   build:
     runs-on: macos-26
@@ -18,16 +21,16 @@ jobs:
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '26.1'
+        xcode-version: ${{ env.XCODE_VERSION }}
     - uses: actions/checkout@v6
     - name: Use sample configuration
       run: cp BeeKit/Config.swift.sample BeeKit/Config.swift
     - uses: actions/cache@v4
       with:
-        path: DerivedData/SourcePackages
-        key: ${{ runner.os }}-spm4-${{ hashFiles('**/Package.resolved') }}
+        path: DerivedData
+        key: ${{ runner.os }}-xcode-${{ env.XCODE_VERSION }}-deriveddata-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
-          ${{ runner.os }}-spm4-
+          ${{ runner.os }}-xcode-${{ env.XCODE_VERSION }}-deriveddata-
     - name: Setup ruby and install gems
       uses: ruby/setup-ruby@v1
       with:
