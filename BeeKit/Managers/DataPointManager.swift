@@ -117,6 +117,7 @@ import SwiftyJSON
           )
         }
       }
+      try await group.waitForAll()
     }
   }
 
@@ -167,6 +168,7 @@ import SwiftyJSON
           }
         }
       }
+      try await group.waitForAll()
     }
   }
 
