@@ -125,7 +125,6 @@ public class Goal: NSManagedObject {
         self.yAxis = yAxis
 
         lastModifiedLocal = Date()
-        lastSyncedWithHealthKit = Date.distantPast
     }
 
     public init(context: NSManagedObjectContext, owner: User, json: JSON) {
@@ -133,8 +132,6 @@ public class Goal: NSManagedObject {
         super.init(entity: entity, insertInto: context)
         self.owner = owner
         self.id = json["id"].string!
-
-        lastSyncedWithHealthKit = Date.distantPast
         
         self.updateToMatch(json: json)
     }
