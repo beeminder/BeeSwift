@@ -18,27 +18,40 @@ class MockHealthKitDataPoint: BeeDataPoint {
 }
 
 class MockRequestManagerForDataPoint: RequestManager {
-  var responses: [String: Any] = [:]
-  var putCalls: [(url: String, parameters: [String: Any])] = []
-  var deleteCalls: [String] = []
-  var addDatapointCalls: [(urtext: String, slug: String, requestId: String)] = []
+  private let queue = DispatchQueue(label: "com.beeminder.MockRequestManagerForDataPoint")
+  private var _responses: [String: Any] = [:]
+  private var _putCalls: [(url: String, parameters: [String: Any])] = []
+  private var _deleteCalls: [String] = []
+  private var _addDatapointCalls: [(urtext: String, slug: String, requestId: String)] = []
+
+  var responses: [String: Any] {
+    get { queue.sync { _responses } }
+    set { queue.sync { _responses = newValue } }
+  }
+  var putCalls: [(url: String, parameters: [String: Any])] { queue.sync { _putCalls } }
+  var deleteCalls: [String] { queue.sync { _deleteCalls } }
+  var addDatapointCalls: [(urtext: String, slug: String, requestId: String)] { queue.sync { _addDatapointCalls } }
+
   override func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    if let response = responses[url] {
-      responses.removeValue(forKey: url)
-      return response
+    let response = queue.sync { () -> Any? in
+      if let response = _responses[url] {
+        _responses.removeValue(forKey: url)
+        return response
+      }
+      return nil
     }
-    return []
+    return response ?? []
   }
   override func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    putCalls.append((url: url, parameters: parameters ?? [:]))
+    queue.sync { _putCalls.append((url: url, parameters: parameters ?? [:])) }
     return [:]
   }
   override func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    deleteCalls.append(url)
+    queue.sync { _deleteCalls.append(url) }
     return [:]
   }
   override func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
-    addDatapointCalls.append((urtext: urtext, slug: slug, requestId: requestId ?? ""))
+    queue.sync { _addDatapointCalls.append((urtext: urtext, slug: slug, requestId: requestId ?? "")) }
     return [:]
   }
 }
