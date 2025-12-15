@@ -24,10 +24,10 @@ jobs:
       run: cp BeeKit/Config.swift.sample BeeKit/Config.swift
     - uses: actions/cache@v4
       with:
-        path: /Users/runner/work/BeeSwift/BeeSwift/DerivedData/SourcePackages
-        key: ${{ runner.os }}-spm2-${{ hashFiles('**/Package.resolved') }}
+        path: SPMCache
+        key: ${{ runner.os }}-spm3-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
-          ${{ runner.os }}-spm2-
+          ${{ runner.os }}-spm3-
     - name: Setup ruby and install gems
       uses: ruby/setup-ruby@v1
       with:
