@@ -20,7 +20,6 @@ platform :ios do
     run_tests(
         scheme: "BeeSwift",
         reset_simulator: true,
-        xcodebuild_formatter: "xcpretty",
     )
   end
   lane :ci do
@@ -44,8 +43,8 @@ platform :ios do
         reset_simulator: true,
         include_simulator_logs: true,
         buildlog_path: "fastlane/test_output",
-        xcodebuild_formatter: "xcpretty",
         ensure_devices_found: true,
+        xcodebuild_formatter: "xcbeautify --renderer github-actions",
     )
   end
   lane :build do
