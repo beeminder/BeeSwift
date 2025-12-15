@@ -105,8 +105,8 @@
 		E48E27202973261F008013C0 /* BackgroundUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271F2973261F008013C0 /* BackgroundUpdates.swift */; };
 		E49127752DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E49127722DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld */; };
 		E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */; };
-		E4B083402932F90400A71565 /* WorkoutConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */; };
 		E4B0833B2934620500A71564 /* DatapointTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833A2934620500A71564 /* DatapointTableViewController.swift */; };
+		E4B083402932F90400A71565 /* WorkoutConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
 		E4D470D02D2FE25C00EE648B /* DataPointManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */; };
 		E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */; };
@@ -282,9 +282,9 @@
 		E49127732DC9E2C6000BFBFE /* BeeminderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel.xcdatamodel; sourceTree = "<group>"; };
 		E49127742DC9E2C6000BFBFE /* BeeminderModel2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel2.xcdatamodel; sourceTree = "<group>"; };
 		E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureHKMetricViewController.swift; sourceTree = "<group>"; };
-		E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutConfigurationViewController.swift; sourceTree = "<group>"; };
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
+		E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutConfigurationViewController.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
 		E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataPointManagerTests.swift; sourceTree = "<group>"; };
 		E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricMonitor.swift; sourceTree = "<group>"; };
@@ -609,7 +609,7 @@
 			path = Intents;
 			sourceTree = "<group>";
 		};
-		E4E6426E290E27CB004F3EA9 /* HeathKit */ = {
+		E4E6426E290E27CB004F3EA9 /* HealthKit */ = {
 			isa = PBXGroup;
 			children = (
 				A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */,
@@ -625,13 +625,13 @@
 				E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */,
 				E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */,
 			);
-			path = HeathKit;
+			path = HealthKit;
 			sourceTree = "<group>";
 		};
 		E57BE6E12655EBDA00BA540B /* BeeKit */ = {
 			isa = PBXGroup;
 			children = (
-				E4E6426E290E27CB004F3EA9 /* HeathKit */,
+				E4E6426E290E27CB004F3EA9 /* HealthKit */,
 				A106AD8B1AF1F62800C434E8 /* Managers */,
 				E46070F62B3FEFB300305DB4 /* Model */,
 				A149147C1BE7A4FC0060600A /* UI */,
