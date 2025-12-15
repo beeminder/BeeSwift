@@ -2,6 +2,9 @@ name: Fastlane Tests
 
 on:
   pull_request:
+  push:
+    branches:
+      - master
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -15,7 +18,7 @@ jobs:
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: latest-stable
+        xcode-version: '26.1'
     - uses: actions/checkout@v5
     - name: Use sample configuration
       run: cp BeeKit/Config.swift.sample BeeKit/Config.swift
