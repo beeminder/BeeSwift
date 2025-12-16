@@ -7,13 +7,19 @@
 //
 
 import CoreData
-import CoreDataEvolution
 import Foundation
 import OSLog
 import OrderedCollections
 import SwiftyJSON
 
-@NSModelActor(disableGenerateInit: true) public actor GoalManager {
+public actor GoalManager {
+  public nonisolated let modelContainer: BeeminderPersistentContainer
+  private nonisolated let modelExecutor: CoreDataModelExecutor
+
+  public nonisolated var unownedExecutor: UnownedSerialExecutor { modelExecutor.context.unownedExecutor }
+
+  private var modelContext: NSManagedObjectContext { modelExecutor.context }
+
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalManager")
 
   public enum NotificationName {

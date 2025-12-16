@@ -7,13 +7,19 @@
 //
 
 import CoreData
-import CoreDataEvolution
 import Foundation
 import KeychainSwift
 import OSLog
 import SwiftyJSON
 
-@NSModelActor(disableGenerateInit: true) public actor CurrentUserManager {
+public actor CurrentUserManager {
+  public nonisolated let modelContainer: BeeminderPersistentContainer
+  private nonisolated let modelExecutor: CoreDataModelExecutor
+
+  public nonisolated var unownedExecutor: UnownedSerialExecutor { modelExecutor.context.unownedExecutor }
+
+  private var modelContext: NSManagedObjectContext { modelExecutor.context }
+
   let logger = Logger(subsystem: "com.beeminder.beeminder", category: "CurrentUserManager")
 
   public enum NotificationName {
