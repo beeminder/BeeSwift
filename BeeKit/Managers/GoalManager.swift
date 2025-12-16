@@ -16,7 +16,7 @@ public actor GoalManager {
   public nonisolated let modelContainer: BeeminderPersistentContainer
   private nonisolated let modelExecutor: CoreDataModelExecutor
 
-  public nonisolated var unownedExecutor: UnownedSerialExecutor { modelExecutor.context.unownedExecutor }
+  public nonisolated var unownedExecutor: UnownedSerialExecutor { modelExecutor.context.asUnownedSerialExecutor() }
 
   private var modelContext: NSManagedObjectContext { modelExecutor.context }
 
