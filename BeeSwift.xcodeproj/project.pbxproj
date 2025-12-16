@@ -63,6 +63,7 @@
 		E458C8082AD11BFB000DCA5C /* BeeDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* BeeDataPoint.swift */; };
 		E458C80A2AD11C1C000DCA5C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
 		E458C80B2AD11C2B000DCA5C /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE7722993317B00394E87 /* ServiceLocator.swift */; };
+		E4CDAE012DF1234500CDAEF2 /* CoreDataModelExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CDAE002DF1234500CDAEF1 /* CoreDataModelExecutor.swift */; };
 		E458C80D2AD11C64000DCA5C /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12BA9531AFFF21800AFEF32 /* Crypto.swift */; };
 		E458C80E2AD11C77000DCA5C /* HealthStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */; };
 		E458C80F2AD11C80000DCA5C /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
@@ -265,6 +266,7 @@
 		E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogReaderTests.swift; sourceTree = "<group>"; };
 		E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointValueAccessory.swift; sourceTree = "<group>"; };
 		E44CE7722993317B00394E87 /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
+		E4CDAE002DF1234500CDAEF1 /* CoreDataModelExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataModelExecutor.swift; sourceTree = "<group>"; };
 		E44CE77E2993351100394E87 /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
 		E44CE782299338C500394E87 /* GoalManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalManager.swift; sourceTree = "<group>"; };
 		E45470272B60E24500EE648B /* Daystamp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Daystamp.swift; sourceTree = "<group>"; };
@@ -641,6 +643,7 @@
 				E45470272B60E24500EE648B /* Daystamp.swift */,
 				E57BE6E32655EBDA00BA540B /* Info.plist */,
 				E44CE7722993317B00394E87 /* ServiceLocator.swift */,
+				E4CDAE002DF1234500CDAEF1 /* CoreDataModelExecutor.swift */,
 				E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */,
 			);
 			path = BeeKit;
@@ -1018,6 +1021,7 @@
 				E458C8022AD11BB9000DCA5C /* CurrentUserManager.swift in Sources */,
 				E458C8182AD11CAC000DCA5C /* TimeAsleepHealthKitMetric.swift in Sources */,
 				E458C80B2AD11C2B000DCA5C /* ServiceLocator.swift in Sources */,
+				E4CDAE012DF1234500CDAEF2 /* CoreDataModelExecutor.swift in Sources */,
 				E4D5BD5F2C6709060007B0BE /* BeeminderSpotlightDelegate.swift in Sources */,
 				E458C81B2AD11CD8000DCA5C /* UIColorExtension.swift in Sources */,
 				E458C8082AD11BFB000DCA5C /* BeeDataPoint.swift in Sources */,
