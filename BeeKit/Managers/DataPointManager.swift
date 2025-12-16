@@ -1,11 +1,17 @@
 import CoreData
-import CoreDataEvolution
 import Foundation
 import OSLog
 import SwiftyJSON
 
 /// Read and update datapoints from the beeminder server
-@NSModelActor(disableGenerateInit: true) public actor DataPointManager {
+public actor DataPointManager {
+  public nonisolated let modelContainer: BeeminderPersistentContainer
+  private nonisolated let modelExecutor: CoreDataModelExecutor
+
+  public nonisolated var unownedExecutor: UnownedSerialExecutor { modelExecutor.context.unownedExecutor }
+
+  private var modelContext: NSManagedObjectContext { modelExecutor.context }
+
   let logger = Logger(subsystem: "com.beeminder.beeminder", category: "DataPointManager")
 
   // Ignore automatic datapoint updates where the difference is a smaller fraction than this. This

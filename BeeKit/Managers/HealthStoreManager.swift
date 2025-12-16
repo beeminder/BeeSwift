@@ -7,12 +7,18 @@
 //
 
 import CoreData
-import CoreDataEvolution
 import Foundation
 import HealthKit
 import OSLog
 
-@NSModelActor(disableGenerateInit: true) public actor HealthStoreManager {
+public actor HealthStoreManager {
+  public nonisolated let modelContainer: NSPersistentContainer
+  private nonisolated let modelExecutor: CoreDataModelExecutor
+
+  public nonisolated var unownedExecutor: UnownedSerialExecutor { modelExecutor.context.unownedExecutor }
+
+  private var modelContext: NSManagedObjectContext { modelExecutor.context }
+
   /// The number of days to update when we are informed of a change. We are only called when the device is unlocked, so we must look
   /// at the previous day in case data was added after the last time the device was locked. There may also be other integrations which report
   /// data with some lag, so we look a bit further back for safety
