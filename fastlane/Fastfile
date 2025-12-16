@@ -44,6 +44,7 @@ platform :ios do
         include_simulator_logs: true,
         buildlog_path: "fastlane/test_output",
         ensure_devices_found: true,
+        cloned_source_packages_path: "SPMCache",
         xcodebuild_formatter: "xcbeautify --renderer github-actions",
     )
   end
