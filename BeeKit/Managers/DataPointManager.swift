@@ -8,7 +8,7 @@ public actor DataPointManager {
   public nonisolated let modelContainer: BeeminderPersistentContainer
   private nonisolated let modelExecutor: CoreDataModelExecutor
 
-  public nonisolated var unownedExecutor: UnownedSerialExecutor { modelExecutor.context.asUnownedSerialExecutor() }
+  public nonisolated var unownedExecutor: UnownedSerialExecutor { modelExecutor.asUnownedSerialExecutor() }
 
   private var modelContext: NSManagedObjectContext { modelExecutor.context }
 
