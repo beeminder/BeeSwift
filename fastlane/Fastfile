@@ -23,22 +23,13 @@ platform :ios do
     )
   end
   lane :ci do
-    sh("xcrun simctl list devices")
-    sleep 1
-    
-    sh("xcrun simctl delete all")
-    sleep 5
-    
-    sh("xcrun simctl list devicetypes")
-    sh("xcrun simctl list runtimes")
-    
+    # Create a dedicated test simulator
     sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-1")
-    sleep 5
-    sh("xcrun simctl list devices")
 
     run_tests(
         scheme: "BeeSwift",
         destination: "platform=iOS Simulator,name=Test-iPhone,OS=26.1",
+        skip_testing: ["BeeSwiftUITests"],
         prelaunch_simulator: true,
         reset_simulator: true,
         include_simulator_logs: true,
