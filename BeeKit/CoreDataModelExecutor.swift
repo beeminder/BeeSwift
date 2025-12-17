@@ -8,10 +8,17 @@
 
 import CoreData
 
-/// A simple wrapper that provides access to an NSManagedObjectContext for use as an actor executor.
-/// This allows actors to use the context's serial queue for isolation.
-public struct CoreDataModelExecutor: Sendable {
+/// A serial executor that uses an NSManagedObjectContext's queue for actor isolation.
+/// This allows actors to safely access Core Data on the context's thread.
+public final class CoreDataModelExecutor: SerialExecutor, @unchecked Sendable {
   public let context: NSManagedObjectContext
 
   public init(context: NSManagedObjectContext) { self.context = context }
+
+  public func enqueue(_ job: consuming ExecutorJob) {
+    let unownedJob = UnownedJob(job)
+    context.perform { unownedJob.runSynchronously(on: self.asUnownedSerialExecutor()) }
+  }
+
+  public func asUnownedSerialExecutor() -> UnownedSerialExecutor { UnownedSerialExecutor(ordinary: self) }
 }

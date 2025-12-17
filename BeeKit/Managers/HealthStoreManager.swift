@@ -15,7 +15,7 @@ public actor HealthStoreManager {
   public nonisolated let modelContainer: NSPersistentContainer
   private nonisolated let modelExecutor: CoreDataModelExecutor
 
-  public nonisolated var unownedExecutor: UnownedSerialExecutor { modelExecutor.context.asUnownedSerialExecutor() }
+  public nonisolated var unownedExecutor: UnownedSerialExecutor { modelExecutor.asUnownedSerialExecutor() }
 
   private var modelContext: NSManagedObjectContext { modelExecutor.context }
 
