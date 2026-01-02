@@ -1,59 +1,55 @@
-import UIKit
 import CoreData
 import OSLog
+import UIKit
 
 public class BeeminderPersistentContainer: NSPersistentContainer, @unchecked Sendable {
-    private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "BeeminderPersistentContainer")
-    private var spotlightIndexer: NSCoreDataCoreSpotlightDelegate?
+  private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "BeeminderPersistentContainer")
+  private var spotlightIndexer: NSCoreDataCoreSpotlightDelegate?
 
+  override open class func defaultDirectoryURL() -> URL {
+    let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.beeminder.beeminder")
+    return storeURL!
+  }
 
-    override open class func defaultDirectoryURL() -> URL {
-        let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.beeminder.beeminder")
-        return storeURL!
+  static func create() -> BeeminderPersistentContainer {
+    DueByTableValueTransformer.register()
+    let container = BeeminderPersistentContainer(name: "BeeminderModel")
+
+    guard let description = container.persistentStoreDescriptions.first else {
+      fatalError("Failed to retrieve a persistent store description.")
+    }
+    // Spotlight indexing requires sqlite and history tracking
+    description.type = NSSQLiteStoreType
+    description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+
+    description.shouldMigrateStoreAutomatically = true
+    description.shouldInferMappingModelAutomatically = true
+
+    container.loadPersistentStores { description, error in
+      if let error = error { fatalError("Unable to load persistent stores: \(error)") }
     }
 
-    static func create() -> BeeminderPersistentContainer {
-        DueByTableValueTransformer.register()
-        
-        let container = BeeminderPersistentContainer(name: "BeeminderModel")
+    container.spotlightIndexer = BeeminderSpotlightDelegate(
+      forStoreWith: description,
+      coordinator: container.persistentStoreCoordinator
+    )
+    container.spotlightIndexer?.startSpotlightIndexing()
 
-        guard let description = container.persistentStoreDescriptions.first else {
-            fatalError("Failed to retrieve a persistent store description.")
-        }
-        // Spotlight indexing requires sqlite and history tracking
-        description.type = NSSQLiteStoreType
-        description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+    return container
+  }
 
-        description.shouldMigrateStoreAutomatically = true
-        description.shouldInferMappingModelAutomatically = true
+  static func createMemoryBackedForTests() -> BeeminderPersistentContainer {
+    DueByTableValueTransformer.register()
+    let container = BeeminderPersistentContainer(name: "BeeminderModel")
+    let description = NSPersistentStoreDescription()
+    description.type = NSInMemoryStoreType
+    container.persistentStoreDescriptions = [description]
 
-        container.loadPersistentStores { description, error in
-            if let error = error {
-                fatalError("Unable to load persistent stores: \(error)")
-            }
-        }
-
-        container.spotlightIndexer = BeeminderSpotlightDelegate(forStoreWith: description, coordinator: container.persistentStoreCoordinator)
-        container.spotlightIndexer?.startSpotlightIndexing()
-
-        return container
+    container.loadPersistentStores { (storeDescription, error) in
+      if let error = error as NSError? { fatalError("Unresolved error \(error), \(error.userInfo)") }
     }
 
-    static func createMemoryBackedForTests() -> BeeminderPersistentContainer {
-        DueByTableValueTransformer.register()
-        
-        let container = BeeminderPersistentContainer(name: "BeeminderModel")
-        let description = NSPersistentStoreDescription()
-        description.type = NSInMemoryStoreType
-        container.persistentStoreDescriptions = [description]
-
-        container.loadPersistentStores { (storeDescription, error) in
-            if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
-            }
-        }
-
-        return container
-    }
+    return container
+  }
 
 }

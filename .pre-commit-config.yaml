@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: swift-format
+        name: Swift Format
+        entry: swift format --in-place
+        language: system
+        files: \.swift$
+        pass_filenames: true

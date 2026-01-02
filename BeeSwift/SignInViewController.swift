@@ -6,168 +6,164 @@
 //  Copyright 2015 APB. All rights reserved.
 //
 
+import BeeKit
 import Foundation
 import MBProgressHUD
 import SafariServices
 
-import BeeKit
+class SignInViewController: UIViewController, UITextFieldDelegate {
+  var headerLabel = BSLabel()
+  var emailTextField = BSTextField()
+  var passwordTextField = BSTextField()
+  var beeImageView = UIImageView()
+  var signInButton = BSButton()
+  var divider = UIView()
+  private let currentUserManager: CurrentUserManager
+  private weak var coordinator: MainCoordinator?
+  init(currentUserManager: CurrentUserManager, coordinator: MainCoordinator?) {
+    self.currentUserManager = currentUserManager
+    self.coordinator = coordinator
+    super.init(nibName: nil, bundle: nil)
+  }
+  required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+  override func viewDidLoad() {
+    super.viewDidLoad()
 
-class SignInViewController : UIViewController, UITextFieldDelegate {
-    
-    var headerLabel = BSLabel()
-    var emailTextField = BSTextField()
-    var passwordTextField = BSTextField()
-    var beeImageView = UIImageView()
-    var signInButton = BSButton()
-    var divider = UIView()
-    private let currentUserManager: CurrentUserManager
-    private weak var coordinator: MainCoordinator?
-    
-    init(currentUserManager: CurrentUserManager,
-         coordinator: MainCoordinator?) {
-        self.currentUserManager = currentUserManager
-        self.coordinator = coordinator
-        
-        super.init(nibName: nil, bundle: nil)
+    let scrollView = UIScrollView()
+    self.view.addSubview(scrollView)
+    scrollView.snp.makeConstraints { (make) -> Void in make.edges.equalTo(self.view) }
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(self.handleFailedSignIn(_:)),
+      name: CurrentUserManager.NotificationName.failedSignIn,
+      object: nil
+    )
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(self.handleSignedIn(_:)),
+      name: CurrentUserManager.NotificationName.signedIn,
+      object: nil
+    )
+    self.view.backgroundColor = UIColor.systemBackground
+    self.beeImageView.image = UIImage(named: "website_logo_mid")
+    scrollView.addSubview(self.beeImageView)
+    self.beeImageView.snp.makeConstraints { (make) in
+      make.centerX.equalTo(scrollView)
+      make.centerY.equalToSuperview().multipliedBy(0.55)
     }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    scrollView.addSubview(self.headerLabel)
+    self.headerLabel.textAlignment = NSTextAlignment.center
+    self.headerLabel.snp.makeConstraints { (make) -> Void in
+      make.top.equalTo(beeImageView.snp.bottom)
+      make.centerX.equalToSuperview()
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    scrollView.addSubview(self.emailTextField)
+    self.emailTextField.isHidden = true
+    self.emailTextField.placeholder = "Email or username"
+    self.emailTextField.autocapitalizationType = .none
+    self.emailTextField.autocorrectionType = .no
+    self.emailTextField.keyboardType = UIKeyboardType.emailAddress
+    self.emailTextField.returnKeyType = .next
+    self.emailTextField.delegate = self
+    self.emailTextField.snp.makeConstraints { (make) -> Void in
+      make.top.equalTo(self.headerLabel.snp.bottom).offset(15)
+      make.centerX.equalTo(scrollView)
+      make.width.equalTo(scrollView).multipliedBy(0.75)
+      make.height.equalTo(Constants.defaultTextFieldHeight)
+    }
+    scrollView.addSubview(self.passwordTextField)
+    self.passwordTextField.isHidden = true
+    self.passwordTextField.placeholder = "Password"
+    self.passwordTextField.isSecureTextEntry = true
+    self.passwordTextField.returnKeyType = .done
+    self.passwordTextField.autocapitalizationType = .none
+    self.passwordTextField.delegate = self
+    self.passwordTextField.snp.makeConstraints { (make) -> Void in
+      make.top.equalTo(self.emailTextField.snp.bottom).offset(15)
+      make.centerX.equalTo(self.emailTextField)
+      make.width.equalTo(self.emailTextField)
+      make.height.equalTo(Constants.defaultTextFieldHeight)
+    }
 
-        let scrollView = UIScrollView()
-        self.view.addSubview(scrollView)
-        scrollView.snp.makeConstraints { (make) -> Void in
-            make.edges.equalTo(self.view)
-        }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleFailedSignIn(_:)), name: CurrentUserManager.NotificationName.failedSignIn, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleSignedIn(_:)), name: CurrentUserManager.NotificationName.signedIn, object: nil)
-        self.view.backgroundColor = UIColor.systemBackground
-        
-        
-        self.beeImageView.image = UIImage(named: "website_logo_mid")
-        scrollView.addSubview(self.beeImageView)
-        self.beeImageView.snp.makeConstraints { (make) in
-            make.centerX.equalTo(scrollView)
-            make.centerY.equalToSuperview().multipliedBy(0.55)
-        }
-        
-        scrollView.addSubview(self.headerLabel)
-        self.headerLabel.textAlignment = NSTextAlignment.center
-        self.headerLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(beeImageView.snp.bottom)
-            make.centerX.equalToSuperview()
-        }
-        
-        scrollView.addSubview(self.emailTextField)
-        self.emailTextField.isHidden = true
-        self.emailTextField.placeholder = "Email or username"
-        self.emailTextField.autocapitalizationType = .none
-        self.emailTextField.autocorrectionType = .no
-        self.emailTextField.keyboardType = UIKeyboardType.emailAddress
-        self.emailTextField.returnKeyType = .next
-        self.emailTextField.delegate = self
-        self.emailTextField.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.headerLabel.snp.bottom).offset(15)
-            make.centerX.equalTo(scrollView)
-            make.width.equalTo(scrollView).multipliedBy(0.75)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-        }
-        
-        scrollView.addSubview(self.passwordTextField)
-        self.passwordTextField.isHidden = true
-        self.passwordTextField.placeholder = "Password"
-        self.passwordTextField.isSecureTextEntry = true
-        self.passwordTextField.returnKeyType = .done
-        self.passwordTextField.autocapitalizationType = .none
-        self.passwordTextField.delegate = self
-        self.passwordTextField.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.emailTextField.snp.bottom).offset(15)
-            make.centerX.equalTo(self.emailTextField)
-            make.width.equalTo(self.emailTextField)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-        }
+    scrollView.addSubview(self.signInButton)
+    self.signInButton.isHidden = true
+    self.signInButton.setTitle("Sign In", for: UIControl.State())
+    self.signInButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
+    self.signInButton.titleLabel?.textColor = UIColor.white
+    self.signInButton.addTarget(
+      self,
+      action: #selector(SignInViewController.signInButtonPressed),
+      for: UIControl.Event.touchUpInside
+    )
+    self.signInButton.snp.makeConstraints { (make) -> Void in
+      make.left.equalTo(self.passwordTextField)
+      make.right.equalTo(self.passwordTextField)
+      make.top.equalTo(self.passwordTextField.snp.bottom).offset(15)
+      make.height.equalTo(Constants.defaultTextFieldHeight)
+    }
+    scrollView.addSubview(self.divider)
+    self.divider.isHidden = true
+    self.divider.backgroundColor = UIColor.Beeminder.gray
+    self.chooseSignInButtonPressed()
+  }
+  @objc func chooseSignInButtonPressed() {
+    self.emailTextField.isHidden = false
+    self.passwordTextField.isHidden = false
+    self.headerLabel.text = "Sign in to Beeminder"
+    self.headerLabel.isHidden = false
+    self.signInButton.isHidden = false
+    self.divider.snp.remakeConstraints { (make) -> Void in
+      make.left.equalTo(self.signInButton)
+      make.right.equalTo(self.signInButton)
+      make.height.equalTo(1)
+      make.top.equalTo(self.signInButton.snp.bottom).offset(15)
+    }
+  }
+  var missingDataOnSignIn: UIAlertController {
+    let lackOfCredentials = UIAlertController(
+      title: "Incomplete Account Details",
+      message: "Username and Password are required",
+      preferredStyle: .alert
+    )
+    lackOfCredentials.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+    return lackOfCredentials
+  }
+  private var couldNotSignInAlertController: UIAlertController {
+    let controller = UIAlertController(
+      title: "Could not sign in",
+      message: "Invalid credentials",
+      preferredStyle: .alert
+    )
+    controller.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+    return controller
+  }
+  @objc func handleFailedSignIn(_ notification: Notification) {
+    self.present(couldNotSignInAlertController, animated: true, completion: nil)
+    MBProgressHUD.hide(for: self.view, animated: true)
+  }
+  @objc func handleSignedIn(_ notification: Notification) {
+    MBProgressHUD.hide(for: self.view, animated: true)
+    coordinator?.start()
+  }
+  @objc func signInButtonPressed() {
+    Task { @MainActor in
+      guard let email = self.emailTextField.text?.trimmingCharacters(in: .whitespaces),
+        let password = self.passwordTextField.text, !email.isEmpty, !password.isEmpty
+      else {
+        self.present(self.missingDataOnSignIn, animated: true, completion: nil)
+        return
+      }
 
-        scrollView.addSubview(self.signInButton)
-        self.signInButton.isHidden = true
-        self.signInButton.setTitle("Sign In", for: UIControl.State())
-        self.signInButton.titleLabel?.font = UIFont.beeminder.defaultFontPlain.withSize(20)
-        self.signInButton.titleLabel?.textColor = UIColor.white
-        self.signInButton.addTarget(self, action: #selector(SignInViewController.signInButtonPressed), for: UIControl.Event.touchUpInside)
-        self.signInButton.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.passwordTextField)
-            make.right.equalTo(self.passwordTextField)
-            make.top.equalTo(self.passwordTextField.snp.bottom).offset(15)
-            make.height.equalTo(Constants.defaultTextFieldHeight)
-        }
-        
-        scrollView.addSubview(self.divider)
-        self.divider.isHidden = true
-        self.divider.backgroundColor = UIColor.Beeminder.gray
-        
-        self.chooseSignInButtonPressed()
+      MBProgressHUD.showAdded(to: self.view, animated: true)
+      await currentUserManager.signInWithEmail(email, password: password)
     }
-    
-    @objc func chooseSignInButtonPressed() {
-        self.emailTextField.isHidden = false
-        self.passwordTextField.isHidden = false
-        self.headerLabel.text = "Sign in to Beeminder"
-        self.headerLabel.isHidden = false
-        self.signInButton.isHidden = false
-        self.divider.snp.remakeConstraints { (make) -> Void in
-            make.left.equalTo(self.signInButton)
-            make.right.equalTo(self.signInButton)
-            make.height.equalTo(1)
-            make.top.equalTo(self.signInButton.snp.bottom).offset(15)
-        }
+  }
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    if textField.isEqual(self.emailTextField) {
+      self.passwordTextField.becomeFirstResponder()
+    } else if textField.isEqual(self.passwordTextField) {
+      self.signInButtonPressed()
     }
-    
-    var missingDataOnSignIn: UIAlertController {
-        let lackOfCredentials = UIAlertController(title: "Incomplete Account Details", message: "Username and Password are required", preferredStyle: .alert)
-        lackOfCredentials.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-        
-        return lackOfCredentials
-    }
-    
-    private var couldNotSignInAlertController: UIAlertController {
-        let controller = UIAlertController(title: "Could not sign in", message: "Invalid credentials", preferredStyle: .alert)
-        controller.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-        return controller
-    }
-    
-    @objc func handleFailedSignIn(_ notification : Notification) {
-        self.present(couldNotSignInAlertController, animated: true, completion: nil)
-        MBProgressHUD.hide(for: self.view, animated: true)
-    }
-    
-    @objc func handleSignedIn(_ notification : Notification) {
-        MBProgressHUD.hide(for: self.view, animated: true)
-        coordinator?.start()
-    }
-    
-    @objc func signInButtonPressed() {
-        Task { @MainActor in
-            guard let email = self.emailTextField.text?.trimmingCharacters(in: .whitespaces), let password = self.passwordTextField.text, !email.isEmpty, !password.isEmpty else {
-                self.present(self.missingDataOnSignIn, animated: true, completion: nil)
-                return
-            }
-
-            MBProgressHUD.showAdded(to: self.view, animated: true)
-            await currentUserManager.signInWithEmail(email, password: password)
-        }
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField.isEqual(self.emailTextField) {
-            self.passwordTextField.becomeFirstResponder()
-        }
-        else if textField.isEqual(self.passwordTextField) {
-            self.signInButtonPressed()
-        }
-        return true
-    }
+    return true
+  }
 }
