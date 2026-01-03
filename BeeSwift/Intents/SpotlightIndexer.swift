@@ -65,7 +65,7 @@ class SpotlightIndexer {
     }
   }
 
-  func clearIndex() async {
+  private func clearIndex() async {
     do {
       try await searchableIndex.deleteAllSearchableItems()
       logger.info("Cleared Spotlight index")

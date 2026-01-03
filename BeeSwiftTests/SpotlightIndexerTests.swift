@@ -123,18 +123,6 @@ final class SpotlightIndexerTests: XCTestCase {
     XCTAssertTrue(mockSearchableIndex.deleteAllSearchableItemsCalled, "Should clear index on sign out")
   }
 
-  func testClearIndexCallsDeleteAll() async {
-    let indexer = SpotlightIndexer(
-      container: container,
-      currentUserManager: currentUserManager,
-      searchableIndex: mockSearchableIndex
-    )
-
-    await indexer.clearIndex()
-
-    XCTAssertTrue(mockSearchableIndex.deleteAllSearchableItemsCalled, "Should call deleteAllSearchableItems")
-  }
-
   // MARK: - Helpers
 
   func createTestUser() -> User {
