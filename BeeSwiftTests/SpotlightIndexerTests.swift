@@ -16,12 +16,18 @@ import XCTest
 class MockSearchableIndex: SearchableIndexing {
   var indexedEntities: [[GoalEntity]] = []
   var deleteAllSearchableItemsCalled = false
+  var onIndex: (() -> Void)?
+  var onDeleteAll: (() -> Void)?
 
   func indexAppEntities<T: IndexedEntity>(_ entities: [T], priority: Int) async throws {
     if let goalEntities = entities as? [GoalEntity] { indexedEntities.append(goalEntities) }
+    onIndex?()
   }
 
-  func deleteAllSearchableItems() async throws { deleteAllSearchableItemsCalled = true }
+  func deleteAllSearchableItems() async throws {
+    deleteAllSearchableItemsCalled = true
+    onDeleteAll?()
+  }
 }
 
 final class SpotlightIndexerTests: XCTestCase {
@@ -69,9 +75,6 @@ final class SpotlightIndexerTests: XCTestCase {
 
     await indexer.reindexAllGoals()
 
-    // Wait for the nested Task in reindexAllGoals to complete
-    try await Task.sleep(for: .milliseconds(100))
-
     XCTAssertEqual(mockSearchableIndex.indexedEntities.count, 1, "Should have indexed once")
     let indexed = mockSearchableIndex.indexedEntities.first!
     XCTAssertEqual(indexed.count, 2, "Should have indexed 2 goals")
@@ -85,6 +88,9 @@ final class SpotlightIndexerTests: XCTestCase {
     _ = createTestGoal(owner: user, slug: "initial-goal", title: "Initial Goal")
     try container.viewContext.save()
 
+    let indexed = expectation(description: "Goals indexed")
+    mockSearchableIndex.onIndex = { indexed.fulfill() }
+
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
@@ -97,14 +103,16 @@ final class SpotlightIndexerTests: XCTestCase {
       NotificationCenter.default.post(name: GoalManager.NotificationName.goalsUpdated, object: nil)
     }
 
-    // Wait for async indexing to complete
-    try await Task.sleep(for: .milliseconds(100))
+    await fulfillment(of: [indexed], timeout: 1.0)
 
     XCTAssertEqual(mockSearchableIndex.indexedEntities.count, 1, "Should have indexed once")
     XCTAssertEqual(mockSearchableIndex.indexedEntities.first?.first?.slug, "initial-goal")
   }
 
   func testClearIndexOnSignedOutNotification() async throws {
+    let cleared = expectation(description: "Index cleared")
+    mockSearchableIndex.onDeleteAll = { cleared.fulfill() }
+
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
@@ -117,8 +125,7 @@ final class SpotlightIndexerTests: XCTestCase {
       NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: nil)
     }
 
-    // Wait for async clear to complete
-    try await Task.sleep(for: .milliseconds(100))
+    await fulfillment(of: [cleared], timeout: 1.0)
 
     XCTAssertTrue(mockSearchableIndex.deleteAllSearchableItemsCalled, "Should clear index on sign out")
   }

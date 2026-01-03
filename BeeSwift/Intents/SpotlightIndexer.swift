@@ -50,19 +50,18 @@ class SpotlightIndexer {
 
   func reindexAllGoals() async {
     let context = container.viewContext
-    await context.perform {
+    let entities = await context.perform {
       guard let user = self.currentUserManager.user(context: context) else {
         self.logger.info("No user, skipping spotlight indexing")
-        return
+        return [GoalEntity]()
       }
-      let entities = user.goals.map { GoalEntity(from: $0) }
-      Task {
-        do {
-          try await self.searchableIndex.indexAppEntities(entities, priority: 0)
-          self.logger.info("Indexed \(entities.count) goals in Spotlight")
-        } catch { self.logger.error("Failed to index goals: \(error)") }
-      }
+      return user.goals.map { GoalEntity(from: $0) }
     }
+    guard !entities.isEmpty else { return }
+    do {
+      try await searchableIndex.indexAppEntities(entities, priority: 0)
+      logger.info("Indexed \(entities.count) goals in Spotlight")
+    } catch { logger.error("Failed to index goals: \(error)") }
   }
 
   private func clearIndex() async {
