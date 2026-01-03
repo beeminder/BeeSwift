@@ -19,10 +19,11 @@ struct GoalEntity: AppEntity, IndexedEntity, Equatable {
 
   var attributeSet: CSSearchableItemAttributeSet {
     let attributes = defaultAttributeSet
-    attributes.displayName = slug
-    attributes.contentDescription = title
+    attributes.displayName = displayTitle
+    attributes.contentDescription = slug
     return attributes
   }
+
   init(id: String, slug: String, title: String, thumbUrl: String? = nil) {
     self.id = id
     self.slug = slug
