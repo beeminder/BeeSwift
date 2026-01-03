@@ -713,6 +713,7 @@
 				E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */,
 				E486DE2529B0403700F338B2 /* OrderedCollections */,
 				E41286F02A62E6840093D598 /* KeychainSwift */,
+				E4ASYNC012E3A5B0100ASYNC /* AsyncAlgorithms */,
 			);
 			productName = BeeSwift;
 			productReference = A196CB141AE4142E00B90A3E /* BeeSwift.app */;
@@ -887,6 +888,7 @@
 				E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 				E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */,
+				E4ASYNC002E3A5B0100ASYNC /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 			);
 			productRefGroup = A196CB151AE4142E00B90A3E /* Products */;
 			projectDirPath = "";
@@ -1623,6 +1625,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E4ASYNC002E3A5B0100ASYNC /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/fatbobman/CoreDataEvolution.git";
@@ -1706,6 +1716,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E4ASYNC012E3A5B0100ASYNC /* AsyncAlgorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E4ASYNC002E3A5B0100ASYNC /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncAlgorithms;
+		};
 		E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */;

@@ -63,8 +63,10 @@ import UIKit
       object: nil
     )
 
-    spotlightIndexer.startListening()
-    Task { await spotlightIndexer.reindexAllGoals() }
+    Task {
+      await spotlightIndexer.reindexAllGoals()
+      await spotlightIndexer.listenForNotifications()
+    }
 
     backgroundUpdates.startUpdatingRegularlyInBackground()
     return true

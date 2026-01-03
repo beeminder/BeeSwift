@@ -13,11 +13,13 @@ import XCTest
 @testable import BeeKit
 @testable import BeeSwift
 
-class MockSearchableIndex: SearchableIndexing {
+final class MockSearchableIndex: SearchableIndexing, @unchecked Sendable {
   var indexedEntities: [[GoalEntity]] = []
   var deleteAllSearchableItemsCalled = false
+  var deletedIdentifiers: [String] = []
   var onIndex: (() -> Void)?
   var onDeleteAll: (() -> Void)?
+  var onDeleteIdentifiers: (() -> Void)?
 
   func indexAppEntities<T: IndexedEntity>(_ entities: [T], priority: Int) async throws {
     if let goalEntities = entities as? [GoalEntity] { indexedEntities.append(goalEntities) }
@@ -27,6 +29,11 @@ class MockSearchableIndex: SearchableIndexing {
   func deleteAllSearchableItems() async throws {
     deleteAllSearchableItemsCalled = true
     onDeleteAll?()
+  }
+
+  func deleteSearchableItems(withIdentifiers identifiers: [String]) async throws {
+    deletedIdentifiers.append(contentsOf: identifiers)
+    onDeleteIdentifiers?()
   }
 }
 
@@ -96,14 +103,15 @@ final class SpotlightIndexerTests: XCTestCase {
       currentUserManager: currentUserManager,
       searchableIndex: mockSearchableIndex
     )
-    indexer.startListening()
+    let listenerTask = Task { await indexer.listenForNotifications() }
 
-    // Post the notification on main thread (AppDelegate observers require main thread)
+    // Post the notification on main thread
     await MainActor.run {
       NotificationCenter.default.post(name: GoalManager.NotificationName.goalsUpdated, object: nil)
     }
 
     await fulfillment(of: [indexed], timeout: 1.0)
+    listenerTask.cancel()
 
     XCTAssertEqual(mockSearchableIndex.indexedEntities.count, 1, "Should have indexed once")
     XCTAssertEqual(mockSearchableIndex.indexedEntities.first?.first?.slug, "initial-goal")
@@ -118,16 +126,88 @@ final class SpotlightIndexerTests: XCTestCase {
       currentUserManager: currentUserManager,
       searchableIndex: mockSearchableIndex
     )
-    indexer.startListening()
+    let listenerTask = Task { await indexer.listenForNotifications() }
 
-    // Post the notification on main thread (AppDelegate observers require main thread)
+    // Post the notification on main thread
     await MainActor.run {
       NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: nil)
     }
 
     await fulfillment(of: [cleared], timeout: 1.0)
+    listenerTask.cancel()
 
     XCTAssertTrue(mockSearchableIndex.deleteAllSearchableItemsCalled, "Should clear index on sign out")
+  }
+
+  // MARK: - Incremental Indexing Tests
+
+  func testFirstIndexDeletesAllThenIndexes() async throws {
+    let user = createTestUser()
+    _ = createTestGoal(owner: user, slug: "goal-one", title: "First Goal")
+    try container.viewContext.save()
+
+    let indexer = SpotlightIndexer(
+      container: container,
+      currentUserManager: currentUserManager,
+      searchableIndex: mockSearchableIndex
+    )
+
+    await indexer.reindexAllGoals()
+
+    XCTAssertTrue(mockSearchableIndex.deleteAllSearchableItemsCalled, "First run should delete all")
+    XCTAssertEqual(mockSearchableIndex.indexedEntities.count, 1)
+  }
+
+  func testSecondIndexIsIncremental() async throws {
+    let user = createTestUser()
+    _ = createTestGoal(owner: user, slug: "goal-one", title: "First Goal")
+    try container.viewContext.save()
+
+    let indexer = SpotlightIndexer(
+      container: container,
+      currentUserManager: currentUserManager,
+      searchableIndex: mockSearchableIndex
+    )
+
+    // First indexing
+    await indexer.reindexAllGoals()
+    XCTAssertTrue(mockSearchableIndex.deleteAllSearchableItemsCalled)
+
+    // Reset tracking
+    mockSearchableIndex.deleteAllSearchableItemsCalled = false
+
+    // Second indexing (same goals)
+    await indexer.reindexAllGoals()
+
+    XCTAssertFalse(mockSearchableIndex.deleteAllSearchableItemsCalled, "Second run should not delete all")
+    XCTAssertEqual(mockSearchableIndex.indexedEntities.count, 2, "Should have indexed twice")
+  }
+
+  func testDeletedGoalIsRemovedFromIndex() async throws {
+    let user = createTestUser()
+    let goal1 = createTestGoal(owner: user, slug: "goal-one", title: "First Goal")
+    _ = createTestGoal(owner: user, slug: "goal-two", title: "Second Goal")
+    try container.viewContext.save()
+
+    let indexer = SpotlightIndexer(
+      container: container,
+      currentUserManager: currentUserManager,
+      searchableIndex: mockSearchableIndex
+    )
+
+    // First indexing with 2 goals
+    await indexer.reindexAllGoals()
+    XCTAssertEqual(mockSearchableIndex.indexedEntities.first?.count, 2)
+
+    // Delete one goal
+    container.viewContext.delete(goal1)
+    try container.viewContext.save()
+
+    // Second indexing
+    await indexer.reindexAllGoals()
+
+    XCTAssertEqual(mockSearchableIndex.deletedIdentifiers, ["goal-one-id"], "Should delete removed goal")
+    XCTAssertEqual(mockSearchableIndex.indexedEntities.last?.count, 1, "Should index remaining goal")
   }
 
   // MARK: - Helpers
