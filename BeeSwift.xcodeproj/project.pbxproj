@@ -109,6 +109,7 @@
 		E4B083402932F90400A71565 /* WorkoutConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
 		E4D470D02D2FE25C00EE648B /* DataPointManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */; };
+		E4SPOTTEST1234567890001 /* SpotlightIndexerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */; };
 		E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */; };
 		E4SPOTIDX12345678900001 /* SpotlightIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */; };
 		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
@@ -286,6 +287,7 @@
 		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
 		E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutConfigurationViewController.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
+		E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexerTests.swift; sourceTree = "<group>"; };
 		E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataPointManagerTests.swift; sourceTree = "<group>"; };
 		E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricMonitor.swift; sourceTree = "<group>"; };
 		E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 				E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */,
 				E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */,
 				E4B6FEC52A776A2900690376 /* GoalTests.swift */,
+				E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */,
 			);
 			path = BeeSwiftTests;
 			sourceTree = "<group>";
@@ -1001,6 +1004,7 @@
 				A196CB331AE4142F00B90A3E /* BeeSwiftTests.swift in Sources */,
 				E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */,
 				E43BEA862A036D4300FC3A38 /* LogReaderTests.swift in Sources */,
+				E4SPOTTEST1234567890001 /* SpotlightIndexerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
