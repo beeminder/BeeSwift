@@ -2,9 +2,10 @@
 
 import AppIntents
 import BeeKit
+import CoreSpotlight
 import Foundation
 
-struct GoalEntity: AppEntity, Equatable {
+struct GoalEntity: AppEntity, IndexedEntity, Equatable {
   static var typeDisplayRepresentation: TypeDisplayRepresentation = "Goal"
   static var defaultQuery = GoalEntityQuery()
   var id: String
@@ -15,6 +16,14 @@ struct GoalEntity: AppEntity, Equatable {
     DisplayRepresentation(title: "\(displayTitle)", subtitle: "\(slug)")
   }
   var displayTitle: String { return title.isEmpty ? slug : title }
+
+  var attributeSet: CSSearchableItemAttributeSet {
+    let attributes = defaultAttributeSet
+    attributes.displayName = displayTitle
+    attributes.contentDescription = slug
+    return attributes
+  }
+
   init(id: String, slug: String, title: String, thumbUrl: String? = nil) {
     self.id = id
     self.slug = slug

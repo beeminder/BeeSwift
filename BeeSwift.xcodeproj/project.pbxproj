@@ -109,8 +109,9 @@
 		E4B083402932F90400A71565 /* WorkoutConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
 		E4D470D02D2FE25C00EE648B /* DataPointManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */; };
+		E4SPOTTEST1234567890001 /* SpotlightIndexerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */; };
 		E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */; };
-		E4D5BD5F2C6709060007B0BE /* BeeminderSpotlightDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */; };
+		E4SPOTIDX12345678900001 /* SpotlightIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */; };
 		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
 		E4E63C6D2C3F9083005E00DA /* DataPointManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */; };
 		E4E63C6F2C3F9086005E00DA /* RefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C6E2C3F9085005E00DA /* RefreshManager.swift */; };
@@ -286,9 +287,10 @@
 		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
 		E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutConfigurationViewController.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
+		E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexerTests.swift; sourceTree = "<group>"; };
 		E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataPointManagerTests.swift; sourceTree = "<group>"; };
 		E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricMonitor.swift; sourceTree = "<group>"; };
-		E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderSpotlightDelegate.swift; sourceTree = "<group>"; };
+		E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
 		E4E43D8729F39CE800697116 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
 		E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPointManager.swift; sourceTree = "<group>"; };
 		E4E63C6E2C3F9085005E00DA /* RefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshManager.swift; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 				E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */,
 				E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */,
 				E4B6FEC52A776A2900690376 /* GoalTests.swift */,
+				E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */,
 			);
 			path = BeeSwiftTests;
 			sourceTree = "<group>";
@@ -539,7 +542,6 @@
 				E46070EE2B36A4D900305DB4 /* User.swift */,
 				E4E8DD3A2BE87F890059C64F /* Goal.swift */,
 				E4E8DD3C2BE881440059C64F /* DataPoint.swift */,
-				E4D5BD5E2C6709060007B0BE /* BeeminderSpotlightDelegate.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -605,6 +607,7 @@
 				47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */,
 				FDC1E1A1A992425FBB98CE57 /* GoalEntityQuery.swift */,
 				46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */,
+				E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */,
 			);
 			path = Intents;
 			sourceTree = "<group>";
@@ -710,6 +713,7 @@
 				E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */,
 				E486DE2529B0403700F338B2 /* OrderedCollections */,
 				E41286F02A62E6840093D598 /* KeychainSwift */,
+				E4ASYNC012E3A5B0100ASYNC /* AsyncAlgorithms */,
 			);
 			productName = BeeSwift;
 			productReference = A196CB141AE4142E00B90A3E /* BeeSwift.app */;
@@ -884,6 +888,7 @@
 				E486DE2429B0403700F338B2 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 				E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */,
+				E4ASYNC002E3A5B0100ASYNC /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 			);
 			productRefGroup = A196CB151AE4142E00B90A3E /* Products */;
 			projectDirPath = "";
@@ -988,6 +993,7 @@
 				A1619EA61BEECC6700E14B3A /* EditGoalNotificationsViewController.swift in Sources */,
 				A1A8BDE61FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift in Sources */,
 				A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */,
+				E4SPOTIDX12345678900001 /* SpotlightIndexer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1000,6 +1006,7 @@
 				A196CB331AE4142F00B90A3E /* BeeSwiftTests.swift in Sources */,
 				E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */,
 				E43BEA862A036D4300FC3A38 /* LogReaderTests.swift in Sources */,
+				E4SPOTTEST1234567890001 /* SpotlightIndexerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1022,7 +1029,6 @@
 				E458C8022AD11BB9000DCA5C /* CurrentUserManager.swift in Sources */,
 				E458C8182AD11CAC000DCA5C /* TimeAsleepHealthKitMetric.swift in Sources */,
 				E458C80B2AD11C2B000DCA5C /* ServiceLocator.swift in Sources */,
-				E4D5BD5F2C6709060007B0BE /* BeeminderSpotlightDelegate.swift in Sources */,
 				E458C81B2AD11CD8000DCA5C /* UIColorExtension.swift in Sources */,
 				E458C8082AD11BFB000DCA5C /* BeeDataPoint.swift in Sources */,
 				E458C81C2AD11CDE000DCA5C /* UIFontExtension.swift in Sources */,
@@ -1154,7 +1160,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1212,7 +1218,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "";
@@ -1243,7 +1249,7 @@
 				);
 				INFOPLIST_FILE = BeeSwift/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = Swift;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1280,7 +1286,7 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = BeeSwift/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = Swift;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1311,7 +1317,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = BeeSwiftTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1334,7 +1340,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = BeeSwiftTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1373,7 +1379,7 @@
 				INFOPLIST_FILE = BeeKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				INTENTS_CODEGEN_LANGUAGE = Swift;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1420,7 +1426,7 @@
 				INFOPLIST_FILE = BeeKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				INTENTS_CODEGEN_LANGUAGE = Swift;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1455,7 +1461,7 @@
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BeeKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1485,7 +1491,7 @@
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BeeKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1514,7 +1520,7 @@
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BeeSwiftUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1544,7 +1550,7 @@
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BeeSwiftUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1619,6 +1625,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E4ASYNC002E3A5B0100ASYNC /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/fatbobman/CoreDataEvolution.git";
@@ -1702,6 +1716,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E4ASYNC012E3A5B0100ASYNC /* AsyncAlgorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E4ASYNC002E3A5B0100ASYNC /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncAlgorithms;
+		};
 		E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */;

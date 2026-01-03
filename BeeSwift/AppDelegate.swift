@@ -17,6 +17,10 @@ import UIKit
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
   let logger = Logger(subsystem: "com.beeminder.beeminder", category: "AppDelegate")
   let backgroundUpdates = BackgroundUpdates()
+  let spotlightIndexer = SpotlightIndexer(
+    container: ServiceLocator.persistentContainer,
+    currentUserManager: ServiceLocator.currentUserManager
+  )
 
   func application(
     _ application: UIApplication,
@@ -58,6 +62,11 @@ import UIKit
       name: CurrentUserManager.NotificationName.signedOut,
       object: nil
     )
+
+    Task {
+      await spotlightIndexer.reindexAllGoals()
+      await spotlightIndexer.listenForNotifications()
+    }
 
     backgroundUpdates.startUpdatingRegularlyInBackground()
     return true
