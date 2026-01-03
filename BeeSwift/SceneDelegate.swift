@@ -1,7 +1,6 @@
 // Part of BeeSwift. Copyright Beeminder
 
 import BeeKit
-import CoreSpotlight
 import Foundation
 import OSLog
 import UIKit
@@ -36,27 +35,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     logger.info("\(#function)")
-    var userInfoOfGoalFromSpotlight: [AnyHashable: Any]? {
-      guard userActivity.activityType == CSSearchableItemActionType else { return nil }
-      guard let goalIdentifier = userActivity.userInfo?[CSSearchableItemActivityIdentifier] as? String else {
-        return nil
-      }
-      logger.info("\(#function): continuing from spotlight result, found goal with identifier: \(goalIdentifier)")
-      return ["identifier": goalIdentifier]
-    }
-    var userInfoOfGoalFrom: [AnyHashable: Any]? {
-      guard let goalname = userActivity.userInfo?["slug"] as? String else { return nil }
-      logger.info("\(#function): continuing, found goal named: \(goalname)")
-      return ["slug": goalname]
-    }
-    if let userInfo = userInfoOfGoalFromSpotlight ?? userInfoOfGoalFrom {
-      logger.info("\(#function): opening goal")
-      NotificationCenter.default.post(
-        name: GalleryViewController.NotificationName.openGoal,
-        object: nil,
-        userInfo: userInfo
-      )
-    }
+    // Spotlight results are handled by OpenGoalIntent (via OpenIntent conformance)
+    // This handles other NSUserActivity continuations (e.g., Handoff)
+    guard let goalname = userActivity.userInfo?["slug"] as? String else { return }
+    logger.info("\(#function): continuing, found goal named: \(goalname)")
+    NotificationCenter.default.post(
+      name: GalleryViewController.NotificationName.openGoal,
+      object: nil,
+      userInfo: ["slug": goalname]
+    )
   }
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
     logger.info("\(#function)")
