@@ -57,8 +57,10 @@ class SpotlightIndexer {
       }
       return user.goals.map { GoalEntity(from: $0) }
     }
-    guard !entities.isEmpty else { return }
     do {
+      // Delete all items first to handle goal deletions
+      try await searchableIndex.deleteAllSearchableItems()
+      guard !entities.isEmpty else { return }
       try await searchableIndex.indexAppEntities(entities, priority: 0)
       logger.info("Indexed \(entities.count) goals in Spotlight")
     } catch { logger.error("Failed to index goals: \(error)") }
