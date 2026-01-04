@@ -358,9 +358,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
 
   override func viewDidDisappear(_ animated: Bool) { super.viewDidDisappear(animated) }
 
-  @objc func managedObjectContextObjectsDidChange(_ notification: Notification) {
-    updateInterfaceToMatchGoal()
-  }
+  @objc func managedObjectContextObjectsDidChange(_ notification: Notification) { updateInterfaceToMatchGoal() }
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
