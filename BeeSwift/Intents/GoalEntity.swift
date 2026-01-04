@@ -12,15 +12,13 @@ struct GoalEntity: AppEntity, IndexedEntity, Equatable {
   @Property(title: "Slug") var slug: String
   @Property(title: "Title") var title: String
   var thumbUrl: String?
-  var displayRepresentation: DisplayRepresentation {
-    DisplayRepresentation(title: "\(displayTitle)", subtitle: "\(slug)")
-  }
-  var displayTitle: String { return title.isEmpty ? slug : title }
+  var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(slug)", subtitle: "\(title)") }
+  var displayTitle: String { return slug }
 
   var attributeSet: CSSearchableItemAttributeSet {
     let attributes = defaultAttributeSet
     attributes.displayName = displayTitle
-    attributes.contentDescription = slug
+    attributes.contentDescription = title
     return attributes
   }
 
