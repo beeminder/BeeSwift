@@ -30,7 +30,8 @@ public enum HealthKitConfig {
         humanText: "Exercise time",
         databaseString: "exerciseTime",
         category: .Activity,
-        hkQuantityTypeIdentifier: .appleExerciseTime
+        hkQuantityTypeIdentifier: .appleExerciseTime,
+        precision: [HKUnit.minute(): 1]
       ),
       QuantityHealthKitMetric(
         humanText: "Nike Fuel",
@@ -195,7 +196,8 @@ public enum HealthKitConfig {
         humanText: "Water",
         databaseString: "water",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryWater
+        hkQuantityTypeIdentifier: .dietaryWater,
+        precision: [HKUnit.fluidOunceUS(): 1]
       ),
       // Sleep
       TimeInBedHealthKitMetric(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep),
