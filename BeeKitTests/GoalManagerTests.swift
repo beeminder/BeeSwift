@@ -47,7 +47,7 @@ class GoalManagerTests: XCTestCase {
     currentUserManager = nil
     goalManager = nil
   }
-  func testInitialGoalCreation() async throws {
+  @MainActor func testInitialGoalCreation() async throws {
     let userResponse = """
       {
           "username": "test_user",
@@ -103,7 +103,7 @@ class GoalManagerTests: XCTestCase {
     XCTAssertEqual(goal.slug, "deletable-goal")
     XCTAssertEqual(goal.title, "We will delete this")
   }
-  func testGoalDeletion() async throws {
+  @MainActor func testGoalDeletion() async throws {
     try await testInitialGoalCreation()
     let deletionResponse = """
       {
@@ -134,7 +134,7 @@ class GoalManagerTests: XCTestCase {
     let user = try XCTUnwrap(currentUserManager.user(context: context))
     XCTAssertEqual(user.goals.count, 0, "All goals should be deleted")
   }
-  func testIncrementalUpdateUpdatesAllGoalsLastUpdatedLocal() async throws {
+  @MainActor func testIncrementalUpdateUpdatesAllGoalsLastUpdatedLocal() async throws {
     // 1. First create two goals
     let userResponse = """
       {
@@ -209,15 +209,13 @@ class GoalManagerTests: XCTestCase {
     context.refreshAllObjects()
     let user = try XCTUnwrap(currentUserManager.user(context: context))
     XCTAssertEqual(user.goals.count, 2)
-    // Find goals by slug
-    let goalOne = user.goals.first { $0.slug == "goal-one" }
-    let goalTwo = user.goals.first { $0.slug == "goal-two" }
-    XCTAssertNotNil(goalOne)
-    XCTAssertNotNil(goalTwo)
-    let originalGoalOneTimestamp = goalOne!.lastUpdatedLocal
-    let originalGoalTwoTimestamp = goalTwo!.lastUpdatedLocal
+    // Find goals by slug and capture timestamps
+    let goalOne = try XCTUnwrap(user.goals.first { $0.slug == "goal-one" })
+    let goalTwo = try XCTUnwrap(user.goals.first { $0.slug == "goal-two" })
+    let originalGoalOneTimestamp = goalOne.lastUpdatedLocal
+    let originalGoalTwoTimestamp = goalTwo.lastUpdatedLocal
     // Wait a moment to ensure timestamps will be different
-    try await Task.sleep(nanoseconds: 1_000_000_000)
+    try await Task.sleep(nanoseconds: 100_000_000)
     // 3. Now perform an incremental update that only updates one goal
     let incrementalResponse = """
       {
@@ -263,22 +261,20 @@ class GoalManagerTests: XCTestCase {
     try await goalManager.refreshGoals()
     // 4. Verify that both goals' timestamps were updated
     context.refreshAllObjects()
-    let updatedGoalOne = user.goals.first { $0.slug == "goal-one" }
-    let updatedGoalTwo = user.goals.first { $0.slug == "goal-two" }
-    XCTAssertNotNil(updatedGoalOne)
-    XCTAssertNotNil(updatedGoalTwo)
+    let updatedGoalOne = try XCTUnwrap(user.goals.first { $0.slug == "goal-one" })
+    let updatedGoalTwo = try XCTUnwrap(user.goals.first { $0.slug == "goal-two" })
     XCTAssertGreaterThan(
-      updatedGoalOne!.lastUpdatedLocal,
+      updatedGoalOne.lastUpdatedLocal,
       originalGoalOneTimestamp,
       "Goal One should have updated timestamp"
     )
     XCTAssertGreaterThan(
-      updatedGoalTwo!.lastUpdatedLocal,
+      updatedGoalTwo.lastUpdatedLocal,
       originalGoalTwoTimestamp,
       "Goal Two should have updated timestamp even though it wasn't in the response"
     )
     // 5. Verify other properties updated correctly
-    XCTAssertEqual(updatedGoalOne!.title, "Goal One Updated")
-    XCTAssertEqual(updatedGoalTwo!.title, "Goal Two")
+    XCTAssertEqual(updatedGoalOne.title, "Goal One Updated")
+    XCTAssertEqual(updatedGoalTwo.title, "Goal Two")
   }
 }
