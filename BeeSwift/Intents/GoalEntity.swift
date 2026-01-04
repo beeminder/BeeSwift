@@ -2,19 +2,26 @@
 
 import AppIntents
 import BeeKit
+import CoreSpotlight
 import Foundation
 
-struct GoalEntity: AppEntity, Equatable {
+struct GoalEntity: AppEntity, IndexedEntity, Equatable {
   static var typeDisplayRepresentation: TypeDisplayRepresentation = "Goal"
   static var defaultQuery = GoalEntityQuery()
   var id: String
   @Property(title: "Slug") var slug: String
   @Property(title: "Title") var title: String
   var thumbUrl: String?
-  var displayRepresentation: DisplayRepresentation {
-    DisplayRepresentation(title: "\(displayTitle)", subtitle: "\(slug)")
+  var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(slug)", subtitle: "\(title)") }
+  var displayTitle: String { return slug }
+
+  var attributeSet: CSSearchableItemAttributeSet {
+    let attributes = defaultAttributeSet
+    attributes.displayName = displayTitle
+    attributes.contentDescription = title
+    return attributes
   }
-  var displayTitle: String { return title.isEmpty ? slug : title }
+
   init(id: String, slug: String, title: String, thumbUrl: String? = nil) {
     self.id = id
     self.slug = slug

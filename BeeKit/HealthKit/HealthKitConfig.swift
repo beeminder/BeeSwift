@@ -120,6 +120,12 @@ public enum HealthKitConfig {
         hkQuantityTypeIdentifier: .dietaryFatTotal
       ),
       QuantityHealthKitMetric(
+        humanText: "Dietary fiber",
+        databaseString: "dietaryFiber",
+        category: .Nutrition,
+        hkQuantityTypeIdentifier: .dietaryFiber
+      ),
+      QuantityHealthKitMetric(
         humanText: "Dietary protein",
         databaseString: "dietaryProtein",
         category: .Nutrition,
