@@ -204,7 +204,7 @@ class GoalManagerTests: XCTestCase {
       ),
     ]
     try await goalManager.refreshGoals()
-    /// 2. Capture original timestamps
+    // 2. Capture original timestamps
     let context = container.viewContext
     context.refreshAllObjects()
     let user = try XCTUnwrap(currentUserManager.user(context: context))
