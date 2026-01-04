@@ -16,10 +16,6 @@ import SwiftyJSON
 @NSModelActor(disableGenerateInit: true) public actor GoalManager {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalManager")
 
-  public enum NotificationName {
-    /// A notification that is triggered any time the data for one or more goals is updated
-    public static let goalsUpdated = NSNotification.Name(rawValue: "com.beeminder.goalsUpdatedNotification")
-  }
   private let requestManager: RequestManager
   private nonisolated let currentUserManager: CurrentUserManager
 
@@ -166,12 +162,6 @@ import SwiftyJSON
       // copies will make it a no-op
       await pollQueuedGoalsUntilUpdated()
     }
-
-    // Notify all listeners of the update
-    await Task { @MainActor in
-      modelContainer.viewContext.refreshAllObjects()
-      NotificationCenter.default.post(name: GoalManager.NotificationName.goalsUpdated, object: self)
-    }.value
   }
 
   private func pollQueuedGoalsUntilUpdated() async {

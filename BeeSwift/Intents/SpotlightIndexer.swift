@@ -3,6 +3,7 @@
 import AppIntents
 import AsyncAlgorithms
 import BeeKit
+import CoreData
 import CoreSpotlight
 import Foundation
 import OSLog
@@ -33,14 +34,15 @@ actor SpotlightIndexer {
   }
 
   func listenForNotifications() async {
-    let goalsUpdated = NotificationCenter.default.notifications(named: GoalManager.NotificationName.goalsUpdated).map {
-      _ in IndexAction.reindex
-    }
+    let objectsDidChange = NotificationCenter.default.notifications(
+      named: .NSManagedObjectContextObjectsDidChange,
+      object: container.viewContext
+    ).map { _ in IndexAction.reindex }
     let signedOut = NotificationCenter.default.notifications(named: CurrentUserManager.NotificationName.signedOut).map {
       _ in IndexAction.clear
     }
 
-    for await action in merge(goalsUpdated, signedOut) {
+    for await action in merge(objectsDidChange, signedOut) {
       switch action {
       case .reindex: await reindexAllGoals()
       case .clear: await clearIndex()

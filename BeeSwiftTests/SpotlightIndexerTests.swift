@@ -90,7 +90,7 @@ final class SpotlightIndexerTests: XCTestCase {
     XCTAssertEqual(slugs, ["goal-one", "goal-two"])
   }
 
-  func testReindexOnGoalsUpdatedNotification() async throws {
+  func testReindexOnObjectsDidChangeNotification() async throws {
     let user = createTestUser()
     _ = createTestGoal(owner: user, slug: "initial-goal", title: "Initial Goal")
     try container.viewContext.save()
@@ -107,7 +107,7 @@ final class SpotlightIndexerTests: XCTestCase {
 
     // Post the notification on main thread
     await MainActor.run {
-      NotificationCenter.default.post(name: GoalManager.NotificationName.goalsUpdated, object: nil)
+      NotificationCenter.default.post(name: .NSManagedObjectContextObjectsDidChange, object: container.viewContext)
     }
 
     await fulfillment(of: [indexed], timeout: 1.0)
