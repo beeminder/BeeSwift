@@ -345,9 +345,9 @@ class GalleryViewController: UIViewController {
     let message: String
     if let searchText = searchBar.text, !searchText.isEmpty, totalGoalsCount > 0 {
       let goalsWord = totalGoalsCount == 1 ? "goal" : "goals"
-      message = "No goals match your filter.\n\n\(totalGoalsCount) \(goalsWord) hidden."
+      message = "No goals match your filter\n\n\(totalGoalsCount) \(goalsWord) hidden"
     } else {
-      message = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
+      message = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use"
     }
 
     let label = BSLabel()
