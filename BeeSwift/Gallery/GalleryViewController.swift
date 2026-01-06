@@ -358,7 +358,7 @@ class GalleryViewController: UIViewController {
     let container = UIView()
     container.addSubview(label)
     label.snp.makeConstraints { make in
-      make.center.equalToSuperview()
+      make.top.equalToSuperview().offset(100)
       make.left.right.equalToSuperview().inset(20)
     }
 
