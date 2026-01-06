@@ -100,7 +100,6 @@ class GalleryViewController: UIViewController {
   private var dataSource: UICollectionViewDiffableDataSource<Section, NSManagedObjectID>!
   private let fetchedResultsController: NSFetchedResultsController<Goal>!
   private var fetchRequest: NSFetchRequest<Goal>?
-  private var totalGoalsCount: Int = 0
   init(
     currentUserManager: CurrentUserManager,
     viewContext: NSManagedObjectContext,
@@ -308,10 +307,6 @@ class GalleryViewController: UIViewController {
     self.didUpdateGoals()
   }
   func updateFilteredGoals() {
-    // Get total goals count (without filter) for empty state messaging
-    let countRequest = Goal.fetchRequest()
-    totalGoalsCount = (try? viewContext.count(for: countRequest)) ?? 0
-
     if let searchText = searchBar.text, !searchText.isEmpty {
       self.fetchedResultsController.fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [
         NSPredicate(format: "slug contains[cd] %@", searchText),
@@ -344,6 +339,8 @@ class GalleryViewController: UIViewController {
       self.collectionView.backgroundView = nil
       return
     }
+
+    let totalGoalsCount = (try? viewContext.count(for: Goal.fetchRequest())) ?? 0
 
     let message: String
     if let searchText = searchBar.text, !searchText.isEmpty, totalGoalsCount > 0 {
