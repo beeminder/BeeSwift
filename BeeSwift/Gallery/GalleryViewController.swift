@@ -356,9 +356,11 @@ class GalleryViewController: UIViewController {
     label.numberOfLines = 0
 
     let container = UIView()
+    container.addSubview(label)
+    self.collectionView.backgroundView = container
+
     let availableSpaceGuide = UILayoutGuide()
     container.addLayoutGuide(availableSpaceGuide)
-    container.addSubview(label)
 
     availableSpaceGuide.snp.makeConstraints { make in
       make.top.left.right.equalToSuperview()
@@ -369,8 +371,6 @@ class GalleryViewController: UIViewController {
       make.centerY.equalTo(availableSpaceGuide)
       make.left.right.equalToSuperview().inset(20)
     }
-
-    self.collectionView.backgroundView = container
   }
   override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
     // After a rotation or other size change the optimal width for our cells may have changed.
