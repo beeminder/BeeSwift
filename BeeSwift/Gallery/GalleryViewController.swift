@@ -67,15 +67,19 @@ class GalleryViewController: UIViewController {
     outofdateView.isHidden = true
     return outofdateView
   }()
+  private lazy var noGoalsContainer: UIView = {
+    let container = UIView()
+    container.isHidden = true
+    // When shown this container should fill all remaining space so the label is centered on the screen.
+    container.setContentHuggingPriority(UILayoutPriority(UILayoutPriority.defaultLow.rawValue - 10), for: .vertical)
+    return container
+  }()
   private lazy var noGoalsLabel: BSLabel = {
     let noGoalsLabel = BSLabel()
     noGoalsLabel.accessibilityIdentifier = "noGoalsLabel"
     noGoalsLabel.text = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
     noGoalsLabel.textAlignment = .center
     noGoalsLabel.numberOfLines = 0
-    noGoalsLabel.isHidden = true
-    // When shown this label should fill all remaining space so it is centered on the screen.
-    noGoalsLabel.setContentHuggingPriority(UILayoutPriority(UILayoutPriority.defaultLow.rawValue - 10), for: .vertical)
     return noGoalsLabel
   }()
   private lazy var outofdateLabel: BSLabel = {
@@ -218,7 +222,12 @@ class GalleryViewController: UIViewController {
       refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControl.Event.valueChanged)
       return refreshControl
     }()
-    self.stackView.addArrangedSubview(self.noGoalsLabel)
+    self.stackView.addArrangedSubview(self.noGoalsContainer)
+    self.noGoalsContainer.addSubview(self.noGoalsLabel)
+    self.noGoalsLabel.snp.makeConstraints { make in
+      make.top.bottom.equalToSuperview()
+      make.left.right.equalToSuperview().inset(20)
+    }
     self.updateGoals()
     self.fetchGoals()
     if currentUserManager.signedIn(context: viewContext) {
@@ -344,7 +353,7 @@ class GalleryViewController: UIViewController {
     self.updateLastUpdatedLabel()
 
     if self.filteredGoals.isEmpty {
-      self.noGoalsLabel.isHidden = false
+      self.noGoalsContainer.isHidden = false
       self.collectionContainer.isHidden = true
 
       // Show different message when filter is active vs no goals at all
@@ -357,7 +366,7 @@ class GalleryViewController: UIViewController {
           "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
       }
     } else {
-      self.noGoalsLabel.isHidden = true
+      self.noGoalsContainer.isHidden = true
       self.collectionContainer.isHidden = false
     }
     let searchItem = UIBarButtonItem(
