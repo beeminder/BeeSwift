@@ -356,9 +356,17 @@ class GalleryViewController: UIViewController {
     label.numberOfLines = 0
 
     let container = UIView()
+    let availableSpaceGuide = UILayoutGuide()
+    container.addLayoutGuide(availableSpaceGuide)
     container.addSubview(label)
+
+    availableSpaceGuide.snp.makeConstraints { make in
+      make.top.left.right.equalToSuperview()
+      make.bottom.equalTo(collectionView.keyboardLayoutGuide.snp.top)
+    }
+
     label.snp.makeConstraints { make in
-      make.top.equalToSuperview().offset(100)
+      make.centerY.equalTo(availableSpaceGuide)
       make.left.right.equalToSuperview().inset(20)
     }
 
