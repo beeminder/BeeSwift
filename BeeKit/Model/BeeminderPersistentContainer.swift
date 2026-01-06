@@ -27,6 +27,17 @@ public class BeeminderPersistentContainer: NSPersistentContainer, @unchecked Sen
       if let error = error { fatalError("Unable to load persistent stores: \(error)") }
     }
 
+    container.viewContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
+
+    NotificationCenter.default.addObserver(forName: .NSManagedObjectContextDidSave, object: nil, queue: nil) {
+      notification in
+      guard let savedContext = notification.object as? NSManagedObjectContext, savedContext !== container.viewContext,
+        savedContext.persistentStoreCoordinator === container.persistentStoreCoordinator
+      else { return }
+
+      container.viewContext.perform { container.viewContext.mergeChanges(fromContextDidSave: notification) }
+    }
+
     return container
   }
 
