@@ -35,17 +35,17 @@ extension WorkoutTypeSelectionViewController: UITableViewDelegate, UITableViewDa
   // Section 0: "All Types" option
   // Sections 1-N: One section per WorkoutCategory
 
-  func numberOfSections(in tableView: UITableView) -> Int { return 1 + WorkoutCategory.allCases.count }
+  func numberOfSections(in tableView: UITableView) -> Int { return 1 + WorkoutActivityCategory.allCases.count }
 
   func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     if section == 0 { return nil }
-    return WorkoutCategory.allCases[section - 1].rawValue
+    return WorkoutActivityCategory.allCases[section - 1].rawValue
   }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     if section == 0 { return 1 }
-    let category = WorkoutCategory.allCases[section - 1]
-    return WorkoutMinutesHealthKitMetric.workoutTypes(forCategory: category).count
+    let category = WorkoutActivityCategory.allCases[section - 1]
+    return WorkoutActivityTypeInfo.types(forCategory: category).count
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -56,8 +56,8 @@ extension WorkoutTypeSelectionViewController: UITableViewDelegate, UITableViewDa
       cell.textLabel?.text = "All Types"
       cell.accessoryType = isAllTypesSelected ? .checkmark : .none
     } else {
-      let category = WorkoutCategory.allCases[indexPath.section - 1]
-      let types = WorkoutMinutesHealthKitMetric.workoutTypes(forCategory: category)
+      let category = WorkoutActivityCategory.allCases[indexPath.section - 1]
+      let types = WorkoutActivityTypeInfo.types(forCategory: category)
       let workoutType = types[indexPath.row]
       cell.textLabel?.text = workoutType.displayName
       cell.accessoryType = selectedTypes.contains(workoutType.identifier) ? .checkmark : .none
@@ -71,8 +71,8 @@ extension WorkoutTypeSelectionViewController: UITableViewDelegate, UITableViewDa
       // "All Types" selected - clear specific selections
       selectedTypes.removeAll()
     } else {
-      let category = WorkoutCategory.allCases[indexPath.section - 1]
-      let types = WorkoutMinutesHealthKitMetric.workoutTypes(forCategory: category)
+      let category = WorkoutActivityCategory.allCases[indexPath.section - 1]
+      let types = WorkoutActivityTypeInfo.types(forCategory: category)
       let workoutType = types[indexPath.row]
 
       if selectedTypes.contains(workoutType.identifier) {

@@ -4,8 +4,8 @@ import XCTest
 
 final class WorkoutConfigurationViewControllerTests: XCTestCase {
 
-  func createViewController() -> WorkoutConfigurationViewController {
-    let vc = WorkoutConfigurationViewController()
+  func createViewController(existingConfig: [String: Any] = [:]) -> WorkoutConfigurationViewController {
+    let vc = WorkoutConfigurationViewController(existingConfig: existingConfig)
     vc.loadViewIfNeeded()
     return vc
   }
@@ -23,13 +23,11 @@ final class WorkoutConfigurationViewControllerTests: XCTestCase {
 
   func testConfigDailyAggregateFalse() {
     let vc = createViewController()
-    // Simulate selecting "Individual Workouts" (index 1)
-    // We need to access the segmented control - since it's private, we test via the public interface
-    // by setting up the VC and checking the default, then we'd need to expose the control or test differently
+    vc.syncModeSegmentedControl.selectedSegmentIndex = 1  // Individual Workouts
 
-    // For now, test the default state
     let config = vc.getConfigParameters()
-    XCTAssertNotNil(config["daily_aggregate"])
+
+    XCTAssertEqual(config["daily_aggregate"] as? Bool, false)
   }
 
   func testConfigNoTypesSelectedOmitsWorkoutTypesKey() {
@@ -80,5 +78,32 @@ final class WorkoutConfigurationViewControllerTests: XCTestCase {
     vc.setSelectedWorkoutTypes(["running"])
 
     XCTAssertTrue(callbackCalled)
+  }
+
+  // MARK: - Init with existing config tests
+
+  func testInitWithExistingWorkoutTypes() {
+    let vc = createViewController(existingConfig: ["workout_types": ["running", "yoga"]])
+
+    XCTAssertEqual(vc.selectedWorkoutTypes, ["running", "yoga"])
+  }
+
+  func testInitWithExistingDailyAggregateFalse() {
+    let vc = createViewController(existingConfig: ["daily_aggregate": false])
+
+    XCTAssertEqual(vc.syncModeSegmentedControl.selectedSegmentIndex, 1)
+  }
+
+  func testInitWithExistingDailyAggregateTrue() {
+    let vc = createViewController(existingConfig: ["daily_aggregate": true])
+
+    XCTAssertEqual(vc.syncModeSegmentedControl.selectedSegmentIndex, 0)
+  }
+
+  func testInitWithEmptyConfig() {
+    let vc = createViewController(existingConfig: [:])
+
+    XCTAssertEqual(vc.selectedWorkoutTypes, [])
+    XCTAssertEqual(vc.syncModeSegmentedControl.selectedSegmentIndex, 0)  // defaults to daily aggregate
   }
 }

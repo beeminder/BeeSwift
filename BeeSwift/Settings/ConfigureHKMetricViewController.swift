@@ -255,16 +255,8 @@ class ConfigureHKMetricViewController: UIViewController {
   }
 
   private func setupWorkoutConfiguration() {
-    let workoutConfig = WorkoutConfigurationViewController()
+    let workoutConfig = WorkoutConfigurationViewController(existingConfig: goal.autodataConfig)
     workoutConfigViewController = workoutConfig
-
-    // Load existing config
-    if let existingTypes = goal.autodataConfig["workout_types"] as? [String] {
-      workoutConfig.selectedWorkoutTypes = existingTypes
-    }
-    if let dailyAggregate = goal.autodataConfig["daily_aggregate"] as? Bool {
-      workoutConfig.setDailyAggregate(dailyAggregate)
-    }
 
     addChild(workoutConfig)
     view.addSubview(workoutConfig.view)

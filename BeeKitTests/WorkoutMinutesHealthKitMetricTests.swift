@@ -17,56 +17,62 @@ final class WorkoutMinutesHealthKitMetricTests: XCTestCase {
     return HKWorkout(activityType: type, start: now, end: now.addingTimeInterval(60))
   }
 
-  // MARK: - identifier(for:) tests
+  // MARK: - find(byActivityType:) tests
 
-  func testIdentifierForRunning() { XCTAssertEqual(WorkoutMinutesHealthKitMetric.identifier(for: .running), "running") }
+  func testFindByActivityTypeRunning() {
+    XCTAssertEqual(WorkoutActivityTypeInfo.find(byActivityType: .running)?.identifier, "running")
+  }
 
-  func testIdentifierForYoga() { XCTAssertEqual(WorkoutMinutesHealthKitMetric.identifier(for: .yoga), "yoga") }
+  func testFindByActivityTypeYoga() {
+    XCTAssertEqual(WorkoutActivityTypeInfo.find(byActivityType: .yoga)?.identifier, "yoga")
+  }
 
-  func testIdentifierForTraditionalStrengthTraining() {
+  func testFindByActivityTypeTraditionalStrengthTraining() {
     XCTAssertEqual(
-      WorkoutMinutesHealthKitMetric.identifier(for: .traditionalStrengthTraining),
+      WorkoutActivityTypeInfo.find(byActivityType: .traditionalStrengthTraining)?.identifier,
       "traditionalStrengthTraining"
     )
   }
 
-  func testIdentifierForUnmappedTypeReturnsNil() {
+  func testFindByActivityTypeUnmappedTypeReturnsNil() {
     // .other is not in our supported list
-    XCTAssertNil(WorkoutMinutesHealthKitMetric.identifier(for: .other))
+    XCTAssertNil(WorkoutActivityTypeInfo.find(byActivityType: .other))
   }
 
-  // MARK: - activityType(for:) tests
+  // MARK: - find(byIdentifier:) tests
 
-  func testActivityTypeForRunning() {
-    XCTAssertEqual(WorkoutMinutesHealthKitMetric.activityType(for: "running"), .running)
+  func testFindByIdentifierRunning() {
+    XCTAssertEqual(WorkoutActivityTypeInfo.find(byIdentifier: "running")?.activityType, .running)
   }
 
-  func testActivityTypeForYoga() { XCTAssertEqual(WorkoutMinutesHealthKitMetric.activityType(for: "yoga"), .yoga) }
-
-  func testActivityTypeForInvalidStringReturnsNil() {
-    XCTAssertNil(WorkoutMinutesHealthKitMetric.activityType(for: "notARealWorkout"))
+  func testFindByIdentifierYoga() {
+    XCTAssertEqual(WorkoutActivityTypeInfo.find(byIdentifier: "yoga")?.activityType, .yoga)
   }
 
-  func testActivityTypeForEmptyStringReturnsNil() { XCTAssertNil(WorkoutMinutesHealthKitMetric.activityType(for: "")) }
+  func testFindByIdentifierInvalidStringReturnsNil() {
+    XCTAssertNil(WorkoutActivityTypeInfo.find(byIdentifier: "notARealWorkout"))
+  }
 
-  // MARK: - displayName(for:) tests
+  func testFindByIdentifierEmptyStringReturnsNil() { XCTAssertNil(WorkoutActivityTypeInfo.find(byIdentifier: "")) }
+
+  // MARK: - displayName tests
 
   func testDisplayNameForRunning() {
-    XCTAssertEqual(WorkoutMinutesHealthKitMetric.displayName(for: "running"), "Running")
+    XCTAssertEqual(WorkoutActivityTypeInfo.find(byIdentifier: "running")?.displayName, "Running")
   }
 
   func testDisplayNameForHIIT() {
-    XCTAssertEqual(WorkoutMinutesHealthKitMetric.displayName(for: "highIntensityIntervalTraining"), "HIIT")
+    XCTAssertEqual(WorkoutActivityTypeInfo.find(byIdentifier: "highIntensityIntervalTraining")?.displayName, "HIIT")
   }
 
   func testDisplayNameForInvalidIdentifierReturnsNil() {
-    XCTAssertNil(WorkoutMinutesHealthKitMetric.displayName(for: "notReal"))
+    XCTAssertNil(WorkoutActivityTypeInfo.find(byIdentifier: "notReal")?.displayName)
   }
 
-  // MARK: - workoutTypes(forCategory:) tests
+  // MARK: - types(forCategory:) tests
 
   func testWorkoutTypesForCardioCategory() {
-    let cardioTypes = WorkoutMinutesHealthKitMetric.workoutTypes(forCategory: .cardio)
+    let cardioTypes = WorkoutActivityTypeInfo.types(forCategory: .cardio)
     let identifiers = cardioTypes.map { $0.identifier }
 
     XCTAssertTrue(identifiers.contains("running"))
@@ -77,7 +83,7 @@ final class WorkoutMinutesHealthKitMetricTests: XCTestCase {
   }
 
   func testWorkoutTypesForStrengthCategory() {
-    let strengthTypes = WorkoutMinutesHealthKitMetric.workoutTypes(forCategory: .strength)
+    let strengthTypes = WorkoutActivityTypeInfo.types(forCategory: .strength)
     let identifiers = strengthTypes.map { $0.identifier }
 
     XCTAssertEqual(strengthTypes.count, 3)
@@ -87,7 +93,7 @@ final class WorkoutMinutesHealthKitMetricTests: XCTestCase {
   }
 
   func testWorkoutTypesForMindBodyCategory() {
-    let mindBodyTypes = WorkoutMinutesHealthKitMetric.workoutTypes(forCategory: .mindBody)
+    let mindBodyTypes = WorkoutActivityTypeInfo.types(forCategory: .mindBody)
     let identifiers = mindBodyTypes.map { $0.identifier }
 
     XCTAssertTrue(identifiers.contains("yoga"))

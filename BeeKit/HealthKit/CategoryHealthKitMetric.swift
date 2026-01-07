@@ -33,21 +33,48 @@ public class CategoryHealthKitMetric: HealthKitMetric {
   public func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore, autodataConfig: [String: Any])
     async throws -> [BeeDataPoint]
   {
+    return try await recentDataPoints(
+      days: days,
+      deadline: deadline,
+      healthStore: healthStore,
+      autodataConfig: autodataConfig,
+      sampleFilter: nil
+    )
+  }
+
+  internal func recentDataPoints(
+    days: Int,
+    deadline: Int,
+    healthStore: HKHealthStore,
+    autodataConfig: [String: Any],
+    sampleFilter: (([HKSample]) -> [HKSample])?
+  ) async throws -> [BeeDataPoint] {
     let today = Daystamp.now(deadline: deadline)
     let startDate = today - days
 
     var results: [BeeDataPoint] = []
     for date in (startDate...today) {
-      results.append(try await self.getDataPoint(date: date, deadline: deadline, healthStore: healthStore))
+      results.append(
+        try await self.getDataPoint(
+          date: date,
+          deadline: deadline,
+          healthStore: healthStore,
+          sampleFilter: sampleFilter
+        )
+      )
     }
     return results
   }
 
   public func units(healthStore: HKHealthStore) async throws -> HKUnit { return HKUnit.count() }
 
-  private func getDataPoint(date: Daystamp, deadline: Int, healthStore: HKHealthStore) async throws -> BeeDataPoint {
-
-    let samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
+  private func getDataPoint(
+    date: Daystamp,
+    deadline: Int,
+    healthStore: HKHealthStore,
+    sampleFilter: (([HKSample]) -> [HKSample])? = nil
+  ) async throws -> BeeDataPoint {
+    var samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
       let query = HKSampleQuery(
         sampleType: sampleType(),
         predicate: HKQuery.predicateForSamples(
@@ -68,6 +95,8 @@ public class CategoryHealthKitMetric: HealthKitMetric {
       )
       healthStore.execute(query)
     })
+
+    if let sampleFilter = sampleFilter { samples = sampleFilter(samples) }
 
     let id = "apple-heath-" + date.description
     let datapointValue = self.hkDatapointValueForSamples(samples: samples, startOfDate: date.start(deadline: deadline))

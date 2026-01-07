@@ -14,13 +14,19 @@ private class SelfSizingTableView: UITableView {
 
 class WorkoutConfigurationViewController: UIViewController {
   private let tableView = SelfSizingTableView(frame: .zero, style: .insetGrouped)
-  private let syncModeSegmentedControl = UISegmentedControl(items: ["Daily Total", "Individual Workouts"])
+  let syncModeSegmentedControl = UISegmentedControl(items: ["Daily Total", "Individual Workouts"])
 
   var selectedWorkoutTypes: [String] = []
   var onConfigurationChanged: (() -> Void)?
   var onNavigateToTypeSelection: (() -> Void)?
 
-  init() { super.init(nibName: nil, bundle: nil) }
+  private var initialDailyAggregate: Bool = true
+
+  init(existingConfig: [String: Any] = [:]) {
+    super.init(nibName: nil, bundle: nil)
+    if let types = existingConfig["workout_types"] as? [String] { selectedWorkoutTypes = types }
+    if let dailyAggregate = existingConfig["daily_aggregate"] as? Bool { initialDailyAggregate = dailyAggregate }
+  }
   required init?(coder: NSCoder) { return nil }
 
   override func viewDidLoad() {
@@ -39,7 +45,7 @@ class WorkoutConfigurationViewController: UIViewController {
   }
 
   private func setupSegmentedControl() {
-    syncModeSegmentedControl.selectedSegmentIndex = 0
+    syncModeSegmentedControl.selectedSegmentIndex = initialDailyAggregate ? 0 : 1
     syncModeSegmentedControl.addTarget(self, action: #selector(syncModeChanged), for: .valueChanged)
   }
 
@@ -47,7 +53,7 @@ class WorkoutConfigurationViewController: UIViewController {
     if selectedWorkoutTypes.isEmpty {
       return "All Types"
     } else if selectedWorkoutTypes.count == 1 {
-      return WorkoutMinutesHealthKitMetric.displayName(for: selectedWorkoutTypes[0]) ?? selectedWorkoutTypes[0]
+      return WorkoutActivityTypeInfo.find(byIdentifier: selectedWorkoutTypes[0])?.displayName ?? selectedWorkoutTypes[0]
     } else {
       return "\(selectedWorkoutTypes.count) types"
     }
@@ -60,8 +66,6 @@ class WorkoutConfigurationViewController: UIViewController {
     tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
     onConfigurationChanged?()
   }
-
-  func setDailyAggregate(_ value: Bool) { syncModeSegmentedControl.selectedSegmentIndex = value ? 0 : 1 }
 
   func getConfigParameters() -> [String: Any] {
     let dailyAggregate = syncModeSegmentedControl.selectedSegmentIndex == 0
