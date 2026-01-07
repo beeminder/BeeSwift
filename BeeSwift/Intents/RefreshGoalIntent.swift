@@ -30,31 +30,23 @@ struct RefreshGoalIntent: AppIntent {
   static var parameterSummary: some ParameterSummary { Summary("Refresh \(\.$goal)") }
 
   func perform() async throws -> some IntentResult & ProvidesDialog {
-    // Fetch the Goal from CoreData
+    // Fetch the Goal from CoreData to get objectID
     let container = ServiceLocator.persistentContainer
     let context = container.viewContext
 
-    let goalObject = try await context.perform {
+    let goalID = try await context.perform {
       let request = NSFetchRequest<Goal>(entityName: "Goal")
       request.predicate = NSPredicate(format: "id == %@", goal.id)
       request.fetchLimit = 1
       guard let result = try context.fetch(request).first else { throw RefreshGoalError.goalNotFound }
-      return result
+      return result.objectID
     }
 
-    // Check if goal has autodata
-    guard let autodata = goalObject.autodata, !autodata.isEmpty else { throw RefreshGoalError.manualGoal }
-
     do {
-      if autodata == "apple" {
-        // Apple Health goal - fetch from HealthKit
-        try await ServiceLocator.healthStoreManager.updateWithRecentData(goalID: goalObject.objectID, days: 7)
-      } else {
-        // Other autodata (IFTTT, API, etc.) - server-side refresh
-        try await ServiceLocator.goalManager.forceAutodataRefresh(goalObject)
-        try await ServiceLocator.goalManager.refreshGoal(goalObject.objectID)
-      }
+      try await ServiceLocator.refreshManager.refreshGoalAutodata(goalID)
       return .result(dialog: "Refreshed \(goal.slug)")
+    } catch RefreshError.manualGoal { throw RefreshGoalError.manualGoal } catch RefreshError.goalNotFound {
+      throw RefreshGoalError.goalNotFound
     } catch { throw RefreshGoalError.refreshFailed(error.localizedDescription) }
   }
 }
