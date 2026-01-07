@@ -14,6 +14,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
   public let humanText: String
   public let databaseString: String
   public let category: HealthKitCategory
+  public var hasAdditionalOptions: Bool { false }
   let hkSampleType: HKSampleType
 
   internal init(humanText: String, databaseString: String, category: HealthKitCategory, hkSampleType: HKSampleType) {

@@ -27,6 +27,8 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
     super.init(humanText: humanText, databaseString: databaseString, category: category, hkSampleType: .workoutType())
   }
 
+  public override var hasAdditionalOptions: Bool { true }
+
   // MARK: - Workout Type Definitions
 
   public static let supportedWorkoutTypes: [WorkoutTypeInfo] = [

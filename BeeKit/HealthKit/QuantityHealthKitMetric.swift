@@ -14,6 +14,7 @@ class QuantityHealthKitMetric: HealthKitMetric {
   let humanText: String
   let databaseString: String
   let category: HealthKitCategory
+  var hasAdditionalOptions: Bool { false }
   let hkQuantityTypeIdentifier: HKQuantityTypeIdentifier
   let precision: [HKUnit: Int]
 

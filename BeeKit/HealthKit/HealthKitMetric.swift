@@ -20,6 +20,7 @@ public protocol HealthKitMetric {
   var humanText: String { get }
   var databaseString: String { get }
   var category: HealthKitCategory { get }
+  var hasAdditionalOptions: Bool { get }
 
   /// The permission required for this connection to read data from HealthKit
   func permissionType() -> HKObjectType
@@ -42,3 +43,5 @@ public protocol HealthKitMetric {
   /// The units this metric returns its datapoint values in
   func units(healthStore: HKHealthStore) async throws -> HKUnit
 }
+
+extension HealthKitMetric { public var hasAdditionalOptions: Bool { false } }
