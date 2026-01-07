@@ -67,17 +67,6 @@ class GalleryViewController: UIViewController {
     outofdateView.isHidden = true
     return outofdateView
   }()
-  private lazy var noGoalsLabel: BSLabel = {
-    let noGoalsLabel = BSLabel()
-    noGoalsLabel.accessibilityIdentifier = "noGoalsLabel"
-    noGoalsLabel.text = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use."
-    noGoalsLabel.textAlignment = .center
-    noGoalsLabel.numberOfLines = 0
-    noGoalsLabel.isHidden = true
-    // When shown this label should fill all remaining space so it is centered on the screen.
-    noGoalsLabel.setContentHuggingPriority(UILayoutPriority(UILayoutPriority.defaultLow.rawValue - 10), for: .vertical)
-    return noGoalsLabel
-  }()
   private lazy var outofdateLabel: BSLabel = {
     let outofdateLabel = BSLabel()
     outofdateLabel.accessibilityIdentifier = "outofdateLabel"
@@ -217,7 +206,6 @@ class GalleryViewController: UIViewController {
       refreshControl.addTarget(self, action: #selector(self.fetchGoals), for: UIControl.Event.valueChanged)
       return refreshControl
     }()
-    self.stackView.addArrangedSubview(self.noGoalsLabel)
     self.updateGoals()
     self.fetchGoals()
     if currentUserManager.signedIn(context: viewContext) {
@@ -337,20 +325,52 @@ class GalleryViewController: UIViewController {
     MBProgressHUD.hide(for: self.view, animated: true)
     self.updateDeadbeatVisibility()
     self.updateLastUpdatedLabel()
-
-    if self.filteredGoals.isEmpty {
-      self.noGoalsLabel.isHidden = false
-      self.collectionContainer.isHidden = true
-    } else {
-      self.noGoalsLabel.isHidden = true
-      self.collectionContainer.isHidden = false
-    }
+    self.updateEmptyStateBackground()
     let searchItem = UIBarButtonItem(
       barButtonSystemItem: .search,
       target: self,
       action: #selector(self.searchButtonPressed)
     )
     self.navigationItem.leftBarButtonItem = searchItem
+  }
+
+  private func updateEmptyStateBackground() {
+    guard self.filteredGoals.isEmpty else {
+      self.collectionView.backgroundView = nil
+      return
+    }
+
+    let totalGoalsCount = (try? viewContext.count(for: Goal.fetchRequest())) ?? 0
+
+    let message: String
+    if let searchText = searchBar.text, !searchText.isEmpty, totalGoalsCount > 0 {
+      let goalsWord = totalGoalsCount == 1 ? "goal" : "goals"
+      message = "No goals match your filter\n\n\(totalGoalsCount) \(goalsWord) hidden"
+    } else {
+      message = "You have no Beeminder goals!\n\nYou'll need to create one before this app will be any use"
+    }
+
+    let label = BSLabel()
+    label.text = message
+    label.textAlignment = .center
+    label.numberOfLines = 0
+
+    let container = UIView()
+    container.addSubview(label)
+    self.collectionView.backgroundView = container
+
+    let availableSpaceGuide = UILayoutGuide()
+    container.addLayoutGuide(availableSpaceGuide)
+
+    availableSpaceGuide.snp.makeConstraints { make in
+      make.top.left.right.equalToSuperview()
+      make.bottom.equalTo(collectionView.keyboardLayoutGuide.snp.top)
+    }
+
+    label.snp.makeConstraints { make in
+      make.centerY.equalTo(availableSpaceGuide)
+      make.left.right.equalToSuperview().inset(20)
+    }
   }
   override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
     // After a rotation or other size change the optimal width for our cells may have changed.
