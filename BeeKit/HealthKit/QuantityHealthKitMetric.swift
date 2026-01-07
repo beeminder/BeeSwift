@@ -129,10 +129,7 @@ class QuantityHealthKitMetric: HealthKitMetric {
         continue
       }
 
-      if let unitPrecision = precision[unit] {
-        let roundingFactor = pow(10.0, Double(unitPrecision))
-        datapointValue = round(datapointValue * roundingFactor) / roundingFactor
-      }
+      datapointValue = applyPrecision(value: datapointValue, unit: unit)
 
       let id = "apple-health-" + daystamp.description
       results.append(

@@ -23,6 +23,8 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "WorkoutMinutesHealthKitMetric")
   let minuteInSeconds = 60.0
 
+  public override var precision: [HKUnit: Int] { return [HKUnit.minute(): 1] }
+
   init(humanText: String, databaseString: String, category: HealthKitCategory) {
     super.init(humanText: humanText, databaseString: databaseString, category: category, hkSampleType: .workoutType())
   }
@@ -236,7 +238,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
     let samplesOnDay = samples.filter { sample in sample.startDate >= startOfDate }
     let workouts = samplesOnDay.compactMap({ sample in sample as? HKWorkout })
     let workoutMinutes = workouts.map { sample in sample.duration / minuteInSeconds }.reduce(0, +)
-    return Double(workoutMinutes)
+    return applyPrecision(value: Double(workoutMinutes), unit: HKUnit.minute())
   }
   public override func recentDataPoints(
     days: Int,
@@ -276,7 +278,10 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
       let samples = try await getWorkoutSamples(date: date, deadline: deadline, healthStore: healthStore)
       let workouts = samples.compactMap { $0 as? HKWorkout }
       let filteredWorkouts = filterWorkouts(workouts, config: autodataConfig)
-      let workoutMinutes = filteredWorkouts.map { $0.duration / minuteInSeconds }.reduce(0, +)
+      let workoutMinutes = applyPrecision(
+        value: filteredWorkouts.map { $0.duration / minuteInSeconds }.reduce(0, +),
+        unit: HKUnit.minute()
+      )
 
       let id = "apple-heath-" + date.description
       results.append(
@@ -305,7 +310,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
       let workouts = samples.compactMap { $0 as? HKWorkout }
       let filteredWorkouts = filterWorkouts(workouts, config: autodataConfig)
       for workout in filteredWorkouts {
-        let workoutMinutes = workout.duration / minuteInSeconds
+        let workoutMinutes = applyPrecision(value: workout.duration / minuteInSeconds, unit: HKUnit.minute())
         let workoutDescription = formatWorkoutDescription(workout: workout)
         let id = "apple-health-workout-\(workout.uuid.uuidString)"
         results.append(

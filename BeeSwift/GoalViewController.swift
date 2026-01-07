@@ -372,12 +372,8 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
   @objc func refreshButtonPressed() {
     Task { @MainActor in
       do {
-        if self.goal.isLinkedToHealthKit {
-          try await self.healthStoreManager.updateWithRecentData(goalID: self.goal.objectID, days: 7)
-        } else if goal.isDataProvidedAutomatically {
-          // Don't force a refresh for manual goals. While doing so is harmless, it queues the goal which means we show a
-          // lemniscate for a few seconds, making the refresh slower.
-          try await self.goalManager.forceAutodataRefresh(self.goal)
+        if goal.isDataProvidedAutomatically {
+          try await ServiceLocator.refreshManager.refreshGoalAutodata(self.goal.objectID)
         }
         try await self.updateGoalAndInterface()
       } catch {
