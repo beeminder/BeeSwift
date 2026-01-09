@@ -38,7 +38,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
       deadline: deadline,
       healthStore: healthStore,
       autodataConfig: autodataConfig,
-      sampleFilter: nil
+      samplePredicate: nil
     )
   }
 
@@ -47,7 +47,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
     deadline: Int,
     healthStore: HKHealthStore,
     autodataConfig: [String: Any],
-    sampleFilter: (([HKSample]) -> [HKSample])?
+    samplePredicate: ((HKSample) -> Bool)?
   ) async throws -> [BeeDataPoint] {
     let today = Daystamp.now(deadline: deadline)
     let startDate = today - days
@@ -59,7 +59,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
           date: date,
           deadline: deadline,
           healthStore: healthStore,
-          sampleFilter: sampleFilter
+          samplePredicate: samplePredicate
         )
       )
     }
@@ -72,7 +72,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
     date: Daystamp,
     deadline: Int,
     healthStore: HKHealthStore,
-    sampleFilter: (([HKSample]) -> [HKSample])? = nil
+    samplePredicate: ((HKSample) -> Bool)? = nil
   ) async throws -> BeeDataPoint {
     var samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
       let query = HKSampleQuery(
@@ -96,7 +96,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
       healthStore.execute(query)
     })
 
-    if let sampleFilter = sampleFilter { samples = sampleFilter(samples) }
+    if let samplePredicate = samplePredicate { samples = samples.filter(samplePredicate) }
 
     let id = "apple-heath-" + date.description
     let datapointValue = self.hkDatapointValueForSamples(samples: samples, startOfDate: date.start(deadline: deadline))

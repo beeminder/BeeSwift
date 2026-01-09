@@ -300,11 +300,23 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
   // MARK: - Workout Filtering
 
   func filterWorkouts(_ workouts: [HKWorkout], config: [String: Any]) -> [HKWorkout] {
-    guard let typeIdentifiers = config["workout_types"] as? [String], !typeIdentifiers.isEmpty else {
+    guard let allowedTypes = allowedWorkoutTypes(from: config) else {
       return workouts  // No filter = all types
     }
-    let allowedTypes = Set(typeIdentifiers.compactMap { WorkoutActivityTypeInfo.find(byIdentifier: $0)?.activityType })
     return workouts.filter { allowedTypes.contains($0.workoutActivityType) }
+  }
+
+  private func allowedWorkoutTypes(from config: [String: Any]) -> Set<HKWorkoutActivityType>? {
+    guard let typeIdentifiers = config["workout_types"] as? [String], !typeIdentifiers.isEmpty else { return nil }
+    return Set(typeIdentifiers.compactMap { WorkoutActivityTypeInfo.find(byIdentifier: $0)?.activityType })
+  }
+
+  func workoutMatchesFilter(_ sample: HKSample, config: [String: Any]) -> Bool {
+    guard let workout = sample as? HKWorkout else { return false }
+    guard let allowedTypes = allowedWorkoutTypes(from: config) else {
+      return true  // No filter = all types
+    }
+    return allowedTypes.contains(workout.workoutActivityType)
   }
 
   override func hkDatapointValueForSamples(samples: [HKSample], startOfDate: Date) -> Double {
@@ -335,10 +347,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
         deadline: deadline,
         healthStore: healthStore,
         autodataConfig: autodataConfig,
-        sampleFilter: { samples in
-          let workouts = samples.compactMap { $0 as? HKWorkout }
-          return self.filterWorkouts(workouts, config: autodataConfig)
-        }
+        samplePredicate: { self.workoutMatchesFilter($0, config: autodataConfig) }
       )
     }
   }

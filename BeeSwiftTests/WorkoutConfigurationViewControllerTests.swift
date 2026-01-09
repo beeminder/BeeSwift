@@ -24,6 +24,7 @@ final class WorkoutConfigurationViewControllerTests: XCTestCase {
   func testConfigDailyAggregateFalse() {
     let vc = createViewController()
     vc.syncModeSegmentedControl.selectedSegmentIndex = 1  // Individual Workouts
+    vc.syncModeSegmentedControl.sendActions(for: .valueChanged)
 
     let config = vc.getConfigParameters()
 
