@@ -14,6 +14,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
   public let humanText: String
   public let databaseString: String
   public let category: HealthKitCategory
+  public var hasAdditionalOptions: Bool { false }
   let hkSampleType: HKSampleType
 
   public var precision: [HKUnit: Int] { [:] }
@@ -32,21 +33,48 @@ public class CategoryHealthKitMetric: HealthKitMetric {
   public func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore, autodataConfig: [String: Any])
     async throws -> [BeeDataPoint]
   {
+    return try await recentDataPoints(
+      days: days,
+      deadline: deadline,
+      healthStore: healthStore,
+      autodataConfig: autodataConfig,
+      samplePredicate: nil
+    )
+  }
+
+  internal func recentDataPoints(
+    days: Int,
+    deadline: Int,
+    healthStore: HKHealthStore,
+    autodataConfig: [String: Any],
+    samplePredicate: ((HKSample) -> Bool)?
+  ) async throws -> [BeeDataPoint] {
     let today = Daystamp.now(deadline: deadline)
     let startDate = today - days
 
     var results: [BeeDataPoint] = []
     for date in (startDate...today) {
-      results.append(try await self.getDataPoint(date: date, deadline: deadline, healthStore: healthStore))
+      results.append(
+        try await self.getDataPoint(
+          date: date,
+          deadline: deadline,
+          healthStore: healthStore,
+          samplePredicate: samplePredicate
+        )
+      )
     }
     return results
   }
 
   public func units(healthStore: HKHealthStore) async throws -> HKUnit { return HKUnit.count() }
 
-  private func getDataPoint(date: Daystamp, deadline: Int, healthStore: HKHealthStore) async throws -> BeeDataPoint {
-
-    let samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
+  private func getDataPoint(
+    date: Daystamp,
+    deadline: Int,
+    healthStore: HKHealthStore,
+    samplePredicate: ((HKSample) -> Bool)? = nil
+  ) async throws -> BeeDataPoint {
+    var samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
       let query = HKSampleQuery(
         sampleType: sampleType(),
         predicate: HKQuery.predicateForSamples(
@@ -67,6 +95,8 @@ public class CategoryHealthKitMetric: HealthKitMetric {
       )
       healthStore.execute(query)
     })
+
+    if let samplePredicate = samplePredicate { samples = samples.filter(samplePredicate) }
 
     let id = "apple-heath-" + date.description
     let datapointValue = self.hkDatapointValueForSamples(samples: samples, startOfDate: date.start(deadline: deadline))

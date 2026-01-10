@@ -20,6 +20,7 @@ public protocol HealthKitMetric {
   var humanText: String { get }
   var databaseString: String { get }
   var category: HealthKitCategory { get }
+  var hasAdditionalOptions: Bool { get }
   var precision: [HKUnit: Int] { get }
 
   /// The permission required for this connection to read data from HealthKit
@@ -45,6 +46,8 @@ public protocol HealthKitMetric {
 }
 
 extension HealthKitMetric {
+  public var hasAdditionalOptions: Bool { false }
+
   func applyPrecision(value: Double, unit: HKUnit) -> Double {
     if let unitPrecision = precision[unit] {
       let roundingFactor = pow(10.0, Double(unitPrecision))
