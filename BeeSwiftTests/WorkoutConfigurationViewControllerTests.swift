@@ -5,7 +5,11 @@ import XCTest
 final class WorkoutConfigurationViewControllerTests: XCTestCase {
 
   func createViewController(existingConfig: [String: Any] = [:]) -> WorkoutConfigurationViewController {
-    let vc = WorkoutConfigurationViewController(existingConfig: existingConfig)
+    let vc = WorkoutConfigurationViewController(
+      goalName: "test-goal",
+      metricName: "Workout Minutes",
+      existingConfig: existingConfig
+    )
     vc.loadViewIfNeeded()
     return vc
   }

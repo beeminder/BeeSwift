@@ -161,6 +161,7 @@ class ConfigureHKMetricViewController: UIViewController {
       }
 
       let units = try await self.metric.units(healthStore: self.healthStoreManager.healthStore)
+      workoutConfigViewController?.unitName = units.description
       unitsLabel.attributedText = {
         let text = NSMutableAttributedString()
         text.append(
@@ -255,7 +256,11 @@ class ConfigureHKMetricViewController: UIViewController {
   }
 
   private func setupWorkoutConfiguration() {
-    let workoutConfig = WorkoutConfigurationViewController(existingConfig: goal.autodataConfig)
+    let workoutConfig = WorkoutConfigurationViewController(
+      goalName: goal.slug,
+      metricName: metric.humanText,
+      existingConfig: goal.autodataConfig
+    )
     workoutConfigViewController = workoutConfig
 
     addChild(workoutConfig)
