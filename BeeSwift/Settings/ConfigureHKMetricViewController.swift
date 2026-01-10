@@ -42,30 +42,9 @@ class ConfigureHKMetricViewController: UIViewController {
     setupMetricConfiguration()
 
     self.view.addSubview(previewDescriptionLabel)
-    previewDescriptionLabel.attributedText = {
-      let text = NSMutableAttributedString()
-      text.append(
-        NSMutableAttributedString(
-          string: "Here is a preview of the data points which will be added to your ",
-          attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]
-        )
-      )
-      text.append(
-        NSMutableAttributedString(
-          string: self.goal.slug,
-          attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultBoldFont]
-        )
-      )
-      text.append(
-        NSMutableAttributedString(
-          string: " goal:",
-          attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]
-        )
-      )
-      return text
-    }()
+    previewDescriptionLabel.text = "Data Preview"
+    previewDescriptionLabel.font = UIFont.beeminder.defaultBoldFont
     previewDescriptionLabel.textAlignment = .left
-    previewDescriptionLabel.numberOfLines = 0
     previewDescriptionLabel.snp.makeConstraints { (make) in
       if let metricConfig = metricConfigViewController {
         make.top.equalTo(metricConfig.view.snp.bottom).offset(componentMargin)
@@ -117,16 +96,6 @@ class ConfigureHKMetricViewController: UIViewController {
     }
     noDataFoundLabel.isHidden = true
 
-    let unitsLabel = BSLabel()
-    self.view.addSubview(unitsLabel)
-    unitsLabel.textAlignment = .left
-    unitsLabel.numberOfLines = 0
-    unitsLabel.snp.makeConstraints { (make) in
-      make.top.equalTo(noDataFoundLabel.snp.bottom).offset(componentMargin)
-      make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(componentMargin)
-      make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
-    }
-
     self.view.addSubview(saveButton)
     saveButton.snp.makeConstraints { (make) in
       make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-20)
@@ -163,22 +132,6 @@ class ConfigureHKMetricViewController: UIViewController {
 
       let units = try await self.metric.units(healthStore: self.healthStoreManager.healthStore)
       metricConfigViewController?.unitName = units.description
-      unitsLabel.attributedText = {
-        let text = NSMutableAttributedString()
-        text.append(
-          NSMutableAttributedString(
-            string: "This metric reports results as ",
-            attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]
-          )
-        )
-        text.append(
-          NSMutableAttributedString(
-            string: units.description,
-            attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultBoldFont]
-          )
-        )
-        return text
-      }()
     }
   }
 

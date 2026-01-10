@@ -124,6 +124,9 @@ class HealthKitMetricConfigViewController: UIViewController {
     internalTableView.dataSource = self
     internalTableView.isScrollEnabled = false
     internalTableView.backgroundColor = .clear
+    internalTableView.tableHeaderView = UIView(
+      frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNonzeroMagnitude)
+    )
     view.addSubview(internalTableView)
     internalTableView.snp.makeConstraints { make in make.edges.equalToSuperview() }
   }
@@ -155,10 +158,10 @@ extension HealthKitMetricConfigViewController: UITableViewDelegate, UITableViewD
 
       switch indexPath.row {
       case 0:
-        cell.textLabel?.text = "Goal Name"
+        cell.textLabel?.text = "Goal"
         cell.detailTextLabel?.text = goalName
       case 1:
-        cell.textLabel?.text = "Apple Health Metric"
+        cell.textLabel?.text = "Metric"
         cell.detailTextLabel?.text = metricName
       case 2:
         cell.textLabel?.text = "Unit"
@@ -174,5 +177,9 @@ extension HealthKitMetricConfigViewController: UITableViewDelegate, UITableViewD
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     tableView.deselectRow(at: indexPath, animated: true)
     if indexPath.section == 1 { configurationProvider?.didSelectRow(at: indexPath.row) }
+  }
+
+  func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return section == 0 ? CGFloat.leastNonzeroMagnitude : UITableView.automaticDimension
   }
 }
