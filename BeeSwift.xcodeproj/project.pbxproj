@@ -8,86 +8,41 @@
 
 /* Begin PBXBuildFile section */
 		063B8B6D36ECC4A2401D5FF5 /* WorkoutMinutesHealthKitMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82549C20A89407D6E5D2790E /* WorkoutMinutesHealthKitMetricTests.swift */; };
-		08CF6F4794AD4118B7435D08 /* WorkoutTypeSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3960C6E09CBC83C14B589A81 /* WorkoutTypeSelectionViewController.swift */; };
-		0AB71DB9200F4E6DAE9BBA5A /* AddDataPointIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB71DB9200F4E6DAE9BBA5B /* AddDataPointIntent.swift */; };
-		46124622FCF84EB6A6E41C30 /* OpenGoalIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */; };
-		47C4AD8C407A4D9E977AEF8B /* GoalEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */; };
 		6D515F87AD966135DE127D2D /* DatapointTableViewCellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE40870B3BB076B0F0D28B5 /* DatapointTableViewCellTests.swift */; };
-		8646D674ADB842B797E2F98D /* AddDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8646D674ADB842B797E2F98E /* AddDataError.swift */; };
 		9B65F2322CFA6427009674A7 /* DeeplinkGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */; };
 		9B8CA57D24B120CA009C86C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */; };
 		9BD4C4E82D45A09F00B03E99 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */; };
-		9BFB27E92CFE770F0056D10D /* FreshnessIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */; };
-		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
-		A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */; };
-		A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */; };
 		A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */; };
 		A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */; };
 		A1453B3F1AEDFCC8006F48DA /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */; };
-		A149147B1BE79FD50060600A /* EditNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149147A1BE79FD40060600A /* EditNotificationsViewController.swift */; };
 		A149147F1BE7A5670060600A /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */; };
-		A149B3701AEF528C00F19A09 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */; };
 		A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A158DDB51E46EEA10031BD4F /* HealthKit.framework */; };
 		A15FF4201AEB621000A9AD22 /* GoalCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15FF41F1AEB621000A9AD22 /* GoalCollectionViewCell.swift */; };
-		A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */; };
-		A1619EA61BEECC6700E14B3A /* EditGoalNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */; };
 		A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17E930B1B09032F0098FCA0 /* QuartzCore.framework */; };
 		A196CB1A1AE4142E00B90A3E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB191AE4142E00B90A3E /* AppDelegate.swift */; };
-		A196CB1F1AE4142F00B90A3E /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */; };
 		A196CB241AE4142F00B90A3E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A196CB231AE4142F00B90A3E /* Images.xcassets */; };
 		A196CB331AE4142F00B90A3E /* BeeSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A196CB321AE4142F00B90A3E /* BeeSwiftTests.swift */; };
-		A1A8BDE61FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */; };
 		A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723D1B0989DF00584782 /* Foundation.framework */; };
 		A1B672401B0989E800584782 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723F1B0989E800584782 /* UIKit.framework */; };
 		A1B672421B0989ED00584782 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B672411B0989ED00584782 /* CoreGraphics.framework */; };
 		A1BD0D181AEB30A5001EDE8B /* GoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */; };
-		A1BE73AA1E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */; };
 		A1BE73AC1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */; };
-		A1E618E21E78158700D8ED93 /* HealthKitConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */; };
 		A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */; };
 		A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
 		E4015D9F2D10DC4D00F58D94 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4015D9E2D10DC4D00F58D94 /* SceneDelegate.swift */; };
 		E4015DA22D1E7B2D00F58D94 /* CoreDataEvolution in Frameworks */ = {isa = PBXBuildFile; productRef = E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */; };
 		E41286F12A62E6840093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F02A62E6840093D598 /* KeychainSwift */; };
-		E412DADF2B869E1E0099E483 /* BeeLemniscateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E412DADE2B869E1E0099E483 /* BeeLemniscateView.swift */; };
-		E412DAE12B86A8F70099E483 /* GoalImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E412DAE02B86A8F70099E483 /* GoalImageView.swift */; };
 		E417572D2A6446FE0029CDDA /* CurrentUserManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */; };
-		E43833942AC1473E0098A38F /* InlineDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43833932AC1473E0098A38F /* InlineDatePicker.swift */; };
 		E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BEA832A036A9C00FC3A38 /* LogReader.swift */; };
 		E43BEA862A036D4300FC3A38 /* LogReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */; };
-		E43D9AFB2929C37D00FC1578 /* DatapointValueAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */; };
 		E45470282B60E24500EE648B /* Daystamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45470272B60E24500EE648B /* Daystamp.swift */; };
 		E454702A2B60E25C00EE648B /* DaystampTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45470292B60E25C00EE648B /* DaystampTests.swift */; };
-		E458C8012AD11BB3000DCA5C /* RequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BCE9841AFFFB3A007322CC /* RequestManager.swift */; };
-		E458C8022AD11BB9000DCA5C /* CurrentUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */; };
-		E458C8042AD11BC3000DCA5C /* SignedRequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A142492C1FD079B4007736B3 /* SignedRequestManager.swift */; };
-		E458C8052AD11BC8000DCA5C /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C161932423CE9F0045C90D /* VersionManager.swift */; };
-		E458C8062AD11BCD000DCA5C /* GoalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE782299338C500394E87 /* GoalManager.swift */; };
 		E458C8082AD11BFB000DCA5C /* BeeDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833C293810EB00A71564 /* BeeDataPoint.swift */; };
-		E458C80A2AD11C1C000DCA5C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C11B471B06F5D100D22871 /* Constants.swift */; };
 		E458C80B2AD11C2B000DCA5C /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44CE7722993317B00394E87 /* ServiceLocator.swift */; };
-		E458C80D2AD11C64000DCA5C /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12BA9531AFFF21800AFEF32 /* Crypto.swift */; };
-		E458C80E2AD11C77000DCA5C /* HealthStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */; };
-		E458C80F2AD11C80000DCA5C /* HealthKitConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */; };
-		E458C8102AD11C87000DCA5C /* CategoryHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */; };
-		E458C8112AD11C8B000DCA5C /* MindfulSessionHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */; };
-		E458C8132AD11C94000DCA5C /* HealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */; };
-		E458C8142AD11C99000DCA5C /* QuantityHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */; };
-		E458C8152AD11C9D000DCA5C /* TimeInBedHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E6428F2910D327004F3EA9 /* TimeInBedHealthKitMetric.swift */; };
-		E458C8162AD11CA2000DCA5C /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB451291727B200A35AB9 /* HealthKitError.swift */; };
-		E458C8172AD11CA7000DCA5C /* TotalSleepMinutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */; };
-		E458C8182AD11CAC000DCA5C /* TimeAsleepHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */; };
-		E458C8192AD11CB0000DCA5C /* StandHoursHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */; };
-		E458C81A2AD11CB5000DCA5C /* WorkoutMinutesHealthKitMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */; };
-		E458C81B2AD11CD8000DCA5C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B341AED9184006F48DA /* UIColorExtension.swift */; };
-		E458C81C2AD11CDE000DCA5C /* UIFontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */; };
 		E458C8202AD11D35000DCA5C /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E458C81F2AD11D35000DCA5C /* SwiftyJSON */; };
 		E458C8222AD11D40000DCA5C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8212AD11D40000DCA5C /* Alamofire */; };
 		E458C8242AD11D7F000DCA5C /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8232AD11D7F000DCA5C /* KeychainSwift */; };
-		E458C8252AD11E01000DCA5C /* BSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B3711AEF54D100F19A09 /* BSButton.swift */; };
-		E458C8262AD11E12000DCA5C /* BSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1781AB21DE50F59000B96C5 /* BSTextField.swift */; };
-		E458C8272AD11F81000DCA5C /* BSLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1453B381AEDA71D006F48DA /* BSLabel.swift */; };
 		E458C8292AD12057000DCA5C /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8282AD12057000DCA5C /* OrderedCollections */; };
 		E458C8352AD1266B000DCA5C /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8342AD1266B000DCA5C /* SwiftyJSON */; };
 		E458C8372AD12671000DCA5C /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8362AD12671000DCA5C /* KeychainSwift */; };
@@ -100,27 +55,16 @@
 		E462BA4229AC458B00E80EF0 /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA4129AC458B00E80EF0 /* MBProgressHUD */; };
 		E462BA4829ADAA1C00E80EF0 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA4729ADAA1C00E80EF0 /* SnapKit */; };
 		E462BA5A29AEF02500E80EF0 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */; };
-		E46DC80F2AA58DF20059FDFE /* PullToRefreshHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */; };
 		E4866ED22DE5426900793D6A /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E4866ED12DE5426900793D6A /* SwiftyJSON */; };
-		E4866EFE2DE577CB00793D6A /* AddData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4866EFD2DE577CB00793D6A /* AddData.swift */; };
 		E486DE2629B0403700F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2529B0403700F338B2 /* OrderedCollections */; };
 		E48E2714296B75E4008013C0 /* TotalSleepMinutesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */; };
 		E48E27202973261F008013C0 /* BackgroundUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E271F2973261F008013C0 /* BackgroundUpdates.swift */; };
 		E49127752DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E49127722DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld */; };
-		E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */; };
-		E4B0833B2934620500A71564 /* DatapointTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833A2934620500A71564 /* DatapointTableViewController.swift */; };
-		E4B083402932F90400A71565 /* HealthKitMetricConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083412932F90400A71565 /* HealthKitMetricConfigViewController.swift */; };
-		E4B083422932F90400A71566 /* WorkoutConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083432932F90400A71566 /* WorkoutConfigurationProvider.swift */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
 		E4D470D02D2FE25C00EE648B /* DataPointManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */; };
-		E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */; };
-		E4E43D8829F39CE800697116 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E43D8729F39CE800697116 /* LogsViewController.swift */; };
-		E4E63C6D2C3F9083005E00DA /* DataPointManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */; };
-		E4E63C6F2C3F9086005E00DA /* RefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C6E2C3F9085005E00DA /* RefreshManager.swift */; };
 		E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */; };
 		E4E8DD3B2BE87F890059C64F /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8DD3A2BE87F890059C64F /* Goal.swift */; };
 		E4E8DD3D2BE881440059C64F /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8DD3C2BE881440059C64F /* DataPoint.swift */; };
-		E4SPOTIDX12345678900001 /* SpotlightIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */; };
 		E4SPOTTEST1234567890001 /* SpotlightIndexerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */; };
 		E57BE6E92655EBE000BA540B /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
 		E57BE6F22655EBE000BA540B /* BeeKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E57BE6E22655EBDA00BA540B /* BeeKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -135,7 +79,6 @@
 		E5FEFB4124E6FAFC00A076BB /* LaunchScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */; };
 		E9D661EBFB2D8EEE8F8DEEA0 /* GoalManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4BF1F79738C8EB7F63CD31 /* GoalManagerTests.swift */; };
 		E9D661EC00000001F8DEEA0 /* MigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4BF1F800000001F63CD31 /* MigrationTests.swift */; };
-		FDC1E1A1A992425FBB98CE56 /* GoalEntityQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC1E1A1A992425FBB98CE57 /* GoalEntityQuery.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -201,115 +144,60 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0AB71DB9200F4E6DAE9BBA5B /* AddDataPointIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataPointIntent.swift; sourceTree = "<group>"; };
 		0E4BF1F79738C8EB7F63CD31 /* GoalManagerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoalManagerTests.swift; sourceTree = "<group>"; };
 		0E4BF1F800000001F63CD31 /* MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationTests.swift; sourceTree = "<group>"; };
-		3960C6E09CBC83C14B589A81 /* WorkoutTypeSelectionViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutTypeSelectionViewController.swift; sourceTree = "<group>"; };
-		46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGoalIntent.swift; sourceTree = "<group>"; };
-		47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEntity.swift; sourceTree = "<group>"; };
 		4EE40870B3BB076B0F0D28B5 /* DatapointTableViewCellTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCellTests.swift; sourceTree = "<group>"; };
 		82549C20A89407D6E5D2790E /* WorkoutMinutesHealthKitMetricTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutMinutesHealthKitMetricTests.swift; sourceTree = "<group>"; };
-		8646D674ADB842B797E2F98E /* AddDataError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataError.swift; sourceTree = "<group>"; };
 		92A80BDCAB8C369EFE1322AA /* HealthKitMetricConfigTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HealthKitMetricConfigTests.swift; sourceTree = "<group>"; };
 		9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkGenerator.swift; sourceTree = "<group>"; };
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
-		9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshnessIndicatorView.swift; sourceTree = "<group>"; };
-		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
-		A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveHKMetricViewController.swift; sourceTree = "<group>"; };
-		A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseGoalSortViewController.swift; sourceTree = "<group>"; };
-		A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoreManager.swift; sourceTree = "<group>"; };
 		A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewController.swift; sourceTree = "<group>"; };
 		A12BA94B1AFF201B00AFEF32 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		A12BA9531AFFF21800AFEF32 /* Crypto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Crypto.swift; sourceTree = "<group>"; };
 		A1308D451DE24D76006D0626 /* BeeSwift.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BeeSwift.entitlements; sourceTree = "<group>"; };
-		A142492C1FD079B4007736B3 /* SignedRequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedRequestManager.swift; sourceTree = "<group>"; };
-		A1453B341AED9184006F48DA /* UIColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
-		A1453B381AEDA71D006F48DA /* BSLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSLabel.swift; sourceTree = "<group>"; };
-		A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentUserManager.swift; sourceTree = "<group>"; };
 		A1453B3E1AEDFCC8006F48DA /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
-		A149147A1BE79FD40060600A /* EditNotificationsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditNotificationsViewController.swift; sourceTree = "<group>"; };
 		A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
-		A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		A149B3711AEF54D100F19A09 /* BSButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSButton.swift; sourceTree = "<group>"; };
 		A158DDB51E46EEA10031BD4F /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		A15FF41F1AEB621000A9AD22 /* GoalCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoalCollectionViewCell.swift; sourceTree = "<group>"; };
-		A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDefaultNotificationsViewController.swift; sourceTree = "<group>"; };
-		A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditGoalNotificationsViewController.swift; sourceTree = "<group>"; };
-		A1781AB21DE50F59000B96C5 /* BSTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSTextField.swift; sourceTree = "<group>"; };
 		A17E930B1B09032F0098FCA0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A196CB141AE4142E00B90A3E /* BeeSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeeSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A196CB181AE4142E00B90A3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A196CB191AE4142E00B90A3E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
 		A196CB231AE4142F00B90A3E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		A196CB2C1AE4142F00B90A3E /* BeeSwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeeSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A196CB311AE4142F00B90A3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A196CB321AE4142F00B90A3E /* BeeSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeSwiftTests.swift; sourceTree = "<group>"; };
-		A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureNotificationsViewController.swift; sourceTree = "<group>"; };
 		A1B53C301B2D04EA00AF266F /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		A1B6723D1B0989DF00584782 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A1B6723F1B0989E800584782 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A1B672411B0989ED00584782 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		A1BCE9841AFFFB3A007322CC /* RequestManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestManager.swift; sourceTree = "<group>"; };
 		A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoalViewController.swift; sourceTree = "<group>"; };
 		A1BD3E021AE41AE400B1390A /* BeeSwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeeSwift-Bridging-Header.h"; sourceTree = "<group>"; };
-		A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChooseHKMetricViewController.swift; sourceTree = "<group>"; };
 		A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitMetricTableViewCell.swift; sourceTree = "<group>"; };
-		A1C11B471B06F5D100D22871 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFontExtension.swift; sourceTree = "<group>"; };
-		A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfigViewController.swift; sourceTree = "<group>"; };
 		A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfigTableViewCell.swift; sourceTree = "<group>"; };
-		A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitConfig.swift; sourceTree = "<group>"; };
 		A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCell.swift; sourceTree = "<group>"; };
 		A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDatapointViewController.swift; sourceTree = "<group>"; };
 		E4015D9E2D10DC4D00F58D94 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMinutesHealthKitMetric.swift; sourceTree = "<group>"; };
-		E412DADE2B869E1E0099E483 /* BeeLemniscateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeLemniscateView.swift; sourceTree = "<group>"; };
-		E412DAE02B86A8F70099E483 /* GoalImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalImageView.swift; sourceTree = "<group>"; };
 		E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserManagerTests.swift; sourceTree = "<group>"; };
-		E42CB451291727B200A35AB9 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
-		E43833932AC1473E0098A38F /* InlineDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineDatePicker.swift; sourceTree = "<group>"; };
 		E43BEA832A036A9C00FC3A38 /* LogReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogReader.swift; sourceTree = "<group>"; };
 		E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogReaderTests.swift; sourceTree = "<group>"; };
-		E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointValueAccessory.swift; sourceTree = "<group>"; };
 		E44CE7722993317B00394E87 /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
 		E44CE77E2993351100394E87 /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
-		E44CE782299338C500394E87 /* GoalManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalManager.swift; sourceTree = "<group>"; };
 		E45470272B60E24500EE648B /* Daystamp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Daystamp.swift; sourceTree = "<group>"; };
 		E45470292B60E25C00EE648B /* DaystampTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DaystampTests.swift; sourceTree = "<group>"; };
 		E46070EE2B36A4D900305DB4 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		E46070F72B3FEFD400305DB4 /* BeeminderPersistentContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeminderPersistentContainer.swift; sourceTree = "<group>"; };
-		E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshHint.swift; sourceTree = "<group>"; };
-		E4866EFD2DE577CB00793D6A /* AddData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddData.swift; sourceTree = "<group>"; };
-		E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutes.swift; sourceTree = "<group>"; };
 		E48E2713296B75E4008013C0 /* TotalSleepMinutesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSleepMinutesTests.swift; sourceTree = "<group>"; };
-		E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAsleepHealthKitMetric.swift; sourceTree = "<group>"; };
-		E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandHoursHealthKitMetric.swift; sourceTree = "<group>"; };
 		E48E271F2973261F008013C0 /* BackgroundUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundUpdates.swift; sourceTree = "<group>"; };
 		E49127732DC9E2C6000BFBFE /* BeeminderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel.xcdatamodel; sourceTree = "<group>"; };
 		E49127742DC9E2C6000BFBFE /* BeeminderModel2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BeeminderModel2.xcdatamodel; sourceTree = "<group>"; };
-		E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureHKMetricViewController.swift; sourceTree = "<group>"; };
-		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
-		E4B083412932F90400A71565 /* HealthKitMetricConfigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricConfigViewController.swift; sourceTree = "<group>"; };
-		E4B083432932F90400A71566 /* WorkoutConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutConfigurationProvider.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
 		E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataPointManagerTests.swift; sourceTree = "<group>"; };
-		E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricMonitor.swift; sourceTree = "<group>"; };
-		E4E43D8729F39CE800697116 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
-		E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPointManager.swift; sourceTree = "<group>"; };
-		E4E63C6E2C3F9085005E00DA /* RefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshManager.swift; sourceTree = "<group>"; };
 		E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalExtensions.swift; sourceTree = "<group>"; };
-		E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetric.swift; sourceTree = "<group>"; };
-		E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityHealthKitMetric.swift; sourceTree = "<group>"; };
-		E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryHealthKitMetric.swift; sourceTree = "<group>"; };
-		E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MindfulSessionHealthKitMetric.swift; sourceTree = "<group>"; };
-		E4E6428F2910D327004F3EA9 /* TimeInBedHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInBedHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E8DD3A2BE87F890059C64F /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		E4E8DD3C2BE881440059C64F /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
-		E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
 		E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexerTests.swift; sourceTree = "<group>"; };
 		E55FEE6A23FF7552007C20B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		E57BE6E02655EBD900BA540B /* BeeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -317,7 +205,6 @@
 		E57BE6E32655EBDA00BA540B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E57BE6E82655EBDF00BA540B /* BeeKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeeKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E57BE6F12655EBE000BA540B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E5C161932423CE9F0045C90D /* VersionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionManager.swift; sourceTree = "<group>"; };
 		E5DF493624DC69A200260560 /* Config.swift.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = Config.swift.sample; sourceTree = "<group>"; };
 		E5F7C491260FC5300095684F /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		E5F7C49C260FC5300095684F /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
@@ -325,7 +212,6 @@
 		E5FEFB3724E6FAC800A076BB /* BeeSwiftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeSwiftUITests.swift; sourceTree = "<group>"; };
 		E5FEFB3924E6FAC800A076BB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E5FEFB4024E6FAFC00A076BB /* LaunchScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenTests.swift; sourceTree = "<group>"; };
-		FDC1E1A1A992425FBB98CE57 /* GoalEntityQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEntityQuery.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -338,6 +224,94 @@
 			explicitFolders = (
 			);
 			path = DueBy;
+			sourceTree = "<group>";
+		};
+		A106AD8B1AF1F62800C434E8 /* Managers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		A149147C1BE7A4FC0060600A /* UI */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		A149147D1BE7A5140060600A /* Util */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
+		E46070FD2B43D98600305DB4 /* Components */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		E46070FE2B43D9D900305DB4 /* Settings */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		E46071002B43DA7100305DB4 /* Gallery */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Gallery;
+			sourceTree = "<group>";
+		};
+		E4866F3C2DE818DA00793D6A /* Intents */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		E4E6426E290E27CB004F3EA9 /* HealthKit */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = HealthKit;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -406,42 +380,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A106AD8B1AF1F62800C434E8 /* Managers */ = {
-			isa = PBXGroup;
-			children = (
-				A1BCE9841AFFFB3A007322CC /* RequestManager.swift */,
-				A1453B3C1AEDFA52006F48DA /* CurrentUserManager.swift */,
-				A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */,
-				A142492C1FD079B4007736B3 /* SignedRequestManager.swift */,
-				E5C161932423CE9F0045C90D /* VersionManager.swift */,
-				E44CE782299338C500394E87 /* GoalManager.swift */,
-				E4E63C6C2C3F9083005E00DA /* DataPointManager.swift */,
-				E4E63C6E2C3F9085005E00DA /* RefreshManager.swift */,
-			);
-			path = Managers;
-			sourceTree = "<group>";
-		};
-		A149147C1BE7A4FC0060600A /* UI */ = {
-			isa = PBXGroup;
-			children = (
-				A149B3711AEF54D100F19A09 /* BSButton.swift */,
-				A1453B381AEDA71D006F48DA /* BSLabel.swift */,
-				A1781AB21DE50F59000B96C5 /* BSTextField.swift */,
-				A1453B341AED9184006F48DA /* UIColorExtension.swift */,
-				A1C170DF1BEEB3110018D32B /* UIFontExtension.swift */,
-			);
-			path = UI;
-			sourceTree = "<group>";
-		};
-		A149147D1BE7A5140060600A /* Util */ = {
-			isa = PBXGroup;
-			children = (
-				A1C11B471B06F5D100D22871 /* Constants.swift */,
-				A12BA9531AFFF21800AFEF32 /* Crypto.swift */,
-			);
-			path = Util;
-			sourceTree = "<group>";
-		};
 		A196CB0B1AE4142E00B90A3E = {
 			isa = PBXGroup;
 			children = (
@@ -568,41 +506,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		E46070FD2B43D98600305DB4 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */,
-				A10D4E921B07948500A72D29 /* DatapointsTableView.swift */,
-				E4B0833A2934620500A71564 /* DatapointTableViewController.swift */,
-				E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */,
-				E43833932AC1473E0098A38F /* InlineDatePicker.swift */,
-				E46DC80E2AA58DF20059FDFE /* PullToRefreshHint.swift */,
-				E412DADE2B869E1E0099E483 /* BeeLemniscateView.swift */,
-				E412DAE02B86A8F70099E483 /* GoalImageView.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
-		E46070FE2B43D9D900305DB4 /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */,
-				E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */,
-				E4B083412932F90400A71565 /* HealthKitMetricConfigViewController.swift */,
-				E4B083432932F90400A71566 /* WorkoutConfigurationProvider.swift */,
-				A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */,
-				A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */,
-				A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */,
-				A149147A1BE79FD40060600A /* EditNotificationsViewController.swift */,
-				A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */,
-				E4E43D8729F39CE800697116 /* LogsViewController.swift */,
-				A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */,
-				A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */,
-				3960C6E09CBC83C14B589A81 /* WorkoutTypeSelectionViewController.swift */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
 		E46070FF2B43DA3D00305DB4 /* GoalView */ = {
 			isa = PBXGroup;
 			children = (
@@ -611,48 +514,6 @@
 				A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */,
 			);
 			name = GoalView;
-			sourceTree = "<group>";
-		};
-		E46071002B43DA7100305DB4 /* Gallery */ = {
-			isa = PBXGroup;
-			children = (
-				A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */,
-				A196CB1E1AE4142F00B90A3E /* GalleryViewController.swift */,
-			);
-			path = Gallery;
-			sourceTree = "<group>";
-		};
-		E4866F3C2DE818DA00793D6A /* Intents */ = {
-			isa = PBXGroup;
-			children = (
-				E4866EFD2DE577CB00793D6A /* AddData.swift */,
-				8646D674ADB842B797E2F98E /* AddDataError.swift */,
-				0AB71DB9200F4E6DAE9BBA5B /* AddDataPointIntent.swift */,
-				47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */,
-				FDC1E1A1A992425FBB98CE57 /* GoalEntityQuery.swift */,
-				46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */,
-				E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */,
-			);
-			path = Intents;
-			sourceTree = "<group>";
-		};
-		E4E6426E290E27CB004F3EA9 /* HealthKit */ = {
-			isa = PBXGroup;
-			children = (
-				A1E618FF1E86980900D8ED93 /* HealthKitConfig.swift */,
-				E4E642832910C442004F3EA9 /* CategoryHealthKitMetric.swift */,
-				E4E642872910D055004F3EA9 /* MindfulSessionHealthKitMetric.swift */,
-				E4E6427B2910C3AB004F3EA9 /* HealthKitMetric.swift */,
-				E4E6427F2910C3FB004F3EA9 /* QuantityHealthKitMetric.swift */,
-				E4E6428F2910D327004F3EA9 /* TimeInBedHealthKitMetric.swift */,
-				E42CB451291727B200A35AB9 /* HealthKitError.swift */,
-				E48E2711296B7548008013C0 /* TotalSleepMinutes.swift */,
-				E48E2715296B9F4B008013C0 /* TimeAsleepHealthKitMetric.swift */,
-				E48E271B2970EC85008013C0 /* StandHoursHealthKitMetric.swift */,
-				E4040D732A7B5F0E008E7D0E /* WorkoutMinutesHealthKitMetric.swift */,
-				E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */,
-			);
-			path = HealthKit;
 			sourceTree = "<group>";
 		};
 		E57BE6E12655EBDA00BA540B /* BeeKit */ = {
@@ -727,6 +588,12 @@
 			dependencies = (
 				E57BE7132655F00200BA540B /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				E46070FD2B43D98600305DB4 /* Components */,
+				E46070FE2B43D9D900305DB4 /* Settings */,
+				E46071002B43DA7100305DB4 /* Gallery */,
+				E4866F3C2DE818DA00793D6A /* Intents */,
+			);
 			name = BeeSwift;
 			packageProductDependencies = (
 				E462BA3529AC44EA00E80EF0 /* Alamofire */,
@@ -781,6 +648,10 @@
 			);
 			fileSystemSynchronizedGroups = (
 				9BB602A42D3A6D1900756109 /* DueBy */,
+				A106AD8B1AF1F62800C434E8 /* Managers */,
+				A149147C1BE7A4FC0060600A /* UI */,
+				A149147D1BE7A5140060600A /* Util */,
+				E4E6426E290E27CB004F3EA9 /* HealthKit */,
 			);
 			name = BeeKit;
 			packageProductDependencies = (
