@@ -7,3 +7,10 @@ repos:
         language: system
         files: \.swift$
         pass_filenames: true
+
+      - id: swift-files-in-project
+        name: Check Swift files in Xcode project
+        entry: scripts/check-swift-files-in-project.sh
+        language: script
+        files: \.swift$
+        pass_filenames: false
