@@ -1,5 +1,6 @@
 // Part of BeeSwift. Copyright Beeminder
 
+import Foundation
 import SwiftyJSON
 
 @objc(DueByEntry) public class DueByEntry: NSObject, Codable {

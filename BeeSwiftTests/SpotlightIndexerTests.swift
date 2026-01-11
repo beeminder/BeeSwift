@@ -202,6 +202,10 @@ final class SpotlightIndexerTests: XCTestCase {
     // Delete one goal
     container.viewContext.delete(goal1)
     try container.viewContext.save()
+    // Refresh all objects to ensure the User's goals relationship reflects the deletion.
+    // In production, this happens automatically via NSManagedObjectContextObjectsDidChange
+    // notifications, but in tests we call reindexAllGoals() directly.
+    container.viewContext.refreshAllObjects()
 
     // Second indexing
     await indexer.reindexAllGoals()
