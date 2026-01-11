@@ -115,20 +115,15 @@ final class WorkoutConfigurationProviderTests: XCTestCase {
     XCTAssertEqual(workoutTypes, ["cycling"])
   }
 
-  func testSetSelectedWorkoutTypesTriggersCallback() {
+  func testSyncModeChangeTriggersCallback() {
     let provider = createProvider()
     var callbackCalled = false
     provider.onConfigurationChanged = { callbackCalled = true }
 
-    // Create a dummy table view for the method
-    let tableView = UITableView()
-    tableView.dataSource = DummyDataSource()
-    tableView.reloadData()
-
-    provider.setSelectedWorkoutTypes(["running"], in: tableView)
+    provider.syncModeSegmentedControl.selectedSegmentIndex = 1
+    provider.syncModeSegmentedControl.sendActions(for: .valueChanged)
 
     XCTAssertTrue(callbackCalled)
-    XCTAssertEqual(provider.selectedWorkoutTypes, ["running"])
   }
 
   // MARK: - Init with existing config tests
@@ -162,14 +157,5 @@ final class WorkoutConfigurationProviderTests: XCTestCase {
     let provider = createProvider()
 
     XCTAssertEqual(provider.numberOfRows, 2)
-  }
-}
-
-// Helper for table view tests
-private class DummyDataSource: NSObject, UITableViewDataSource {
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return 2 }
-  func numberOfSections(in tableView: UITableView) -> Int { return 2 }
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    return UITableViewCell()
   }
 }

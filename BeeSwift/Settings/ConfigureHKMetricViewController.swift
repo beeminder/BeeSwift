@@ -20,7 +20,6 @@ class ConfigureHKMetricViewController: UIViewController {
   fileprivate var datapointTableController = DatapointTableViewController()
   fileprivate let noDataFoundLabel = BSLabel()
   private var metricConfigViewController: HealthKitMetricConfigViewController?
-  private var workoutConfigProvider: WorkoutConfigurationProvider?
   let saveButton = BSButton()
 
   init(goal: Goal, metric: HealthKitMetric, healthStoreManager: HealthStoreManager, requestManager: RequestManager) {
@@ -216,29 +215,32 @@ class ConfigureHKMetricViewController: UIViewController {
     // Set up workout-specific configuration if applicable
     if metric is WorkoutMinutesHealthKitMetric {
       let workoutProvider = WorkoutConfigurationProvider(existingConfig: goal.autodataConfig)
-      workoutConfigProvider = workoutProvider
       metricConfig.configurationProvider = workoutProvider
-
-      workoutProvider.onConfigurationChanged = { [weak self] in
-        Task { @MainActor in
-          guard let self = self else { return }
-          do {
-            var currentConfig = self.goal.autodataConfig
-            if let metricConfig = self.metricConfigViewController {
-              let configParams = metricConfig.getConfigParameters()
-              for (key, value) in configParams { currentConfig[key] = value }
-            }
-            let datapoints = try await self.metric.recentDataPoints(
-              days: 5,
-              deadline: self.goal.deadline,
-              healthStore: self.healthStoreManager.healthStore,
-              autodataConfig: currentConfig
-            )
-            self.datapointTableController.datapoints = datapoints
-          } catch { self.logger.error("Failed to fetch preview data: \(error)") }
-        }
+      workoutProvider.setTableView(metricConfig.tableView)
+      workoutProvider.onPushViewController = { [weak self] viewController in
+        self?.navigationController?.pushViewController(viewController, animated: true)
       }
-      workoutProvider.onNavigateToTypeSelection = { [weak self] in self?.showWorkoutTypeSelection() }
+    }
+
+    // Listen for configuration changes from the metric config view controller
+    metricConfig.onConfigurationChanged = { [weak self] in
+      Task { @MainActor in
+        guard let self = self else { return }
+        do {
+          var currentConfig = self.goal.autodataConfig
+          if let metricConfig = self.metricConfigViewController {
+            let configParams = metricConfig.getConfigParameters()
+            for (key, value) in configParams { currentConfig[key] = value }
+          }
+          let datapoints = try await self.metric.recentDataPoints(
+            days: 5,
+            deadline: self.goal.deadline,
+            healthStore: self.healthStoreManager.healthStore,
+            autodataConfig: currentConfig
+          )
+          self.datapointTableController.datapoints = datapoints
+        } catch { self.logger.error("Failed to fetch preview data: \(error)") }
+      }
     }
 
     addChild(metricConfig)
@@ -250,16 +252,6 @@ class ConfigureHKMetricViewController: UIViewController {
       make.right.equalTo(view.safeAreaLayoutGuide.snp.rightMargin)
     }
     metricConfig.didMove(toParent: self)
-  }
-
-  private func showWorkoutTypeSelection() {
-    guard let workoutProvider = workoutConfigProvider, let metricConfig = metricConfigViewController else { return }
-    let selectionVC = WorkoutTypeSelectionViewController(initialSelection: workoutProvider.selectedWorkoutTypes)
-    selectionVC.onSelectionChanged = { [weak workoutProvider, weak metricConfig] types in
-      guard let provider = workoutProvider, let config = metricConfig else { return }
-      provider.setSelectedWorkoutTypes(types, in: config.tableView)
-    }
-    navigationController?.pushViewController(selectionVC, animated: true)
   }
 
 }
