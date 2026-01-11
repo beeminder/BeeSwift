@@ -14,6 +14,8 @@ struct DatapointColumnWidths {
   let dayWidth: CGFloat
   let valueWidth: CGFloat
   static let columnSpacing: CGFloat = 8
+  /// If max width exceeds 75th percentile by more than this factor, use percentile and allow overflow
+  static let overflowThreshold: CGFloat = 1.5
 }
 
 protocol DatapointTableViewControllerDelegate: AnyObject {
@@ -65,12 +67,8 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
     guard indexPath.row < datapoints.count else { return cell }
     let datapoint = datapoints[indexPath.row]
 
-    let day = formatDay(datapoint: datapoint)
-    let value = formatValue(datapoint: datapoint)
-    let comment = datapoint.comment
-
     let widths = columnWidths ?? DatapointColumnWidths(dayWidth: 20, valueWidth: 40)
-    cell.configure(day: day, value: value, comment: comment, columnWidths: widths)
+    cell.configure(datapoint: datapoint, hhmmformat: hhmmformat, columnWidths: widths)
 
     return cell
   }
@@ -94,10 +92,10 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
     var dayWidths: [CGFloat] = []
     var valueWidths: [CGFloat] = []
     for datapoint in datapoints {
-      let dayText = formatDay(datapoint: datapoint)
+      let dayText = DatapointTableViewCell.formatDay(datapoint: datapoint)
       dayWidths.append((dayText as NSString).size(withAttributes: attributes).width)
 
-      let valueText = formatValue(datapoint: datapoint)
+      let valueText = DatapointTableViewCell.formatValue(datapoint: datapoint, hhmmformat: hhmmformat)
       valueWidths.append((valueText as NSString).size(withAttributes: attributes).width)
     }
 
@@ -105,7 +103,7 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
     let dayWidth = dayWidths.max() ?? minWidth
 
     // Value column: use 75th percentile, but expand to max if:
-    // - max isn't much wider than 75th percentile (within 30%)
+    // - max isn't much wider than 75th percentile
     // - or max isn't that wide overall (under 60pt)
     let valueWidth = calculatePercentileWidth(widths: valueWidths, fallback: minWidth)
 
@@ -120,31 +118,10 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
     let p75Width = sorted[max(0, p75Index)]
     let maxWidth = sorted.last!
 
-    if maxWidth <= 60 || maxWidth <= p75Width * 1.3 { return maxWidth } else { return p75Width }
-  }
-
-  private func formatDay(datapoint: BeeDataPoint) -> String {
-    let now = Date()
-    let calendar = Calendar.current
-    let currentMonth = calendar.component(.month, from: now)
-    let currentYear = calendar.component(.year, from: now)
-
-    let stamp = datapoint.daystamp
-    if stamp.month != currentMonth || stamp.year != currentYear {
-      return "\(stamp.month)/\(stamp.day)"
+    if maxWidth <= 60 || maxWidth <= p75Width * DatapointColumnWidths.overflowThreshold {
+      return maxWidth
     } else {
-      return String(stamp.day)
-    }
-  }
-
-  private func formatValue(datapoint: BeeDataPoint) -> String {
-    if hhmmformat {
-      let value = datapoint.value.doubleValue
-      let hours = Int(value)
-      let minutes = Int((value.truncatingRemainder(dividingBy: 1) * 60).rounded()) % 60
-      return String(hours) + ":" + String(format: "%02d", minutes)
-    } else {
-      return datapoint.value.stringValue
+      return p75Width
     }
   }
 }

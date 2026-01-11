@@ -76,15 +76,40 @@ class DatapointTableViewCell: UITableViewCell {
     }
   }
 
-  func configure(day: String, value: String, comment: String, columnWidths: DatapointColumnWidths) {
-    dayLabel.text = day
-    valueLabel.text = value
-    commentLabel.text = comment
+  func configure(datapoint: BeeDataPoint, hhmmformat: Bool, columnWidths: DatapointColumnWidths) {
+    dayLabel.text = Self.formatDay(datapoint: datapoint)
+    valueLabel.text = Self.formatValue(datapoint: datapoint, hhmmformat: hhmmformat)
+    commentLabel.text = datapoint.comment
 
     dayWidthConstraint?.update(offset: columnWidths.dayWidth)
     valueWidthConstraint?.update(offset: columnWidths.valueWidth)
 
     // Update intrinsic size constraint for value overflow
     valueMinWidthConstraint?.update(offset: valueLabel.intrinsicContentSize.width)
+  }
+
+  public static func formatDay(datapoint: BeeDataPoint) -> String {
+    let now = Date()
+    let calendar = Calendar.current
+    let currentMonth = calendar.component(.month, from: now)
+    let currentYear = calendar.component(.year, from: now)
+
+    let stamp = datapoint.daystamp
+    if stamp.month != currentMonth || stamp.year != currentYear {
+      return "\(stamp.month)/\(stamp.day)"
+    } else {
+      return String(stamp.day)
+    }
+  }
+
+  public static func formatValue(datapoint: BeeDataPoint, hhmmformat: Bool) -> String {
+    if hhmmformat {
+      let value = datapoint.value.doubleValue
+      let hours = Int(value)
+      let minutes = Int((value.truncatingRemainder(dividingBy: 1) * 60).rounded()) % 60
+      return String(hours) + ":" + String(format: "%02d", minutes)
+    } else {
+      return datapoint.value.stringValue
+    }
   }
 }
