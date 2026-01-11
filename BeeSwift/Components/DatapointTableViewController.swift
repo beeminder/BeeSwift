@@ -10,6 +10,12 @@ import BeeKit
 import Foundation
 import UIKit
 
+struct DatapointColumnWidths {
+  let dayWidth: CGFloat
+  let valueWidth: CGFloat
+  static let columnSpacing: CGFloat = 8
+}
+
 protocol DatapointTableViewControllerDelegate: AnyObject {
   func datapointTableViewController(
     _ datapointTableViewController: DatapointTableViewController,
@@ -23,17 +29,18 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
 
   public weak var delegate: DatapointTableViewControllerDelegate?
 
-  public var datapoints: [BeeDataPoint] = [] {
-    didSet {
-      // Cause the table to re-render to pick up the change to rows
-      self.datapointsTableView.reloadData()
-      // The number of rows may have changed, so we must trigger a re-layout to allow the
-      // table view more or less space
-      self.datapointsTableView.invalidateIntrinsicContentSize()
-    }
-  }
+  private var columnWidths: DatapointColumnWidths?
 
-  public var hhmmformat: Bool = false { didSet { self.datapointsTableView.reloadData() } }
+  public var datapoints: [BeeDataPoint] = [] { didSet { reloadTableData() } }
+
+  public var hhmmformat: Bool = false { didSet { reloadTableData() } }
+
+  private func reloadTableData() {
+    columnWidths = calculateColumnWidths(for: datapoints)
+    datapointsTableView.reloadData()
+    // The number of rows or column widths may have changed, so trigger a re-layout
+    datapointsTableView.invalidateIntrinsicContentSize()
+  }
 
   override func viewDidLoad() {
     self.view.addSubview(self.datapointsTableView)
@@ -58,7 +65,12 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
     guard indexPath.row < datapoints.count else { return cell }
     let datapoint = datapoints[indexPath.row]
 
-    cell.datapointText = displayText(datapoint: datapoint)
+    let day = formatDay(datapoint: datapoint)
+    let value = formatValue(datapoint: datapoint)
+    let comment = datapoint.comment
+
+    let widths = columnWidths ?? DatapointColumnWidths(dayWidth: 20, valueWidth: 40)
+    cell.configure(day: day, value: value, comment: comment, columnWidths: widths)
 
     return cell
   }
@@ -72,20 +84,67 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
     self.delegate?.datapointTableViewController(self, didSelectDatapoint: datapoint)
   }
 
-  func displayText(datapoint: BeeDataPoint) -> String {
-    let day = datapoint.daystamp.day
+  private func calculateColumnWidths(for datapoints: [BeeDataPoint]) -> DatapointColumnWidths {
+    let font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
+    let attributes: [NSAttributedString.Key: Any] = [.font: font]
 
-    var formattedValue: String
+    let minWidth = ("0" as NSString).size(withAttributes: attributes).width
+
+    // Measure actual day and value strings from data
+    var dayWidths: [CGFloat] = []
+    var valueWidths: [CGFloat] = []
+    for datapoint in datapoints {
+      let dayText = formatDay(datapoint: datapoint)
+      dayWidths.append((dayText as NSString).size(withAttributes: attributes).width)
+
+      let valueText = formatValue(datapoint: datapoint)
+      valueWidths.append((valueText as NSString).size(withAttributes: attributes).width)
+    }
+
+    // Day column: always use max width (no overflow, dates should align)
+    let dayWidth = dayWidths.max() ?? minWidth
+
+    // Value column: use 75th percentile, but expand to max if:
+    // - max isn't much wider than 75th percentile (within 30%)
+    // - or max isn't that wide overall (under 60pt)
+    let valueWidth = calculatePercentileWidth(widths: valueWidths, fallback: minWidth)
+
+    return DatapointColumnWidths(dayWidth: ceil(dayWidth), valueWidth: ceil(valueWidth))
+  }
+
+  private func calculatePercentileWidth(widths: [CGFloat], fallback: CGFloat) -> CGFloat {
+    guard !widths.isEmpty else { return fallback }
+
+    let sorted = widths.sorted()
+    let p75Index = min(sorted.count - 1, Int(ceil(Double(sorted.count) * 0.75)) - 1)
+    let p75Width = sorted[max(0, p75Index)]
+    let maxWidth = sorted.last!
+
+    if maxWidth <= 60 || maxWidth <= p75Width * 1.3 { return maxWidth } else { return p75Width }
+  }
+
+  private func formatDay(datapoint: BeeDataPoint) -> String {
+    let now = Date()
+    let calendar = Calendar.current
+    let currentMonth = calendar.component(.month, from: now)
+    let currentYear = calendar.component(.year, from: now)
+
+    let stamp = datapoint.daystamp
+    if stamp.month != currentMonth || stamp.year != currentYear {
+      return "\(stamp.month)/\(stamp.day)"
+    } else {
+      return String(stamp.day)
+    }
+  }
+
+  private func formatValue(datapoint: BeeDataPoint) -> String {
     if hhmmformat {
       let value = datapoint.value.doubleValue
       let hours = Int(value)
-      let minutes = Int(value.truncatingRemainder(dividingBy: 1) * 60)
-      formattedValue = String(hours) + ":" + String(format: "%02d", minutes)
+      let minutes = Int((value.truncatingRemainder(dividingBy: 1) * 60).rounded()) % 60
+      return String(hours) + ":" + String(format: "%02d", minutes)
     } else {
-      formattedValue = datapoint.value.stringValue
+      return datapoint.value.stringValue
     }
-    let comment = datapoint.comment
-
-    return "\(day) \(formattedValue) \(comment)"
   }
 }
