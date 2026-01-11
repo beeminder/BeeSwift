@@ -137,7 +137,7 @@ class DatapointTableViewCell: UITableViewCell {
     return DatapointColumnWidths(dayWidth: ceil(dayWidth), valueWidth: ceil(valueWidth))
   }
 
-  private static func calculatePercentileWidth(widths: [CGFloat], fallback: CGFloat) -> CGFloat {
+  static func calculatePercentileWidth(widths: [CGFloat], fallback: CGFloat) -> CGFloat {
     guard !widths.isEmpty else { return fallback }
 
     let sorted = widths.sorted()
