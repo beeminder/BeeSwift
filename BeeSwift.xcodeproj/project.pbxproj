@@ -11,6 +11,7 @@
 		08CF6F4794AD4118B7435D08 /* WorkoutTypeSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3960C6E09CBC83C14B589A81 /* WorkoutTypeSelectionViewController.swift */; };
 		0AB71DB9200F4E6DAE9BBA5A /* AddDataPointIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB71DB9200F4E6DAE9BBA5B /* AddDataPointIntent.swift */; };
 		46124622FCF84EB6A6E41C30 /* OpenGoalIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */; };
+		E4REFRESH12345678900001 /* RefreshGoalIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4REFRESH12345678900002 /* RefreshGoalIntent.swift */; };
 		47C4AD8C407A4D9E977AEF8B /* GoalEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */; };
 		6D515F87AD966135DE127D2D /* DatapointTableViewCellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE40870B3BB076B0F0D28B5 /* DatapointTableViewCellTests.swift */; };
 		8646D674ADB842B797E2F98D /* AddDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8646D674ADB842B797E2F98E /* AddDataError.swift */; };
@@ -206,6 +207,7 @@
 		0E4BF1F800000001F63CD31 /* MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationTests.swift; sourceTree = "<group>"; };
 		3960C6E09CBC83C14B589A81 /* WorkoutTypeSelectionViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutTypeSelectionViewController.swift; sourceTree = "<group>"; };
 		46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGoalIntent.swift; sourceTree = "<group>"; };
+		E4REFRESH12345678900002 /* RefreshGoalIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshGoalIntent.swift; sourceTree = "<group>"; };
 		47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEntity.swift; sourceTree = "<group>"; };
 		4EE40870B3BB076B0F0D28B5 /* DatapointTableViewCellTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCellTests.swift; sourceTree = "<group>"; };
 		82549C20A89407D6E5D2790E /* WorkoutMinutesHealthKitMetricTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutMinutesHealthKitMetricTests.swift; sourceTree = "<group>"; };
@@ -631,6 +633,7 @@
 				47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */,
 				FDC1E1A1A992425FBB98CE57 /* GoalEntityQuery.swift */,
 				46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */,
+				E4REFRESH12345678900002 /* RefreshGoalIntent.swift */,
 				E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */,
 			);
 			path = Intents;
@@ -1008,6 +1011,7 @@
 				47C4AD8C407A4D9E977AEF8B /* GoalEntity.swift in Sources */,
 				FDC1E1A1A992425FBB98CE56 /* GoalEntityQuery.swift in Sources */,
 				46124622FCF84EB6A6E41C30 /* OpenGoalIntent.swift in Sources */,
+				E4REFRESH12345678900001 /* RefreshGoalIntent.swift in Sources */,
 				A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */,
 				E48E27202973261F008013C0 /* BackgroundUpdates.swift in Sources */,
 				A149147F1BE7A5670060600A /* SettingsTableViewCell.swift in Sources */,
