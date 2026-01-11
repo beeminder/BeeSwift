@@ -22,7 +22,7 @@ enum RefreshGoalError: Error, CustomLocalizedStringResourceConvertible {
 struct RefreshGoalIntent: AppIntent {
   static var title: LocalizedStringResource = "Refresh Goal"
   static var description = IntentDescription(
-    "Refresh automatic data for a goal from Apple Health or other connected services"
+    "Refresh automatic data for a goal from Health or other connected services"
   )
 
   @Parameter(title: "Goal") var goal: GoalEntity
