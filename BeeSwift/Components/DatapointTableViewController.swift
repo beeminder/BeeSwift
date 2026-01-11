@@ -38,7 +38,7 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
   public var hhmmformat: Bool = false { didSet { reloadTableData() } }
 
   private func reloadTableData() {
-    columnWidths = calculateColumnWidths(for: datapoints)
+    columnWidths = DatapointTableViewCell.calculateColumnWidths(for: datapoints, hhmmformat: hhmmformat)
     datapointsTableView.reloadData()
     // The number of rows or column widths may have changed, so trigger a re-layout
     datapointsTableView.invalidateIntrinsicContentSize()
@@ -80,48 +80,5 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
     let datapoint = datapoints[indexPath.row]
 
     self.delegate?.datapointTableViewController(self, didSelectDatapoint: datapoint)
-  }
-
-  private func calculateColumnWidths(for datapoints: [BeeDataPoint]) -> DatapointColumnWidths {
-    let font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
-    let attributes: [NSAttributedString.Key: Any] = [.font: font]
-
-    let minWidth = ("0" as NSString).size(withAttributes: attributes).width
-
-    // Measure actual day and value strings from data
-    var dayWidths: [CGFloat] = []
-    var valueWidths: [CGFloat] = []
-    for datapoint in datapoints {
-      let dayText = DatapointTableViewCell.formatDay(datapoint: datapoint)
-      dayWidths.append((dayText as NSString).size(withAttributes: attributes).width)
-
-      let valueText = DatapointTableViewCell.formatValue(datapoint: datapoint, hhmmformat: hhmmformat)
-      valueWidths.append((valueText as NSString).size(withAttributes: attributes).width)
-    }
-
-    // Day column: always use max width (no overflow, dates should align)
-    let dayWidth = dayWidths.max() ?? minWidth
-
-    // Value column: use 75th percentile, but expand to max if:
-    // - max isn't much wider than 75th percentile
-    // - or max isn't that wide overall (under 60pt)
-    let valueWidth = calculatePercentileWidth(widths: valueWidths, fallback: minWidth)
-
-    return DatapointColumnWidths(dayWidth: ceil(dayWidth), valueWidth: ceil(valueWidth))
-  }
-
-  private func calculatePercentileWidth(widths: [CGFloat], fallback: CGFloat) -> CGFloat {
-    guard !widths.isEmpty else { return fallback }
-
-    let sorted = widths.sorted()
-    let p75Index = min(sorted.count - 1, Int(ceil(Double(sorted.count) * 0.75)) - 1)
-    let p75Width = sorted[max(0, p75Index)]
-    let maxWidth = sorted.last!
-
-    if maxWidth <= 60 || maxWidth <= p75Width * DatapointColumnWidths.overflowThreshold {
-      return maxWidth
-    } else {
-      return p75Width
-    }
   }
 }

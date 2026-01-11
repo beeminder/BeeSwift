@@ -11,6 +11,8 @@ import Foundation
 import SnapKit
 
 class DatapointTableViewCell: UITableViewCell {
+  private static let font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
+
   private let dayLabel = BSLabel()
   private let valueLabel = BSLabel()
   private let commentLabel = BSLabel()
@@ -37,10 +39,8 @@ class DatapointTableViewCell: UITableViewCell {
   }
 
   func setup() {
-    let font = UIFont.beeminder.defaultFontPlain.withSize(Constants.defaultFontSize)
-
     for label in [dayLabel, valueLabel, commentLabel] {
-      label.font = font
+      label.font = Self.font
       contentView.addSubview(label)
     }
 
@@ -110,6 +110,45 @@ class DatapointTableViewCell: UITableViewCell {
       return String(hours) + ":" + String(format: "%02d", minutes)
     } else {
       return datapoint.value.stringValue
+    }
+  }
+
+  public static func calculateColumnWidths(for datapoints: [BeeDataPoint], hhmmformat: Bool) -> DatapointColumnWidths {
+    let attributes: [NSAttributedString.Key: Any] = [.font: font]
+    let minWidth = ("0" as NSString).size(withAttributes: attributes).width
+
+    // Measure actual day and value strings from data
+    var dayWidths: [CGFloat] = []
+    var valueWidths: [CGFloat] = []
+    for datapoint in datapoints {
+      let dayText = formatDay(datapoint: datapoint)
+      dayWidths.append((dayText as NSString).size(withAttributes: attributes).width)
+
+      let valueText = formatValue(datapoint: datapoint, hhmmformat: hhmmformat)
+      valueWidths.append((valueText as NSString).size(withAttributes: attributes).width)
+    }
+
+    // Day column: always use max width (no overflow, dates should align)
+    let dayWidth = dayWidths.max() ?? minWidth
+
+    // Value column: use 75th percentile, but expand to max if not much wider
+    let valueWidth = calculatePercentileWidth(widths: valueWidths, fallback: minWidth)
+
+    return DatapointColumnWidths(dayWidth: ceil(dayWidth), valueWidth: ceil(valueWidth))
+  }
+
+  private static func calculatePercentileWidth(widths: [CGFloat], fallback: CGFloat) -> CGFloat {
+    guard !widths.isEmpty else { return fallback }
+
+    let sorted = widths.sorted()
+    let p75Index = min(sorted.count - 1, Int(ceil(Double(sorted.count) * 0.75)) - 1)
+    let p75Width = sorted[max(0, p75Index)]
+    let maxWidth = sorted.last!
+
+    if maxWidth <= 60 || maxWidth <= p75Width * DatapointColumnWidths.overflowThreshold {
+      return maxWidth
+    } else {
+      return p75Width
     }
   }
 }
