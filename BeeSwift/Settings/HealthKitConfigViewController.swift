@@ -155,7 +155,7 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
     if !goal.isDataProvidedAutomatically {
       coordinator?.showAssociateHealthKitWithGoal(goal)
     } else if goal.autodata == "apple" {
-      coordinator?.showRemoveHealthKitIntegrationFromGoal(goal)
+      coordinator?.showReconfigureHealthKitForGoal(goal)
     } else {
       let alert: UIAlertController = {
         let alert = UIAlertController(
