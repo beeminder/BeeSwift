@@ -120,8 +120,24 @@ class MainCoordinator {
     )
     navigationController.pushViewController(controller, animated: true)
   }
-  func showRemoveHealthKitIntegrationFromGoal(_ goal: Goal) {
-    let controller = RemoveHKMetricViewController(goal: goal, requestManager: requestManager, goalManager: goalManager)
+  func showReconfigureHealthKitForGoal(_ goal: Goal) {
+    guard let metric = HealthKitConfig.metrics.first(where: { $0.databaseString == goal.healthKitMetric }) else {
+      let alert = UIAlertController(
+        title: "Unknown Metric",
+        message: "Unable to find configuration for this Apple Health metric. The metric may no longer be supported.",
+        preferredStyle: .alert
+      )
+      alert.addAction(UIAlertAction(title: "OK", style: .default))
+      navigationController.present(alert, animated: true)
+      return
+    }
+    let controller = ConfigureHKMetricViewController(
+      goal: goal,
+      metric: metric,
+      healthStoreManager: healthStoreManager,
+      requestManager: requestManager,
+      goalManager: goalManager
+    )
     navigationController.pushViewController(controller, animated: true)
   }
   func showAssociateHealthKitWithGoal(_ goal: Goal) {

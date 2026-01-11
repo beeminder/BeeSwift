@@ -19,7 +19,6 @@
 		9BD4C4E82D45A09F00B03E99 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */; };
 		9BFB27E92CFE770F0056D10D /* FreshnessIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */; };
 		A10D4E931B07948500A72D29 /* DatapointsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D4E921B07948500A72D29 /* DatapointsTableView.swift */; };
-		A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */; };
 		A11A87C61FEBFF7200A43E47 /* ChooseGoalSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */; };
 		A11BC2D91FFAD5BC00E56064 /* TimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */; };
 		A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */; };
@@ -216,7 +215,6 @@
 		9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
 		9BFB27E82CFE770F0056D10D /* FreshnessIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshnessIndicatorView.swift; sourceTree = "<group>"; };
 		A10D4E921B07948500A72D29 /* DatapointsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatapointsTableView.swift; sourceTree = "<group>"; };
-		A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveHKMetricViewController.swift; sourceTree = "<group>"; };
 		A11A87C51FEBFF7200A43E47 /* ChooseGoalSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseGoalSortViewController.swift; sourceTree = "<group>"; };
 		A11BA9A31FCE54E3004BB425 /* HealthStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoreManager.swift; sourceTree = "<group>"; };
 		A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewController.swift; sourceTree = "<group>"; };
@@ -596,7 +594,6 @@
 				A149147A1BE79FD40060600A /* EditNotificationsViewController.swift */,
 				A1E618E11E78158700D8ED93 /* HealthKitConfigViewController.swift */,
 				E4E43D8729F39CE800697116 /* LogsViewController.swift */,
-				A10DC2DE207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift */,
 				A149B36F1AEF528C00F19A09 /* SettingsViewController.swift */,
 				3960C6E09CBC83C14B589A81 /* WorkoutTypeSelectionViewController.swift */,
 			);
@@ -990,7 +987,6 @@
 				A1BE73AC1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift in Sources */,
 				E43833942AC1473E0098A38F /* InlineDatePicker.swift in Sources */,
 				9BFB27E92CFE770F0056D10D /* FreshnessIndicatorView.swift in Sources */,
-				A10DC2DF207BFCBA00FB7B3A /* RemoveHKMetricViewController.swift in Sources */,
 				E412DAE12B86A8F70099E483 /* GoalImageView.swift in Sources */,
 				A1619EA41BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift in Sources */,
 				9BD4C4E82D45A09F00B03E99 /* MainCoordinator.swift in Sources */,
