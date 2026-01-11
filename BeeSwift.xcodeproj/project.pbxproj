@@ -11,7 +11,6 @@
 		08CF6F4794AD4118B7435D08 /* WorkoutTypeSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3960C6E09CBC83C14B589A81 /* WorkoutTypeSelectionViewController.swift */; };
 		0AB71DB9200F4E6DAE9BBA5A /* AddDataPointIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB71DB9200F4E6DAE9BBA5B /* AddDataPointIntent.swift */; };
 		46124622FCF84EB6A6E41C30 /* OpenGoalIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */; };
-		E4REFRESH12345678900001 /* RefreshGoalIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4REFRESH12345678900002 /* RefreshGoalIntent.swift */; };
 		47C4AD8C407A4D9E977AEF8B /* GoalEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */; };
 		6D515F87AD966135DE127D2D /* DatapointTableViewCellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE40870B3BB076B0F0D28B5 /* DatapointTableViewCellTests.swift */; };
 		8646D674ADB842B797E2F98D /* AddDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8646D674ADB842B797E2F98E /* AddDataError.swift */; };
@@ -55,6 +54,7 @@
 		E412DAE12B86A8F70099E483 /* GoalImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E412DAE02B86A8F70099E483 /* GoalImageView.swift */; };
 		E417572D2A6446FE0029CDDA /* CurrentUserManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */; };
 		E43833942AC1473E0098A38F /* InlineDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43833932AC1473E0098A38F /* InlineDatePicker.swift */; };
+		E43AFB5D2F140CA0001BD306 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = E4ASYNC012E3A5B0100ASYNC /* AsyncAlgorithms */; };
 		E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BEA832A036A9C00FC3A38 /* LogReader.swift */; };
 		E43BEA862A036D4300FC3A38 /* LogReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BEA852A036D4300FC3A38 /* LogReaderTests.swift */; };
 		E43D9AFB2929C37D00FC1578 /* DatapointValueAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43D9AFA2929C37D00FC1578 /* DatapointValueAccessory.swift */; };
@@ -121,6 +121,7 @@
 		E4E63C732C5DDE98005E00DA /* GoalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E63C722C5DDE98005E00DA /* GoalExtensions.swift */; };
 		E4E8DD3B2BE87F890059C64F /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8DD3A2BE87F890059C64F /* Goal.swift */; };
 		E4E8DD3D2BE881440059C64F /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8DD3C2BE881440059C64F /* DataPoint.swift */; };
+		E4REFRESH12345678900001 /* RefreshGoalIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4REFRESH12345678900002 /* RefreshGoalIntent.swift */; };
 		E4SPOTIDX12345678900001 /* SpotlightIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */; };
 		E4SPOTTEST1234567890001 /* SpotlightIndexerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */; };
 		E57BE6E92655EBE000BA540B /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
@@ -128,7 +129,7 @@
 		E57BE6F52655EBE000BA540B /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
 		E57BE7042655EE1F00BA540B /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55FEE6A23FF7552007C20B2 /* Config.swift */; };
 		E57BE71B2655F03200BA540B /* BeeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E5A80E6826598A370016D9A0 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		E5A80E6826598A370016D9A0 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		E5CF51A72612436200546184 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
 		E5DF493724DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
 		E5DF493824DC69A200260560 /* Config.swift.sample in Resources */ = {isa = PBXBuildFile; fileRef = E5DF493624DC69A200260560 /* Config.swift.sample */; };
@@ -207,7 +208,6 @@
 		0E4BF1F800000001F63CD31 /* MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationTests.swift; sourceTree = "<group>"; };
 		3960C6E09CBC83C14B589A81 /* WorkoutTypeSelectionViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutTypeSelectionViewController.swift; sourceTree = "<group>"; };
 		46124622FCF84EB6A6E41C31 /* OpenGoalIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGoalIntent.swift; sourceTree = "<group>"; };
-		E4REFRESH12345678900002 /* RefreshGoalIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshGoalIntent.swift; sourceTree = "<group>"; };
 		47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEntity.swift; sourceTree = "<group>"; };
 		4EE40870B3BB076B0F0D28B5 /* DatapointTableViewCellTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DatapointTableViewCellTests.swift; sourceTree = "<group>"; };
 		82549C20A89407D6E5D2790E /* WorkoutMinutesHealthKitMetricTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutMinutesHealthKitMetricTests.swift; sourceTree = "<group>"; };
@@ -311,6 +311,7 @@
 		E4E6428F2910D327004F3EA9 /* TimeInBedHealthKitMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInBedHealthKitMetric.swift; sourceTree = "<group>"; };
 		E4E8DD3A2BE87F890059C64F /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		E4E8DD3C2BE881440059C64F /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
+		E4REFRESH12345678900002 /* RefreshGoalIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshGoalIntent.swift; sourceTree = "<group>"; };
 		E4SPOTIDX12345678900002 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
 		E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexerTests.swift; sourceTree = "<group>"; };
 		E55FEE6A23FF7552007C20B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -331,17 +332,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		9BB602A42D3A6D1900756109 /* DueBy */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = DueBy;
-			sourceTree = "<group>";
-		};
+		9BB602A42D3A6D1900756109 /* DueBy */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DueBy; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -349,6 +340,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E43AFB5D2F140CA0001BD306 /* AsyncAlgorithms in Frameworks */,
 				E462BA3F29AC456500E80EF0 /* SwiftyJSON in Frameworks */,
 				E462BA4829ADAA1C00E80EF0 /* SnapKit in Frameworks */,
 				A1B672421B0989ED00584782 /* CoreGraphics.framework in Frameworks */,
@@ -512,7 +504,6 @@
 				E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */,
 				E4B6FEC52A776A2900690376 /* GoalTests.swift */,
 				E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */,
-				92A80BDCAB8C369EFE1322AA /* HealthKitMetricConfigTests.swift */,
 				4EE40870B3BB076B0F0D28B5 /* DatapointTableViewCellTests.swift */,
 				92A80BDCAB8C369EFE1322AA /* HealthKitMetricConfigTests.swift */,
 			);
@@ -536,7 +527,7 @@
 				A1BE73AB1E8B47E700DEC4DB /* HealthKitMetricTableViewCell.swift */,
 				A149147E1BE7A5670060600A /* SettingsTableViewCell.swift */,
 			);
-			name = Cells;
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		C039E8389CFF5C0D8CF85D8D /* Frameworks */ = {
@@ -612,7 +603,7 @@
 				A1BD0D171AEB30A5001EDE8B /* GoalViewController.swift */,
 				A11BC2D81FFAD5BC00E56064 /* TimerViewController.swift */,
 			);
-			name = GoalView;
+			path = GoalView;
 			sourceTree = "<group>";
 		};
 		E46071002B43DA7100305DB4 /* Gallery */ = {
@@ -1038,9 +1029,7 @@
 				E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */,
 				E43BEA862A036D4300FC3A38 /* LogReaderTests.swift in Sources */,
 				E4SPOTTEST1234567890001 /* SpotlightIndexerTests.swift in Sources */,
-				E13454C16900DDF6639CFF71 /* HealthKitMetricConfigTests.swift in Sources */,
 				6D515F87AD966135DE127D2D /* DatapointTableViewCellTests.swift in Sources */,
-				E13454C16900DDF6639CFF71 /* HealthKitMetricConfigTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1071,7 +1060,7 @@
 				E458C8112AD11C8B000DCA5C /* MindfulSessionHealthKitMetric.swift in Sources */,
 				E458C80A2AD11C1C000DCA5C /* Constants.swift in Sources */,
 				E46071032B451FB100305DB4 /* User.swift in Sources */,
-				E5A80E6826598A370016D9A0 /* BuildFile in Sources */,
+				E5A80E6826598A370016D9A0 /* (null) in Sources */,
 				E57BE7042655EE1F00BA540B /* Config.swift in Sources */,
 				E458C80E2AD11C77000DCA5C /* HealthStoreManager.swift in Sources */,
 				E49127752DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld in Sources */,
