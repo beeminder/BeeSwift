@@ -188,7 +188,7 @@ extension EditNotificationsViewController: UIPickerViewDataSource, UIPickerViewD
     // 12h am
     guard self.timePickerView.selectedRow(inComponent: 2) == 1 else { return selectedHour }
     // 12h pm
-    return selectedHour == 12 ? 12 : selectedHour + 12
+    return selectedHour + 12
   }
   func numberOfComponents(in pickerView: UIPickerView) -> Int { return self.use24HourTime() ? 2 : 3 }
   func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?)
