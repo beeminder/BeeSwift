@@ -19,7 +19,7 @@ class ConfigureHKMetricViewController: UIViewController {
   let previewDescriptionLabel = BSLabel()
   fileprivate var datapointTableController = DatapointTableViewController()
   fileprivate let noDataFoundLabel = BSLabel()
-  private var workoutConfigViewController: WorkoutConfigurationViewController?
+  private var metricConfigViewController: HealthKitMetricConfigViewController?
   let saveButton = BSButton()
 
   init(goal: Goal, metric: HealthKitMetric, healthStoreManager: HealthStoreManager, requestManager: RequestManager) {
@@ -38,36 +38,15 @@ class ConfigureHKMetricViewController: UIViewController {
     self.title = self.metric.humanText
     self.view.backgroundColor = UIColor.systemBackground
 
-    if metric is WorkoutMinutesHealthKitMetric { setupWorkoutConfiguration() }
+    setupMetricConfiguration()
 
     self.view.addSubview(previewDescriptionLabel)
-    previewDescriptionLabel.attributedText = {
-      let text = NSMutableAttributedString()
-      text.append(
-        NSMutableAttributedString(
-          string: "Here is a preview of the data points which will be added to your ",
-          attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]
-        )
-      )
-      text.append(
-        NSMutableAttributedString(
-          string: self.goal.slug,
-          attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultBoldFont]
-        )
-      )
-      text.append(
-        NSMutableAttributedString(
-          string: " goal:",
-          attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]
-        )
-      )
-      return text
-    }()
+    previewDescriptionLabel.text = "Data Preview"
+    previewDescriptionLabel.font = UIFont.beeminder.defaultBoldFont
     previewDescriptionLabel.textAlignment = .left
-    previewDescriptionLabel.numberOfLines = 0
     previewDescriptionLabel.snp.makeConstraints { (make) in
-      if let workoutConfig = workoutConfigViewController {
-        make.top.equalTo(workoutConfig.view.snp.bottom).offset(componentMargin)
+      if let metricConfig = metricConfigViewController {
+        make.top.equalTo(metricConfig.view.snp.bottom).offset(componentMargin)
       } else {
         make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(componentMargin)
       }
@@ -116,16 +95,6 @@ class ConfigureHKMetricViewController: UIViewController {
     }
     noDataFoundLabel.isHidden = true
 
-    let unitsLabel = BSLabel()
-    self.view.addSubview(unitsLabel)
-    unitsLabel.textAlignment = .left
-    unitsLabel.numberOfLines = 0
-    unitsLabel.snp.makeConstraints { (make) in
-      make.top.equalTo(noDataFoundLabel.snp.bottom).offset(componentMargin)
-      make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(componentMargin)
-      make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-componentMargin)
-    }
-
     self.view.addSubview(saveButton)
     saveButton.snp.makeConstraints { (make) in
       make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin).offset(-20)
@@ -140,8 +109,8 @@ class ConfigureHKMetricViewController: UIViewController {
     Task { @MainActor in
       let datapoints: [BeeDataPoint]
       var currentConfig = goal.autodataConfig
-      if let workoutConfig = workoutConfigViewController {
-        let configParams = workoutConfig.getConfigParameters()
+      if let metricConfig = metricConfigViewController {
+        let configParams = metricConfig.getConfigParameters()
         for (key, value) in configParams { currentConfig[key] = value }
       }
       datapoints = try await self.metric.recentDataPoints(
@@ -161,22 +130,7 @@ class ConfigureHKMetricViewController: UIViewController {
       }
 
       let units = try await self.metric.units(healthStore: self.healthStoreManager.healthStore)
-      unitsLabel.attributedText = {
-        let text = NSMutableAttributedString()
-        text.append(
-          NSMutableAttributedString(
-            string: "This metric reports results as ",
-            attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultFont]
-          )
-        )
-        text.append(
-          NSMutableAttributedString(
-            string: units.description,
-            attributes: [NSAttributedString.Key.font: UIFont.beeminder.defaultBoldFont]
-          )
-        )
-        return text
-      }()
+      metricConfigViewController?.unitName = units.description
     }
   }
 
@@ -208,8 +162,8 @@ class ConfigureHKMetricViewController: UIViewController {
       var params: [String: Any] = [:]
       var iiParams: [String: Any] = ["name": "apple", "metric": self.goal.healthKitMetric!]
 
-      if let workoutConfig = workoutConfigViewController {
-        let configParams = workoutConfig.getConfigParameters()
+      if let metricConfig = metricConfigViewController {
+        let configParams = metricConfig.getConfigParameters()
         for (key, value) in configParams { iiParams[key] = value }
       }
 
@@ -254,25 +208,28 @@ class ConfigureHKMetricViewController: UIViewController {
     }
   }
 
-  private func setupWorkoutConfiguration() {
-    let workoutConfig = WorkoutConfigurationViewController(existingConfig: goal.autodataConfig)
-    workoutConfigViewController = workoutConfig
+  private func setupMetricConfiguration() {
+    let metricConfig = HealthKitMetricConfigViewController(goalName: goal.slug, metricName: metric.humanText)
+    metricConfigViewController = metricConfig
 
-    addChild(workoutConfig)
-    view.addSubview(workoutConfig.view)
-    workoutConfig.view.setContentHuggingPriority(.required, for: .vertical)
-    workoutConfig.view.snp.makeConstraints { make in
-      make.top.equalTo(view.safeAreaLayoutGuide.snp.topMargin)
-      make.left.equalTo(view.safeAreaLayoutGuide.snp.leftMargin)
-      make.right.equalTo(view.safeAreaLayoutGuide.snp.rightMargin)
+    // Set up workout-specific configuration if applicable
+    if metric is WorkoutMinutesHealthKitMetric {
+      let workoutProvider = WorkoutConfigurationProvider(existingConfig: goal.autodataConfig)
+      metricConfig.configurationProvider = workoutProvider
+      workoutProvider.setTableView(metricConfig.tableView)
+      workoutProvider.onPushViewController = { [weak self] viewController in
+        self?.navigationController?.pushViewController(viewController, animated: true)
+      }
     }
-    workoutConfig.onConfigurationChanged = { [weak self] in
+
+    // Listen for configuration changes from the metric config view controller
+    metricConfig.onConfigurationChanged = { [weak self] in
       Task { @MainActor in
         guard let self = self else { return }
         do {
           var currentConfig = self.goal.autodataConfig
-          if let workoutConfig = self.workoutConfigViewController {
-            let configParams = workoutConfig.getConfigParameters()
+          if let metricConfig = self.metricConfigViewController {
+            let configParams = metricConfig.getConfigParameters()
             for (key, value) in configParams { currentConfig[key] = value }
           }
           let datapoints = try await self.metric.recentDataPoints(
@@ -285,15 +242,16 @@ class ConfigureHKMetricViewController: UIViewController {
         } catch { self.logger.error("Failed to fetch preview data: \(error)") }
       }
     }
-    workoutConfig.onNavigateToTypeSelection = { [weak self] in self?.showWorkoutTypeSelection() }
-    workoutConfig.didMove(toParent: self)
-  }
 
-  private func showWorkoutTypeSelection() {
-    guard let workoutConfig = workoutConfigViewController else { return }
-    let selectionVC = WorkoutTypeSelectionViewController(initialSelection: workoutConfig.selectedWorkoutTypes)
-    selectionVC.onSelectionChanged = { [weak workoutConfig] types in workoutConfig?.setSelectedWorkoutTypes(types) }
-    navigationController?.pushViewController(selectionVC, animated: true)
+    addChild(metricConfig)
+    view.addSubview(metricConfig.view)
+    metricConfig.view.setContentHuggingPriority(.required, for: .vertical)
+    metricConfig.view.snp.makeConstraints { make in
+      make.top.equalTo(view.safeAreaLayoutGuide.snp.topMargin)
+      make.left.equalTo(view.safeAreaLayoutGuide.snp.leftMargin)
+      make.right.equalTo(view.safeAreaLayoutGuide.snp.rightMargin)
+    }
+    metricConfig.didMove(toParent: self)
   }
 
 }

@@ -46,7 +46,7 @@
 		A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E618E31E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift */; };
 		A1EA154D1B01E6EC0052A6E6 /* DatapointTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EA154C1B01E6EC0052A6E6 /* DatapointTableViewCell.swift */; };
 		A1F9D1EA211B9B7600E2BC93 /* EditDatapointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9D1E9211B9B7600E2BC93 /* EditDatapointViewController.swift */; };
-		E13454C16900DDF6639CFF71 /* WorkoutConfigurationViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A80BDCAB8C369EFE1322AA /* WorkoutConfigurationViewControllerTests.swift */; };
+		E13454C16900DDF6639CFF71 /* HealthKitMetricConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A80BDCAB8C369EFE1322AA /* HealthKitMetricConfigTests.swift */; };
 		E4015D9F2D10DC4D00F58D94 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4015D9E2D10DC4D00F58D94 /* SceneDelegate.swift */; };
 		E4015DA22D1E7B2D00F58D94 /* CoreDataEvolution in Frameworks */ = {isa = PBXBuildFile; productRef = E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */; };
 		E41286F12A62E6840093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F02A62E6840093D598 /* KeychainSwift */; };
@@ -109,7 +109,8 @@
 		E49127752DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E49127722DC9E2C6000BFBFE /* BeeminderModel.xcdatamodeld */; };
 		E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */; };
 		E4B0833B2934620500A71564 /* DatapointTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B0833A2934620500A71564 /* DatapointTableViewController.swift */; };
-		E4B083402932F90400A71565 /* WorkoutConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */; };
+		E4B083402932F90400A71565 /* HealthKitMetricConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083412932F90400A71565 /* HealthKitMetricConfigViewController.swift */; };
+		E4B083422932F90400A71566 /* WorkoutConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B083432932F90400A71566 /* WorkoutConfigurationProvider.swift */; };
 		E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B6FEC52A776A2900690376 /* GoalTests.swift */; };
 		E4D470D02D2FE25C00EE648B /* DataPointManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */; };
 		E4D5BD5D2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */; };
@@ -208,7 +209,7 @@
 		47C4AD8C407A4D9E977AEF8C /* GoalEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEntity.swift; sourceTree = "<group>"; };
 		82549C20A89407D6E5D2790E /* WorkoutMinutesHealthKitMetricTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutMinutesHealthKitMetricTests.swift; sourceTree = "<group>"; };
 		8646D674ADB842B797E2F98E /* AddDataError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataError.swift; sourceTree = "<group>"; };
-		92A80BDCAB8C369EFE1322AA /* WorkoutConfigurationViewControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutConfigurationViewControllerTests.swift; sourceTree = "<group>"; };
+		92A80BDCAB8C369EFE1322AA /* HealthKitMetricConfigTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HealthKitMetricConfigTests.swift; sourceTree = "<group>"; };
 		9B65F2312CFA6418009674A7 /* DeeplinkGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkGenerator.swift; sourceTree = "<group>"; };
 		9B8CA57C24B120CA009C86C2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9BD4C4E72D45A09F00B03E99 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
@@ -291,7 +292,8 @@
 		E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureHKMetricViewController.swift; sourceTree = "<group>"; };
 		E4B0833A2934620500A71564 /* DatapointTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointTableViewController.swift; sourceTree = "<group>"; };
 		E4B0833C293810EB00A71564 /* BeeDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeeDataPoint.swift; sourceTree = "<group>"; };
-		E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutConfigurationViewController.swift; sourceTree = "<group>"; };
+		E4B083412932F90400A71565 /* HealthKitMetricConfigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricConfigViewController.swift; sourceTree = "<group>"; };
+		E4B083432932F90400A71566 /* WorkoutConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutConfigurationProvider.swift; sourceTree = "<group>"; };
 		E4B6FEC52A776A2900690376 /* GoalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTests.swift; sourceTree = "<group>"; };
 		E4D470CF2D2FE25C00EE648B /* DataPointManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataPointManagerTests.swift; sourceTree = "<group>"; };
 		E4D5BD5C2C5DFBA30007B0BE /* HealthKitMetricMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricMonitor.swift; sourceTree = "<group>"; };
@@ -507,7 +509,7 @@
 				E417572C2A6446FE0029CDDA /* CurrentUserManagerTests.swift */,
 				E4B6FEC52A776A2900690376 /* GoalTests.swift */,
 				E4SPOTTEST1234567890002 /* SpotlightIndexerTests.swift */,
-				92A80BDCAB8C369EFE1322AA /* WorkoutConfigurationViewControllerTests.swift */,
+				92A80BDCAB8C369EFE1322AA /* HealthKitMetricConfigTests.swift */,
 			);
 			path = BeeSwiftTests;
 			sourceTree = "<group>";
@@ -583,7 +585,8 @@
 			children = (
 				A1BE73A91E8B45BF00DEC4DB /* ChooseHKMetricViewController.swift */,
 				E4B083382932F90400A71564 /* ConfigureHKMetricViewController.swift */,
-				E4B083412932F90400A71565 /* WorkoutConfigurationViewController.swift */,
+				E4B083412932F90400A71565 /* HealthKitMetricConfigViewController.swift */,
+				E4B083432932F90400A71566 /* WorkoutConfigurationProvider.swift */,
 				A1A8BDE51FEAE8DD007D61D6 /* ConfigureNotificationsViewController.swift */,
 				A1619EA31BEECC1500E14B3A /* EditDefaultNotificationsViewController.swift */,
 				A1619EA51BEECC6700E14B3A /* EditGoalNotificationsViewController.swift */,
@@ -973,7 +976,8 @@
 				A1453B3F1AEDFCC8006F48DA /* SignInViewController.swift in Sources */,
 				A1E618E41E7934C700D8ED93 /* HealthKitConfigTableViewCell.swift in Sources */,
 				E4B083392932F90400A71564 /* ConfigureHKMetricViewController.swift in Sources */,
-				E4B083402932F90400A71565 /* WorkoutConfigurationViewController.swift in Sources */,
+				E4B083402932F90400A71565 /* HealthKitMetricConfigViewController.swift in Sources */,
+				E4B083422932F90400A71566 /* WorkoutConfigurationProvider.swift in Sources */,
 				E43BEA842A036A9C00FC3A38 /* LogReader.swift in Sources */,
 				9B65F2322CFA6427009674A7 /* DeeplinkGenerator.swift in Sources */,
 				A196CB1F1AE4142F00B90A3E /* GalleryViewController.swift in Sources */,
@@ -1027,7 +1031,7 @@
 				E4B6FEC62A776A2900690376 /* GoalTests.swift in Sources */,
 				E43BEA862A036D4300FC3A38 /* LogReaderTests.swift in Sources */,
 				E4SPOTTEST1234567890001 /* SpotlightIndexerTests.swift in Sources */,
-				E13454C16900DDF6639CFF71 /* WorkoutConfigurationViewControllerTests.swift in Sources */,
+				E13454C16900DDF6639CFF71 /* HealthKitMetricConfigTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
