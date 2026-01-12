@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */; };
+		A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A158DDB51E46EEA10031BD4F /* HealthKit.framework */; };
+		A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17E930B1B09032F0098FCA0 /* QuartzCore.framework */; };
+		A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723D1B0989DF00584782 /* Foundation.framework */; };
+		A1B672401B0989E800584782 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723F1B0989E800584782 /* UIKit.framework */; };
+		A1B672421B0989ED00584782 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B672411B0989ED00584782 /* CoreGraphics.framework */; };
 		E4015DA22D1E7B2D00F58D94 /* CoreDataEvolution in Frameworks */ = {isa = PBXBuildFile; productRef = E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */; };
 		E41286F12A62E6840093D598 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E41286F02A62E6840093D598 /* KeychainSwift */; };
 		E43AFB5D2F140CA0001BD306 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = E4ASYNC012E3A5B0100ASYNC /* AsyncAlgorithms */; };
@@ -25,12 +31,6 @@
 		E462BA5A29AEF02500E80EF0 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA5929AEF02500E80EF0 /* IQKeyboardManagerSwift */; };
 		E4866ED22DE5426900793D6A /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E4866ED12DE5426900793D6A /* SwiftyJSON */; };
 		E486DE2629B0403700F338B2 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = E486DE2529B0403700F338B2 /* OrderedCollections */; };
-		A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */; };
-		A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A158DDB51E46EEA10031BD4F /* HealthKit.framework */; };
-		A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17E930B1B09032F0098FCA0 /* QuartzCore.framework */; };
-		A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723D1B0989DF00584782 /* Foundation.framework */; };
-		A1B672401B0989E800584782 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B6723F1B0989E800584782 /* UIKit.framework */; };
-		A1B672421B0989ED00584782 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B672411B0989ED00584782 /* CoreGraphics.framework */; };
 		E57BE6E92655EBE000BA540B /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
 		E57BE6F52655EBE000BA540B /* BeeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; };
 		E57BE71B2655F03200BA540B /* BeeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E57BE6E02655EBD900BA540B /* BeeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -158,56 +158,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		FSSYNCROOT0000000000001 /* BeeSwift */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				FSSYNCEXCEPT00000000001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
-			);
-			explicitFileTypes = {};
-			explicitFolders = ();
-			path = BeeSwift;
-			sourceTree = "<group>";
-		};
-		FSSYNCROOT0000000000002 /* BeeKit */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				FSSYNCEXCEPT00000000002 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
-			);
-			explicitFileTypes = {};
-			explicitFolders = ();
-			path = BeeKit;
-			sourceTree = "<group>";
-		};
-		FSSYNCROOT0000000000003 /* BeeSwiftTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				FSSYNCEXCEPT00000000003 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
-			);
-			explicitFileTypes = {};
-			explicitFolders = ();
-			path = BeeSwiftTests;
-			sourceTree = "<group>";
-		};
-		FSSYNCROOT0000000000004 /* BeeKitTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				FSSYNCEXCEPT00000000004 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
-			);
-			explicitFileTypes = {};
-			explicitFolders = ();
-			path = BeeKitTests;
-			sourceTree = "<group>";
-		};
-		FSSYNCROOT0000000000005 /* BeeSwiftUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				FSSYNCEXCEPT00000000005 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
-			);
-			explicitFileTypes = {};
-			explicitFolders = ();
-			path = BeeSwiftUITests;
-			sourceTree = "<group>";
-		};
+		FSSYNCROOT0000000000001 /* BeeSwift */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (FSSYNCEXCEPT00000000001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = BeeSwift; sourceTree = "<group>"; };
+		FSSYNCROOT0000000000002 /* BeeKit */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (FSSYNCEXCEPT00000000002 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = BeeKit; sourceTree = "<group>"; };
+		FSSYNCROOT0000000000003 /* BeeSwiftTests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (FSSYNCEXCEPT00000000003 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = BeeSwiftTests; sourceTree = "<group>"; };
+		FSSYNCROOT0000000000004 /* BeeKitTests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (FSSYNCEXCEPT00000000004 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = BeeKitTests; sourceTree = "<group>"; };
+		FSSYNCROOT0000000000005 /* BeeSwiftUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (FSSYNCEXCEPT00000000005 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = BeeSwiftUITests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -479,9 +434,7 @@
 				TargetAttributes = {
 					A196CB131AE4142E00B90A3E = {
 						CreatedOnToolsVersion = 6.3;
-						DevelopmentTeam = 8TW9V9HVES;
 						LastSwiftMigration = 1240;
-						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -510,8 +463,6 @@
 					};
 					E57BE6DF2655EBD900BA540B = {
 						CreatedOnToolsVersion = 12.4;
-						DevelopmentTeam = 8TW9V9HVES;
-						ProvisioningStyle = Automatic;
 					};
 					E57BE6E72655EBDF00BA540B = {
 						CreatedOnToolsVersion = 12.4;
@@ -799,7 +750,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BeeSwift/BeeSwift.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_BITCODE = NO;
@@ -835,7 +785,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BeeSwift/BeeSwift.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8TW9V9HVES;
 				ENABLE_BITCODE = NO;
@@ -915,6 +865,7 @@
 		E57BE6F82655EBE400BA540B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -944,6 +895,8 @@
 		E57BE6F92655EBE400BA540B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -1293,9 +1246,6 @@
 			productName = AsyncAlgorithms;
 		};
 /* End XCSwiftPackageProductDependency section */
-
-/* Begin XCVersionGroup section */
-/* End XCVersionGroup section */
 	};
 	rootObject = A196CB0C1AE4142E00B90A3E /* Project object */;
 }
