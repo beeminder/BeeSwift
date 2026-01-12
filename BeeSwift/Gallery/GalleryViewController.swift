@@ -6,6 +6,7 @@
 //  Copyright 2015 APB. All rights reserved.
 //
 
+import AlamofireImage
 import BeeKit
 import CoreData
 import HealthKit
@@ -499,6 +500,18 @@ extension GalleryViewController: UICollectionViewDelegate {
     let goal = fetchedResultsController.object(at: indexPath)
     logger.info("... Goal is \(goal.id, privacy: .public)")
     self.openGoal(goal)
+  }
+}
+
+// MARK: - Prefetching (using AlamofireImage's ImageDownloader)
+extension GalleryViewController: UICollectionViewDataSourcePrefetching {
+  func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+    let urls = indexPaths.compactMap { indexPath -> URL? in
+      let goal = fetchedResultsController.object(at: indexPath)
+      return try? goal.thumbUrl.asURL()
+    }
+    let downloader = ImageDownloader.default
+    urls.forEach { downloader.download(URLRequest(url: $0), completion: { _ in }) }
   }
 }
 
