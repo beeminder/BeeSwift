@@ -49,6 +49,11 @@ class GalleryViewController: UIViewController {
       forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
       withReuseIdentifier: "footer"
     )
+    collectionView.register(
+      BeemergencySeparatorView.self,
+      forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+      withReuseIdentifier: "beemergencySeparator"
+    )
     return collectionView
   }()
   private lazy var collectionViewLayout = UICollectionViewFlowLayout()
@@ -95,7 +100,11 @@ class GalleryViewController: UIViewController {
       "Hey! Beeminder couldn't charge your credit card, so you can't see your graphs. Please update your card on beeminder.com or email support@beeminder.com if this is a mistake."
     return deadbeatLabel
   }()
-  private enum Section: CaseIterable { case main }
+  private enum Section: CaseIterable {
+    case beemergenciesTonight
+    case beemergenciesTomorrow
+    case other
+  }
   private typealias GallerySnapshot = NSDiffableDataSourceSnapshot<GalleryViewController.Section, NSManagedObjectID>
   private var dataSource: UICollectionViewDiffableDataSource<Section, NSManagedObjectID>!
   private let fetchedResultsController: NSFetchedResultsController<Goal>!
@@ -317,6 +326,9 @@ class GalleryViewController: UIViewController {
     }
     self.fetchedResultsController.fetchRequest.sortDescriptors = Self.preferredSort
     try? self.fetchedResultsController.performFetch()
+    // Rebuild the sectioned snapshot to handle sort changes and beemergency categorization
+    let snapshot = buildSectionedSnapshot()
+    dataSource.apply(snapshot, animatingDifferences: false)
   }
   private var filteredGoals: [Goal] { fetchedResultsController.fetchedObjects ?? [] }
   @objc func didUpdateGoals() {
@@ -422,7 +434,8 @@ class GalleryViewController: UIViewController {
   private func configureDataSource() {
     let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, NSManagedObjectID> {
       [weak self] cell, indexPath, goalObjectId in
-      let goal = self?.fetchedResultsController.object(at: indexPath)
+      guard let self = self else { return }
+      let goal = self.goalForIndexPath(indexPath)
       cell.configure(with: goal)
     }
     self.dataSource = .init(
@@ -431,10 +444,22 @@ class GalleryViewController: UIViewController {
         collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: goalObjectId)
       }
     )
-    dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
-      collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
+    dataSource.supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
+      if kind == UICollectionView.elementKindSectionHeader {
+        return collectionView.dequeueReusableSupplementaryView(
+          ofKind: kind,
+          withReuseIdentifier: "beemergencySeparator",
+          for: indexPath
+        )
+      }
+      return collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
     }
     self.collectionView.dataSource = dataSource
+  }
+
+  private func goalForIndexPath(_ indexPath: IndexPath) -> Goal? {
+    guard let itemIdentifier = dataSource.itemIdentifier(for: indexPath) else { return nil }
+    return try? viewContext.existingObject(with: itemIdentifier) as? Goal
   }
 }
 
@@ -443,8 +468,62 @@ extension GalleryViewController: NSFetchedResultsControllerDelegate {
     _ controller: NSFetchedResultsController<any NSFetchRequestResult>,
     didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference
   ) {
-    dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: false)
+    let newSnapshot = buildSectionedSnapshot()
+    dataSource.apply(newSnapshot, animatingDifferences: false)
     didUpdateGoals()
+  }
+
+  private func buildSectionedSnapshot() -> GallerySnapshot {
+    var snapshot = GallerySnapshot()
+
+    let goals = filteredGoals
+    let isSortedByUrgency = Self.isSortedByUrgency
+
+    if isSortedByUrgency {
+      // Categorize goals into sections
+      var tonightGoals: [NSManagedObjectID] = []
+      var tomorrowGoals: [NSManagedObjectID] = []
+      var otherGoals: [NSManagedObjectID] = []
+
+      for goal in goals {
+        if let dueDate = goal.beemergencyDueDate {
+          switch dueDate {
+          case .tonight:
+            tonightGoals.append(goal.objectID)
+          case .tomorrow:
+            tomorrowGoals.append(goal.objectID)
+          }
+        } else {
+          otherGoals.append(goal.objectID)
+        }
+      }
+
+      // Add sections in order, but only if they have items
+      if !tonightGoals.isEmpty {
+        snapshot.appendSections([.beemergenciesTonight])
+        snapshot.appendItems(tonightGoals, toSection: .beemergenciesTonight)
+      }
+      if !tomorrowGoals.isEmpty {
+        snapshot.appendSections([.beemergenciesTomorrow])
+        snapshot.appendItems(tomorrowGoals, toSection: .beemergenciesTomorrow)
+      }
+      if !otherGoals.isEmpty {
+        snapshot.appendSections([.other])
+        snapshot.appendItems(otherGoals, toSection: .other)
+      }
+    } else {
+      // Not sorted by urgency - put everything in 'other' section
+      snapshot.appendSections([.other])
+      snapshot.appendItems(goals.map { $0.objectID }, toSection: .other)
+    }
+
+    return snapshot
+  }
+
+  private static var isSortedByUrgency: Bool {
+    let selectedGoalSort =
+      UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String ?? Constants.urgencyGoalSortString
+    return selectedGoalSort == Constants.urgencyGoalSortString
   }
 }
 
@@ -490,13 +569,36 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
     _ collectionView: UICollectionView,
     layout collectionViewLayout: UICollectionViewLayout,
     referenceSizeForFooterInSection section: Int
-  ) -> CGSize { return CGSize(width: 320, height: section == 0 && self.filteredGoals.count > 0 ? 5 : 0) }
+  ) -> CGSize {
+    let snapshot = dataSource.snapshot()
+    let lastSectionIndex = snapshot.numberOfSections - 1
+    let hasItems = snapshot.numberOfItems > 0
+    return CGSize(width: 320, height: section == lastSectionIndex && hasItems ? 5 : 0)
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    layout collectionViewLayout: UICollectionViewLayout,
+    referenceSizeForHeaderInSection section: Int
+  ) -> CGSize {
+    let snapshot = dataSource.snapshot()
+    guard section < snapshot.numberOfSections else { return .zero }
+
+    let sectionIdentifier = snapshot.sectionIdentifiers[section]
+
+    // Only show separator header for beemergenciesTomorrow section
+    // AND only if beemergenciesTonight section also exists (has items)
+    if sectionIdentifier == .beemergenciesTomorrow && snapshot.sectionIdentifiers.contains(.beemergenciesTonight) {
+      return CGSize(width: collectionView.frame.width, height: 16)
+    }
+    return .zero
+  }
 }
 
 extension GalleryViewController: UICollectionViewDelegate {
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     logger.info("Tapped goal at index \(indexPath, privacy: .public)")
-    let goal = fetchedResultsController.object(at: indexPath)
+    guard let goal = goalForIndexPath(indexPath) else { return }
     logger.info("... Goal is \(goal.id, privacy: .public)")
     self.openGoal(goal)
   }

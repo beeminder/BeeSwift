@@ -1,7 +1,43 @@
 import Foundation
 import UIKit
 
+/// Represents when a beemergency goal is due relative to today's calendar date
+public enum BeemergencyDueDate {
+  /// The goal is due tonight (deadline falls on today's calendar date)
+  case tonight
+  /// The goal is due tomorrow (deadline falls on tomorrow's calendar date)
+  case tomorrow
+}
+
 extension Goal {
+  /// For beemergency goals (safeBuf < 1), determines if the goal is due "tonight" or "tomorrow"
+  /// based on comparing the calendar date of the deadline with the current calendar date.
+  /// Returns nil for non-beemergency goals.
+  public var beemergencyDueDate: BeemergencyDueDate? {
+    guard self.safeBuf < 1 else { return nil }
+
+    let calendar = Calendar.current
+    let now = Date()
+    let todayStart = calendar.startOfDay(for: now)
+
+    // Calculate when this goal's current beeminder day ends (the actual deadline time)
+    let currentBeeminderDay = Daystamp(fromDate: now, deadline: self.deadline)
+    let deadlineTime = currentBeeminderDay.end(deadline: self.deadline)
+
+    // Get the calendar date of the deadline
+    let deadlineCalendarDay = calendar.startOfDay(for: deadlineTime)
+
+    // Compare calendar dates
+    if deadlineCalendarDay == todayStart {
+      return .tonight
+    } else {
+      return .tomorrow
+    }
+  }
+
+  /// Returns true if this is a beemergency goal (safeBuf < 1)
+  public var isBeemergency: Bool { self.safeBuf < 1 }
+
   public var humanizedAutodata: String? {
     if self.autodata == "ifttt" { return "IFTTT" }
     if self.autodata == "api" { return "API" }
