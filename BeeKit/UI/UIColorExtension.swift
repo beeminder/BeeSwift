@@ -36,11 +36,11 @@ extension UIColor {
         default: return UIColor(red: 255 / 255.0, green: 230 / 255.0, blue: 200 / 255.0, alpha: 1)
         }
       }
-      // Yellow - 2 days buffer (safeBuf 2-3)
-      public static let yellow: UIColor = UIColor { traitCollection in
+      // Blue - 2 days buffer (safeBuf 2-3)
+      public static let blue: UIColor = UIColor { traitCollection in
         switch traitCollection.userInterfaceStyle {
         case .dark: return .systemBackground
-        default: return UIColor(red: 255 / 255.0, green: 255 / 255.0, blue: 210 / 255.0, alpha: 1)
+        default: return UIColor(red: 210 / 255.0, green: 230 / 255.0, blue: 255 / 255.0, alpha: 1)
         }
       }
       // Green - 3-6 days buffer (safeBuf 3-7)
@@ -50,18 +50,11 @@ extension UIColor {
         default: return UIColor(red: 210 / 255.0, green: 255 / 255.0, blue: 210 / 255.0, alpha: 1)
         }
       }
-      // Blue - 7-13 days buffer (safeBuf 7-14)
-      public static let blue: UIColor = UIColor { traitCollection in
+      // Forest green - 7+ days buffer (safeBuf 7+)
+      public static let forestGreen: UIColor = UIColor { traitCollection in
         switch traitCollection.userInterfaceStyle {
         case .dark: return .systemBackground
-        default: return UIColor(red: 210 / 255.0, green: 230 / 255.0, blue: 255 / 255.0, alpha: 1)
-        }
-      }
-      // Purple - 14+ days buffer (safeBuf 14+)
-      public static let purple: UIColor = UIColor { traitCollection in
-        switch traitCollection.userInterfaceStyle {
-        case .dark: return .systemBackground
-        default: return UIColor(red: 230 / 255.0, green: 210 / 255.0, blue: 255 / 255.0, alpha: 1)
+        default: return UIColor(red: 182 / 255.0, green: 225 / 255.0, blue: 182 / 255.0, alpha: 1)
         }
       }
     }

@@ -64,10 +64,9 @@ extension Goal {
     switch self.safeBuf {
     case ..<1: return UIColor.Beeminder.GalleryBackground.red
     case ..<2: return UIColor.Beeminder.GalleryBackground.orange
-    case ..<3: return UIColor.Beeminder.GalleryBackground.yellow
+    case ..<3: return UIColor.Beeminder.GalleryBackground.blue
     case ..<7: return UIColor.Beeminder.GalleryBackground.green
-    case ..<14: return UIColor.Beeminder.GalleryBackground.blue
-    default: return UIColor.Beeminder.GalleryBackground.purple
+    default: return UIColor.Beeminder.GalleryBackground.forestGreen
     }
   }
 
