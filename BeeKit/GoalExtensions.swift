@@ -64,6 +64,45 @@ extension Goal {
 
   public var isLinkedToHealthKit: Bool { return self.autodata == "apple" }
 
+  /// Whether the goal is past its deadline time for the current Beeminder day.
+  ///
+  /// The Beeminder day starts at 6:30am. A goal is considered "past deadline" if the current
+  /// wall-clock time is later than the deadline time, when both are measured relative to 6:30am.
+  /// This means a 3am deadline won't be considered "past" at 9pm because 3am is near the end
+  /// of the Beeminder day (before the next 6:30am).
+  public var isPastDeadline: Bool {
+    let now = Date()
+    let calendar = Calendar.current
+
+    // Get current time as seconds since midnight
+    let currentSeconds = calendar.component(.hour, from: now) * 3600
+      + calendar.component(.minute, from: now) * 60
+      + calendar.component(.second, from: now)
+
+    // Day starts at 6:30am = 6.5 hours = 23400 seconds
+    let dayStartSeconds = 6 * 3600 + 30 * 60  // 23400
+
+    // Convert deadline from "offset from midnight" to wall-clock seconds
+    // deadline is negative before midnight, positive after
+    // e.g., deadline = -3*3600 = -10800 means 9pm (21:00)
+    // e.g., deadline = 3*3600 = 10800 means 3am (03:00)
+    let deadlineWallClock: Int
+    if deadline < 0 {
+      // Before midnight: add to seconds in day
+      deadlineWallClock = 24 * 3600 + deadline
+    } else {
+      // After midnight: use directly
+      deadlineWallClock = deadline
+    }
+
+    // Convert both times to "seconds since 6:30am", wrapping around 24 hours
+    let secondsInDay = 24 * 3600
+    let currentSinceDayStart = (currentSeconds - dayStartSeconds + secondsInDay) % secondsInDay
+    let deadlineSinceDayStart = (deadlineWallClock - dayStartSeconds + secondsInDay) % secondsInDay
+
+    return currentSinceDayStart > deadlineSinceDayStart
+  }
+
   /// A hint for the value the user is likely to enter, based on past data points
   public var suggestedNextValue: NSNumber? {
     let candidateDatapoints = self.recentData.filter { !$0.isDummy }.sorted(using: [

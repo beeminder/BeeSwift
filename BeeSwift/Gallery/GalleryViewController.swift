@@ -423,7 +423,8 @@ class GalleryViewController: UIViewController {
     let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, NSManagedObjectID> {
       [weak self] cell, indexPath, goalObjectId in
       let goal = self?.fetchedResultsController.object(at: indexPath)
-      cell.configure(with: goal)
+      let collapsed = goal?.isPastDeadline ?? false
+      cell.configure(with: goal, collapsed: collapsed)
     }
     self.dataSource = .init(
       collectionView: collectionView,
@@ -484,7 +485,11 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
     // may have rounded down the number of cells. E.g. if we could have fit 1.5 minimum width
     // cells we will only show 1, but can make it 50% wider than minimum
     let targetWidth = (availableWidth + itemSpacing) / CGFloat(cellsWhileMaintainingMinimumWidth) - itemSpacing
-    return CGSize(width: targetWidth, height: 120)
+
+    // Use collapsed height for goals that are past their deadline
+    let goal = fetchedResultsController.object(at: indexPath)
+    let height = goal.isPastDeadline ? GoalCollectionViewCell.collapsedHeight : GoalCollectionViewCell.expandedHeight
+    return CGSize(width: targetWidth, height: height)
   }
   func collectionView(
     _ collectionView: UICollectionView,

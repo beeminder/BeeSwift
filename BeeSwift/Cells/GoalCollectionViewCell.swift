@@ -10,12 +10,18 @@ import BeeKit
 import Foundation
 
 class GoalCollectionViewCell: UICollectionViewCell {
+  static let expandedHeight: CGFloat = 120
+  static let collapsedHeight: CGFloat = 44
+
   let slugLabel: BSLabel = BSLabel()
   let titleLabel: BSLabel = BSLabel()
   let todaytaLabel: BSLabel = BSLabel()
   let thumbnailImageView = GoalImageView(isThumbnail: true)
   let safesumLabel: BSLabel = BSLabel()
   let margin = 8
+
+  private var isCollapsed = false
+
   override init(frame: CGRect) {
     super.init(frame: frame)
     self.contentView.addSubview(self.slugLabel)
@@ -68,15 +74,55 @@ class GoalCollectionViewCell: UICollectionViewCell {
   required init?(coder aDecoder: NSCoder) { super.init(coder: aDecoder) }
   override func prepareForReuse() {
     super.prepareForReuse()
-    configure(with: nil)
+    configure(with: nil, collapsed: false)
   }
-  func configure(with goal: Goal?) {
+  func configure(with goal: Goal?, collapsed: Bool = false) {
+    self.isCollapsed = collapsed
     self.thumbnailImageView.goal = goal
-    self.titleLabel.text = goal?.title
     self.slugLabel.text = goal?.slug
-    self.titleLabel.isHidden = goal?.title == goal?.slug
-    self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
-    self.safesumLabel.text = goal?.capitalSafesum()
     self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
+
+    if collapsed {
+      // Collapsed mode: single line with slug on left, safesum on right
+      self.titleLabel.isHidden = true
+      self.todaytaLabel.isHidden = true
+      self.thumbnailImageView.isHidden = true
+      self.safesumLabel.text = goal?.capitalSafesum()
+
+      // Reposition safesum to the right side of the cell, centered vertically
+      self.safesumLabel.snp.remakeConstraints { make in
+        make.right.equalTo(-self.margin)
+        make.centerY.equalToSuperview()
+      }
+      self.safesumLabel.textAlignment = .right
+
+      // Center the slug vertically for collapsed mode
+      self.slugLabel.snp.remakeConstraints { make in
+        make.left.equalTo(self.margin)
+        make.centerY.equalToSuperview()
+        make.right.lessThanOrEqualTo(self.safesumLabel.snp.left).offset(-10)
+      }
+    } else {
+      // Expanded mode: normal layout with thumbnail
+      self.titleLabel.text = goal?.title
+      self.titleLabel.isHidden = goal?.title == goal?.slug
+      self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
+      self.todaytaLabel.isHidden = false
+      self.thumbnailImageView.isHidden = false
+      self.safesumLabel.text = goal?.capitalSafesum()
+
+      // Restore original constraints for expanded mode
+      self.slugLabel.snp.remakeConstraints { make in
+        make.left.equalTo(self.margin)
+        make.top.equalTo(10)
+        make.width.lessThanOrEqualTo(self.contentView).multipliedBy(0.35)
+      }
+      self.safesumLabel.snp.remakeConstraints { make in
+        make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
+        make.centerY.equalTo(self.thumbnailImageView.snp.centerY)
+        make.right.equalTo(-self.margin)
+      }
+      self.safesumLabel.textAlignment = .center
+    }
   }
 }
