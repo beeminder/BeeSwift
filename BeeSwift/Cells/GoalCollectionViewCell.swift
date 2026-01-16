@@ -78,5 +78,6 @@ class GoalCollectionViewCell: UICollectionViewCell {
     self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
     self.safesumLabel.text = goal?.capitalSafesum()
     self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
+    self.contentView.backgroundColor = goal?.galleryBackgroundColor ?? .systemBackground
   }
 }

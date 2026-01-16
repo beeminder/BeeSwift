@@ -60,6 +60,17 @@ extension Goal {
     }
   }
 
+  public var galleryBackgroundColor: UIColor {
+    switch self.safeBuf {
+    case ..<1: return UIColor.Beeminder.GalleryBackground.red
+    case ..<2: return UIColor.Beeminder.GalleryBackground.orange
+    case ..<3: return UIColor.Beeminder.GalleryBackground.yellow
+    case ..<7: return UIColor.Beeminder.GalleryBackground.green
+    case ..<14: return UIColor.Beeminder.GalleryBackground.blue
+    default: return UIColor.Beeminder.GalleryBackground.purple
+    }
+  }
+
   public var hideDataEntry: Bool { return self.isDataProvidedAutomatically || self.won }
 
   public var isLinkedToHealthKit: Bool { return self.autodata == "apple" }
