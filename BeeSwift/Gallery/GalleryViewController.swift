@@ -51,7 +51,12 @@ class GalleryViewController: UIViewController {
     )
     return collectionView
   }()
-  private lazy var collectionViewLayout = UICollectionViewFlowLayout()
+  private lazy var collectionViewLayout: UICollectionViewFlowLayout = {
+    let layout = UICollectionViewFlowLayout()
+    layout.minimumInteritemSpacing = 0
+    layout.minimumLineSpacing = 0
+    return layout
+  }()
   private lazy var freshnessIndicator = FreshnessIndicatorView()
   private lazy var deadbeatView: UIView = {
     let outofdateView = UIView()
