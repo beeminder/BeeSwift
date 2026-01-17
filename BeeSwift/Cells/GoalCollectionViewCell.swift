@@ -10,8 +10,13 @@ import BeeKit
 import Foundation
 
 class GoalCollectionViewCell: UICollectionViewCell {
-  static let expandedHeight: CGFloat = 120
-  static let collapsedHeight: CGFloat = 44
+  private static let expandedHeight: CGFloat = 120
+  private static let collapsedHeight: CGFloat = 44
+
+  static func cellHeight(for goal: Goal?) -> CGFloat {
+    guard let goal = goal else { return expandedHeight }
+    return goal.isPastDeadline ? collapsedHeight : expandedHeight
+  }
 
   let slugLabel: BSLabel = BSLabel()
   let titleLabel: BSLabel = BSLabel()
@@ -19,8 +24,6 @@ class GoalCollectionViewCell: UICollectionViewCell {
   let thumbnailImageView = GoalImageView(isThumbnail: true)
   let safesumLabel: BSLabel = BSLabel()
   let margin = 8
-
-  private var isCollapsed = false
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -74,10 +77,11 @@ class GoalCollectionViewCell: UICollectionViewCell {
   required init?(coder aDecoder: NSCoder) { super.init(coder: aDecoder) }
   override func prepareForReuse() {
     super.prepareForReuse()
-    configure(with: nil, collapsed: false)
+    configure(with: nil)
   }
-  func configure(with goal: Goal?, collapsed: Bool = false) {
-    self.isCollapsed = collapsed
+  func configure(with goal: Goal?) {
+    let collapsed = goal?.isPastDeadline ?? false
+
     self.thumbnailImageView.goal = goal
     self.slugLabel.text = goal?.slug
     self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
