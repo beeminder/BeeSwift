@@ -9,20 +9,8 @@
 import BeeKit
 import Foundation
 
-class GradientView: UIView {
-  override class var layerClass: AnyClass { CAGradientLayer.self }
-  var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
-
-  func setColors(top: UIColor, bottom: UIColor) {
-    gradientLayer.colors = [top.cgColor, bottom.cgColor]
-    gradientLayer.locations = [0.0, 1.0]
-    gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
-    gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
-  }
-}
-
 class GoalCollectionViewCell: UICollectionViewCell {
-  let gradientView = GradientView()
+  let headerBackground = UIView()
   let slugLabel: BSLabel = BSLabel()
   let titleLabel: BSLabel = BSLabel()
   let todaytaLabel: BSLabel = BSLabel()
@@ -31,7 +19,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
   let margin = 8
   override init(frame: CGRect) {
     super.init(frame: frame)
-    self.contentView.addSubview(self.gradientView)
+    self.contentView.addSubview(self.headerBackground)
     self.contentView.addSubview(self.slugLabel)
     self.contentView.addSubview(self.titleLabel)
     self.contentView.addSubview(self.todaytaLabel)
@@ -39,7 +27,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     self.contentView.addSubview(self.safesumLabel)
     self.contentView.backgroundColor = .systemBackground
 
-    self.gradientView.snp.makeConstraints { make in
+    self.headerBackground.snp.makeConstraints { make in
       make.top.left.right.equalToSuperview()
       make.height.equalTo(35)
     }
@@ -97,9 +85,6 @@ class GoalCollectionViewCell: UICollectionViewCell {
     self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
     self.safesumLabel.text = goal?.capitalSafesum()
     self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
-    let backgroundColor = goal?.galleryBackgroundColor ?? .systemBackground
-    self.contentView.backgroundColor = backgroundColor
-    let richColor = backgroundColor.adjustedForGradient()
-    self.gradientView.setColors(top: richColor, bottom: backgroundColor)
+    self.headerBackground.backgroundColor = goal?.galleryBackgroundColor ?? .systemBackground
   }
 }
