@@ -99,7 +99,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
     let backgroundColor = goal?.galleryBackgroundColor ?? .systemBackground
     self.contentView.backgroundColor = backgroundColor
-    let darkerColor = backgroundColor.adjustedBrightness(by: -0.15)
-    self.gradientView.setColors(top: darkerColor, bottom: backgroundColor)
+    let richColor = backgroundColor.adjustedForGradient()
+    self.gradientView.setColors(top: richColor, bottom: backgroundColor)
   }
 }

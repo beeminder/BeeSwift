@@ -10,14 +10,16 @@ import Foundation
 import UIKit
 
 extension UIColor {
-  public func adjustedBrightness(by amount: CGFloat) -> UIColor {
+  public func adjustedForGradient() -> UIColor {
     var hue: CGFloat = 0
     var saturation: CGFloat = 0
     var brightness: CGFloat = 0
     var alpha: CGFloat = 0
     if getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) {
-      let newBrightness = max(0, min(1, brightness + amount))
-      return UIColor(hue: hue, saturation: saturation, brightness: newBrightness, alpha: alpha)
+      // Increase saturation to create a richer version of the color
+      let newSaturation = min(1, saturation + 0.3)
+      let newBrightness = max(0, brightness - 0.05)
+      return UIColor(hue: hue, saturation: newSaturation, brightness: newBrightness, alpha: alpha)
     }
     return self
   }
