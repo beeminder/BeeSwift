@@ -10,6 +10,18 @@ import Foundation
 import UIKit
 
 extension UIColor {
+  public func adjustedBrightness(by amount: CGFloat) -> UIColor {
+    var hue: CGFloat = 0
+    var saturation: CGFloat = 0
+    var brightness: CGFloat = 0
+    var alpha: CGFloat = 0
+    if getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) {
+      let newBrightness = max(0, min(1, brightness + amount))
+      return UIColor(hue: hue, saturation: saturation, brightness: newBrightness, alpha: alpha)
+    }
+    return self
+  }
+
   public struct Beeminder {
     public static let red: UIColor = .systemRed
     public static let gray = UIColor.systemGray
