@@ -53,8 +53,8 @@ class GalleryViewController: UIViewController {
   }()
   private lazy var collectionViewLayout: UICollectionViewFlowLayout = {
     let layout = UICollectionViewFlowLayout()
-    layout.minimumInteritemSpacing = 0
-    layout.minimumLineSpacing = 0
+    layout.minimumInteritemSpacing = 5
+    layout.minimumLineSpacing = 5
     return layout
   }()
   private lazy var freshnessIndicator = FreshnessIndicatorView()
