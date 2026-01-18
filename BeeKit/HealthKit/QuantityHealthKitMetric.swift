@@ -8,15 +8,15 @@ import Foundation
 import HealthKit
 import OSLog
 
-class QuantityHealthKitMetric: HealthKitMetric {
+public class QuantityHealthKitMetric: HealthKitMetric {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "QuantityHealthKitMetric")
 
-  let humanText: String
-  let databaseString: String
-  let category: HealthKitCategory
-  var hasAdditionalOptions: Bool { false }
-  let hkQuantityTypeIdentifier: HKQuantityTypeIdentifier
-  let precision: [HKUnit: Int]
+  public let humanText: String
+  public let databaseString: String
+  public let category: HealthKitCategory
+  public var hasAdditionalOptions: Bool { false }
+  public let hkQuantityTypeIdentifier: HKQuantityTypeIdentifier
+  public let precision: [HKUnit: Int]
 
   internal init(
     humanText: String,
@@ -32,13 +32,15 @@ class QuantityHealthKitMetric: HealthKitMetric {
     self.precision = precision
   }
 
-  func sampleType() -> HKSampleType { return HKObjectType.quantityType(forIdentifier: hkQuantityTypeIdentifier)! }
+  public func sampleType() -> HKSampleType {
+    return HKObjectType.quantityType(forIdentifier: hkQuantityTypeIdentifier)!
+  }
 
-  func permissionType() -> HKObjectType {
+  public func permissionType() -> HKObjectType {
     return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)!
   }
 
-  func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore, autodataConfig: [String: Any])
+  public func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore, autodataConfig: [String: Any])
     async throws -> [BeeDataPoint]
   {
     guard let quantityType = HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier) else {
@@ -81,7 +83,7 @@ class QuantityHealthKitMetric: HealthKitMetric {
     )
   }
 
-  func units(healthStore: HKHealthStore) async throws -> HKUnit {
+  public func units(healthStore: HKHealthStore) async throws -> HKUnit {
     let quantityType = HKObjectType.quantityType(forIdentifier: hkQuantityTypeIdentifier)!
     let units = try await healthStore.preferredUnits(for: [quantityType])
     guard let unit = units.first?.value else { throw HealthKitError("No preferred units") }
