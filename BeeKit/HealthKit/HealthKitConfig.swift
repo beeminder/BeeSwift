@@ -78,13 +78,7 @@ public enum HealthKitConfig {
       ),
 
       // Body Measurements
-      QuantityHealthKitMetric(
-        humanText: "Weight",
-        databaseString: "weight",
-        category: .BodyMeasurements,
-        hkQuantityTypeIdentifier: .bodyMass,
-        precision: [HKUnit.pound(): 1, HKUnit.gramUnit(with: .kilo): 2]
-      ),
+      WeightHealthKitMetric(humanText: "Weight", databaseString: "weight", category: .BodyMeasurements),
 
       // Heart
 
