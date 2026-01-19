@@ -159,6 +159,16 @@ class MainCoordinator {
     )
     navigationController.pushViewController(controller, animated: true)
   }
+  func showGoalSettings(_ goal: Goal) {
+    let controller = GoalSettingsViewController(
+      goal: goal,
+      currentUserManager: currentUserManager,
+      requestManager: requestManager,
+      goalManager: goalManager,
+      coordinator: self
+    )
+    navigationController.pushViewController(controller, animated: true)
+  }
   func showConfigureDefaultNotifications() {
     let controller = EditDefaultNotificationsViewController(
       currentUserManager: currentUserManager,

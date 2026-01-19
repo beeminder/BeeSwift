@@ -323,7 +323,12 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
         make.right.equalTo(-sideMargin)
       }
     }
-    let menuBarItem = UIBarButtonItem(barButtonSystemItem: .action, target: nil, action: nil)
+    let menuBarItem = UIBarButtonItem(
+      image: UIImage(systemName: "ellipsis.circle"),
+      style: .plain,
+      target: nil,
+      action: nil
+    )
     menuBarItem.menu = createGoalMenu()
     self.navigationItem.rightBarButtonItems = [menuBarItem]
     if !self.goal.hideDataEntry {
@@ -598,6 +603,7 @@ extension DateFormatter {
 
 extension GoalViewController {
   fileprivate enum MenuAction {
+    case inAppSettings
     case goalCommitment
     case goalStop
     case goalData
@@ -607,6 +613,7 @@ extension GoalViewController {
       guard let accessToken = currentUserManager.accessToken else { return nil }
       let destinationUrl: URL
       switch self {
+      case .inAppSettings: return nil
       case .goalCommitment:
         destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalCommitment(username: username, goalName: goalName)
       case .goalStop:
@@ -626,7 +633,7 @@ extension GoalViewController {
     let action: MenuAction
     let imageSystemName: String
   }
-  private func getMenuOptions() -> [MenuOption] {
+  private func getWebMenuOptions() -> [MenuOption] {
     [
       MenuOption(title: "Commitment", action: .goalCommitment, imageSystemName: "signature"),
       MenuOption(title: "Stop/Pause", action: .goalStop, imageSystemName: "pause.fill"),
@@ -636,8 +643,20 @@ extension GoalViewController {
     ]
   }
   private func createGoalMenu() -> UIMenu {
-    let options = getMenuOptions()
-    let actions = options.map { option in
+    // In-app settings action at the top
+    let settingsAction = UIAction(
+      title: "Goal Settings",
+      image: UIImage(systemName: "gearshape"),
+      handler: { [weak self] _ in
+        guard let self else { return }
+        self.coordinator?.showGoalSettings(self.goal)
+      }
+    )
+    let settingsMenu = UIMenu(title: "", options: .displayInline, children: [settingsAction])
+
+    // Web links section
+    let webOptions = getWebMenuOptions()
+    let webActions = webOptions.map { option in
       UIAction(
         title: option.title,
         image: UIImage(systemName: option.imageSystemName),
@@ -656,7 +675,13 @@ extension GoalViewController {
         }
       )
     }
-    return UIMenu(title: "bmndr.com/\(goal.owner.username)/\(goal.slug)", children: actions)
+    let webMenu = UIMenu(
+      title: "bmndr.com/\(goal.owner.username)/\(goal.slug)",
+      options: .displayInline,
+      children: webActions
+    )
+
+    return UIMenu(title: "", children: [settingsMenu, webMenu])
   }
 }
 
