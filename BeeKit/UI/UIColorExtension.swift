@@ -19,7 +19,13 @@ extension UIColor {
       public static let orange: UIColor = .systemOrange
       public static let blue: UIColor = .systemBlue
       public static let green: UIColor = .systemGreen
-      public static let dkgreen: UIColor = .init(red: 34 / 255.0, green: 139 / 255.0, blue: 34 / 255.0, alpha: 1)
+      public static let dkgreen: UIColor = UIColor { traitCollection in
+        if traitCollection.userInterfaceStyle == .dark {
+          return UIColor(red: 50 / 255.0, green: 205 / 255.0, blue: 50 / 255.0, alpha: 1)  // Lime green for dark mode
+        } else {
+          return UIColor(red: 34 / 255.0, green: 139 / 255.0, blue: 34 / 255.0, alpha: 1)  // Forest green for light mode
+        }
+      }
       public static let gray: UIColor = .systemGray
 
       public static func color(for colorkey: String) -> UIColor {
