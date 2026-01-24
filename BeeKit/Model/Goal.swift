@@ -32,6 +32,8 @@ import SwiftyJSON
   @NSManaged public var pledge: Int
   /// Whether the graph is currently being updated to reflect new data.
   @NSManaged public var queued: Bool
+  /// The color key indicating the goal's urgency status (red, orange, blue, green, dkgreen, gray).
+  @NSManaged public var colorkey: String
   /// The integer number of safe days. If it's a beemergency this will be zero.
   @NSManaged public var safeBuf: Int
   /// Undocumented
@@ -156,6 +158,7 @@ import SwiftyJSON
     self.leadTime = json["leadtime"].intValue
     self.pledge = json["pledge"].intValue
     self.queued = json["queued"].boolValue
+    self.colorkey = json["colorkey"].stringValue
     self.safeBuf = json["safebuf"].intValue
     self.safeSum = json["safesum"].stringValue
     self.thumbUrl = json["thumb_url"].stringValue
