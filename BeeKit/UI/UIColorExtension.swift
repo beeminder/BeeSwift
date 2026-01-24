@@ -18,12 +18,18 @@ extension UIColor {
       public static let red: UIColor = .systemRed
       public static let orange: UIColor = .systemOrange
       public static let blue: UIColor = .systemBlue
-      public static let green: UIColor = .systemGreen
+      public static let green: UIColor = UIColor { traitCollection in
+        if traitCollection.userInterfaceStyle == .dark {
+          return UIColor(red: 90 / 255.0, green: 220 / 255.0, blue: 120 / 255.0, alpha: 1)  // Lighter green for dark mode
+        } else {
+          return UIColor(red: 40 / 255.0, green: 160 / 255.0, blue: 70 / 255.0, alpha: 1)  // Darker green for light mode
+        }
+      }
       public static let dkgreen: UIColor = UIColor { traitCollection in
         if traitCollection.userInterfaceStyle == .dark {
-          return UIColor(red: 50 / 255.0, green: 205 / 255.0, blue: 50 / 255.0, alpha: 1)  // Lime green for dark mode
+          return UIColor(red: 60 / 255.0, green: 179 / 255.0, blue: 113 / 255.0, alpha: 1)  // Medium sea green for dark mode
         } else {
-          return UIColor(red: 34 / 255.0, green: 139 / 255.0, blue: 34 / 255.0, alpha: 1)  // Forest green for light mode
+          return UIColor(red: 20 / 255.0, green: 100 / 255.0, blue: 20 / 255.0, alpha: 1)  // Dark forest green for light mode
         }
       }
       public static let gray: UIColor = .systemGray
