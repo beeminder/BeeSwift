@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788" systemVersion="24E263" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="DataPoint" representedClassName="DataPoint" syncable="YES">
+        <attribute name="comment" optional="YES" attributeType="String"/>
+        <attribute name="daystampRaw" attributeType="String"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="isDummy" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isInitial" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
+            <userInfo>
+                <entry key="renamingIdentifier" value="lastModifiedLocal"/>
+            </userInfo>
+        </attribute>
+        <attribute name="requestid" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="value" attributeType="Decimal" defaultValueString="0.0"/>
+        <relationship name="goal" maxCount="1" deletionRule="Nullify" destinationEntity="Goal" inverseName="data" inverseEntity="Goal"/>
+    </entity>
+    <entity name="Goal" representedClassName="Goal" syncable="YES" coreSpotlightDisplayNameExpression="slug">
+        <attribute name="alertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="autodata" optional="YES" attributeType="String"/>
+        <attribute name="autodataConfig" optional="YES" attributeType="Transformable" customClassName="NSDictionary"/>
+        <attribute name="deadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="dueBy" optional="YES" attributeType="Transformable" valueTransformerName="DueByTableValueTransformer" customClassName="NSDictionary"/>
+        <attribute name="graphUrl" attributeType="String"/>
+        <attribute name="healthKitMetric" optional="YES" attributeType="String"/>
+        <attribute name="hhmmFormat" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="initDay" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastTouch" attributeType="String"/>
+        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
+            <userInfo>
+                <entry key="renamingIdentifier" value="lastModifiedLocal"/>
+            </userInfo>
+        </attribute>
+        <attribute name="leadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="limSum" attributeType="String"/>
+        <attribute name="pledge" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="queued" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="colorkey" optional="YES" attributeType="String" defaultValueString="gray"/>
+        <attribute name="safeBuf" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="safeSum" attributeType="String"/>
+        <attribute name="slug" attributeType="String" spotlightIndexingEnabled="YES"/>
+        <attribute name="thumbUrl" attributeType="String"/>
+        <attribute name="title" attributeType="String" spotlightIndexingEnabled="YES"/>
+        <attribute name="todayta" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="urgencyKey" attributeType="String"/>
+        <attribute name="useDefaults" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="won" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="yAxis" attributeType="String"/>
+        <relationship name="data" toMany="YES" deletionRule="Cascade" destinationEntity="DataPoint" inverseName="goal" inverseEntity="DataPoint"/>
+        <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="goals" inverseEntity="User"/>
+        <relationship name="recentData" toMany="YES" deletionRule="Nullify" destinationEntity="DataPoint"/>
+    </entity>
+    <entity name="User" representedClassName=".User" syncable="YES">
+        <attribute name="deadbeat" attributeType="Boolean" usesScalarValueType="NO"/>
+        <attribute name="defaultAlertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="defaultDeadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="defaultLeadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
+            <userInfo>
+                <entry key="renamingIdentifier" value="lastModifiedLocal"/>
+            </userInfo>
+        </attribute>
+        <attribute name="timezone" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-978278400" usesScalarValueType="YES"/>
+        <attribute name="username" attributeType="String"/>
+        <relationship name="goals" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Goal" inverseName="owner" inverseEntity="Goal"/>
+    </entity>
+</model>

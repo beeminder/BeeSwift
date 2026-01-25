@@ -50,15 +50,7 @@ extension Goal {
 
   public func capitalSafesum() -> String { return self.safeSum.prefix(1).uppercased() + self.safeSum.dropFirst(1) }
 
-  public var countdownColor: UIColor {
-    switch self.safeBuf {
-    case ..<1: return UIColor.Beeminder.SafetyBuffer.red
-    case ..<2: return UIColor.Beeminder.SafetyBuffer.orange
-    case ..<3: return UIColor.Beeminder.SafetyBuffer.blue
-    case ..<7: return UIColor.Beeminder.SafetyBuffer.green
-    default: return UIColor.Beeminder.SafetyBuffer.forestGreen
-    }
-  }
+  public var countdownColor: UIColor { return UIColor.Beeminder.SafetyBuffer.color(for: self.colorkey) }
 
   public var hideDataEntry: Bool { return self.isDataProvidedAutomatically || self.won }
 
