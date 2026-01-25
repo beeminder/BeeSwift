@@ -7,11 +7,19 @@
 
 import AppIntents
 import CoreData
+import OSLog
 import SwiftyJSON
 import XCTest
 
 @testable import BeeKit
 @testable import BeeSwift
+
+// MARK: - Diagnostic Logging
+// This logging helps diagnose flaky SIGSEGV crashes. If a test crashes, check logs for:
+// - "POTENTIAL DATA RACE": overlapping mock method calls from different threads
+// - Task lifecycle: cancel called before task work completed
+// - Notification timing: notification posted before listener registered
+private let testLogger = Logger(subsystem: "com.beeminder.BeeSwiftTests", category: "SpotlightIndexerTests")
 
 final class MockSearchableIndex: SearchableIndexing, @unchecked Sendable {
   var indexedEntities: [[GoalEntity]] = []
@@ -21,19 +29,48 @@ final class MockSearchableIndex: SearchableIndexing, @unchecked Sendable {
   var onDeleteAll: (() -> Void)?
   var onDeleteIdentifiers: (() -> Void)?
 
+  // Track concurrent access to detect data races
+  private var activeMethodCalls = 0
+  private let accessQueue = DispatchQueue(label: "MockSearchableIndex.access")
+
+  private func trackEntry(_ method: String) {
+    accessQueue.sync {
+      activeMethodCalls += 1
+      if activeMethodCalls > 1 {
+        testLogger.error(
+          "POTENTIAL DATA RACE: \(method) entered while another method active (count=\(self.activeMethodCalls))"
+        )
+      }
+      testLogger.debug("\(method): enter (thread=\(Thread.current), active=\(self.activeMethodCalls))")
+    }
+  }
+
+  private func trackExit(_ method: String) {
+    accessQueue.sync {
+      testLogger.debug("\(method): exit (thread=\(Thread.current), active=\(self.activeMethodCalls))")
+      activeMethodCalls -= 1
+    }
+  }
+
   func indexAppEntities<T: IndexedEntity>(_ entities: [T], priority: Int) async throws {
+    trackEntry("indexAppEntities")
     if let goalEntities = entities as? [GoalEntity] { indexedEntities.append(goalEntities) }
     onIndex?()
+    trackExit("indexAppEntities")
   }
 
   func deleteAllSearchableItems() async throws {
+    trackEntry("deleteAllSearchableItems")
     deleteAllSearchableItemsCalled = true
     onDeleteAll?()
+    trackExit("deleteAllSearchableItems")
   }
 
   func deleteSearchableItems(withIdentifiers identifiers: [String]) async throws {
+    trackEntry("deleteSearchableItems")
     deletedIdentifiers.append(contentsOf: identifiers)
     onDeleteIdentifiers?()
+    trackExit("deleteSearchableItems")
   }
 }
 
@@ -50,10 +87,13 @@ final class SpotlightIndexerTests: XCTestCase {
   }
 
   override func tearDown() {
+    testLogger.debug("tearDown: starting - setting references to nil")
     container = nil
     currentUserManager = nil
     mockSearchableIndex = nil
+    testLogger.debug("tearDown: references cleared - calling super.tearDown()")
     super.tearDown()
+    testLogger.debug("tearDown: complete")
   }
 
   func testReindexAllGoalsWithNoUser() async {
@@ -96,47 +136,75 @@ final class SpotlightIndexerTests: XCTestCase {
     try container.viewContext.save()
 
     let indexed = expectation(description: "Goals indexed")
-    mockSearchableIndex.onIndex = { indexed.fulfill() }
+    mockSearchableIndex.onIndex = {
+      testLogger.debug("onIndex callback fired - expectation will be fulfilled")
+      indexed.fulfill()
+    }
 
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
       searchableIndex: mockSearchableIndex
     )
-    let listenerTask = Task { await indexer.listenForNotifications() }
+    testLogger.debug("Creating listener task")
+    let listenerTask = Task {
+      testLogger.debug("Listener task started - calling listenForNotifications()")
+      await indexer.listenForNotifications()
+      testLogger.debug("Listener task: listenForNotifications() returned")
+    }
 
     // Post the notification on main thread
+    testLogger.debug("About to post NSManagedObjectContextObjectsDidChange notification")
     await MainActor.run {
       NotificationCenter.default.post(name: .NSManagedObjectContextObjectsDidChange, object: container.viewContext)
     }
+    testLogger.debug("Notification posted")
 
+    testLogger.debug("Awaiting expectation fulfillment")
     await fulfillment(of: [indexed], timeout: 1.0)
+    testLogger.debug("Expectation fulfilled - cancelling task")
     listenerTask.cancel()
+    testLogger.debug("Task cancelled - proceeding to assertions (task may still be running!)")
 
     XCTAssertEqual(mockSearchableIndex.indexedEntities.count, 1, "Should have indexed once")
     XCTAssertEqual(mockSearchableIndex.indexedEntities.first?.first?.slug, "initial-goal")
+    testLogger.debug("Assertions complete")
   }
 
   func testClearIndexOnSignedOutNotification() async throws {
     let cleared = expectation(description: "Index cleared")
-    mockSearchableIndex.onDeleteAll = { cleared.fulfill() }
+    mockSearchableIndex.onDeleteAll = {
+      testLogger.debug("onDeleteAll callback fired - expectation will be fulfilled")
+      cleared.fulfill()
+    }
 
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
       searchableIndex: mockSearchableIndex
     )
-    let listenerTask = Task { await indexer.listenForNotifications() }
+    testLogger.debug("Creating listener task")
+    let listenerTask = Task {
+      testLogger.debug("Listener task started - calling listenForNotifications()")
+      await indexer.listenForNotifications()
+      testLogger.debug("Listener task: listenForNotifications() returned")
+    }
 
     // Post the notification on main thread
+    testLogger.debug("About to post signedOut notification")
     await MainActor.run {
       NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: nil)
     }
+    testLogger.debug("Notification posted")
 
+    testLogger.debug("Awaiting expectation fulfillment")
     await fulfillment(of: [cleared], timeout: 1.0)
+    testLogger.debug("Expectation fulfilled - cancelling task")
     listenerTask.cancel()
+    testLogger.debug("Task cancelled - proceeding to assertions (task may still be running!)")
 
     XCTAssertTrue(mockSearchableIndex.deleteAllSearchableItemsCalled, "Should clear index on sign out")
+    testLogger.debug("Assertions complete")
   }
 
   // MARK: - Incremental Indexing Tests
