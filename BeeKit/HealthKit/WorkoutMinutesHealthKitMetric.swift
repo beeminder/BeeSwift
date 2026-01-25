@@ -103,7 +103,19 @@ public struct WorkoutActivityTypeInfo {
       identifier: "mindAndBody",
       displayName: "Mind And Body",
       category: .mindBody
-    ), WorkoutActivityTypeInfo(activityType: .dance, identifier: "dance", displayName: "Dance", category: .mindBody),
+    ),
+    WorkoutActivityTypeInfo(
+      activityType: .socialDance,
+      identifier: "socialDance",
+      displayName: "Social Dance",
+      category: .mindBody
+    ),
+    WorkoutActivityTypeInfo(
+      activityType: .cardioDance,
+      identifier: "cardioDance",
+      displayName: "Cardio Dance",
+      category: .mindBody
+    ),
     WorkoutActivityTypeInfo(
       activityType: .cooldown,
       identifier: "cooldown",
