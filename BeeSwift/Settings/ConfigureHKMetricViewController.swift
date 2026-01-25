@@ -196,6 +196,9 @@ class ConfigureHKMetricViewController: UIViewController {
       workoutProvider.onPushViewController = { [weak self] viewController in
         self?.navigationController?.pushViewController(viewController, animated: true)
       }
+    } else if metric is WeightHealthKitMetric {
+      let weightProvider = WeightConfigurationProvider(existingConfig: goal.autodataConfig)
+      metricConfig.configurationProvider = weightProvider
     }
 
     metricConfig.onConfigurationChanged = { [weak self] in
