@@ -167,9 +167,12 @@ class ConfigureHKMetricViewController: UIViewController {
     if hasData {
       noDataFoundLabel.snp.updateConstraints { make in make.height.equalTo(0) }
     } else {
-      previewDescriptionLabel.snp.updateConstraints { make in make.height.equalTo(0) }
       noDataFoundLabel.snp.remakeConstraints { make in
-        make.top.equalTo(datapointTableController.view.snp.bottom)
+        if let metricConfig = metricConfigViewController {
+          make.top.equalTo(metricConfig.view.snp.bottom).offset(Layout.componentMargin)
+        } else {
+          make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin).offset(Layout.componentMargin)
+        }
         make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(Layout.componentMargin)
         make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-Layout.componentMargin)
       }
