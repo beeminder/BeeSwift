@@ -143,17 +143,27 @@ class ConfigureHKMetricViewController: UIViewController {
     self.datapointTableController.hhmmformat = self.goal.hhmmFormat
     Task { @MainActor in
       let currentConfig = buildCurrentConfig()
-      let datapoints = try await self.metric.recentDataPoints(
-        days: 5,
-        deadline: self.goal.deadline,
-        healthStore: self.healthStoreManager.healthStore,
-        autodataConfig: currentConfig
-      )
-      self.datapointTableController.datapoints = datapoints
-      updateEmptyState(hasData: !datapoints.isEmpty)
+      do {
+        let datapoints = try await self.metric.recentDataPoints(
+          days: 5,
+          deadline: self.goal.deadline,
+          healthStore: self.healthStoreManager.healthStore,
+          autodataConfig: currentConfig
+        )
+        self.datapointTableController.datapoints = datapoints
+        updateEmptyState(hasData: !datapoints.isEmpty)
+      } catch {
+        self.logger.error("Failed to load preview data: \(error)")
+        updateEmptyState(hasData: false)
+      }
 
-      let units = try await self.metric.units(healthStore: self.healthStoreManager.healthStore)
-      metricConfigViewController?.unitName = units.description
+      do {
+        let units = try await self.metric.units(healthStore: self.healthStoreManager.healthStore)
+        metricConfigViewController?.unitName = units.description
+      } catch {
+        self.logger.error("Failed to load units: \(error)")
+        metricConfigViewController?.unitName = "Unknown"
+      }
     }
   }
 
