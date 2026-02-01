@@ -37,7 +37,7 @@
         <attribute name="limSum" attributeType="String"/>
         <attribute name="pledge" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="queued" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="colorkey" optional="YES" attributeType="String" defaultValueString="gray"/>
+        <attribute name="colorkey" attributeType="String" defaultValueString="gray"/>
         <attribute name="safeBuf" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="safeSum" attributeType="String"/>
         <attribute name="slug" attributeType="String" spotlightIndexingEnabled="YES"/>
@@ -57,6 +57,7 @@
         <attribute name="defaultAlertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="defaultDeadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="defaultLeadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastFetchedModelVersionLocal" optional="YES" attributeType="String"/>
         <attribute name="lastUpdatedLocal" optional="YES" attributeType="Date" defaultDateTimeInterval="-978307200" usesScalarValueType="NO" elementID="lastUpdatedLocal">
             <userInfo>
                 <entry key="renamingIdentifier" value="lastModifiedLocal"/>

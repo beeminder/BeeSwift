@@ -50,23 +50,7 @@ extension Goal {
 
   public func capitalSafesum() -> String { return self.safeSum.prefix(1).uppercased() + self.safeSum.dropFirst(1) }
 
-  public var countdownColor: UIColor {
-    // Use colorkey from API if available, otherwise fall back to calculating from safeBuf
-    let key: String
-    if let colorkey = value(forKey: "colorkey") as? String, !colorkey.isEmpty {
-      key = colorkey
-    } else {
-      // Fallback for migrated data or when API doesn't provide colorkey
-      switch self.safeBuf {
-      case ..<1: key = "red"
-      case ..<2: key = "orange"
-      case ..<3: key = "blue"
-      case ..<7: key = "green"
-      default: key = "dkgreen"
-      }
-    }
-    return UIColor.Beeminder.SafetyBuffer.color(for: key)
-  }
+  public var countdownColor: UIColor { return UIColor.Beeminder.SafetyBuffer.color(for: self.colorkey) }
 
   public var hideDataEntry: Bool { return self.isDataProvidedAutomatically || self.won }
 

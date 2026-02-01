@@ -53,12 +53,27 @@ import SwiftyJSON
   /// Fetch and return the latest set of goals from the server
   public func refreshGoals() async throws {
     guard let user = self.currentUserManager.user(context: modelContext) else { return }
+
+    let currentModelVersion = modelContainer.managedObjectModel.versionChecksum
+    let modelChanged = user.lastFetchedModelVersionLocal != currentModelVersion
+
     let goalsUnknown = user.goals.count == 0 || user.updatedAt.timeIntervalSince1970 < 24 * 60 * 60
-    if goalsUnknown {
+    if goalsUnknown || modelChanged {
+      if modelChanged {
+        logger.notice(
+          "Model version changed from \(user.lastFetchedModelVersionLocal ?? "nil", privacy: .public) to \(currentModelVersion, privacy: .public), forcing full refresh"
+        )
+      }
       try await refreshGoalsFromScratch(user: user)
     } else {
       try await refreshGoalsIncremental(user: user)
     }
+
+    // Update the stored model version after successful refresh
+    if let user = self.currentUserManager.user(context: modelContext) {
+      user.lastFetchedModelVersionLocal = currentModelVersion
+    }
+
     try modelContext.save()
     await performPostGoalUpdateBookkeeping()
   }

@@ -140,6 +140,7 @@ import SwiftyJSON
   public override func awakeFromFetch() {
     super.awakeFromFetch()
     if primitiveValue(forKey: "autodataConfig") == nil { setPrimitiveValue([:], forKey: "autodataConfig") }
+    if primitiveValue(forKey: "colorkey") == nil { setPrimitiveValue("gray", forKey: "colorkey") }
   }
   // Question: Should this type know about JSON, or should there be an adapter / extension?
   public func updateToMatch(json: JSON) {
