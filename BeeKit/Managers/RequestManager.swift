@@ -62,9 +62,7 @@ public class RequestManager {
     ).validate().serializingData(emptyRequestMethods: [HTTPMethod.post]).response
 
     switch response.result {
-    case .success(let data):
-      let asJSON = try? JSONSerialization.jsonObject(with: data)
-      return asJSON
+    case .success(let data): return try await Task.detached { try JSONSerialization.jsonObject(with: data) }.value
 
     case .failure(let error):
       logger.error("Error issuing request \(url): \(error, privacy: .public)")
