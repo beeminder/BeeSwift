@@ -7,23 +7,16 @@
 //
 
 import BeeKit
-import HealthKit
-import OSLog
 import UIKit
 
 class ChooseHKMetricViewController: UIViewController {
-  fileprivate let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ChooseHKMetricViewController")
   fileprivate let cellReuseIdentifier = "hkMetricTableViewCell"
   fileprivate var tableView = UITableView()
   let goal: Goal
-  private let healthStoreManager: HealthStoreManager
-  private let requestManager: RequestManager
   private weak var coordinator: MainCoordinator?
-  init(goal: Goal, healthStoreManager: HealthStoreManager, requestManager: RequestManager, coordinator: MainCoordinator)
-  {
+
+  init(goal: Goal, coordinator: MainCoordinator) {
     self.goal = goal
-    self.healthStoreManager = healthStoreManager
-    self.requestManager = requestManager
     self.coordinator = coordinator
     super.init(nibName: nil, bundle: nil)
   }
@@ -127,18 +120,11 @@ extension ChooseHKMetricViewController: UITableViewDelegate, UITableViewDataSour
     // Prevent double taps
     self.tableView.isUserInteractionEnabled = false
 
-    Task { @MainActor in
-      let section = HealthKitCategory.allCases[indexPath.section]
-      let metric = self.sortedMetricsByCategory[section]![indexPath.row]
+    let section = HealthKitCategory.allCases[indexPath.section]
+    let metric = self.sortedMetricsByCategory[section]![indexPath.row]
 
-      do { try await self.healthStoreManager.requestAuthorization(metric: metric) } catch {
-        logger.error("Error requesting permission for metric: \(error)")
-        self.tableView.isUserInteractionEnabled = true
-        return
-      }
-
-      coordinator?.showConfigureHKMetricForGoal(goal, metric)
-    }
+    // Authorization is requested by ConfigureHKMetricViewController when loading preview data
+    coordinator?.showConfigureHKMetricForGoal(goal, metric)
   }
   func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
     tableView.cellForRow(at: indexPath)?.accessoryType = .none

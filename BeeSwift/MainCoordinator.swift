@@ -141,12 +141,7 @@ class MainCoordinator {
     navigationController.pushViewController(controller, animated: true)
   }
   func showAssociateHealthKitWithGoal(_ goal: Goal) {
-    let chooseHKMetricViewController = ChooseHKMetricViewController(
-      goal: goal,
-      healthStoreManager: healthStoreManager,
-      requestManager: requestManager,
-      coordinator: self
-    )
+    let chooseHKMetricViewController = ChooseHKMetricViewController(goal: goal, coordinator: self)
     navigationController.pushViewController(chooseHKMetricViewController, animated: true)
   }
   func showConfigureNotificationsForGoal(_ goal: Goal) {

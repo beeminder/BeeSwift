@@ -142,6 +142,13 @@ class ConfigureHKMetricViewController: UIViewController {
   private func loadPreviewData() {
     self.datapointTableController.hhmmformat = self.goal.hhmmFormat
     Task { @MainActor in
+      // Request authorization before accessing HealthKit data
+      do {
+        try await self.healthStoreManager.requestAuthorization(metric: self.metric)
+      } catch {
+        self.logger.error("Failed to request HealthKit authorization: \(error)")
+      }
+
       let currentConfig = buildCurrentConfig()
       do {
         let datapoints = try await self.metric.recentDataPoints(
