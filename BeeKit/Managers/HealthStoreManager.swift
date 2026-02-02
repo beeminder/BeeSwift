@@ -64,8 +64,14 @@ import OSLog
   /// will be updated any time the health data changes.
   public func ensureGoalsUpdateRegularly() async throws {
     modelContext.refreshAllObjects()
-    guard let goals = goalManager.staleGoals(context: modelContext) else { return }
+    guard let goals = goalManager.staleGoals(context: modelContext) else {
+      logger.notice("ensureGoalsUpdateRegularly: No user/goals found in context")
+      return
+    }
     let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
+    logger.notice(
+      "ensureGoalsUpdateRegularly: Found \(goals.count, privacy: .public) goals, \(metrics.count, privacy: .public) with HealthKit metrics: \(metrics.joined(separator: ", "), privacy: .public)"
+    )
     return try await ensureUpdatesRegularly(metricNames: metrics, removeMissing: true)
   }
 
@@ -125,8 +131,12 @@ import OSLog
     var permissions = Set<HKObjectType>()
     for monitor in monitors { permissions.insert(monitor.metric.permissionType()) }
     if permissions.count > 0 {
+      logger.notice(
+        "ensureUpdatesRegularly: Requesting authorization for \(permissions.count, privacy: .public) permission(s)"
+      )
       try await self.healthStore.requestAuthorization(toShare: Set(), read: permissions)
-
+    } else {
+      logger.notice("ensureUpdatesRegularly: No permissions to request (monitors: \(monitors.count, privacy: .public))")
     }
 
     try await withThrowingTaskGroup(of: Void.self) { group in

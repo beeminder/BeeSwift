@@ -276,8 +276,12 @@ class GalleryViewController: UIViewController {
 
   func setupHealthKit() {
     Task { @MainActor in
-      do { try await healthStoreManager.ensureGoalsUpdateRegularly() } catch {
-        // We should display an error UI
+      logger.notice("setupHealthKit: Starting HealthKit setup")
+      do {
+        try await healthStoreManager.ensureGoalsUpdateRegularly()
+        logger.notice("setupHealthKit: HealthKit setup completed successfully")
+      } catch {
+        logger.error("setupHealthKit: Failed to setup HealthKit: \(error)")
       }
     }
   }
