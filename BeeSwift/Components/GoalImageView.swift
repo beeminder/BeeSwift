@@ -83,7 +83,6 @@ class GoalImageView: UIView {
         guard let self else { return }
         self.imageView.image = image
         self.beeLemniscateView.isHidden = self.goal == nil || self.goal?.queued == false
-        
         self.imageView.contentMode = self.isThumbnail == true ? .scaleAspectFill : .scaleAspectFit
       },
       completion: { [weak self] _ in
