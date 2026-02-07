@@ -1,5 +1,5 @@
 //
-//  GoalTableViewCell.swift
+//  GoalCollectionViewCell.swift
 //  BeeSwift
 //
 //  Created by Andy Brett on 4/24/15.
