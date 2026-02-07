@@ -26,7 +26,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     self.contentView.backgroundColor = .systemBackground
 
     self.slugLabel.font = UIFont.beeminder.defaultFontHeavy
-    self.slugLabel.textColor = .label
+    self.goalSlugLabel.textColor = .secondaryLabel
     self.slugLabel.snp.makeConstraints { (make) -> Void in
       make.left.equalTo(self.margin)
       make.top.equalTo(10)
@@ -41,7 +41,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
       make.right.lessThanOrEqualTo(self.todaytaLabel.snp.left).offset(-10)
     }
     self.todaytaLabel.font = UIFont.beeminder.defaultFont
-    self.todaytaLabel.textColor = .label
+    self.todaytaLabel.textColor = .secondaryLabel
     self.todaytaLabel.textAlignment = .right
     self.todaytaLabel.snp.makeConstraints { (make) -> Void in
       make.centerY.equalTo(self.slugLabel)
