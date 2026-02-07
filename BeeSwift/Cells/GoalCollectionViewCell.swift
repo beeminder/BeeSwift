@@ -55,15 +55,15 @@ class GoalCollectionViewCell: UICollectionViewCell {
 
   override init(frame: CGRect) {
     super.init(frame: frame)
-    setupView()
+    setUpView()
   }
 
   required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
-    setupView()
+    setUpView()
   }
 
-  private func setupView() {
+  private func setUpView() {
     self.contentView.backgroundColor = .clear
     self.contentView.addSubview(self.cardView)
 
