@@ -41,11 +41,16 @@ class GoalImageView: UIView {
 
   private func setupView() {
     self.addSubview(imageView)
-    imageView.snp.makeConstraints { (make) in make.edges.equalToSuperview() }
+
+    self.layer.cornerRadius = CardLookConstants.cornerRadius
+    self.layer.borderWidth = 0
+    self.clipsToBounds = true
+    imageView.snp.makeConstraints { $0.edges.equalToSuperview() }
+
     self.imageView.image = UIImage(named: "GraphPlaceholder")
 
     self.addSubview(beeLemniscateView)
-    beeLemniscateView.snp.makeConstraints { (make) in make.edges.equalToSuperview() }
+    beeLemniscateView.snp.makeConstraints { $0.edges.equalToSuperview() }
     beeLemniscateView.isHidden = true
 
     NotificationCenter.default.addObserver(
@@ -59,17 +64,7 @@ class GoalImageView: UIView {
     imageView.image = UIImage(named: "GraphPlaceholder")
     currentlyShowingGraph = false
     beeLemniscateView.isHidden = true
-    updateBorder()
-  }
-
-  @MainActor private func updateBorder() {
-    if isThumbnail {
-      imageView.layer.borderColor = goal?.countdownColor.cgColor
-      imageView.layer.borderWidth = goal == nil ? 0 : 1
-    } else {
-      imageView.layer.borderColor = nil
-      imageView.layer.borderWidth = 0
-    }
+    layer.borderWidth = 0
   }
 
   @MainActor private func showGraphImage(image: UIImage) {
@@ -83,11 +78,20 @@ class GoalImageView: UIView {
       duration: duration,
       options: .transitionCrossDissolve,
       animations: { [weak self] in
-        self?.imageView.image = image
-        self?.beeLemniscateView.isHidden = self?.goal == nil || self?.goal?.queued == false
-        self?.updateBorder()
+        guard let self else { return }
+        self.imageView.image = image
+        self.beeLemniscateView.isHidden = self.goal == nil || self.goal?.queued == false
+        self.imageView.contentMode = self.isThumbnail == true ? .scaleAspectFill : .scaleAspectFit
+      },
+      completion: { [weak self] _ in
+        guard let self else { return }
+        if self.isThumbnail {
+          self.layer.borderColor = self.goal?.countdownColor.cgColor
+          self.layer.borderWidth = self.goal == nil ? 0 : 2
+        }
+        self.currentlyShowingGraph = true
       }
-    ) { [weak self] _ in self?.currentlyShowingGraph = true }
+    )
   }
 
   @MainActor private func refresh() {
@@ -107,8 +111,8 @@ class GoalImageView: UIView {
       return
     }
 
-    //  - Deadbeat: Placeholder, no animation
-    if goal.owner.deadbeat {
+    // Deadbeat: Placeholder, no animation
+    guard !goal.owner.deadbeat else {
       clearGoalGraph()
       return
     }
