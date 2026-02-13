@@ -142,7 +142,7 @@ import OSLog
 
     for metricName in metricNames {
       if monitors[metricName] == nil {
-        guard let metric = HealthKitConfig.metrics.first(where: { $0.databaseString == metricName }) else {
+        guard let metric = HealthKitConfig.shared.metrics.first(where: { $0.databaseString == metricName }) else {
           logger.error("No metric found for \(metricName, privacy: .public)")
           continue
         }
@@ -188,7 +188,7 @@ import OSLog
   }
 
   private func updateWithRecentData(goal: Goal, days: Int) async throws {
-    guard let metric = HealthKitConfig.metrics.first(where: { $0.databaseString == goal.healthKitMetric }) else {
+    guard let metric = HealthKitConfig.shared.metrics.first(where: { $0.databaseString == goal.healthKitMetric }) else {
       throw HealthKitError("No metric found for goal \(goal.slug) with metric \(goal.healthKitMetric ?? "nil")")
     }
     let newDataPoints = try await metric.recentDataPoints(

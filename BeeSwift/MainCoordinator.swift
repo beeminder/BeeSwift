@@ -121,7 +121,7 @@ class MainCoordinator {
     navigationController.pushViewController(controller, animated: true)
   }
   func showReconfigureHealthKitForGoal(_ goal: Goal) {
-    guard let metric = HealthKitConfig.metrics.first(where: { $0.databaseString == goal.healthKitMetric }) else {
+    guard let metric = HealthKitConfig.shared.metrics.first(where: { $0.databaseString == goal.healthKitMetric }) else {
       let alert = UIAlertController(
         title: "Unknown Metric",
         message: "Unable to find configuration for this Apple Health metric. The metric may no longer be supported.",

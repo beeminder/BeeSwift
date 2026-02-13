@@ -7,7 +7,7 @@ extension Goal {
     case "ifttt": return "IFTTT"
     case "api": return "API"
     case "apple":
-      let metric = HealthKitConfig.metrics.first(where: { $0.databaseString == self.healthKitMetric })
+      let metric = HealthKitConfig.shared.metrics.first(where: { $0.databaseString == self.healthKitMetric })
       return self.healthKitMetric == nil ? "Apple" : metric?.humanText
     default: return autodata.capitalized
     }

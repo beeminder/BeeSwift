@@ -95,7 +95,7 @@ class ChooseHKMetricViewController: UIViewController {
 }
 
 extension ChooseHKMetricViewController: UITableViewDelegate, UITableViewDataSource {
-  var sortedHKMetrics: [HealthKitMetric] { HealthKitConfig.metrics.sorted(using: SortDescriptor(\.humanText)) }
+  var sortedHKMetrics: [HealthKitMetric] { HealthKitConfig.shared.metrics.sorted(using: SortDescriptor(\.humanText)) }
 
   var sortedMetricsByCategory: [HealthKitCategory: [HealthKitMetric]] {
     var result = [HealthKitCategory: [HealthKitMetric]]()
