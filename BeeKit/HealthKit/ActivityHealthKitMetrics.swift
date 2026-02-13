@@ -43,11 +43,7 @@ public class ActivityHealthKitMetrics {
         category: .Activity,
         hkQuantityTypeIdentifier: .basalEnergyBurned,
         precision: [HKUnit.largeCalorie(): 0]
-      ),
-      StandHoursHealthKitMetric(
-        humanText: "Stand hours",
-        databaseString: "standHour",
-        category: .Activity),
+      ), StandHoursHealthKitMetric(humanText: "Stand hours", databaseString: "standHour", category: .Activity),
       QuantityHealthKitMetric(
         humanText: "Steps",
         databaseString: "steps",
