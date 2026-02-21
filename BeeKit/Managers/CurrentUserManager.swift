@@ -36,13 +36,13 @@ import SwiftyJSON
 
   internal static let keychainPrefix = "CurrentUserManager_"
 
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
 
   fileprivate static var allKeys: [String] {
     [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
   }
 
-  init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
+  init(requestManager: RequestManaging, container: BeeminderPersistentContainer) {
     self.requestManager = requestManager
     self.modelContainer = container
     let context = container.newBackgroundContext()

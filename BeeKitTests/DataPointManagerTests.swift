@@ -17,12 +17,12 @@ class MockHealthKitDataPoint: BeeDataPoint {
   }
 }
 
-class MockRequestManagerForDataPoint: RequestManager {
+class MockRequestManagerForDataPoint: RequestManaging {
   private let queue = DispatchQueue(label: "com.beeminder.MockRequestManagerForDataPoint")
   private var _responses: [String: Any] = [:]
   private var _putCalls: [(url: String, parameters: [String: Any])] = []
   private var _deleteCalls: [String] = []
-  private var _addDatapointCalls: [(urtext: String, slug: String, requestId: String)] = []
+  private var _addDatapointCalls: [(url: String, parameters: [String: Any])] = []
 
   var responses: [String: Any] {
     get { queue.sync { _responses } }
@@ -30,30 +30,41 @@ class MockRequestManagerForDataPoint: RequestManager {
   }
   var putCalls: [(url: String, parameters: [String: Any])] { queue.sync { _putCalls } }
   var deleteCalls: [String] { queue.sync { _deleteCalls } }
-  var addDatapointCalls: [(urtext: String, slug: String, requestId: String)] { queue.sync { _addDatapointCalls } }
+  var addDatapointCalls: [(url: String, parameters: [String: Any])] { queue.sync { _addDatapointCalls } }
 
-  override func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    let response = queue.sync { () -> Any? in
-      if let response = _responses[url] {
-        _responses.removeValue(forKey: url)
-        return response
+  func request(endpoint: EndPoint) async throws -> Any? {
+    let urlString = endpoint.url.absoluteString
+    
+    // Determine HTTP method from endpoint path patterns
+    if urlString.contains("/datapoints/") && urlString.contains("datapoints.json") {
+      // POST - create new datapoint
+      queue.sync { _addDatapointCalls.append((url: urlString, parameters: endpoint.parameters ?? [:])) }
+      return [:]
+    } else if urlString.contains("/datapoints/") && !urlString.contains("datapoints.json") {
+      // Has specific datapoint ID - could be PUT or DELETE
+      // Check if it's a delete (usually has the datapoint ID in the path)
+      if endpoint.parameters == nil || endpoint.parameters?.isEmpty == true {
+        // Likely a delete
+        queue.sync { _deleteCalls.append(urlString) }
+        return [:]
+      } else {
+        // PUT - update datapoint
+        queue.sync { _putCalls.append((url: urlString, parameters: endpoint.parameters ?? [:])) }
+        return [:]
       }
-      return nil
+    } else {
+      // GET - fetch datapoints
+      let response = queue.sync { () -> Any? in
+        if let response = _responses[urlString] {
+          _responses.removeValue(forKey: urlString)
+          return response
+        }
+        return nil
+      }
+      return response ?? []
     }
-    return response ?? []
   }
-  override func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    queue.sync { _putCalls.append((url: url, parameters: parameters ?? [:])) }
-    return [:]
-  }
-  override func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    queue.sync { _deleteCalls.append(url) }
-    return [:]
-  }
-  override func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
-    queue.sync { _addDatapointCalls.append((urtext: urtext, slug: slug, requestId: requestId ?? "")) }
-    return [:]
-  }
+
 }
 
 class DataPointManagerTests: XCTestCase {
@@ -134,9 +145,9 @@ class DataPointManagerTests: XCTestCase {
     XCTAssertTrue(mockRequestManager.deleteCalls[0].contains("obsolete1"))
     // Should create a new datapoint
     XCTAssertEqual(mockRequestManager.addDatapointCalls.count, 1)
-    XCTAssertEqual(mockRequestManager.addDatapointCalls[0].urtext, "1 25 \"New workout\"")
-    XCTAssertEqual(mockRequestManager.addDatapointCalls[0].slug, "test-goal")
-    XCTAssertEqual(mockRequestManager.addDatapointCalls[0].requestId, "hk_workout_2")
+    XCTAssertEqual(mockRequestManager.addDatapointCalls[0].parameters["urtext"] as? String, "1 25 \"New workout\"")
+    XCTAssertTrue(mockRequestManager.addDatapointCalls[0].url.contains("/goals/test-goal"))
+    XCTAssertEqual(mockRequestManager.addDatapointCalls[0].parameters["requestId"] as? String, "hk_workout_2")
   }
   func testDeletesRemovedWorkouts() async throws {
     let apiResponse = [
@@ -211,8 +222,8 @@ class DataPointManagerTests: XCTestCase {
     XCTAssertTrue(mockRequestManager.deleteCalls[0].contains("day2_workout1"))
     // Should create 2 new workouts (day1 yoga, day2 bike)
     XCTAssertEqual(mockRequestManager.addDatapointCalls.count, 2)
-    XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.requestId == "uuid_3" })
-    XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.requestId == "uuid_4" })
+    XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.parameters["requestId"] as? String == "uuid_3" })
+    XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.parameters["requestId"] as? String == "uuid_4" })
   }
   private func createTestGoalJSON() -> JSON {
     return JSON(

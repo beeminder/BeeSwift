@@ -16,12 +16,12 @@ import SwiftyJSON
 @NSModelActor(disableGenerateInit: true) public actor GoalManager {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalManager")
 
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   private nonisolated let currentUserManager: CurrentUserManager
 
   private var queuedGoalsBackgroundTaskRunning: Bool = false
 
-  init(requestManager: RequestManager, currentUserManager: CurrentUserManager, container: BeeminderPersistentContainer)
+  init(requestManager: RequestManaging, currentUserManager: CurrentUserManager, container: BeeminderPersistentContainer)
   {
     modelContainer = container
     let context = container.newBackgroundContext()
