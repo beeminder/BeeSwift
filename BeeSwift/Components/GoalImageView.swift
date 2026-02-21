@@ -11,14 +11,10 @@ class GoalImageView: UIView {
   private let imageView = UIImageView()
   private let beeLemniscateView = BeeLemniscateView()
 
-  private var currentlyShowingGraph = false
-  private var currentDownloadToken: UUID? = nil
-
   public let isThumbnail: Bool
 
   public var goal: Goal? {
     didSet {
-      // If changed to a different goal, remove any current state
       if goal !== oldValue { clearGoalGraph() }
       refresh()
     }
@@ -55,14 +51,10 @@ class GoalImageView: UIView {
 
   @MainActor private func clearGoalGraph() {
     imageView.image = UIImage(named: "GraphPlaceholder")
-    currentlyShowingGraph = false
     beeLemniscateView.isHidden = true
   }
 
   @MainActor private func showGraphImage(image: UIImage) {
-    // Animating the thumbnail view interacts badly with cell re-use in the gallery
-    // e.g. it would cause us to show the image from a different goal before animating
-    // to the corrent one.
     let duration = isThumbnail ? 0 : 0.4
 
     UIView.transition(
@@ -81,59 +73,36 @@ class GoalImageView: UIView {
           self?.imageView.layer.borderWidth = 0
         }
       }
-    ) { [weak self] _ in self?.currentlyShowingGraph = true }
+    )
   }
 
   @MainActor private func refresh() {
-    // Invalidate the download token, meaning that any queued download callbacks
-    // will no-op. This avoids race conditions with downloads finishing out of order.
-    let newDownloadToken = UUID()
-    self.currentDownloadToken = newDownloadToken
-
-    imageView.kf.cancelDownloadTask()
-
-    //  No Goal: Placeholder, no animation
     guard let goal = self.goal else {
       clearGoalGraph()
       return
     }
 
-    //  - Deadbeat: Placeholder, no animation
     if goal.owner.deadbeat {
       clearGoalGraph()
       return
     }
 
-    // When queued, we should show a loading indicator over any existing graph,
-    // but not over the placeholder image.
-    if goal.queued { beeLemniscateView.isHidden = !currentlyShowingGraph }
+    if goal.queued { beeLemniscateView.isHidden = true }
 
     let urlString = isThumbnail ? goal.cacheBustingThumbUrl : goal.cacheBustingGraphUrl
-
-    // Explicitly check the cache to see if the image is already present, and if so set it directly
-    // This avoids flicker when showing images from the cache, which will otherwise briefly show
-    // the placeholder while waiting for the async download callback
-    let cacheKey =  urlString
-    if let cachedImage = KingfisherManager.shared.cache.retrieveImageInMemoryCache(forKey: cacheKey) {
-      showGraphImage(image: cachedImage)
-      return
-    }
+    let options: KingfisherOptionsInfo = [
+      .transition(.fade(0.2)),
+      .cacheSerializer(FormatIndicatedCacheSerializer.png)
+    ]
 
     if let url = URL(string: urlString) {
       imageView.kf.setImage(
         with: url,
         placeholder: nil,
-        options: [.transition(.fade(0.2))],
-        progressBlock: nil,
+        options: options,
         completionHandler: { [weak self] result in
-          if newDownloadToken != self?.currentDownloadToken {
-            // Another refresh has happened since we were enqueued. Skip performing any updates
-            return
-          }
-
           switch result {
           case .success(let value):
-            // Image downloaded. Show it, and have loading indicator match queued state
             self?.showGraphImage(image: value.image)
           case .failure(let error):
             self?.logger.error("Error downloading goal graph: \(error)")
