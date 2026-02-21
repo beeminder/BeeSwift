@@ -183,6 +183,8 @@ public enum EndPoint {
                        requestID: String? = nil)
   
   case deletedDatapoint(username: String, goalname: String, datapointID: String)
+  
+  case registerDeviceToken(token: String, environment: String? = nil)
 
   var url: URL {
     var urlComponents: URLComponents {
@@ -204,6 +206,9 @@ public enum EndPoint {
     case .appVersions:
       "/api/private/app_versions.json"
       
+    case .registerDeviceToken:
+      "/api/private/device_tokens"
+
     case .getUser(let username, _, _), .updateUser(let username, _, _, _):
       "/api/v1/users/\(username).json"
 
@@ -235,7 +240,7 @@ public enum EndPoint {
   
   var method: HTTPMethod {
     return switch self {
-    case .signIn, .createDatapoint:
+    case .signIn, .createDatapoint, .registerDeviceToken:
         .post
     case .appVersions, .getUser, .getGoalDetails, .getDatapoints, .getGoals, .requestAutodataFetch:
         .get
@@ -321,8 +326,23 @@ public enum EndPoint {
       if let requestID { parameters["request_id"] = requestID }
       return parameters.isEmpty ? nil : parameters
       
+    case .registerDeviceToken(let token, let environment):
+      var parameters: [String: Any] = [:]
+      parameters["device_token"] = token
+      if let environment { parameters["server"] = environment }
+      return parameters.isEmpty ? nil : parameters
+        
     default:
       return nil
+    }
+  }
+  
+  var shouldSign: Bool {
+    return switch self {
+    case .registerDeviceToken:
+      true
+    default:
+      false
     }
   }
 }
