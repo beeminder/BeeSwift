@@ -501,7 +501,9 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
       self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
 
       do {
-        let _ = try await self.requestManager.addDatapoint(urtext: self.urtext, slug: self.goal.slug)
+        let _ = try await self.requestManager.request(endpoint: .createDatapoint(username: goal.owner.username,
+                                                                                 goalname: goal.slug,
+                                                                                 urtext: self.urtext))
         self.commentTextField.text = ""
 
         try await updateGoalAndInterface()
