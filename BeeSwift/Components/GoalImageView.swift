@@ -8,7 +8,7 @@ import OSLog
 /// Handles placeholders for loading and queued states, and automatically updates when the goal changes
 class GoalImageView: UIView {
   private static let downloader = ImageDownloader(imageCache: AutoPurgingImageCache())
-  private let logger = Logger(subsystem: "com.beeminder.com", category: "GoalImageView")
+  private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalImageView")
 
   private let imageView = UIImageView()
   private let beeLemniscateView = BeeLemniscateView()
@@ -49,8 +49,8 @@ class GoalImageView: UIView {
     beeLemniscateView.isHidden = true
 
     NotificationCenter.default.addObserver(
-      forName: GoalManager.NotificationName.goalsUpdated,
-      object: nil,
+      forName: .NSManagedObjectContextObjectsDidChange,
+      object: ServiceLocator.persistentContainer.viewContext,
       queue: OperationQueue.main
     ) { [weak self] _ in DispatchQueue.main.async { self?.refresh() } }
     refresh()

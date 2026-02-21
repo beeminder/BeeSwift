@@ -110,9 +110,10 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
         }
       }
       if self.timePickerEditingMode == .deadline {
-        self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
+        let deadline = self.deadlineFromTimePickerView
+        self.updateDeadlineLabel(deadline)
         do {
-          let params = ["deadline": self.midnightOffsetFromTimePickerView(), "use_defaults": false]
+          let params = ["deadline": deadline, "use_defaults": false]
           let _ = try await self.requestManager.put(
             url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
             parameters: params

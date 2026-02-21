@@ -11,6 +11,10 @@ import SwiftyJSON
   @NSManaged public var defaultDeadline: Int
   @NSManaged public var defaultLeadTime: Int
 
+  /// The model version identifier when goals were last fetched from the server.
+  /// Used to detect when a full refresh is needed after data model changes.
+  @NSManaged public var lastFetchedModelVersionLocal: String?
+
   @NSManaged public var goals: Set<Goal>
   @NSManaged func addGoalsObject(value: Goal)
   @NSManaged func removeGoalsObject(value: Goal)

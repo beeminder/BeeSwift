@@ -13,13 +13,11 @@ import OSLog
 
 class EditDefaultNotificationsViewController: EditNotificationsViewController {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDefaultNotificationsViewController")
-
   private let user: User
   private let currentUserManager: CurrentUserManager
   private let requestManager: RequestManager
   private let goalManager: GoalManager
   private let viewContext: NSManagedObjectContext
-
   init(
     currentUserManager: CurrentUserManager,
     requestManager: RequestManager,
@@ -36,7 +34,6 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     self.alertstart = self.user.defaultAlertStart
     self.deadline = self.user.defaultDeadline
   }
-
   required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
   override func sendLeadTimeToServer(_ timer: Timer) {
     // We must not use `timer` in the Task as it may change once this method returns
@@ -73,8 +70,9 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
           hud.hide(animated: true)
         }
       case .deadline:
-        self.updateDeadlineLabel(self.midnightOffsetFromTimePickerView())
-        let params = ["default_deadline": self.midnightOffsetFromTimePickerView()]
+        let deadline = self.deadlineFromTimePickerView
+        self.updateDeadlineLabel(deadline)
+        let params = ["default_deadline": deadline]
         do {
           let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
           try await goalManager.refreshGoals()

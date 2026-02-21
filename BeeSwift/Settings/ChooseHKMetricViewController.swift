@@ -115,7 +115,7 @@ extension ChooseHKMetricViewController: UITableViewDelegate, UITableViewDataSour
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let section = HealthKitCategory.allCases[indexPath.section]
     let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier) as! HealthKitMetricTableViewCell
-    cell.metric = self.sortedMetricsByCategory[section]![indexPath.row].humanText
+    cell.metric = self.sortedMetricsByCategory[section]![indexPath.row]
     if tableView.indexPathForSelectedRow == indexPath {
       cell.accessoryType = .checkmark
     } else {

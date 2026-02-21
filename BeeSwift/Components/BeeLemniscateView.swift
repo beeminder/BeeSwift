@@ -4,38 +4,57 @@ import SpriteKit
 /// An animated bee following a lemniscate (figure-eight) pattern.
 /// Used to indicate server-side asynchronous work is taking place.
 class BeeLemniscateView: UIView {
-  private let sceneContainer = SKView()
-  private let scene = SKScene()
-  private let beeSprite = SKSpriteNode(imageNamed: "Infinibee")
+  // Lazily created to avoid SKView focus warning when animation isn't shown
+  private var sceneContainer: SKView?
+  private var scene: SKScene?
+  private var beeSprite: SKSpriteNode?
 
   private let SpriteRelativeSize = 0.15
   private let LemniscateAspectRatio = 1.25
   private let LemniscateMaxHeight = 0.8
   private let LemniscateMaxWidth = 0.6
 
-  init() {
-    super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-    setupView()
+  override var isHidden: Bool { didSet { if isHidden { tearDownScene() } else { setUpSceneIfNeeded() } } }
+
+  init() { super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
+
+  required init?(coder: NSCoder) { super.init(coder: coder) }
+
+  private func tearDownScene() {
+    sceneContainer?.presentScene(nil)
+    sceneContainer?.removeFromSuperview()
+    sceneContainer = nil
+    scene = nil
+    beeSprite = nil
   }
 
-  required init?(coder: NSCoder) {
-    super.init(coder: coder)
-    setupView()
-  }
+  private func setUpSceneIfNeeded() {
+    guard sceneContainer == nil else { return }
 
-  private func setupView() {
-    self.addSubview(sceneContainer)
-    sceneContainer.snp.makeConstraints { (make) in make.edges.equalToSuperview() }
-    sceneContainer.allowsTransparency = true
+    let container = SKView()
+    container.allowsTransparency = true
 
-    scene.backgroundColor = .clear
-    scene.addChild(beeSprite)
+    let newScene = SKScene()
+    newScene.backgroundColor = .clear
 
-    sceneContainer.presentScene(scene)
+    let sprite = SKSpriteNode(imageNamed: "Infinibee")
+    newScene.addChild(sprite)
+
+    self.addSubview(container)
+    container.snp.makeConstraints { (make) in make.edges.equalToSuperview() }
+    container.presentScene(newScene)
+
+    self.sceneContainer = container
+    self.scene = newScene
+    self.beeSprite = sprite
+
+    setNeedsLayout()
   }
 
   override func layoutSubviews() {
     super.layoutSubviews()
+
+    guard let sceneContainer = sceneContainer, let scene = scene, let beeSprite = beeSprite else { return }
 
     // Resize the scene to match the container layout
     scene.size = sceneContainer.bounds.size

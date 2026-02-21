@@ -10,6 +10,14 @@ import BeeKit
 import Foundation
 import UIKit
 
+struct DatapointColumnWidths {
+  let dayWidth: CGFloat
+  let valueWidth: CGFloat
+  static let columnSpacing: CGFloat = 8
+  /// If max width exceeds 75th percentile by more than this factor, use percentile and allow overflow
+  static let overflowThreshold: CGFloat = 1.5
+}
+
 protocol DatapointTableViewControllerDelegate: AnyObject {
   func datapointTableViewController(
     _ datapointTableViewController: DatapointTableViewController,
@@ -23,17 +31,18 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
 
   public weak var delegate: DatapointTableViewControllerDelegate?
 
-  public var datapoints: [BeeDataPoint] = [] {
-    didSet {
-      // Cause the table to re-render to pick up the change to rows
-      self.datapointsTableView.reloadData()
-      // The number of rows may have changed, so we must trigger a re-layout to allow the
-      // table view more or less space
-      self.datapointsTableView.invalidateIntrinsicContentSize()
-    }
-  }
+  private var columnWidths: DatapointColumnWidths?
 
-  public var hhmmformat: Bool = false { didSet { self.datapointsTableView.reloadData() } }
+  public var datapoints: [BeeDataPoint] = [] { didSet { reloadTableData() } }
+
+  public var hhmmformat: Bool = false { didSet { reloadTableData() } }
+
+  private func reloadTableData() {
+    columnWidths = DatapointTableViewCell.calculateColumnWidths(for: datapoints, hhmmformat: hhmmformat)
+    datapointsTableView.reloadData()
+    // The number of rows or column widths may have changed, so trigger a re-layout
+    datapointsTableView.invalidateIntrinsicContentSize()
+  }
 
   override func viewDidLoad() {
     self.view.addSubview(self.datapointsTableView)
@@ -58,7 +67,8 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
     guard indexPath.row < datapoints.count else { return cell }
     let datapoint = datapoints[indexPath.row]
 
-    cell.datapointText = displayText(datapoint: datapoint)
+    let widths = columnWidths ?? DatapointColumnWidths(dayWidth: 20, valueWidth: 40)
+    cell.configure(datapoint: datapoint, hhmmformat: hhmmformat, columnWidths: widths)
 
     return cell
   }
@@ -70,22 +80,5 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
     let datapoint = datapoints[indexPath.row]
 
     self.delegate?.datapointTableViewController(self, didSelectDatapoint: datapoint)
-  }
-
-  func displayText(datapoint: BeeDataPoint) -> String {
-    let day = datapoint.daystamp.day
-
-    var formattedValue: String
-    if hhmmformat {
-      let value = datapoint.value.doubleValue
-      let hours = Int(value)
-      let minutes = Int(value.truncatingRemainder(dividingBy: 1) * 60)
-      formattedValue = String(hours) + ":" + String(format: "%02d", minutes)
-    } else {
-      formattedValue = datapoint.value.stringValue
-    }
-    let comment = datapoint.comment
-
-    return "\(day) \(formattedValue) \(comment)"
   }
 }

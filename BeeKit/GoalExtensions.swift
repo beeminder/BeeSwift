@@ -1,16 +1,16 @@
 import Foundation
-import UIKit
 
 extension Goal {
   public var humanizedAutodata: String? {
-    if self.autodata == "ifttt" { return "IFTTT" }
-    if self.autodata == "api" { return "API" }
-    if self.autodata == "apple" {
+    guard let autodata, !autodata.isEmpty else { return nil }
+    switch autodata {
+    case "ifttt": return "IFTTT"
+    case "api": return "API"
+    case "apple":
       let metric = HealthKitConfig.metrics.first(where: { $0.databaseString == self.healthKitMetric })
       return self.healthKitMetric == nil ? "Apple" : metric?.humanText
+    default: return autodata.capitalized
     }
-    if let autodata = self.autodata, autodata.count > 0 { return autodata.capitalized }
-    return nil
   }
 
   public var isDataProvidedAutomatically: Bool { return !(self.autodata ?? "").isEmpty }
@@ -48,17 +48,7 @@ extension Goal {
     return cacheBustingUrlStr
   }
 
-  public func capitalSafesum() -> String { return self.safeSum.prefix(1).uppercased() + self.safeSum.dropFirst(1) }
-
-  public var countdownColor: UIColor {
-    switch self.safeBuf {
-    case ..<1: return UIColor.Beeminder.SafetyBuffer.red
-    case ..<2: return UIColor.Beeminder.SafetyBuffer.orange
-    case ..<3: return UIColor.Beeminder.SafetyBuffer.blue
-    case ..<7: return UIColor.Beeminder.SafetyBuffer.green
-    default: return UIColor.Beeminder.SafetyBuffer.forestGreen
-    }
-  }
+  public func capitalSafesum() -> String { return self.safeSum.capitalizingFirstCharacter }
 
   public var hideDataEntry: Bool { return self.isDataProvidedAutomatically || self.won }
 

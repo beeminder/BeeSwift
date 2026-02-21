@@ -5,32 +5,21 @@ import BeeKit
 import Foundation
 import UIKit
 
-struct OpenGoalIntent: AppIntent {
+struct OpenGoalIntent: AppIntent, OpenIntent {
   static var title: LocalizedStringResource = "Open Goal"
-  static var description = IntentDescription("Open Beeminder app to view a specific goal or the goal gallery")
+  static var description = IntentDescription("Open Beeminder app to view a specific goal")
 
-  @Parameter(title: "Goal") var goal: GoalEntity?
-  static var parameterSummary: some ParameterSummary {
-    When(\OpenGoalIntent.$goal, .hasAnyValue) {
-      Summary("Open \(\OpenGoalIntent.$goal) in Beeminder")
-    } otherwise: {
-      Summary("Open Beeminder")
-    }
-  }
-  static var openAppWhenRun: Bool = true
+  @Parameter(title: "Goal") var target: GoalEntity
+
+  static var parameterSummary: some ParameterSummary { Summary("Open \(\.$target) in Beeminder") }
+
   func perform() async throws -> some IntentResult {
-    if let goal = goal {
-      await MainActor.run {
-        NotificationCenter.default.post(
-          name: GalleryViewController.NotificationName.openGoal,
-          object: nil,
-          userInfo: ["slug": goal.slug]
-        )
-      }
-    } else {
-      await MainActor.run {
-        NotificationCenter.default.post(name: GalleryViewController.NotificationName.navigateToGallery, object: nil)
-      }
+    await MainActor.run {
+      NotificationCenter.default.post(
+        name: GalleryViewController.NotificationName.openGoal,
+        object: nil,
+        userInfo: ["slug": target.slug]
+      )
     }
     return .result()
   }

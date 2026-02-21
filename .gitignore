@@ -2,6 +2,7 @@
 ## Build generated
 build/
 DerivedData/
+SPMCache/
 ## Various settings
 *.pbxuser
 !default.pbxuser

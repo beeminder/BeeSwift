@@ -17,6 +17,10 @@ import UIKit
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
   let logger = Logger(subsystem: "com.beeminder.beeminder", category: "AppDelegate")
   let backgroundUpdates = BackgroundUpdates()
+  let spotlightIndexer = SpotlightIndexer(
+    container: ServiceLocator.persistentContainer,
+    currentUserManager: ServiceLocator.currentUserManager
+  )
 
   func application(
     _ application: UIApplication,
@@ -48,9 +52,9 @@ import UIKit
 
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(self.handleGoalsUpdated),
-      name: GoalManager.NotificationName.goalsUpdated,
-      object: nil
+      selector: #selector(self.handleManagedObjectContextObjectsDidChange),
+      name: .NSManagedObjectContextObjectsDidChange,
+      object: ServiceLocator.persistentContainer.viewContext
     )
     NotificationCenter.default.addObserver(
       self,
@@ -58,6 +62,11 @@ import UIKit
       name: CurrentUserManager.NotificationName.signedOut,
       object: nil
     )
+
+    Task {
+      await spotlightIndexer.reindexAllGoals()
+      await spotlightIndexer.listenForNotifications()
+    }
 
     backgroundUpdates.startUpdatingRegularlyInBackground()
     return true
@@ -95,7 +104,7 @@ import UIKit
     logger.notice("application:didFailToRegisterForRemoteNotificationsWithError")
   }
 
-  @objc private func handleGoalsUpdated() {
+  @objc private func handleManagedObjectContextObjectsDidChange(_ notification: Notification) {
     assert(Thread.isMainThread, "\(#function) must be run on the main thread")
 
     let context = ServiceLocator.persistentContainer.viewContext
