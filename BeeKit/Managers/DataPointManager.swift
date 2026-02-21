@@ -45,7 +45,7 @@ import SwiftyJSON
   }
 
   private func postDatapoint(goal: Goal, urText: String, requestId: String) async throws {
-    let _ = try await requestManager.addDatapoint(urtext: urText, slug: goal.slug, requestId: requestId)
+    let _ = try await requestManager.request(endpoint: .createDatapoint(username: goal.owner.username, goalname: goal.slug, urtext: urText, requestID: requestId))
   }
 
   private func fetchDatapoints(goal: Goal, sort: String, per: Int, page: Int) async throws -> [DataPoint] {
