@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B373E5D2F4C842200E26911 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 9B373E5C2F4C842200E26911 /* Kingfisher */; };
 		A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */; };
 		A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A158DDB51E46EEA10031BD4F /* HealthKit.framework */; };
 		A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17E930B1B09032F0098FCA0 /* QuartzCore.framework */; };
@@ -23,7 +24,6 @@
 		E458C8352AD1266B000DCA5C /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8342AD1266B000DCA5C /* SwiftyJSON */; };
 		E458C8372AD12671000DCA5C /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8362AD12671000DCA5C /* KeychainSwift */; };
 		E462BA3629AC44EA00E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3529AC44EA00E80EF0 /* Alamofire */; };
-		E462BA3929AC450000E80EF0 /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3829AC450000E80EF0 /* AlamofireImage */; };
 		E462BA3C29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */; };
 		E462BA3F29AC456500E80EF0 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3E29AC456500E80EF0 /* SwiftyJSON */; };
 		E462BA4229AC458B00E80EF0 /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA4129AC458B00E80EF0 /* MBProgressHUD */; };
@@ -183,8 +183,8 @@
 				A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */,
 				A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */,
 				E462BA3629AC44EA00E80EF0 /* Alamofire in Frameworks */,
-				E462BA3929AC450000E80EF0 /* AlamofireImage in Frameworks */,
 				E462BA4229AC458B00E80EF0 /* MBProgressHUD in Frameworks */,
+				9B373E5D2F4C842200E26911 /* Kingfisher in Frameworks */,
 				A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */,
 				A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */,
 			);
@@ -307,7 +307,6 @@
 			name = BeeSwift;
 			packageProductDependencies = (
 				E462BA3529AC44EA00E80EF0 /* Alamofire */,
-				E462BA3829AC450000E80EF0 /* AlamofireImage */,
 				E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */,
 				E462BA3E29AC456500E80EF0 /* SwiftyJSON */,
 				E462BA4129AC458B00E80EF0 /* MBProgressHUD */,
@@ -316,6 +315,7 @@
 				E486DE2529B0403700F338B2 /* OrderedCollections */,
 				E41286F02A62E6840093D598 /* KeychainSwift */,
 				E4ASYNC012E3A5B0100ASYNC /* AsyncAlgorithms */,
+				9B373E5C2F4C842200E26911 /* Kingfisher */,
 			);
 			productName = BeeSwift;
 			productReference = A196CB141AE4142E00B90A3E /* BeeSwift.app */;
@@ -489,7 +489,6 @@
 			mainGroup = A196CB0B1AE4142E00B90A3E;
 			packageReferences = (
 				E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */,
-				E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */,
 				E462BA3A29AC453D00E80EF0 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */,
 				E462BA3D29AC456500E80EF0 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				E462BA4029AC458B00E80EF0 /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
@@ -499,6 +498,7 @@
 				E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 				E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */,
 				E4ASYNC002E3A5B0100ASYNC /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
+				9B373E5B2F4C842200E26911 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = A196CB151AE4142E00B90A3E /* Products */;
 			projectDirPath = "";
@@ -1064,6 +1064,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		9B373E5B2F4C842200E26911 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.7.0;
+			};
+		};
 		E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/fatbobman/CoreDataEvolution";
@@ -1086,14 +1094,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.0.0;
-			};
-		};
-		E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/AlamofireImage";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
 			};
 		};
 		E462BA3A29AC453D00E80EF0 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */ = {
@@ -1155,6 +1155,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		9B373E5C2F4C842200E26911 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9B373E5B2F4C842200E26911 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
 		E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */;
@@ -1199,11 +1204,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		E462BA3829AC450000E80EF0 /* AlamofireImage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */;
-			productName = AlamofireImage;
 		};
 		E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */ = {
 			isa = XCSwiftPackageProductDependency;
