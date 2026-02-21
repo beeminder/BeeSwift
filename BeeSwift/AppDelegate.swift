@@ -92,9 +92,9 @@ import UIKit
       }
 
       do {
-        let _ = try await ServiceLocator.signedRequestManager.request(endpoint: .registerDeviceToken(token: token,
-                                                                                                     environment: environment))
-
+        let _ = try await ServiceLocator.requestManager.request(endpoint: .registerDeviceToken(token: token,
+                                                                                               environment: environment))
+        
       } catch { logger.error("Error sending device push token: \(error)") }
     }
   }
