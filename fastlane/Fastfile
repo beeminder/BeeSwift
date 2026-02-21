@@ -30,12 +30,10 @@ platform :ios do
   end
 
   lane :unit_test do
-    sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-2")
-    
     # Run unit tests
     run_tests(
         scheme: "BeeSwift",
-        destination: "platform=iOS Simulator,name=Test-iPhone,OS=latest",
+        destination: "id=#{ENV['SIM_DEVICE_UDID']}",
         prelaunch_simulator: true,
         reset_simulator: true,
         include_simulator_logs: true,
@@ -54,7 +52,7 @@ platform :ios do
     sh("xcrun simctl delete all || true")
     
     # Create the required device and capture its UDID
-    udid = sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-1")
+    udid = sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-2")
     ENV["SIM_DEVICE_UDID"] = udid.strip
   end
   
