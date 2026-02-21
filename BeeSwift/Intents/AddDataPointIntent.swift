@@ -5,8 +5,8 @@ import BeeKit
 import Foundation
 
 struct AddDataPointIntent: AppIntent {
-  static var title: LocalizedStringResource = "Add Data Point"
-  static var description = IntentDescription("Add a data point to a Beeminder goal")
+  static var title: LocalizedStringResource = "Add Datapoint"
+  static var description = IntentDescription("Add a datapoint to a Beeminder goal")
   @Parameter(title: "Goal") var goal: GoalEntity
   @Parameter(title: "Value") var value: Double
   @Parameter(title: "Comment", default: "Added via iOS Shortcut") var comment: String?
