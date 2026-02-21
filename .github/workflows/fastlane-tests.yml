@@ -63,9 +63,7 @@ jobs:
         UDID=$(xcrun simctl create "Test-iPhone" com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-2)
         echo "SIMULATOR_UDID=$UDID" >> $GITHUB_ENV
     - name: bundle exec fastlane unit_test 
-      run: |
-        # bundle exec fastlane prepare_simulator
-        bundle exec fastlane unit_test
+      run: bundle exec fastlane unit_test
       env:
         SIMULATOR_UDID: ${{ env.SIMULATOR_UDID }}
     - name: Upload unit test report
@@ -105,10 +103,8 @@ jobs:
       run: |
         UDID=$(xcrun simctl create "Test-iPhone" com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-2)
         echo "SIMULATOR_UDID=$UDID" >> $GITHUB_ENV
-    - name: Run UI tests
-      run: |
-        # bundle exec fastlane prepare_simulator
-        bundle exec fastlane ci
+    - name: bundle exec fastlane ui_test
+      run: bundle exec fastlane ui_test
       env:
         SIMULATOR_UDID: ${{ env.SIMULATOR_UDID }}
     - name: Upload UI test report

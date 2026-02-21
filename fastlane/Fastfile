@@ -42,7 +42,24 @@ platform :ios do
         ensure_devices_found: true,
         cloned_source_packages_path: "SPMCache",
         xcodebuild_formatter: "xcbeautify --renderer github-actions",
-        only_testing: "BeeSwiftTests"
+        only_testing: ["BeeSwiftTests", "BeeKitTests"]
+    )
+  end
+
+  lane :ui_test do
+    prepare_simulator
+
+    run_tests(
+        scheme: "BeeSwift",
+        destination: ENV["DESTINATION"],
+        prelaunch_simulator: true,
+        reset_simulator: true,
+        include_simulator_logs: true,
+        buildlog_path: "fastlane/test_output",
+        ensure_devices_found: true,
+        cloned_source_packages_path: "SPMCache",
+        xcodebuild_formatter: "xcbeautify --renderer github-actions",
+        only_testing: ["BeeSwiftUITests"]
     )
   end
 
@@ -55,42 +72,6 @@ platform :ios do
     ENV["DESTINATION"] = destination
   end
   
-  lane :ci do
-    # Determine if we're running unit tests only
-    only_testing = ENV["FASTLANE_UNIT_ONLY"] == "1"
-      
-    prepare_simulator
-
-    # Configure run_tests based on unit test flag
-    if only_testing
-      # Run only unit tests
-      run_tests(
-          scheme: "BeeSwift",
-          destination: ENV["DESTINATION"],
-          prelaunch_simulator: true,
-          reset_simulator: true,
-          include_simulator_logs: true,
-          buildlog_path: "fastlane/test_output",
-          ensure_devices_found: true,
-          cloned_source_packages_path: "SPMCache",
-          xcodebuild_formatter: "xcbeautify --renderer github-actions",
-          only_testing: "BeeSwiftTests"
-      )
-    else
-      # Run all tests (UI + Unit)
-      run_tests(
-          scheme: "BeeSwift",
-          destination: ENV["DESTINATION"],
-          prelaunch_simulator: true,
-          reset_simulator: true,
-          include_simulator_logs: true,
-          buildlog_path: "fastlane/test_output",
-          ensure_devices_found: true,
-          cloned_source_packages_path: "SPMCache",
-          xcodebuild_formatter: "xcbeautify --renderer github-actions",
-      )
-    end
-  end
   lane :build do
     build_app(scheme: "BeeSwift")
   end
