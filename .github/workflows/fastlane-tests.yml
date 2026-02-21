@@ -64,7 +64,7 @@ jobs:
         echo "SIMULATOR_UDID=$UDID" >> $GITHUB_ENV
     - name: bundle exec fastlane unit_test 
       run: |
-        bundle exec fastlane prepare_simulator
+        # bundle exec fastlane prepare_simulator
         bundle exec fastlane unit_test
       env:
         SIMULATOR_UDID: ${{ env.SIMULATOR_UDID }}
@@ -107,7 +107,7 @@ jobs:
         echo "SIMULATOR_UDID=$UDID" >> $GITHUB_ENV
     - name: Run UI tests
       run: |
-        bundle exec fastlane prepare_simulator
+        # bundle exec fastlane prepare_simulator
         bundle exec fastlane ci
       env:
         SIMULATOR_UDID: ${{ env.SIMULATOR_UDID }}
