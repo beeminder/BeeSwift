@@ -62,6 +62,8 @@ platform :ios do
     # Determine if we're running unit tests only
     only_testing = ENV["FASTLANE_UNIT_ONLY"] == "1"
     
+    ENV["SIM_DEVICE_UDID"]
+    
     # Use the prepared simulator UDID
     destination = "platform=iOS Simulator,id=#{ENV['SIM_DEVICE_UDID']}"
     
