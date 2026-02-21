@@ -26,6 +26,8 @@ jobs:
         key: ${{ runner.os }}-spm-xcode-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-xcode-
+    - name: Resolve SPM dependencies
+      run: xcodebuild -resolvePackageDependencies -scheme BeeSwift
 
   unit-test:
     runs-on: macos-26
