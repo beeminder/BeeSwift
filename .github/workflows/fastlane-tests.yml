@@ -32,9 +32,18 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
       run: xcodebuild -resolvePackageDependencies -scheme BeeSwift
 
+  create-simulator:
+    runs-on: macos-26
+    steps:
+      - name: Create Simulator and Get UDID
+        id: sim_udid
+        run: |
+          UDID=$(xcrun simctl create "Test-iPhone" com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-2)
+          echo "SIMULATOR_UDID=$UDID" >> $GITHUB_ENV
+
   unit-test:
     runs-on: macos-26
-    needs: cache-spm
+    needs: [cache-spm, create-simulator]
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
@@ -61,6 +70,8 @@ jobs:
       run: |
         bundle exec fastlane prepare_simulator
         bundle exec fastlane unit_test
+      env:
+        SIMULATOR_UDID: ${{ env.SIMULATOR_UDID }}
     - name: Upload unit test report
       uses: actions/upload-artifact@v6
       if: always()
@@ -70,7 +81,7 @@ jobs:
 
   ui-test:
     runs-on: macos-26
-    needs: cache-spm
+    needs: [cache-spm, create-simulator]
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
@@ -97,6 +108,8 @@ jobs:
       run: |
         bundle exec fastlane prepare_simulator
         bundle exec fastlane ci
+      env:
+        SIMULATOR_UDID: ${{ env.SIMULATOR_UDID }}
     - name: Upload UI test report
       uses: actions/upload-artifact@v6
       if: always()
