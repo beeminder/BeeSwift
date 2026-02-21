@@ -93,7 +93,8 @@ public class RequestManager: RequestManaging {
       throw error
     }
   }
-  func authenticationHeaders() -> HTTPHeaders {
+
+  private func authenticationHeaders() -> HTTPHeaders {
     guard let accessToken = ServiceLocator.currentUserManager.accessToken else { return HTTPHeaders() }
     return HTTPHeaders([HTTPHeader(name: "Authorization", value: "Bearer " + accessToken)])
   }
