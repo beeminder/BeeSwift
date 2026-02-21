@@ -14,10 +14,12 @@ public struct Config {
     public var sentryClientDSN = ""
     public var requestSigningKey = ""
     public var baseURLString = "https://www.beeminder.com"
+    public var apiHost: String = "www.beeminder.com"
     
     public init() {
         self.baseURLString = "https://www.beeminder.com"
         self.requestSigningKey = ""
         self.sentryClientDSN = ""
+        self.apiHost = "www.beeminder.com"
     }
 }

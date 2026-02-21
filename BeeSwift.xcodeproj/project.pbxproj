@@ -121,7 +121,6 @@
 		FSSYNCEXCEPT00000000001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Config.sample.swift,
 				Info.plist,
 			);
 			target = A196CB131AE4142E00B90A3E /* BeeSwift */;
