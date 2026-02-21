@@ -37,7 +37,8 @@ public enum ServerError: LocalizedError {
 public class RequestManager {
   public let baseURLString = Config().baseURLString
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
-  func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders) async throws
+  
+  private func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders) async throws
     -> Any?
   {
 
@@ -109,9 +110,11 @@ public class RequestManager {
   
   public func request(endpoint: EndPoint) async throws -> Any? {
     print("rawRequest(endpoint) \(endpoint)")
+    
+    let parameters = endpoint.shouldSign ? signedParameters(endpoint.parameters) : endpoint.parameters
     return try await rawRequest(url: endpoint.url.absoluteString,
                                 method: endpoint.method,
-                                parameters: endpoint.parameters,
+                                parameters: parameters,
                                 headers: authenticationHeaders())
   }
 }
@@ -344,5 +347,28 @@ public enum EndPoint {
     default:
       false
     }
+  }
+}
+
+
+fileprivate extension RequestManager {
+  func signedParameters(_ params: [String: Any]?) -> [String: Any]? {
+    if params == nil { return params }
+    var signed = params
+    var base = ""
+    var keys = Array(params!.keys)
+    keys.sort(by: { $0 < $1 })
+    for key in keys {
+      let value: AnyObject? = params![key] as AnyObject?
+      if !(value is String) { return params! }
+      let allowedCharacterSet = (CharacterSet(charactersIn: "@/").inverted)
+      let escapedKey = key.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet)
+      let escapedValue = (params![key] as AnyObject).addingPercentEncoding(withAllowedCharacters: allowedCharacterSet)
+      if base.count > 0 { base += "&" }
+      base += "\(escapedKey!)=\(escapedValue!)"
+    }
+    let token = base.hmac(algorithm: HMACAlgorithm.SHA1, key: Config().requestSigningKey)
+    signed?["beemios_token"] = token
+    return signed! as [String: Any]
   }
 }
