@@ -102,12 +102,7 @@ public class RequestManager {
       throw error
     }
   }
-  public func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .get, parameters: parameters, headers: authenticationHeaders())
-  }
-  public func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .patch, parameters: parameters, headers: authenticationHeaders())
-  }
+  @available(*, deprecated, message: "use Endpoint")
   public func post(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
     return try await rawRequest(url: url, method: .post, parameters: parameters, headers: authenticationHeaders())
   }
@@ -125,7 +120,7 @@ public class RequestManager {
   }
   
   public func request(endpoint: EndPoint) async throws -> Any? {
-    print("rawRequest: \(endpoint)")
+    print("rawRequest(endpoint) \(endpoint)")
     return try await rawRequest(url: endpoint.url.absoluteString,
                                 method: endpoint.method,
                                 parameters: endpoint.parameters,
@@ -144,10 +139,51 @@ extension HTTPHeaders {
 
 
 public enum EndPoint {
+  // signing in
   case signIn(username: String, password: String, beemiosSecret: String)
   
+  // about the app versions the server expects to see
   case appVersions
   
+  // Retrieves information and a list of goalnames for the user with username.
+  case getUser(username: String, diff_since: TimeInterval? = nil, emaciated: Bool? = nil)
+  
+  // Gets goal details for user u's goal g
+  case getGoalDetails(username: String, goalname: String, datapoints_count: Int? = nil, emaciated: Bool? = nil)
+  
+  // Get the list of datapoints for user u's goal g
+  case getDatapoints(username: String, goalname: String, sort: String? = nil, count: Int? = nil, page: Int? = nil, per: Int? = nil)
+
+  // Get all goals for a user
+  case getGoals(username: String, emaciated: Bool? = nil)
+  
+  // Force a fetch of autodata and graph refresh
+  case requestAutodataFetch(username: String, goalname: String)
+  
+  // Update the datapoint with ID id for user u's goal g (beeminder.com/u/g).
+  case updateDatapoint(username: String, goalname: String, datapointID: String, timestamp: Double? = nil, value: NSNumber? = nil, comment: String? = nil, urtext: String? = nil)
+  
+  // Update a goal for a user
+  case updateGoal(username: String,
+                  goalname: String,
+                  title: String? = nil,
+                  tmin: String? = nil,
+                  tmax: String? = nil,
+                  isSecret: Bool? = nil,
+                  isDataPublic: Bool? = nil,
+                  tags: [String]? = nil,
+                  iiParams: [String:Any?]? = nil,
+                  leadtime: Int? = nil,
+                  alertstart: Int? = nil,
+                  deadline: Int? = nil,
+                  usesDefaultNotifications: Bool? = nil)
+  
+  // Update the user
+  case updateUser(username: String,
+                  default_alertstart: Int? = nil,
+                  default_deadline: Int? = nil,
+                  default_leadtime: Int? = nil)
+
   var url: URL {
     var urlComponents: URLComponents {
       var urlComponents = URLComponents()
@@ -164,8 +200,31 @@ public enum EndPoint {
     return switch self {
     case .signIn:
       "/api/private/sign_in"
+
     case .appVersions:
       "/api/private/app_versions.json"
+      
+    case .getUser(let username, _, _), .updateUser(let username, _, _, _):
+      "/api/v1/users/\(username).json"
+
+    case .getGoalDetails(let username, let goalname, _, _):
+      "/api/v1/users/\(username)/goals/\(goalname)"
+      
+    case .getDatapoints(let username, let goalname, _, _, _, _):
+      "/api/v1/users/\(username)/goals/\(goalname)/datapoints.json"
+      
+    case .getGoals(let username, _):
+      "/api/v1/users/\(username)/goals.json"
+      
+    case .requestAutodataFetch(let username, let goalname):
+      "/api/v1/users/\(username)/goals/\(goalname)/refresh_graph.json"
+      
+    case .updateDatapoint(let username, let goalname, let datapointID, _, _, _, _):
+      "/api/v1/users/\(username)/goals/\(goalname)/datapoints/\(datapointID).json"
+      
+    case .updateGoal(let username, let goalname, _, _, _, _, _, _, _, _, _, _, _):
+      "/api/v1/users/\(username)/goals/\(goalname).json"
+      
     }
   }
   
@@ -173,15 +232,17 @@ public enum EndPoint {
     return switch self {
     case .signIn:
         .post
-    case .appVersions:
+    case .appVersions, .getUser, .getGoalDetails, .getDatapoints, .getGoals, .requestAutodataFetch:
         .get
+    case .updateDatapoint, .updateGoal, .updateUser:
+        .put
     }
   }
   
   var parameters: [String: Any]? {
-    return switch self {
+    switch self {
     case .signIn(let username, let password, let beemiosSecret):
-      ["user":
+      return ["user":
         [
           "login": username,
           "password": password
@@ -189,8 +250,62 @@ public enum EndPoint {
        "beemios_secret": beemiosSecret]
       as [String: Any]
       
+    case .getUser(_, let diff_since, let emaciated):
+      var parameters: [String: Any] = [:]
+      if let diff_since { parameters["diff_since"] = diff_since }
+      if let emaciated { parameters["emaciated"] = emaciated }
+      return parameters.isEmpty ? nil : parameters
+    
+    case .getGoalDetails(_, _, let datapoints_count, let emaciated):
+      var parameters: [String: Any] = [:]
+      if let datapoints_count { parameters["datapoints_count"] = datapoints_count }
+      if let emaciated { parameters["emaciated"] = emaciated }
+      return parameters.isEmpty ? nil : parameters
+      
+    case .getDatapoints(_, _, let sort, let count, let page, let per):
+      var parameters: [String: Any] = [:]
+      if let sort { parameters["sort"] = sort }
+      if let count { parameters["count"] = count }
+      if let page { parameters["page"] = page }
+      if let per { parameters["per"] = per }
+      return parameters.isEmpty ? nil : parameters
+      
+    case .getGoals(_, let emaciated):
+      if let emaciated { return ["emaciated": emaciated] }
+      return nil
+      
+    case .updateDatapoint(_, _, _, let timestamp, let value, let comment, let urtext):
+      var parameters: [String: Any] = [:]
+      if let timestamp { parameters["timestamp"] = timestamp }
+      if let value { parameters["value"] = value }
+      if let comment { parameters["comment"] = comment }
+      if let urtext { parameters["urtext"] = urtext }
+      return parameters.isEmpty ? nil : parameters
+        
+    case .updateGoal(_, _, let title, let tmin, let tmax, let isSecret, let isDataPublic, let tags, let iiParams, let leadtime, let alertstart, let deadline, let usesDefaultNotifications):
+      var parameters: [String: Any] = [:]
+      if let title { parameters["title"] = title }
+      if let tmin { parameters["tmin"] = tmin }
+      if let tmax { parameters["tmax"] = tmax }
+      if let isSecret { parameters["is_secret"] = isSecret }
+      if let isDataPublic { parameters["is_data_public"] = isDataPublic }
+      if let tags { parameters["tags"] = tags }
+      if let iiParams { parameters["ii_params"] = iiParams }
+      if let leadtime { parameters["leadtime"] = leadtime }
+      if let alertstart { parameters["alertstart"] = alertstart }
+      if let deadline { parameters["deadline"] = deadline }
+      if let usesDefaultNotifications { parameters["use_defaults"] = usesDefaultNotifications }
+      return parameters.isEmpty ? nil : parameters
+      
+    case .updateUser(_, let default_alertstart, let default_deadline, let default_leadtime):
+      var parameters: [String: Any] = [:]
+      if let default_alertstart { parameters["default_alertstart"] = default_alertstart }
+      if let default_deadline { parameters["default_deadline"] = default_deadline }
+      if let default_leadtime { parameters["default_leadtime"] = default_leadtime }
+      return parameters.isEmpty ? nil : parameters
+      
     default:
-      nil
+      return nil
     }
   }
 }

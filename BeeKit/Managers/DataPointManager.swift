@@ -30,11 +30,12 @@ import SwiftyJSON
   {
     let val = datapoint.value
     if datapointValue == val && comment == datapoint.comment { return }
-    let params = ["value": "\(datapointValue)", "comment": comment]
-    let _ = try await requestManager.put(
-      url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json",
-      parameters: params
-    )
+
+    let _ = try await requestManager.request(endpoint: .updateDatapoint(username: goal.owner.username,
+                                                                        goalname: goal.slug,
+                                                                        datapointID: datapoint.id,
+                                                                        value: datapointValue,
+                                                                        comment: comment))
   }
 
   private func deleteDatapoint(goal: Goal, datapoint: DataPoint) async throws {
@@ -48,11 +49,11 @@ import SwiftyJSON
   }
 
   private func fetchDatapoints(goal: Goal, sort: String, per: Int, page: Int) async throws -> [DataPoint] {
-    let params = ["sort": sort, "per": per, "page": page] as [String: Any]
-    let response = try await requestManager.get(
-      url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json",
-      parameters: params
-    )
+    let response = try await requestManager.request(endpoint: .getDatapoints(username: goal.owner.username,
+                                                                             goalname: goal.slug,
+                                                                             sort: sort,
+                                                                             page: page,
+                                                                             per: per))
     let responseJSON = JSON(response!)
 
     return responseJSON.arrayValue.map({ DataPoint.fromJSON(context: modelContext, goal: goal, json: $0) })

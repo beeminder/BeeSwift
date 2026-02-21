@@ -199,11 +199,10 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
       hud.mode = .indeterminate
 
       do {
-        let params = ["urtext": self.urtext()]
-        let _ = try await self.requestManager.put(
-          url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json",
-          parameters: params
-        )
+        let _ = try await self.requestManager.request(endpoint: .updateDatapoint(username: goal.owner.username,
+                                                                                 goalname: goal.slug,
+                                                                                 datapointID: datapoint.id,
+                                                                                 urtext: urtext()))
         try await self.goalManager.refreshGoal(self.goal.objectID)
 
         hud.mode = .customView
