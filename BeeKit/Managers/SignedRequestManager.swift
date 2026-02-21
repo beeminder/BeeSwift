@@ -14,20 +14,11 @@ public class SignedRequestManager {
 
   init(requestManager: RequestManager) { self.requestManager = requestManager }
 
-  public func signedGET(url: String, parameters: [String: Any]?) async throws -> Any? {
-    let params = signedParameters(parameters)
+  public func request(endpoint: EndPoint) async throws -> Any? {
+    let params = endpoint.shouldSign ? signedParameters(endpoint.parameters) : endpoint.parameters
     return try await requestManager.rawRequest(
-      url: url,
-      method: .get,
-      parameters: params,
-      headers: requestManager.authenticationHeaders()
-    )
-  }
-  public func signedPOST(url: String, parameters: [String: Any]?) async throws -> Any? {
-    let params = signedParameters(parameters)
-    return try await requestManager.rawRequest(
-      url: url,
-      method: .post,
+      url: endpoint.url.absoluteString,
+      method: endpoint.method,
       parameters: params,
       headers: requestManager.authenticationHeaders()
     )
