@@ -12,9 +12,9 @@ import SwiftyJSON
   // prevents effectively no-op updates due to float rounding
   private let datapointValueEpsilon = 0.00000001
 
-  let requestManager: RequestManager
+  let requestManager: RequestManaging
 
-  init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
+  init(requestManager: RequestManaging, container: BeeminderPersistentContainer) {
     self.requestManager = requestManager
     self.modelContainer = container
     let context = container.newBackgroundContext()
