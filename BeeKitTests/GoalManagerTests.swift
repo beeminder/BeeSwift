@@ -5,13 +5,17 @@ import XCTest
 
 @testable import BeeKit
 
-class MockRequestManager: RequestManager {
-  var responses: [String: Any] = [:]
-  override func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    if let response = responses[url] { return response }
-    XCTFail("Unexpected URL requested: \(url)")
-    return nil
+class MockRequestManager: RequestManaging {
+  func request(endpoint: BeeKit.EndPoint) async throws -> Any? {
+    let keyUrlStr = endpoint.url.absoluteString
+    guard let response = responses[keyUrlStr] else {
+      XCTFail("Unexpected URL requested: \(keyUrlStr)")
+      return nil
+    }
+    
+    return response
   }
+  var responses: [String: Any] = [:]
 }
 
 class GoalManagerTests: XCTestCase {
@@ -85,11 +89,11 @@ class GoalManagerTests: XCTestCase {
       ]
       """
     mockRequestManager.responses = [
-      "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
+      "https://www.beeminder.com/api/v1/users/test_user.json": try JSONSerialization.jsonObject(
         with: userResponse.data(using: .utf8)!,
         options: []
       ),
-      "api/v1/users/{username}/goals.json": try JSONSerialization.jsonObject(
+      "https://www.beeminder.com/api/v1/users/test_user/goals.json": try JSONSerialization.jsonObject(
         with: goalsResponse.data(using: .utf8)!,
         options: []
       ),
@@ -123,7 +127,7 @@ class GoalManagerTests: XCTestCase {
       }
       """
     mockRequestManager.responses = [
-      "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
+      "https://www.beeminder.com/api/v1/users/test_user.json": try JSONSerialization.jsonObject(
         with: deletionResponse.data(using: .utf8)!,
         options: []
       )
@@ -194,11 +198,11 @@ class GoalManagerTests: XCTestCase {
       ]
       """
     mockRequestManager.responses = [
-      "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
+      "https://www.beeminder.com/api/v1/users/test_user.json": try JSONSerialization.jsonObject(
         with: userResponse.data(using: .utf8)!,
         options: []
       ),
-      "api/v1/users/{username}/goals.json": try JSONSerialization.jsonObject(
+      "https://www.beeminder.com/api/v1/users/test_user/goals.json": try JSONSerialization.jsonObject(
         with: initialGoalsResponse.data(using: .utf8)!,
         options: []
       ),
@@ -253,7 +257,7 @@ class GoalManagerTests: XCTestCase {
       }
       """
     mockRequestManager.responses = [
-      "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
+      "https://www.beeminder.com/api/v1/users/test_user.json": try JSONSerialization.jsonObject(
         with: incrementalResponse.data(using: .utf8)!,
         options: []
       )
