@@ -30,10 +30,12 @@ platform :ios do
   end
 
   lane :unit_test do
+    destination = "platform=iOS Simulator,id=#{ENV['SIM_DEVICE_UDID']}"
+
     # Run unit tests
     run_tests(
         scheme: "BeeSwift",
-        destination: "id=#{ENV['SIM_DEVICE_UDID']}",
+        destination: destination,
         prelaunch_simulator: true,
         reset_simulator: true,
         include_simulator_logs: true,
@@ -61,14 +63,14 @@ platform :ios do
     only_testing = ENV["FASTLANE_UNIT_ONLY"] == "1"
     
     # Use the prepared simulator UDID
-    destination = "platform=iOS Simulator,udid=#{ENV['SIM_DEVICE_UDID']}"
+    destination = "platform=iOS Simulator,id=#{ENV['SIM_DEVICE_UDID']}"
     
     # Configure run_tests based on unit test flag
     if only_testing
       # Run only unit tests
       run_tests(
           scheme: "BeeSwift",
-          destination: "id=#{ENV['SIM_DEVICE_UDID']}",
+          destination: destination,
           prelaunch_simulator: true,
           reset_simulator: true,
           include_simulator_logs: true,
@@ -76,13 +78,13 @@ platform :ios do
           ensure_devices_found: true,
           cloned_source_packages_path: "SPMCache",
           xcodebuild_formatter: "xcbeautify --renderer github-actions",
-          only_testing: "BeeSwiftTests/Unit"
+          only_testing: "BeeSwiftTests"
       )
     else
       # Run all tests (UI + Unit)
       run_tests(
           scheme: "BeeSwift",
-          destination: "platform=iOS Simulator,name=Test-iPhone,OS=26.2",
+          destination: destination,
           prelaunch_simulator: true,
           reset_simulator: true,
           include_simulator_logs: true,
