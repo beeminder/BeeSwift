@@ -23,6 +23,22 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 
 
+### ios lint_and_unit_test
+
+```sh
+[bundle exec] fastlane ios lint_and_unit_test
+```
+
+
+
+### ios prepare_simulator
+
+```sh
+[bundle exec] fastlane ios prepare_simulator
+```
+
+
+
 ### ios ci
 
 ```sh
