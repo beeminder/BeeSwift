@@ -113,7 +113,7 @@ public class RequestManager {
     guard let accessToken = ServiceLocator.currentUserManager.accessToken else { return HTTPHeaders() }
     return HTTPHeaders([HTTPHeader(name: "Authorization", value: "Bearer " + accessToken)])
   }
-
+  @available(*, deprecated, message: "use Endpoint")
   public func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
     let params = ["urtext": urtext, "requestid": requestId].compactMapValues { $0 }
     return try await post(url: "api/v1/users/{username}/goals/\(slug)/datapoints.json", parameters: params)
@@ -183,6 +183,8 @@ public enum EndPoint {
                   default_alertstart: Int? = nil,
                   default_deadline: Int? = nil,
                   default_leadtime: Int? = nil)
+  // Add a new datapoint to user u's goal g — beeminder.com/u/g.
+  case createDatapoint(username: String, goalname: String, value: NSNumber? = nil, timestamp: Double? = nil, daystamp: String? = nil, comment: String? = nil, urtext: String? = nil, requestID: String? = nil)
 
   var url: URL {
     var urlComponents: URLComponents {
@@ -225,12 +227,14 @@ public enum EndPoint {
     case .updateGoal(let username, let goalname, _, _, _, _, _, _, _, _, _, _, _):
       "/api/v1/users/\(username)/goals/\(goalname).json"
       
+    case .createDatapoint(let username, let goalname, _, _, _, _, _, _):
+      "/api/v1/users/\(username)/goals/\(goalname)/datapoints.json"
     }
   }
   
   var method: HTTPMethod {
     return switch self {
-    case .signIn:
+    case .signIn, .createDatapoint:
         .post
     case .appVersions, .getUser, .getGoalDetails, .getDatapoints, .getGoals, .requestAutodataFetch:
         .get
@@ -302,6 +306,16 @@ public enum EndPoint {
       if let default_alertstart { parameters["default_alertstart"] = default_alertstart }
       if let default_deadline { parameters["default_deadline"] = default_deadline }
       if let default_leadtime { parameters["default_leadtime"] = default_leadtime }
+      return parameters.isEmpty ? nil : parameters
+      
+    case .createDatapoint(_, _, let value, let timestamp, let daystamp, let comment, let urtext, let requestID):
+      var parameters: [String: Any] = [:]
+      if let value { parameters["value"] = value }
+      if let timestamp { parameters["timestamp"] = timestamp }
+      if let daystamp { parameters["daystamp"] = daystamp }
+      if let comment { parameters["comment"] = comment }
+      if let urtext { parameters["urtext"] = urtext }
+      if let requestID { parameters["request_id"] = requestID }
       return parameters.isEmpty ? nil : parameters
       
     default:
