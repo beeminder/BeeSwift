@@ -15,7 +15,7 @@ extension Goal {
 
   public var isDataProvidedAutomatically: Bool { return !(self.autodata ?? "").isEmpty }
 
-  /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
+  /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add datapoints for.
   var initDaystamp: Daystamp {
     let initDate = Date(timeIntervalSince1970: Double(self.initDay))
 
