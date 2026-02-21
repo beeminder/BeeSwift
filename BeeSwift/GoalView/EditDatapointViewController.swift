@@ -221,9 +221,9 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
       hud.mode = .indeterminate
 
       do {
-        let _ = try await self.requestManager.delete(
-          url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json"
-        )
+        let _ = try await self.requestManager.request(endpoint: .deletedDatapoint(username: goal.owner.username,
+                                                                                  goalname: goal.slug,
+                                                                                  datapointID: datapoint.id))
         try await self.goalManager.refreshGoal(self.goal.objectID)
 
         hud.mode = .customView

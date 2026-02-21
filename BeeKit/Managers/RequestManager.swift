@@ -102,21 +102,9 @@ public class RequestManager {
       throw error
     }
   }
-  @available(*, deprecated, message: "use Endpoint")
-  public func post(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .post, parameters: parameters, headers: authenticationHeaders())
-  }
-  public func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .delete, parameters: parameters, headers: authenticationHeaders())
-  }
   func authenticationHeaders() -> HTTPHeaders {
     guard let accessToken = ServiceLocator.currentUserManager.accessToken else { return HTTPHeaders() }
     return HTTPHeaders([HTTPHeader(name: "Authorization", value: "Bearer " + accessToken)])
-  }
-  @available(*, deprecated, message: "use Endpoint")
-  public func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
-    let params = ["urtext": urtext, "requestid": requestId].compactMapValues { $0 }
-    return try await post(url: "api/v1/users/{username}/goals/\(slug)/datapoints.json", parameters: params)
   }
   
   public func request(endpoint: EndPoint) async throws -> Any? {
@@ -183,8 +171,18 @@ public enum EndPoint {
                   default_alertstart: Int? = nil,
                   default_deadline: Int? = nil,
                   default_leadtime: Int? = nil)
+  
   // Add a new datapoint to user u's goal g — beeminder.com/u/g.
-  case createDatapoint(username: String, goalname: String, value: NSNumber? = nil, timestamp: Double? = nil, daystamp: String? = nil, comment: String? = nil, urtext: String? = nil, requestID: String? = nil)
+  case createDatapoint(username: String,
+                       goalname: String,
+                       value: NSNumber? = nil,
+                       timestamp: Double? = nil,
+                       daystamp: String? = nil,
+                       comment: String? = nil,
+                       urtext: String? = nil,
+                       requestID: String? = nil)
+  
+  case deletedDatapoint(username: String, goalname: String, datapointID: String)
 
   var url: URL {
     var urlComponents: URLComponents {
@@ -229,6 +227,9 @@ public enum EndPoint {
       
     case .createDatapoint(let username, let goalname, _, _, _, _, _, _):
       "/api/v1/users/\(username)/goals/\(goalname)/datapoints.json"
+      
+    case .deletedDatapoint(let username, let goalname, let datapointID):
+      "/api/v1/users/\(username)/goals/\(goalname)/datapoints/\(datapointID).json"
     }
   }
   
@@ -240,6 +241,8 @@ public enum EndPoint {
         .get
     case .updateDatapoint, .updateGoal, .updateUser:
         .put
+    case .deletedDatapoint:
+        .delete
     }
   }
   
