@@ -62,7 +62,7 @@ platform :ios do
       # Run only unit tests
       run_tests(
           scheme: "BeeSwift",
-          destination: destination,
+          destination: "platform=iOS Simulator,name=Test-iPhone,OS=26.1",
           prelaunch_simulator: true,
           reset_simulator: true,
           include_simulator_logs: true,
@@ -76,7 +76,7 @@ platform :ios do
       # Run all tests (UI + Unit)
       run_tests(
           scheme: "BeeSwift",
-          destination: destination,
+          destination: "platform=iOS Simulator,name=Test-iPhone,OS=26.1",
           prelaunch_simulator: true,
           reset_simulator: true,
           include_simulator_logs: true,
