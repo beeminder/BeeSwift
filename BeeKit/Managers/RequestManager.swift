@@ -53,8 +53,13 @@ public class RequestManager {
     }
 
     let encoding: ParameterEncoding = if method == .get { URLEncoding.default } else { JSONEncoding.default }  // TODO
+    
+    // TODO no longer needed once migrated to endpoint enum
+    let urlStr = urlWithSubstitutions.starts(with: baseURLString) ? urlWithSubstitutions : "\(baseURLString)/\(urlWithSubstitutions)"
+    
+    logger.debug("rawRequest: \(urlStr), method \(method.rawValue)")
     let response = await AF.request(
-      "\(baseURLString)/\(urlWithSubstitutions)",
+      urlStr,
       method: method,
       parameters: parameters,
       encoding: encoding,
@@ -118,6 +123,14 @@ public class RequestManager {
     let params = ["urtext": urtext, "requestid": requestId].compactMapValues { $0 }
     return try await post(url: "api/v1/users/{username}/goals/\(slug)/datapoints.json", parameters: params)
   }
+  
+  public func request(endpoint: EndPoint) async throws -> Any? {
+    print("rawRequest: \(endpoint)")
+    return try await rawRequest(url: endpoint.url.absoluteString,
+                                method: endpoint.method,
+                                parameters: endpoint.parameters,
+                                headers: authenticationHeaders())
+  }
 }
 
 extension HTTPHeaders {
@@ -126,5 +139,58 @@ extension HTTPHeaders {
     allHeaders.append(contentsOf: lhs)
     allHeaders.append(contentsOf: rhs)
     return HTTPHeaders(allHeaders)
+  }
+}
+
+
+public enum EndPoint {
+  case signIn(username: String, password: String, beemiosSecret: String)
+  
+  case appVersions
+  
+  var url: URL {
+    var urlComponents: URLComponents {
+      var urlComponents = URLComponents()
+      urlComponents.scheme = "https"
+      urlComponents.host = Config().apiHost
+      urlComponents.path = self.path
+      return urlComponents
+    }
+    
+    return urlComponents.url!
+  }
+  
+  var path: String {
+    return switch self {
+    case .signIn:
+      "/api/private/sign_in"
+    case .appVersions:
+      "/api/private/app_versions.json"
+    }
+  }
+  
+  var method: HTTPMethod {
+    return switch self {
+    case .signIn:
+        .post
+    case .appVersions:
+        .get
+    }
+  }
+  
+  var parameters: [String: Any]? {
+    return switch self {
+    case .signIn(let username, let password, let beemiosSecret):
+      ["user":
+        [
+          "login": username,
+          "password": password
+        ],
+       "beemios_secret": beemiosSecret]
+      as [String: Any]
+      
+    default:
+      nil
+    }
   }
 }
