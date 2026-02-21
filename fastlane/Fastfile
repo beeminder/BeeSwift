@@ -35,29 +35,19 @@ platform :ios do
     sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-1")
     sleep 5
     sh("xcrun simctl list devices")
-<<<<<<< patch-1
     sleep 5
     
-    run_tests(
-        buildlog_path: "fastlane/test_output",
-        include_simulator_logs: true,
-        reinstall_app: true,
-        reset_simulator: true,
-        scheme: "BeeSwift",
-        xcodebuild_formatter: "xcpretty",
-=======
-
     run_tests(
         scheme: "BeeSwift",
         destination: "platform=iOS Simulator,name=Test-iPhone,OS=26.1",
         prelaunch_simulator: true,
         reset_simulator: true,
+        reinstall_app: true,
         include_simulator_logs: true,
         buildlog_path: "fastlane/test_output",
         ensure_devices_found: true,
         cloned_source_packages_path: "SPMCache",
         xcodebuild_formatter: "xcbeautify --renderer github-actions",
->>>>>>> master
     )
   end
   lane :build do
