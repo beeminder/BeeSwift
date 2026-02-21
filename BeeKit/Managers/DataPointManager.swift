@@ -39,13 +39,16 @@ import SwiftyJSON
   }
 
   private func deleteDatapoint(goal: Goal, datapoint: DataPoint) async throws {
-    let _ = try await requestManager.delete(
-      url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)"
-    )
+    let _ = try await requestManager.request(endpoint: .deletedDatapoint(username: goal.owner.username,
+                                                                         goalname: goal.slug,
+                                                                         datapointID: datapoint.id))
   }
 
   private func postDatapoint(goal: Goal, urText: String, requestId: String) async throws {
-    let _ = try await requestManager.request(endpoint: .createDatapoint(username: goal.owner.username, goalname: goal.slug, urtext: urText, requestID: requestId))
+    let _ = try await requestManager.request(endpoint: .createDatapoint(username: goal.owner.username,
+                                                                        goalname: goal.slug,
+                                                                        urtext: urText,
+                                                                        requestID: requestId))
   }
 
   private func fetchDatapoints(goal: Goal, sort: String, per: Int, page: Int) async throws -> [DataPoint] {
