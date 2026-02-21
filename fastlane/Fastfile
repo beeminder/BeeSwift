@@ -35,7 +35,7 @@ platform :ios do
     # Run unit tests
     run_tests(
         scheme: "BeeSwift",
-        destination: destination,
+        destination: "platform=iOS Simulator,id=#{ENV['SIM_DEVICE_UDID']}",
         prelaunch_simulator: true,
         reset_simulator: true,
         include_simulator_logs: true,
@@ -72,7 +72,7 @@ platform :ios do
       # Run only unit tests
       run_tests(
           scheme: "BeeSwift",
-          destination: destination,
+          destination: "platform=iOS Simulator,id=#{ENV['SIM_DEVICE_UDID']}",
           prelaunch_simulator: true,
           reset_simulator: true,
           include_simulator_logs: true,
@@ -86,7 +86,7 @@ platform :ios do
       # Run all tests (UI + Unit)
       run_tests(
           scheme: "BeeSwift",
-          destination: destination,
+          destination: "platform=iOS Simulator,id=#{ENV['SIM_DEVICE_UDID']}",
           prelaunch_simulator: true,
           reset_simulator: true,
           include_simulator_logs: true,
