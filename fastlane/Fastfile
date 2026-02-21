@@ -30,6 +30,8 @@ platform :ios do
   end
 
   lane :unit_test do
+    prepare_simulator
+    
     run_tests(
         scheme: "BeeSwift",
         destination: ENV["DESTINATION"],
@@ -55,7 +57,9 @@ platform :ios do
   lane :ci do
     # Determine if we're running unit tests only
     only_testing = ENV["FASTLANE_UNIT_ONLY"] == "1"
-        
+      
+    prepare_simulator
+
     # Configure run_tests based on unit test flag
     if only_testing
       # Run only unit tests
