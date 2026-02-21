@@ -31,7 +31,7 @@ platform :ios do
 
   lane :unit_test do
     prepare_simulator
-    
+
     run_tests(
         scheme: "BeeSwift",
         destination: ENV["DESTINATION"],
@@ -49,9 +49,10 @@ platform :ios do
   lane :prepare_simulator do    
     # using simulator_udid from environment variable if set, otherwise creating our default
     simulator_udid = ENV["SIMULATOR_UDID"] || sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-2")
-    ENV["DESTINATION"] = "platform=iOS Simulator,id=#{simulator_udid}"
+    destination = "platform=iOS Simulator,id=#{simulator_udid}"
     puts "simulator created with UDID: #{udid}"
-    puts "destination defined: #{}.format(ENV["DESTINATION"])"
+    puts "destination defined: #{destination}"
+    ENV["DESTINATION"] = destination
   end
   
   lane :ci do
