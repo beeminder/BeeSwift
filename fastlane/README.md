@@ -23,6 +23,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 
 
+### ios list_simctl
+
+```sh
+[bundle exec] fastlane ios list_simctl
+```
+
+
+
 ### ios unit_test
 
 ```sh
