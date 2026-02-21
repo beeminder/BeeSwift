@@ -23,10 +23,10 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 
 
-### ios lint_and_unit_test
+### ios unit_test
 
 ```sh
-[bundle exec] fastlane ios lint_and_unit_test
+[bundle exec] fastlane ios unit_test
 ```
 
 

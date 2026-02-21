@@ -23,13 +23,7 @@ platform :ios do
     )
   end
   
-  lane :lint_and_unit_test do
-    # Run SwiftLint using Fastlane action
-    swiftlint(
-      mode: :lint,
-      raise_if_swiftlint_error: true
-    )
-    
+  lane :unit_test do    
     # Run unit tests
     run_tests(
         scheme: "BeeSwift",

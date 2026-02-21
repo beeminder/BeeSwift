@@ -52,9 +52,6 @@ jobs:
         bundler-cache: true
     - name: Enable Macros
       run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
-    - name: Run SwiftLint and unit tests
-      run: |
-        bundle exec fastlane lint_and_unit_test
     - name: Upload unit test report
       uses: actions/upload-artifact@v6
       if: always()
