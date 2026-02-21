@@ -30,12 +30,9 @@ platform :ios do
   end
 
   lane :unit_test do
-    simulator_udid = ENV["SIMULATOR_UDID"] || sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-2")
-
-    # Run unit tests
     run_tests(
         scheme: "BeeSwift",
-        devices: [simulator_udid],
+        destination: ENV["DESTINATION"],
         prelaunch_simulator: true,
         reset_simulator: true,
         include_simulator_logs: true,
@@ -46,29 +43,25 @@ platform :ios do
         only_testing: "BeeSwiftTests"
     )
   end
-  
-  lane :prepare_simulator do
-    sh("xcrun simctl list devices")
-    
-    # Delete any existing test devices (fast, no sleep)
-    sh("xcrun simctl delete all || true")
-    
-    # Create the required device and capture its UDID
+
+  lane :prepare_simulator do    
+    # using simulator_udid from environment variable if set, otherwise creating our default
     simulator_udid = ENV["SIMULATOR_UDID"] || sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-2")
+    ENV["DESTINATION"] = "platform=iOS Simulator,id=#{simulator_udid}"
+    puts "simulator created with UDID: #{udid}"
+    puts "destination defined: #{}.format(ENV["DESTINATION"])"
   end
   
   lane :ci do
     # Determine if we're running unit tests only
     only_testing = ENV["FASTLANE_UNIT_ONLY"] == "1"
-    
-    simulator_udid = ENV["SIMULATOR_UDID"] || sh("xcrun simctl create Test-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro com.apple.CoreSimulator.SimRuntime.iOS-26-2")
-    
+        
     # Configure run_tests based on unit test flag
     if only_testing
       # Run only unit tests
       run_tests(
           scheme: "BeeSwift",
-          destination: "platform=iOS Simulator,id=#{simulator_udid}",
+          destination: ENV["DESTINATION"],
           prelaunch_simulator: true,
           reset_simulator: true,
           include_simulator_logs: true,
@@ -82,7 +75,7 @@ platform :ios do
       # Run all tests (UI + Unit)
       run_tests(
           scheme: "BeeSwift",
-          destination: "platform=iOS Simulator,id=#{simulator_udid}",
+          destination: ENV["DESTINATION"],
           prelaunch_simulator: true,
           reset_simulator: true,
           include_simulator_logs: true,
