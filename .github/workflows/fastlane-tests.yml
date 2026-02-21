@@ -52,6 +52,8 @@ jobs:
         bundler-cache: true
     - name: Enable Macros
       run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+    - name: bundle exec fastlane unit_test
+      run: bundle exec fastlane unit_test
     - name: Upload unit test report
       uses: actions/upload-artifact@v6
       if: always()
