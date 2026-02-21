@@ -42,29 +42,15 @@ public class RequestManager: RequestManaging {
   public let baseURLString = Config().baseURLString
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
   
-  private func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders) async throws
+  private func rawRequest(url: URL, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders) async throws
     -> Any?
   {
-
-    var urlWithSubstitutions = url
-    if url.contains("{username}") {
-      guard let username = await ServiceLocator.currentUserManager.username else {
-        throw ServerError.custom(
-          "Attempted to make request to username-based URL \(url) while logged out",
-          requestError: nil
-        )
-      }
-      urlWithSubstitutions = urlWithSubstitutions.replacingOccurrences(of: "{username}", with: username)
-    }
-
-    let encoding: ParameterEncoding = if method == .get { URLEncoding.default } else { JSONEncoding.default }  // TODO
+    let encoding: ParameterEncoding = method == .get ? URLEncoding.default : JSONEncoding.default
     
-    // TODO no longer needed once migrated to endpoint enum
-    let urlStr = urlWithSubstitutions.starts(with: baseURLString) ? urlWithSubstitutions : "\(baseURLString)/\(urlWithSubstitutions)"
+    logger.debug("rawRequest: \(url.absoluteString), method \(method.rawValue)")
     
-    logger.debug("rawRequest: \(urlStr), method \(method.rawValue)")
     let response = await AF.request(
-      urlStr,
+      url,
       method: method,
       parameters: parameters,
       encoding: encoding,
@@ -77,7 +63,7 @@ public class RequestManager: RequestManaging {
       return asJSON
 
     case .failure(let error):
-      logger.error("Error issuing request \(url): \(error, privacy: .public)")
+      logger.error("Error issuing request \(url.absoluteString): \(error, privacy: .public)")
 
       // Log out the user on an unauthorized response
       if case .responseValidationFailed(let reason) = error {
@@ -116,7 +102,7 @@ public class RequestManager: RequestManaging {
     print("rawRequest(endpoint) \(endpoint)")
     
     let parameters = endpoint.shouldSign ? signedParameters(endpoint.parameters) : endpoint.parameters
-    return try await rawRequest(url: endpoint.url.absoluteString,
+    return try await rawRequest(url: endpoint.url,
                                 method: endpoint.method,
                                 parameters: parameters,
                                 headers: authenticationHeaders())
