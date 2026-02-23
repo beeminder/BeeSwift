@@ -143,9 +143,7 @@ class ConfigureHKMetricViewController: UIViewController {
     self.datapointTableController.hhmmformat = self.goal.hhmmFormat
     Task { @MainActor in
       // Request authorization before accessing HealthKit data
-      do {
-        try await self.healthStoreManager.requestAuthorization(metric: self.metric)
-      } catch {
+      do { try await self.healthStoreManager.requestAuthorization(metric: self.metric) } catch {
         self.logger.error("Failed to request HealthKit authorization: \(error)")
       }
 

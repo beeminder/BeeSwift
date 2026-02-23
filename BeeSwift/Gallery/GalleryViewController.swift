@@ -280,9 +280,7 @@ class GalleryViewController: UIViewController {
       do {
         try await healthStoreManager.ensureGoalsUpdateRegularly()
         logger.notice("setupHealthKit: HealthKit setup completed successfully")
-      } catch {
-        logger.error("setupHealthKit: Failed to setup HealthKit: \(error)")
-      }
+      } catch { logger.error("setupHealthKit: Failed to setup HealthKit: \(error)") }
     }
   }
   @objc func fetchGoals() {
