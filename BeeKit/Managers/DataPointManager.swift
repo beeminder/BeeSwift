@@ -124,8 +124,12 @@ import SwiftyJSON
   private func updateToMatchDataPointsForDay(goal: Goal, newDataPoints: [BeeDataPoint], existingDatapoints: [DataPoint])
     async throws
   {
+    var processedDatapoints: Set<String> = []
+    var datapointsToDelete: [DataPoint] = []
+
+    // Phase 1: Perform all creates and updates first, before any deletes.
+    // This avoids a temporary dip in the goal total that could cause a derailment.
     try await withThrowingTaskGroup(of: Void.self) { group in
-      var processedDatapoints: Set<String> = []
       for newDataPoint in newDataPoints {
         let matchingDatapoint = existingDatapoints.first { $0.requestid == newDataPoint.requestid }
         if let existingDatapoint = matchingDatapoint {
@@ -158,17 +162,27 @@ import SwiftyJSON
           }
         }
       }
-      for existingDatapoint in existingDatapoints {
-        if !processedDatapoints.contains(existingDatapoint.requestid) {
+      try await group.waitForAll()
+    }
+
+    // Phase 2: Now that all creates and updates have succeeded, delete obsolete datapoints.
+    for existingDatapoint in existingDatapoints {
+      if !processedDatapoints.contains(existingDatapoint.requestid) {
+        datapointsToDelete.append(existingDatapoint)
+      }
+    }
+    if !datapointsToDelete.isEmpty {
+      try await withThrowingTaskGroup(of: Void.self) { group in
+        for datapoint in datapointsToDelete {
           group.addTask {
             self.logger.notice(
-              "Deleting obsolete datapoint for \(goal.id) with requestId \(existingDatapoint.requestid, privacy: .public)"
+              "Deleting obsolete datapoint for \(goal.id) with requestId \(datapoint.requestid, privacy: .public)"
             )
-            try await self.deleteDatapoint(goal: goal, datapoint: existingDatapoint)
+            try await self.deleteDatapoint(goal: goal, datapoint: datapoint)
           }
         }
+        try await group.waitForAll()
       }
-      try await group.waitForAll()
     }
   }
 

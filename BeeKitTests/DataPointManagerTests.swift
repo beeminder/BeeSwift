@@ -17,12 +17,19 @@ class MockHealthKitDataPoint: BeeDataPoint {
   }
 }
 
+enum DataPointOperation: Equatable {
+  case put(String)
+  case delete(String)
+  case add(String)
+}
+
 class MockRequestManagerForDataPoint: RequestManager {
   private let queue = DispatchQueue(label: "com.beeminder.MockRequestManagerForDataPoint")
   private var _responses: [String: Any] = [:]
   private var _putCalls: [(url: String, parameters: [String: Any])] = []
   private var _deleteCalls: [String] = []
   private var _addDatapointCalls: [(urtext: String, slug: String, requestId: String)] = []
+  private var _operationLog: [DataPointOperation] = []
 
   var responses: [String: Any] {
     get { queue.sync { _responses } }
@@ -31,6 +38,7 @@ class MockRequestManagerForDataPoint: RequestManager {
   var putCalls: [(url: String, parameters: [String: Any])] { queue.sync { _putCalls } }
   var deleteCalls: [String] { queue.sync { _deleteCalls } }
   var addDatapointCalls: [(urtext: String, slug: String, requestId: String)] { queue.sync { _addDatapointCalls } }
+  var operationLog: [DataPointOperation] { queue.sync { _operationLog } }
 
   override func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
     let response = queue.sync { () -> Any? in
@@ -43,15 +51,24 @@ class MockRequestManagerForDataPoint: RequestManager {
     return response ?? []
   }
   override func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    queue.sync { _putCalls.append((url: url, parameters: parameters ?? [:])) }
+    queue.sync {
+      _putCalls.append((url: url, parameters: parameters ?? [:]))
+      _operationLog.append(.put(url))
+    }
     return [:]
   }
   override func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    queue.sync { _deleteCalls.append(url) }
+    queue.sync {
+      _deleteCalls.append(url)
+      _operationLog.append(.delete(url))
+    }
     return [:]
   }
   override func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
-    queue.sync { _addDatapointCalls.append((urtext: urtext, slug: slug, requestId: requestId ?? "")) }
+    queue.sync {
+      _addDatapointCalls.append((urtext: urtext, slug: slug, requestId: requestId ?? ""))
+      _operationLog.append(.add(requestId ?? ""))
+    }
     return [:]
   }
 }
@@ -213,6 +230,54 @@ class DataPointManagerTests: XCTestCase {
     XCTAssertEqual(mockRequestManager.addDatapointCalls.count, 2)
     XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.requestId == "uuid_3" })
     XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.requestId == "uuid_4" })
+  }
+  func testCreatesAndUpdatesCompleteBeforeDeletes() async throws {
+    // Verify that creates and updates are performed before deletes
+    // to avoid temporary dips in goal totals that could cause derailment
+    let apiResponse = [
+      [
+        "id": "existing1", "value": 10, "daystamp": "20221201", "comment": "Old comment", "updated_at": 1000,
+        "is_dummy": false, "is_initial": false, "requestid": "hk_workout_1",
+      ],
+      [
+        "id": "obsolete1", "value": 20, "daystamp": "20221201", "comment": "Should be deleted", "updated_at": 1001,
+        "is_dummy": false, "is_initial": false, "requestid": "hk_workout_old",
+      ],
+    ]
+    mockRequestManager.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
+    let updatedHealthKitDatapoint = MockHealthKitDataPoint(
+      daystamp: try Daystamp(fromString: "20221201"),
+      value: NSNumber(value: 15),
+      comment: "Updated workout comment",
+      requestid: "hk_workout_1"
+    )
+    let newHealthKitDatapoint = MockHealthKitDataPoint(
+      daystamp: try Daystamp(fromString: "20221201"),
+      value: NSNumber(value: 25),
+      comment: "New workout",
+      requestid: "hk_workout_2"
+    )
+    try! await dataPointManager.updateToMatchDataPoints(
+      goalID: goal.objectID,
+      healthKitDataPoints: [updatedHealthKitDatapoint, newHealthKitDatapoint]
+    )
+
+    let log = mockRequestManager.operationLog
+    // Find positions of operations
+    let lastCreateOrUpdateIndex = log.lastIndex { op in
+      if case .put = op { return true }
+      if case .add = op { return true }
+      return false
+    }
+    let firstDeleteIndex = log.firstIndex { op in
+      if case .delete = op { return true }
+      return false
+    }
+
+    // All creates/updates must complete before any delete starts
+    XCTAssertNotNil(lastCreateOrUpdateIndex, "Expected at least one create or update")
+    XCTAssertNotNil(firstDeleteIndex, "Expected at least one delete")
+    XCTAssertLessThan(lastCreateOrUpdateIndex!, firstDeleteIndex!, "Creates and updates must complete before deletes to avoid derailment")
   }
   private func createTestGoalJSON() -> JSON {
     return JSON(
