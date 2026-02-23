@@ -70,7 +70,7 @@ import OSLog
     }
     let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
     logger.notice(
-      "ensureGoalsUpdateRegularly: Found \(goals.count, privacy: .public) goals, \(metrics.count, privacy: .public) with HealthKit metrics: \(metrics.joined(separator: ", "), privacy: .public)"
+      "ensureGoalsUpdateRegularly: Found \(goals.count, privacy: .public) goals, \(metrics.count, privacy: .public) with HealthKit metrics: \(metrics.joined(separator: ", "))"
     )
     return try await ensureUpdatesRegularly(metricNames: metrics, removeMissing: true)
   }
