@@ -327,9 +327,9 @@ class ConfigureHKMetricViewController: UIViewController {
       }
 
       do {
-        let _ = try await self.requestManager.request(endpoint: .updateGoal(username: goal.owner.username,
-                                                                            goalname: goal.slug,
-                                                                            iiParams: iiParams))
+        let _ = try await self.requestManager.request(
+          endpoint: .updateGoal(username: goal.owner.username, goalname: goal.slug, iiParams: iiParams)
+        )
         hud.mode = .customView
         hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))
         hud.hide(animated: true, afterDelay: 2)
@@ -361,15 +361,15 @@ class ConfigureHKMetricViewController: UIViewController {
     isRequestInFlight = true
     disconnectButton.isUserInteractionEnabled = false
 
-    let iiParams: [String : Any?] = ["name": nil, "metric": ""]
+    let iiParams: [String: Any?] = ["name": nil, "metric": ""]
     let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
     hud.mode = .indeterminate
 
     Task { @MainActor in
       do {
-        let _ = try await self.requestManager.request(endpoint: .updateGoal(username: goal.owner.username,
-                                                                            goalname: goal.slug,
-                                                                            iiParams: iiParams))
+        let _ = try await self.requestManager.request(
+          endpoint: .updateGoal(username: goal.owner.username, goalname: goal.slug, iiParams: iiParams)
+        )
 
         if let goalManager = self.goalManager { try await goalManager.refreshGoal(self.goal.objectID) }
 

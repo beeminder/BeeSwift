@@ -34,7 +34,6 @@ class MockRequestManagerForDataPoint: RequestManaging {
 
   func request(endpoint: EndPoint) async throws -> Any? {
     let urlString = endpoint.url.absoluteString
-    
     // Determine HTTP method from endpoint path patterns
     if urlString.contains("/datapoints/") && urlString.contains("datapoints.json") {
       // POST - create new datapoint

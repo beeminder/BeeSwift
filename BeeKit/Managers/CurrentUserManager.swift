@@ -123,7 +123,9 @@ import SwiftyJSON
   }
   public func signInWithEmail(_ email: String, password: String) async {
     do {
-      let response = try await requestManager.request(endpoint: .signIn(username: email, password: password, beemiosSecret: beemiosSecret))
+      let response = try await requestManager.request(
+        endpoint: .signIn(username: email, password: password, beemiosSecret: beemiosSecret)
+      )
       try! await self.handleSuccessfulSignin(JSON(response!))
     } catch { try! await self.handleFailedSignin(error, errorMessage: error.localizedDescription) }
   }

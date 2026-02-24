@@ -38,12 +38,12 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
   override func sendLeadTimeToServer(_ timer: Timer) {
     // We must not use `timer` in the Task as it may change once this method returns
     guard let userInfo = timer.userInfo as? [String: NSNumber] else { return }
-    
     Task { @MainActor in
       guard let leadtime = userInfo["leadtime"]?.intValue else { return }
       do {
-        let _ = try await requestManager.request(endpoint: .updateUser(username: user.username,
-                                                                       default_leadtime: leadtime))
+        let _ = try await requestManager.request(
+          endpoint: .updateUser(username: user.username, default_leadtime: leadtime)
+        )
         try await goalManager.refreshGoals()
       } catch {
         logger.error("Error setting default leadtime: \(error)")  // show alert
@@ -63,7 +63,9 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
         let alertstart = self.midnightOffsetFromTimePickerView()
         self.updateAlertstartLabel(alertstart)
         do {
-          let _ = try await requestManager.request(endpoint: .updateUser(username: user.username, default_alertstart: alertstart))
+          let _ = try await requestManager.request(
+            endpoint: .updateUser(username: user.username, default_alertstart: alertstart)
+          )
           try await goalManager.refreshGoals()
           hud.hide(animated: true, afterDelay: 0.5)
         } catch {
@@ -74,7 +76,9 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
         let deadline = self.deadlineFromTimePickerView
         self.updateDeadlineLabel(deadline)
         do {
-          let _ = try await requestManager.request(endpoint: .updateUser(username: user.username, default_deadline: deadline))
+          let _ = try await requestManager.request(
+            endpoint: .updateUser(username: user.username, default_deadline: deadline)
+          )
           try await goalManager.refreshGoals()
           hud.hide(animated: true, afterDelay: 0.5)
         } catch {

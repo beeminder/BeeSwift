@@ -199,10 +199,14 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
       hud.mode = .indeterminate
 
       do {
-        let _ = try await self.requestManager.request(endpoint: .updateDatapoint(username: goal.owner.username,
-                                                                                 goalname: goal.slug,
-                                                                                 datapointID: datapoint.id,
-                                                                                 urtext: urtext()))
+        let _ = try await self.requestManager.request(
+          endpoint: .updateDatapoint(
+            username: goal.owner.username,
+            goalname: goal.slug,
+            datapointID: datapoint.id,
+            urtext: urtext()
+          )
+        )
         try await self.goalManager.refreshGoal(self.goal.objectID)
 
         hud.mode = .customView
@@ -221,9 +225,9 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
       hud.mode = .indeterminate
 
       do {
-        let _ = try await self.requestManager.request(endpoint: .deletedDatapoint(username: goal.owner.username,
-                                                                                  goalname: goal.slug,
-                                                                                  datapointID: datapoint.id))
+        let _ = try await self.requestManager.request(
+          endpoint: .deletedDatapoint(username: goal.owner.username, goalname: goal.slug, datapointID: datapoint.id)
+        )
         try await self.goalManager.refreshGoal(self.goal.objectID)
 
         hud.mode = .customView
