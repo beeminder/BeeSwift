@@ -36,9 +36,9 @@ struct AddData: DeprecatedAppIntent, CustomIntentMigratedAppIntent, PredictableI
     let dataComment = comment ?? ""
     do {
       let urtext = "^ \(dataValue) \"\(dataComment)\""
-      let _ = try await ServiceLocator.requestManager.request(endpoint: .createDatapoint(username: username,
-                                                                                         goalname: goalSlug,
-                                                                                         urtext: urtext))
+      let _ = try await ServiceLocator.requestManager.request(
+        endpoint: .createDatapoint(username: username, goalname: goalSlug, urtext: urtext)
+      )
       return .result(dialog: .responseSuccess(goal: goalSlug, value: dataValue))
     } catch ServerError.notFound { throw AddDataError.apiError("Goal '\(goalSlug)' not found") } catch {
       throw AddDataError.apiError(error.localizedDescription)

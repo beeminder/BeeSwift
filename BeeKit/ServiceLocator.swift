@@ -15,7 +15,6 @@ public class ServiceLocator {
   public static let persistentContainer = BeeminderPersistentContainer.create()
 
   public static let requestManager = RequestManager()
-  
   public static let currentUserManager = CurrentUserManager(
     requestManager: requestManager,
     container: persistentContainer

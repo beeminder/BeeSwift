@@ -31,32 +31,38 @@ import SwiftyJSON
     let val = datapoint.value
     if datapointValue == val && comment == datapoint.comment { return }
 
-    let _ = try await requestManager.request(endpoint: .updateDatapoint(username: goal.owner.username,
-                                                                        goalname: goal.slug,
-                                                                        datapointID: datapoint.id,
-                                                                        value: datapointValue,
-                                                                        comment: comment))
+    let _ = try await requestManager.request(
+      endpoint: .updateDatapoint(
+        username: goal.owner.username,
+        goalname: goal.slug,
+        datapointID: datapoint.id,
+        value: datapointValue,
+        comment: comment
+      )
+    )
   }
 
   private func deleteDatapoint(goal: Goal, datapoint: DataPoint) async throws {
-    let _ = try await requestManager.request(endpoint: .deletedDatapoint(username: goal.owner.username,
-                                                                         goalname: goal.slug,
-                                                                         datapointID: datapoint.id))
+    let _ = try await requestManager.request(
+      endpoint: .deletedDatapoint(username: goal.owner.username, goalname: goal.slug, datapointID: datapoint.id)
+    )
   }
 
   private func postDatapoint(goal: Goal, urText: String, requestId: String) async throws {
-    let _ = try await requestManager.request(endpoint: .createDatapoint(username: goal.owner.username,
-                                                                        goalname: goal.slug,
-                                                                        urtext: urText,
-                                                                        requestID: requestId))
+    let _ = try await requestManager.request(
+      endpoint: .createDatapoint(
+        username: goal.owner.username,
+        goalname: goal.slug,
+        urtext: urText,
+        requestID: requestId
+      )
+    )
   }
 
   private func fetchDatapoints(goal: Goal, sort: String, per: Int, page: Int) async throws -> [DataPoint] {
-    let response = try await requestManager.request(endpoint: .getDatapoints(username: goal.owner.username,
-                                                                             goalname: goal.slug,
-                                                                             sort: sort,
-                                                                             page: page,
-                                                                             per: per))
+    let response = try await requestManager.request(
+      endpoint: .getDatapoints(username: goal.owner.username, goalname: goal.slug, sort: sort, page: page, per: per)
+    )
     let responseJSON = JSON(response!)
 
     return responseJSON.arrayValue.map({ DataPoint.fromJSON(context: modelContext, goal: goal, json: $0) })

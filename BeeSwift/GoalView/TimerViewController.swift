@@ -147,9 +147,9 @@ class TimerViewController: UIViewController {
 
     Task { @MainActor in
       do {
-        let _ = try await requestManager.request(endpoint: .createDatapoint(username: goal.owner.username,
-                                                                            goalname: goal.slug,
-                                                                            urtext: self.urtext()))
+        let _ = try await requestManager.request(
+          endpoint: .createDatapoint(username: goal.owner.username, goalname: goal.slug, urtext: self.urtext())
+        )
         hud.mode = .text
         hud.label.text = "Added!"
         DispatchQueue.main.asyncAfter(

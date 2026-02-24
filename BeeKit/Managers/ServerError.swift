@@ -1,12 +1,11 @@
 // Part of BeeSwift. Copyright Beeminder
 
-
 import Alamofire
 import Foundation
 import OSLog
 import SwiftyJSON
 
-public enum ServerError: LocalizedError {   
+public enum ServerError: LocalizedError {
   case notFound
   case unauthorized
   case forbidden
