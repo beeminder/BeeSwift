@@ -11,44 +11,32 @@ import Foundation
 import OSLog
 import SwiftyJSON
 
-
-
-public protocol RequestManaging {
-  func request(endpoint: EndPoint) async throws -> Any?
-}
+public protocol RequestManaging { func request(endpoint: EndPoint) async throws -> Any? }
 
 public class RequestManager: RequestManaging {
   public let baseURLString = Config().baseURLString
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
-  
   public func request(endpoint: EndPoint) async throws -> Any? {
     print("rawRequest(endpoint) \(endpoint)")
-    
     let parameters = endpoint.shouldSign ? signedParameters(endpoint.parameters) : endpoint.parameters
-    return try await rawRequest(url: endpoint.url,
-                                method: endpoint.method,
-                                parameters: parameters,
-                                headers: authenticationHeaders())
+    return try await rawRequest(
+      url: endpoint.url,
+      method: endpoint.method,
+      parameters: parameters,
+      headers: authenticationHeaders()
+    )
   }
 }
 
-fileprivate extension RequestManager {
-  func rawRequest(url: URL, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders) async throws
-  -> Any?
+extension RequestManager {
+  fileprivate func rawRequest(url: URL, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders)
+    async throws -> Any?
   {
     let encoding: ParameterEncoding = method == .get ? URLEncoding.default : JSONEncoding.default
     let headers = HTTPHeaders.default + headers
-    
     logger.debug("rawRequest: \(url.absoluteString), method \(method.rawValue)")
-    
-    let response = await AF.request(
-      url,
-      method: method,
-      parameters: parameters,
-      encoding: encoding,
-      headers: headers
-    ).validate().serializingData(emptyRequestMethods: [HTTPMethod.post]).response
-    
+    let response = await AF.request(url, method: method, parameters: parameters, encoding: encoding, headers: headers)
+      .validate().serializingData(emptyRequestMethods: [HTTPMethod.post]).response
     switch response.result {
     case .success(let data):
       let asJSON = try? JSONSerialization.jsonObject(with: data)
@@ -81,19 +69,17 @@ fileprivate extension RequestManager {
           }
         }
       }
-      
       throw error
     }
   }
-  
-  func authenticationHeaders() -> HTTPHeaders {
+  fileprivate func authenticationHeaders() -> HTTPHeaders {
     guard let accessToken = ServiceLocator.currentUserManager.accessToken else { return HTTPHeaders() }
     return HTTPHeaders([HTTPHeader(name: "Authorization", value: "Bearer " + accessToken)])
   }
 }
 
-fileprivate extension RequestManager {
-  func signedParameters(_ params: [String: Any]?) -> [String: Any]? {
+extension RequestManager {
+  fileprivate func signedParameters(_ params: [String: Any]?) -> [String: Any]? {
     if params == nil { return params }
     var signed = params
     var base = ""
@@ -114,8 +100,8 @@ fileprivate extension RequestManager {
   }
 }
 
-fileprivate extension HTTPHeaders {
-  static func + (lhs: HTTPHeaders, rhs: HTTPHeaders) -> HTTPHeaders {
+extension HTTPHeaders {
+  fileprivate static func + (lhs: HTTPHeaders, rhs: HTTPHeaders) -> HTTPHeaders {
     var allHeaders = [HTTPHeader]()
     allHeaders.append(contentsOf: lhs)
     allHeaders.append(contentsOf: rhs)

@@ -85,16 +85,15 @@ import UIKit
     Task { @MainActor in
       let token = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
       var environment: String?
-      
       if isDevelopmentBuild() {
         environment = "development"
         logger.notice("Registering device token for development APNS server")
       }
 
       do {
-        let _ = try await ServiceLocator.requestManager.request(endpoint: .registerDeviceToken(token: token,
-                                                                                               environment: environment))
-        
+        let _ = try await ServiceLocator.requestManager.request(
+          endpoint: .registerDeviceToken(token: token, environment: environment)
+        )
       } catch { logger.error("Error sending device push token: \(error)") }
     }
   }

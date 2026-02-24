@@ -14,14 +14,11 @@ struct AddDataPointIntent: AppIntent {
   func perform() async throws -> some IntentResult & ProvidesDialog {
     let dataComment = comment ?? ""
     do {
-      guard let username = await ServiceLocator.currentUserManager.username else {
-        throw AddDataError.noUser
-      }
+      guard let username = await ServiceLocator.currentUserManager.username else { throw AddDataError.noUser }
       let urtext = "^ \(value) \"\(dataComment)\""
-      let _ = try await ServiceLocator.requestManager.request(endpoint: .createDatapoint(username: username,
-                                                                                         goalname: goal.slug,
-                                                                                         urtext: urtext))
-      
+      let _ = try await ServiceLocator.requestManager.request(
+        endpoint: .createDatapoint(username: username, goalname: goal.slug, urtext: urtext)
+      )
       // Use displayTitle to show title with slug fallback
       let formatter = NumberFormatter()
       formatter.minimumFractionDigits = 0

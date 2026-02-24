@@ -71,14 +71,17 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
   override func sendLeadTimeToServer(_ timer: Timer) {
     // We must not use `timer` in the Task as it may change once this method returns
     guard let userInfo = timer.userInfo as? [String: NSNumber] else { return }
-    
     Task { @MainActor in
       let leadtime = userInfo["leadtime"]?.intValue
       do {
-        let _ = try await self.requestManager.request(endpoint: .updateGoal(username: goal.owner.username,
-                                                                            goalname: goal.slug,
-                                                                            leadtime: leadtime,
-                                                                            usesDefaultNotifications: false))
+        let _ = try await self.requestManager.request(
+          endpoint: .updateGoal(
+            username: goal.owner.username,
+            goalname: goal.slug,
+            leadtime: leadtime,
+            usesDefaultNotifications: false
+          )
+        )
 
         try await self.goalManager.refreshGoal(self.goal.objectID)
 
@@ -92,14 +95,17 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
       let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
       hud.mode = .indeterminate
       if self.timePickerEditingMode == .alertstart {
-        
         do {
           let alertstart = self.midnightOffsetFromTimePickerView()
           self.updateAlertstartLabel(alertstart)
-          let _ = try await self.requestManager.request(endpoint: .updateGoal(username: user.username,
-                                                                              goalname: goal.slug,
-                                                                              alertstart: alertstart,
-                                                                              usesDefaultNotifications: false))
+          let _ = try await self.requestManager.request(
+            endpoint: .updateGoal(
+              username: user.username,
+              goalname: goal.slug,
+              alertstart: alertstart,
+              usesDefaultNotifications: false
+            )
+          )
           try await self.goalManager.refreshGoal(self.goal.objectID)
 
           self.useDefaultsSwitch.isOn = false
@@ -114,10 +120,14 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
         do {
           let deadline = self.deadlineFromTimePickerView
           self.updateDeadlineLabel(deadline)
-          let _ = try await self.requestManager.request(endpoint: .updateGoal(username: user.username,
-                                                                              goalname: goal.slug,
-                                                                              deadline: deadline,
-                                                                              usesDefaultNotifications: false))
+          let _ = try await self.requestManager.request(
+            endpoint: .updateGoal(
+              username: user.username,
+              goalname: goal.slug,
+              deadline: deadline,
+              usesDefaultNotifications: false
+            )
+          )
           try await self.goalManager.refreshGoal(self.goal.objectID)
 
           self.useDefaultsSwitch.isOn = false
@@ -153,9 +163,13 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
               let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
               hud.mode = .indeterminate
               do {
-                let _ = try await self.requestManager.request(endpoint: .updateGoal(username: self.user.username,
-                                                                                    goalname: self.goal.slug,
-                                                                                    usesDefaultNotifications: true))
+                let _ = try await self.requestManager.request(
+                  endpoint: .updateGoal(
+                    username: self.user.username,
+                    goalname: self.goal.slug,
+                    usesDefaultNotifications: true
+                  )
+                )
                 try await self.goalManager.refreshGoal(self.goal.objectID)
                 hud.hide(animated: true, afterDelay: 0.5)
               } catch {
@@ -193,9 +207,9 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud.mode = .indeterminate
         do {
-          let _ = try await self.requestManager.request(endpoint: .updateGoal(username: user.username,
-                                                                              goalname: goal.slug,
-                                                                              usesDefaultNotifications: false))
+          let _ = try await self.requestManager.request(
+            endpoint: .updateGoal(username: user.username, goalname: goal.slug, usesDefaultNotifications: false)
+          )
           try await self.goalManager.refreshGoal(self.goal.objectID)
           hud.hide(animated: true, afterDelay: 0.5)
         } catch {
