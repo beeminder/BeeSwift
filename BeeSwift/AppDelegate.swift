@@ -11,9 +11,8 @@ import BeeKit
 import CoreSpotlight
 import HealthKit
 import IQKeyboardManagerSwift
-import OSLog
 import Kingfisher
-
+import OSLog
 import UIKit
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -71,7 +70,6 @@ import UIKit
     }
 
     backgroundUpdates.startUpdatingRegularlyInBackground()
-    
     configureKingfisherCacheSettings()
     return true
   }
@@ -169,7 +167,6 @@ import UIKit
     let provisionPath = (resourcePath as NSString).appendingPathComponent("embedded.mobileprovision")
     return FileManager.default.fileExists(atPath: provisionPath)
   }
-  
   private func configureKingfisherCacheSettings() {
     let cache = KingfisherManager.shared.cache
     cache.memoryStorage.config.totalCostLimit = 1028 * 1024 * 1024
