@@ -77,12 +77,12 @@ class GoalImageView: UIView {
   }
 
   @MainActor private func refresh() {
-    guard let goal = self.goal else {
+    guard let goal else {
       clearGoalGraph()
       return
     }
 
-    if goal.owner.deadbeat {
+    guard !goal.owner.deadbeat else {
       clearGoalGraph()
       return
     }
@@ -94,20 +94,19 @@ class GoalImageView: UIView {
       .transition(.fade(0.2)), .cacheSerializer(FormatIndicatedCacheSerializer.png),
     ]
 
-    if let url = URL(string: urlString) {
-      imageView.kf.setImage(
-        with: url,
-        placeholder: UIImage(named: "GraphPlaceholder"),
-        options: options,
-        completionHandler: { [weak self] result in
-          switch result {
-          case .success(let value): self?.showGraphImage(image: value.image)
-          case .failure(let error):
-            self?.logger.error("Error downloading goal graph: \(error)")
-            self?.clearGoalGraph()
-          }
+    guard let url = URL(string: urlString) else { return }
+    imageView.kf.setImage(
+      with: url,
+      placeholder: UIImage(named: "GraphPlaceholder"),
+      options: options,
+      completionHandler: { [weak self] result in
+        switch result {
+        case .success(let value): self?.showGraphImage(image: value.image)
+        case .failure(let error):
+          self?.logger.error("Error downloading goal graph: \(error)")
+          self?.clearGoalGraph()
         }
-      )
-    }
+      }
+    )
   }
 }
