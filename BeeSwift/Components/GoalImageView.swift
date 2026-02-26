@@ -97,7 +97,7 @@ class GoalImageView: UIView {
     if let url = URL(string: urlString) {
       imageView.kf.setImage(
         with: url,
-        placeholder: nil,
+        placeholder: UIImage(named: "GraphPlaceholder"),
         options: options,
         completionHandler: { [weak self] result in
           switch result {
