@@ -45,7 +45,6 @@ class GoalImageView: UIView {
     self.layer.cornerRadius = CardLookConstants.cornerRadius
     self.layer.borderWidth = 0
     self.clipsToBounds = true
-    
     imageView.snp.makeConstraints { $0.edges.equalToSuperview() }
 
     self.imageView.image = UIImage(named: "GraphPlaceholder")
