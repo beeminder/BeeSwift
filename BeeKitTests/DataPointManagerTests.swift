@@ -32,7 +32,7 @@ class MockRequestManagerForDataPoint: RequestManaging {
   var deleteCalls: [String] { queue.sync { _deleteCalls } }
   var addDatapointCalls: [(url: String, parameters: [String: Any])] { queue.sync { _addDatapointCalls } }
 
-  func request(endpoint: EndPoint) async throws -> Any? {
+  func request(endpoint: Endpoint) async throws -> Any? {
     let urlString = endpoint.url.absoluteString
     // Determine HTTP method from endpoint path patterns
     if urlString.contains("/datapoints/") && urlString.contains("datapoints.json") {

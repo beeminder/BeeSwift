@@ -5,7 +5,7 @@ import Foundation
 import OSLog
 import SwiftyJSON
 
-public enum EndPoint {
+public enum Endpoint {
   // signing in
   case signIn(username: String, password: String, beemiosSecret: String)
   // about the app versions the server expects to see
