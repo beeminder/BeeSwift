@@ -17,7 +17,6 @@ public class RequestManager: RequestManaging {
   public let baseURLString = Config().baseURLString
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
   public func request(endpoint: Endpoint) async throws -> Any? {
-    print("rawRequest(endpoint) \(endpoint)")
     let parameters = endpoint.shouldSign ? signedParameters(endpoint.parameters) : endpoint.parameters
     return try await rawRequest(
       url: endpoint.url,
