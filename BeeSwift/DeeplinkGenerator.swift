@@ -41,9 +41,16 @@ struct DeeplinkGenerator {
   public static func webURLToGoal(username: String, goalName: String, tab: GoalTab) -> URL {
     WebEndpoint.goal(username: username, goalName: goalName, tab: tab).url
   }
+  static func generateAuthenticatedDeepLink(accessToken: String, username: String, destinationURL: URL) -> URL {
+    WebEndpoint.apiRedirect(username: username, accessToken: accessToken, redirectTo: destinationURL).url
   }
-  }
-  public static func generateDeepLinkToUrl(accessToken: String, username: String, url: URL) -> URL {
-    WebEndpoint.apiRedirect(username: username, accessToken: accessToken, redirectTo: url).url
+  public static func generateAuthenticatedDeepLinkToGoal(
+    tab: GoalTab,
+    username: String,
+    goalName: String,
+    accessToken: String
+  ) -> URL {
+    let destinationURL = webURLToGoal(username: username, goalName: goalName, tab: tab)
+    return generateAuthenticatedDeepLink(accessToken: accessToken, username: username, destinationURL: destinationURL)
   }
 }

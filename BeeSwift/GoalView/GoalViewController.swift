@@ -613,21 +613,21 @@ extension GoalViewController {
     case goalSettings
     func makeLink(username: String, goalName: String, currentUserManager: CurrentUserManager) -> URL? {
       guard let accessToken = currentUserManager.accessToken else { return nil }
-      let destinationUrl: URL
+      let tab: GoalTab
       switch self {
       case .inAppSettings: return nil
-      case .goalCommitment:
-        destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalCommitment(username: username, goalName: goalName)
-      case .goalStop:
-        destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalStop(username: username, goalName: goalName)
-      case .goalData:
-        destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalData(username: username, goalName: goalName)
-      case .goalStatistics:
-        destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalStatistics(username: username, goalName: goalName)
-      case .goalSettings:
-        destinationUrl = DeeplinkGenerator.generateDeepLinkToGoalSettings(username: username, goalName: goalName)
+      case .goalCommitment: tab = .commitment
+      case .goalStop: tab = .stop
+      case .goalData: tab = .data
+      case .goalStatistics: tab = .statistics
+      case .goalSettings: tab = .settings
       }
-      return DeeplinkGenerator.generateDeepLinkToUrl(accessToken: accessToken, username: username, url: destinationUrl)
+      return DeeplinkGenerator.generateAuthenticatedDeepLinkToGoal(
+        tab: tab,
+        username: username,
+        goalName: goalName,
+        accessToken: accessToken
+      )
     }
   }
   fileprivate struct MenuOption {
