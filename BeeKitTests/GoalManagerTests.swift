@@ -10,9 +10,8 @@ class MockRequestManager: RequestManaging {
     let keyUrlStr = endpoint.url.absoluteString
     guard let response = responses[keyUrlStr] else {
       XCTFail("Unexpected URL requested: \(keyUrlStr)")
-    return nil
-  }
-    
+      return nil
+    }
     return response
   }
   var responses: [String: Any] = [:]
