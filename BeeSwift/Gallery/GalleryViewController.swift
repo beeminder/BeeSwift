@@ -41,8 +41,8 @@ class GalleryViewController: UIViewController {
   }()
   private lazy var collectionContainer = UIView()
   private lazy var collectionView: UICollectionView = {
-    let collectionView = UICollectionView(frame: stackView.frame, collectionViewLayout: self.collectionViewLayout)
-    collectionView.backgroundColor = .systemBackground
+    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.collectionViewLayout)
+    collectionView.backgroundColor = .systemGray6
     collectionView.alwaysBounceVertical = true
     collectionView.register(
       UICollectionReusableView.self,
@@ -144,7 +144,7 @@ class GalleryViewController: UIViewController {
       object: nil
     )
     self.view.addSubview(self.stackView)
-    stackView.snp.makeConstraints { (make) -> Void in make.edges.equalToSuperview() }
+    self.stackView.snp.makeConstraints { (make) -> Void in make.edges.equalToSuperview() }
 
     NotificationCenter.default.addObserver(
       self,
@@ -473,7 +473,7 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
     let minimumWidth: CGFloat = 320
     let itemSpacing = self.collectionViewLayout.minimumInteritemSpacing
     let availableWidth =
-      collectionView.frame.width - collectionView.contentInset.left - collectionView.contentInset.right
+      collectionView.bounds.width - collectionView.contentInset.left - collectionView.contentInset.right
     // Calculate how many cells could fit at the minimum width, rounding down (as we can't show a fractional cell)
     // We need to account for there being margin between cells, so there is 1 fewer margin than cell. We do this by
     // imagining there is some non-showed spacing after the final cell. For example with wo cells:
