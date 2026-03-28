@@ -537,7 +537,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
     self.datapointTableController.hhmmformat = goal.hhmmFormat
     self.datapointTableController.datapoints = goal.recentData.sorted(by: { $0.updatedAt < $1.updatedAt })
     self.deltasLabel.isHidden = goal.dueBy.isEmpty
-    self.deltasLabel.attributedText = self.dueByTableAttributedString
+    self.deltasLabel.attributedText = goal.dueByTableAttributedString
     self.refreshCountdown()
     self.updateLastUpdatedLabel()
   }
@@ -682,28 +682,5 @@ extension GoalViewController {
     )
 
     return UIMenu(title: "", children: [settingsMenu, webMenu])
-  }
-}
-
-extension GoalViewController {
-  fileprivate var dueByTableAttributedString: NSAttributedString {
-    let textAndColor: [(text: String, color: UIColor)] = goal.dueBy.sorted(using: SortDescriptor(\.key)).compactMap {
-      $0.value.formattedDelta
-    }.map { $0 == "✔" ? "✓" : $0 }.enumerated().map { offset, element in
-      var color: UIColor {
-        switch offset {
-        case 0: return UIColor.Beeminder.SafetyBuffer.orange
-        case 1: return UIColor.Beeminder.SafetyBuffer.blue
-        case 2: return UIColor.Beeminder.SafetyBuffer.green
-        default: return .label.withAlphaComponent(0.8)
-        }
-      }
-      return (text: element, color: color)
-    }
-    let attrStr = NSMutableAttributedString()
-    textAndColor.map { (text: String, color: UIColor) in
-      NSAttributedString(string: text + " ", attributes: [.foregroundColor: color])
-    }.forEach { attrStr.append($0) }
-    return attrStr
   }
 }
