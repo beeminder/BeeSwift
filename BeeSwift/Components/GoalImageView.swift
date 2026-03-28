@@ -55,11 +55,21 @@ class GoalImageView: UIView {
     ) { [weak self] _ in DispatchQueue.main.async { self?.refresh() } }
     refresh()
   }
-
   @MainActor private func clearGoalGraph() {
     imageView.image = UIImage(named: "GraphPlaceholder")
     currentlyShowingGraph = false
     beeLemniscateView.isHidden = true
+    updateBorder()
+  }
+
+  @MainActor private func updateBorder() {
+    if isThumbnail {
+      imageView.layer.borderColor = goal?.countdownColor.cgColor
+      imageView.layer.borderWidth = goal == nil ? 0 : 1
+    } else {
+      imageView.layer.borderColor = nil
+      imageView.layer.borderWidth = 0
+    }
   }
 
   @MainActor private func showGraphImage(image: UIImage) {
@@ -75,14 +85,7 @@ class GoalImageView: UIView {
       animations: { [weak self] in
         self?.imageView.image = image
         self?.beeLemniscateView.isHidden = self?.goal == nil || self?.goal?.queued == false
-
-        if self?.isThumbnail == true {
-          self?.imageView.layer.borderColor = self?.goal?.countdownColor.cgColor
-          self?.imageView.layer.borderWidth = self?.goal == nil ? 0 : 1
-        } else {
-          self?.imageView.layer.borderColor = nil
-          self?.imageView.layer.borderWidth = 0
-        }
+        self?.updateBorder()
       }
     ) { [weak self] _ in self?.currentlyShowingGraph = true }
   }
