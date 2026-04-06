@@ -109,7 +109,6 @@ class MigrationTests: XCTestCase {
       accuracy: 0.001,
       "User date value should be preserved during migration"
     )
-  
     // Migration on Goal
     let goalRequest = NSFetchRequest<Goal>(entityName: "Goal")
     let goals = try context.fetch(goalRequest)
@@ -159,4 +158,3 @@ class MigrationTests: XCTestCase {
     XCTAssertTrue(goal.autodataConfig.isEmpty, "autodataConfig should be empty dict for migrated goals")
   }
 }
-
