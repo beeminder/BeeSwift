@@ -163,7 +163,7 @@ import SwiftyJSON
       if let existingGoal = try? modelContext.fetch(request).first {
         existingGoal.updateToMatch(json: goalJSON)
       } else {
-        let _ = Goal(context: modelContext, owner: user, json: goalJSON)
+        _ = Goal(context: modelContext, owner: user, json: goalJSON)
       }
     }
 
