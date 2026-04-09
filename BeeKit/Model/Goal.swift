@@ -63,6 +63,7 @@ import SwiftyJSON
 
   /// The last time this record in the CoreData store was updated
   @NSManaged public var lastUpdatedLocal: Date
+  @NSManaged public var lastSyncedWithHealthKitLocal: Date?
 
   public init(
     context: NSManagedObjectContext,
@@ -119,6 +120,7 @@ import SwiftyJSON
     self.yAxis = yAxis
 
     lastUpdatedLocal = Date()
+    lastSyncedWithHealthKitLocal = nil
   }
 
   public init(context: NSManagedObjectContext, owner: User, json: JSON) {
@@ -127,6 +129,7 @@ import SwiftyJSON
     self.owner = owner
     self.id = json["id"].string!
 
+    lastSyncedWithHealthKitLocal = nil
     self.updateToMatch(json: json)
   }
 
