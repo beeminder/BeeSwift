@@ -21,10 +21,10 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
   fileprivate var datePicker = InlineDatePicker()
   fileprivate var valueField = UITextField()
   fileprivate var commentField = UITextField()
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   private let goalManager: GoalManager
 
-  init(goal: Goal, datapoint: DataPoint, requestManager: RequestManager, goalManager: GoalManager) {
+  init(goal: Goal, datapoint: DataPoint, requestManager: RequestManaging, goalManager: GoalManager) {
     self.goal = goal
     self.datapoint = datapoint
     self.requestManager = requestManager

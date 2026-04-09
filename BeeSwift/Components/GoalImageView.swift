@@ -7,7 +7,7 @@ import OSLog
 /// Shows the current graph for a goal
 /// Handles placeholders for loading and queued states, and automatically updates when the goal changes
 class GoalImageView: UIView {
-  private static let downloader = ImageDownloader(imageCache: AutoPurgingImageCache())
+  private static let downloader = ServiceLocator.imageDownloader
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalImageView")
 
   private let imageView = UIImageView()

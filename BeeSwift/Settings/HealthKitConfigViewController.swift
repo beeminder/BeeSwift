@@ -23,13 +23,13 @@ class HealthKitConfigViewController: UIViewController {
   private let goalManager: GoalManager
   private let viewContext: NSManagedObjectContext
   private let healthStoreManager: HealthStoreManager
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   private weak var coordinator: MainCoordinator?
   init(
     goalManager: GoalManager,
     viewContext: NSManagedObjectContext,
     healthStoreManager: HealthStoreManager,
-    requestManager: RequestManager,
+    requestManager: RequestManaging,
     coordinator: MainCoordinator
   ) {
     self.goalManager = goalManager

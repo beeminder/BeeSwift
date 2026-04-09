@@ -6,16 +6,20 @@
 //  Copyright 2023 APB. All rights reserved.
 //
 
+import AlamofireImage
 import Foundation
 import OSLog
 
 public class ServiceLocator {
   private static let logger = Logger(subsystem: "com.beeminder.beeminder", category: "ServiceLocator")
 
+  private static let sharedRequestManager = RequestManager()
+
+  public static let requestManager: RequestManaging = sharedRequestManager
+  public static let signedRequestManager: SignedRequestManaging = sharedRequestManager
+
   public static let persistentContainer = BeeminderPersistentContainer.create()
 
-  public static let requestManager = RequestManager()
-  public static let signedRequestManager = SignedRequestManager(requestManager: requestManager)
   public static let currentUserManager = CurrentUserManager(
     requestManager: requestManager,
     container: persistentContainer
@@ -33,4 +37,6 @@ public class ServiceLocator {
     goalManager: goalManager,
     container: persistentContainer
   )
+
+  public static let imageDownloader = ImageDownloadService.shared.downloader
 }

@@ -11,7 +11,7 @@ class GoalSettingsViewController: UIViewController {
   fileprivate let cellReuseIdentifier = "goalSettingsTableViewCell"
   let goal: Goal
   private let currentUserManager: CurrentUserManager
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   private let goalManager: GoalManager
   private weak var coordinator: MainCoordinator?
 
@@ -27,7 +27,7 @@ class GoalSettingsViewController: UIViewController {
   init(
     goal: Goal,
     currentUserManager: CurrentUserManager,
-    requestManager: RequestManager,
+    requestManager: RequestManaging,
     goalManager: GoalManager,
     coordinator: MainCoordinator
   ) {

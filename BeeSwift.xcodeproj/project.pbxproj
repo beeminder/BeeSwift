@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9BA7F9052F40723300CF84BE /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = 9BA7F9042F40723300CF84BE /* AlamofireImage */; };
 		A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A12BA94D1AFF202200AFEF32 /* SystemConfiguration.framework */; };
 		A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A158DDB51E46EEA10031BD4F /* HealthKit.framework */; };
 		A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17E930B1B09032F0098FCA0 /* QuartzCore.framework */; };
@@ -208,6 +209,7 @@
 				E458C8292AD12057000DCA5C /* OrderedCollections in Frameworks */,
 				E4015DA22D1E7B2D00F58D94 /* CoreDataEvolution in Frameworks */,
 				E458C8222AD11D40000DCA5C /* Alamofire in Frameworks */,
+				9BA7F9052F40723300CF84BE /* AlamofireImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -369,6 +371,7 @@
 				E458C8232AD11D7F000DCA5C /* KeychainSwift */,
 				E458C8282AD12057000DCA5C /* OrderedCollections */,
 				E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */,
+				9BA7F9042F40723300CF84BE /* AlamofireImage */,
 			);
 			productName = BeeKit;
 			productReference = E57BE6E02655EBD900BA540B /* BeeKit.framework */;
@@ -1155,6 +1158,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		9BA7F9042F40723300CF84BE /* AlamofireImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */;
+			productName = AlamofireImage;
+		};
 		E4015DA12D1E7B2D00F58D94 /* CoreDataEvolution */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E4015DA02D1E7B2D00F58D94 /* XCRemoteSwiftPackageReference "CoreDataEvolution" */;

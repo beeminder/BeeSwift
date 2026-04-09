@@ -20,10 +20,10 @@ class TimerViewController: UIViewController {
   var timingSince: Date?
   var timer: Timer?
   private let units: TimerUnit
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
 
   var accumulatedSeconds = 0
-  init(goal: Goal, requestManager: RequestManager) {
+  init(goal: Goal, requestManager: RequestManaging) {
     self.goal = goal
     self.requestManager = requestManager
     self.units = Self.timerUnit(goal: goal) ?? .hours

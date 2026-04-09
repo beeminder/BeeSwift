@@ -6,6 +6,7 @@
 //  Copyright 2015 APB. All rights reserved.
 //
 
+import AlamofireImage
 import BeeKit
 import CoreData
 import HealthKit
@@ -29,7 +30,7 @@ class GalleryViewController: UIViewController {
   private let versionManager: VersionManager
   private let goalManager: GoalManager
   private let healthStoreManager: HealthStoreManager
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   private lazy var stackView: UIStackView = {
     let stackView = UIStackView()
     stackView.axis = .vertical
@@ -106,7 +107,7 @@ class GalleryViewController: UIViewController {
     versionManager: VersionManager,
     goalManager: GoalManager,
     healthStoreManager: HealthStoreManager,
-    requestManager: RequestManager,
+    requestManager: RequestManaging,
     coordinator: MainCoordinator
   ) {
     self.currentUserManager = currentUserManager
@@ -499,6 +500,17 @@ extension GalleryViewController: UICollectionViewDelegate {
     let goal = fetchedResultsController.object(at: indexPath)
     logger.info("... Goal is \(goal.id, privacy: .public)")
     self.openGoal(goal)
+  }
+}
+
+extension GalleryViewController: UICollectionViewDataSourcePrefetching {
+  func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+    let urls = indexPaths.compactMap { indexPath -> URL? in
+      let goal = fetchedResultsController.object(at: indexPath)
+      return try? goal.thumbUrl.asURL()
+    }
+    let downloader = ServiceLocator.imageDownloader
+    urls.forEach { downloader.download(URLRequest(url: $0), completion: { _ in }) }
   }
 }
 

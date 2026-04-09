@@ -19,13 +19,13 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
   let goal: Goal
   fileprivate var useDefaultsSwitch = UISwitch()
   private let currentUserManager: CurrentUserManager
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   private let goalManager: GoalManager
   private let viewContext: NSManagedObjectContext
   init(
     goal: Goal,
     currentUserManager: CurrentUserManager,
-    requestManager: RequestManager,
+    requestManager: RequestManaging,
     goalManager: GoalManager,
     viewContext: NSManagedObjectContext
   ) {

@@ -18,13 +18,13 @@ class SettingsViewController: UIViewController {
   private let currentUserManager: CurrentUserManager
   private let viewContext: NSManagedObjectContext
   private let goalManager: GoalManager
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   private weak var coordinator: MainCoordinator?
   init(
     currentUserManager: CurrentUserManager,
     viewContext: NSManagedObjectContext,
     goalManager: GoalManager,
-    requestManager: RequestManager,
+    requestManager: RequestManaging,
     coordinator: MainCoordinator
   ) {
     self.currentUserManager = currentUserManager

@@ -25,7 +25,7 @@ class ConfigureHKMetricViewController: UIViewController {
   private let goal: Goal
   private let metric: HealthKitMetric
   private let healthStoreManager: HealthStoreManager
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   private let goalManager: GoalManager?
 
   private var isRequestInFlight = false
@@ -47,7 +47,7 @@ class ConfigureHKMetricViewController: UIViewController {
     goal: Goal,
     metric: HealthKitMetric,
     healthStoreManager: HealthStoreManager,
-    requestManager: RequestManager,
+    requestManager: RequestManaging,
     goalManager: GoalManager? = nil
   ) {
     self.goal = goal

@@ -5,9 +5,13 @@ import XCTest
 
 @testable import BeeKit
 
-class MockRequestManager: RequestManager {
+class MockRequestManager: RequestManaging {
+  func addDatapoint(urtext: String, slug: String, requestId: String?) async throws -> Any? { nil }
+  func delete(url: String, parameters: [String: Any]?) async throws -> Any? { nil }
+  func post(url: String, parameters: [String: Any]?) async throws -> Any? { nil }
+  func put(url: String, parameters: [String: Any]?) async throws -> Any? { nil }
   var responses: [String: Any] = [:]
-  override func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
     if let response = responses[url] { return response }
     XCTFail("Unexpected URL requested: \(url)")
     return nil

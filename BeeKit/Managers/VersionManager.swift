@@ -23,9 +23,9 @@ private let ageOfReleaseToWarn: TimeInterval = 10.0 * dayInSeconds
 public class VersionManager {
   private var minRequiredVersion: String = "1.0"
   private var updateState = UpdateState.UpToDate
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
 
-  init(requestManager: RequestManager) { self.requestManager = requestManager }
+  init(requestManager: RequestManaging) { self.requestManager = requestManager }
 
   public func lastChckedUpdateState() -> UpdateState { return updateState }
 

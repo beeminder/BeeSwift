@@ -9,7 +9,7 @@ class MainCoordinator {
   private let versionManager: VersionManager
   private let goalManager: GoalManager
   private let healthStoreManager: HealthStoreManager
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   init(
     navigationController: UINavigationController,
     currentUserManager: CurrentUserManager,
@@ -17,7 +17,7 @@ class MainCoordinator {
     versionManager: VersionManager,
     goalManager: GoalManager,
     healthStoreManager: HealthStoreManager,
-    requestManager: RequestManager
+    requestManager: RequestManaging
   ) {
     self.navigationController = navigationController
     self.currentUserManager = currentUserManager

@@ -15,12 +15,12 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDefaultNotificationsViewController")
   private let user: User
   private let currentUserManager: CurrentUserManager
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   private let goalManager: GoalManager
   private let viewContext: NSManagedObjectContext
   init(
     currentUserManager: CurrentUserManager,
-    requestManager: RequestManager,
+    requestManager: RequestManaging,
     goalManager: GoalManager,
     viewContext: NSManagedObjectContext
   ) {

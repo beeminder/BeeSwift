@@ -17,7 +17,8 @@ class MockHealthKitDataPoint: BeeDataPoint {
   }
 }
 
-class MockRequestManagerForDataPoint: RequestManager {
+class MockRequestManagerForDataPoint: RequestManaging {
+  func post(url: String, parameters: [String: Any]?) async throws -> Any? { nil }
   private let queue = DispatchQueue(label: "com.beeminder.MockRequestManagerForDataPoint")
   private var _responses: [String: Any] = [:]
   private var _putCalls: [(url: String, parameters: [String: Any])] = []
@@ -32,7 +33,7 @@ class MockRequestManagerForDataPoint: RequestManager {
   var deleteCalls: [String] { queue.sync { _deleteCalls } }
   var addDatapointCalls: [(urtext: String, slug: String, requestId: String)] { queue.sync { _addDatapointCalls } }
 
-  override func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
     let response = queue.sync { () -> Any? in
       if let response = _responses[url] {
         _responses.removeValue(forKey: url)
@@ -42,15 +43,15 @@ class MockRequestManagerForDataPoint: RequestManager {
     }
     return response ?? []
   }
-  override func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
     queue.sync { _putCalls.append((url: url, parameters: parameters ?? [:])) }
     return [:]
   }
-  override func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
     queue.sync { _deleteCalls.append(url) }
     return [:]
   }
-  override func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
+  func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
     queue.sync { _addDatapointCalls.append((urtext: urtext, slug: slug, requestId: requestId ?? "")) }
     return [:]
   }

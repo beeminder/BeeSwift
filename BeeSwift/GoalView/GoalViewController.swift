@@ -28,7 +28,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
   let goal: Goal
   private let healthStoreManager: HealthStoreManager
   private let goalManager: GoalManager
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
   private let currentUserManager: CurrentUserManager
   private let viewContext: NSManagedObjectContext
   private weak var coordinator: MainCoordinator?
@@ -61,7 +61,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
     goal: Goal,
     healthStoreManager: HealthStoreManager,
     goalManager: GoalManager,
-    requestManager: RequestManager,
+    requestManager: RequestManaging,
     currentUserManager: CurrentUserManager,
     viewContext: NSManagedObjectContext,
     coordinator: MainCoordinator
