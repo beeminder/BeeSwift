@@ -1,27 +1,20 @@
-import Alamofire
-import AlamofireImage
 import BeeKit
 import Foundation
+import Kingfisher
 import OSLog
 
 /// Shows the current graph for a goal
 /// Handles placeholders for loading and queued states, and automatically updates when the goal changes
 class GoalImageView: UIView {
-  private static let downloader = ImageDownloader(imageCache: AutoPurgingImageCache())
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalImageView")
 
   private let imageView = UIImageView()
   private let beeLemniscateView = BeeLemniscateView()
 
-  private var currentlyShowingGraph = false
-  private var inProgressDownload: RequestReceipt? = nil
-  private var currentDownloadToken: UUID? = nil
-
   public let isThumbnail: Bool
 
   public var goal: Goal? {
     didSet {
-      // If changed to a different goal, remove any current state
       if goal !== oldValue { clearGoalGraph() }
       refresh()
     }
@@ -57,7 +50,6 @@ class GoalImageView: UIView {
   }
   @MainActor private func clearGoalGraph() {
     imageView.image = UIImage(named: "GraphPlaceholder")
-    currentlyShowingGraph = false
     beeLemniscateView.isHidden = true
     updateBorder()
   }
@@ -73,9 +65,6 @@ class GoalImageView: UIView {
   }
 
   @MainActor private func showGraphImage(image: UIImage) {
-    // Animating the thumbnail view interacts badly with cell re-use in the gallery
-    // e.g. it would cause us to show the image from a different goal before animating
-    // to the corrent one.
     let duration = isThumbnail ? 0 : 0.4
 
     UIView.transition(
@@ -87,64 +76,38 @@ class GoalImageView: UIView {
         self?.beeLemniscateView.isHidden = self?.goal == nil || self?.goal?.queued == false
         self?.updateBorder()
       }
-    ) { [weak self] _ in self?.currentlyShowingGraph = true }
+    )
   }
 
   @MainActor private func refresh() {
-    // Invalidate the download token, meaning that any queued download callbacks
-    // will no-op. This avoids race conditions with downloads finishing out of order.
-    let newDownloadToken = UUID()
-    self.currentDownloadToken = newDownloadToken
-
-    if let downloadReceipt = inProgressDownload {
-      GoalImageView.downloader.cancelRequest(with: downloadReceipt)
-      inProgressDownload = nil
-    }
-
-    //  No Goal: Placeholder, no animation
-    guard let goal = self.goal else {
+    guard let goal else {
       clearGoalGraph()
       return
     }
 
-    //  - Deadbeat: Placeholder, no animation
-    if goal.owner.deadbeat {
+    guard !goal.owner.deadbeat else {
       clearGoalGraph()
       return
     }
 
-    // When queued, we should show a loading indicator over any existing graph,
-    // but not over the placeholder image.
-    if goal.queued { beeLemniscateView.isHidden = !currentlyShowingGraph }
+    if goal.queued { beeLemniscateView.isHidden = true }
 
     let urlString = isThumbnail ? goal.cacheBustingThumbUrl : goal.cacheBustingGraphUrl
-    let request = URLRequest(url: URL(string: urlString)!)
+    let options: KingfisherOptionsInfo = [
+      .transition(.fade(0.2)), .cacheSerializer(FormatIndicatedCacheSerializer.png),
+    ]
 
-    // Explicitly check the cache to see if the image is already present, and if so set it directly
-    // This avoids flicker when showing images from the cache, which will otherwise briefly show
-    // the placeholder while waiting for the async download callback
-    if let image = GoalImageView.downloader.imageCache?.image(for: request, withIdentifier: nil) {
-      showGraphImage(image: image)
-      return
-    }
-
-    // Download the image and show it once downloaded
-    inProgressDownload = GoalImageView.downloader.download(
-      request,
-      completion: { response in
-        if newDownloadToken != self.currentDownloadToken {
-          // Another refresh has happend since we were enqueued. Skip performing any updates
-          return
-        }
-
-        switch response.result {
-        case .success(let image):
-          // Image downloaded. Show it, and have loading indicator match queued state
-          self.showGraphImage(image: image)
-          break
+    guard let url = URL(string: urlString) else { return }
+    imageView.kf.setImage(
+      with: url,
+      placeholder: UIImage(named: "GraphPlaceholder"),
+      options: options,
+      completionHandler: { [weak self] result in
+        switch result {
+        case .success(let value): self?.showGraphImage(image: value.image)
         case .failure(let error):
-          self.logger.error("Error downloading goal graph: \(error)")
-          self.clearGoalGraph()
+          self?.logger.error("Error downloading goal graph: \(error)")
+          self?.clearGoalGraph()
         }
       }
     )

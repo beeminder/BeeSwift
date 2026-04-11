@@ -6,7 +6,6 @@
 //  Copyright 2015 APB. All rights reserved.
 //
 
-import AlamofireImage
 import BeeKit
 import CoreData
 import Foundation
