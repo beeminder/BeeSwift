@@ -159,11 +159,16 @@ import SwiftyJSON
       let goalId = goalJSON["id"].stringValue
       let request = NSFetchRequest<Goal>(entityName: "Goal")
       request.predicate = NSPredicate(format: "id == %@", goalId)
-      // TODO: Better error handling of failure here?
-      if let existingGoal = try! modelContext.fetch(request).first {
-        existingGoal.updateToMatch(json: goalJSON)
-      } else {
-        _ = Goal(context: modelContext, owner: user, json: goalJSON)
+
+      do {
+        if let existingGoal = try modelContext.fetch(request).first {
+          existingGoal.updateToMatch(json: goalJSON)
+        } else {
+          _ = Goal(context: modelContext, owner: user, json: goalJSON)
+        }
+      } catch {
+        logger.error("modelContext.fetch failed (for id: \(goalId)) with error: \(error)")
+        continue
       }
     }
 
