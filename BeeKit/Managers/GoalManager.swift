@@ -97,7 +97,7 @@ import SwiftyJSON
       let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
       for goal in goalsToDelete { modelContext.delete(goal) }
     }
-    updateGoalsFromJson(goalResponse)
+    try updateGoalsFromJson(goalResponse)
   }
   /// Perform an incremental refresh of goals for regular updates
   private func refreshGoalsIncremental(user: User) async throws {
@@ -118,57 +118,54 @@ import SwiftyJSON
     let deletedGoalIds = Set(deletedGoals.arrayValue.map { $0["id"].stringValue })
     let goalsToDelete = user.goals.filter { deletedGoalIds.contains($0.id) }
     for goal in goalsToDelete { modelContext.delete(goal) }
-    updateGoalsFromJson(goalResponse)
+    try updateGoalsFromJson(goalResponse)
     // Update lastUpdatedLocal for all goals, even those not in response
     let now = Date()
     for goal in user.goals { goal.lastUpdatedLocal = now }
   }
-
   public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
     let goal = try modelContext.existingObject(with: goalID) as! Goal
-
     let responseObject = try await requestManager.get(
       url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)",
       parameters: ["datapoints_count": "5", "emaciated": "true"]
     )
     let goalJSON = JSON(responseObject!)
-
     // The goal may have changed during the network operation, reload latest version
     modelContext.refresh(goal, mergeChanges: false)
     goal.updateToMatch(json: goalJSON)
-
     try modelContext.save()
-
     await performPostGoalUpdateBookkeeping()
   }
-
   public func forceAutodataRefresh(_ goal: Goal) async throws {
     let _ = try await requestManager.get(
       url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json"
     )
   }
 
-  private func updateGoalsFromJson(_ responseJSON: JSON) {
-    guard let responseGoals = responseJSON.array else { return }
+  private func updateGoalsFromJson(_ responseJSON: JSON) throws {
+    guard let responseGoals = responseJSON.array else {
+      logger.error("responseJSON apparently not array")
+      return
+    }
 
-    // The user may have logged out while waiting for the data, so ignore if so
-    guard let user = self.currentUserManager.user(context: modelContext) else { return }
+    guard let user = self.currentUserManager.user(context: modelContext) else {
+      logger.info("The user may have logged out while waiting for the data, so ignore if so")
+      return
+    }
 
     // Create and update existing goals
     for goalJSON in responseGoals {
-      let goalId = goalJSON["id"].stringValue
+      guard let goalId = goalJSON["id"].string else {
+        logger.error("goalJSON missing id")
+        continue
+      }
       let request = NSFetchRequest<Goal>(entityName: "Goal")
       request.predicate = NSPredicate(format: "id == %@", goalId)
 
-      do {
-        if let existingGoal = try modelContext.fetch(request).first {
-          existingGoal.updateToMatch(json: goalJSON)
-        } else {
-          _ = Goal(context: modelContext, owner: user, json: goalJSON)
-        }
-      } catch {
-        logger.error("modelContext.fetch failed (for id: \(goalId)) with error: \(error)")
-        continue
+      if let existingGoal = try modelContext.fetch(request).first {
+        existingGoal.updateToMatch(json: goalJSON)
+      } else {
+        _ = Goal(context: modelContext, owner: user, json: goalJSON)
       }
     }
 
