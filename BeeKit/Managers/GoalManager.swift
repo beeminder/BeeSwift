@@ -86,10 +86,12 @@ import SwiftyJSON
       throw GoalManagerError.getUserFailed
     }
     let userResponse = JSON(getUser)
-    
-    guard let getGoals = try await requestManager.get(url: "api/v1/users/{username}/goals.json", parameters: ["emaciated": "true"]) else {
-      throw GoalManagerError.getGoalsFailed
-    }
+    guard
+      let getGoals = try await requestManager.get(
+        url: "api/v1/users/{username}/goals.json",
+        parameters: ["emaciated": "true"]
+      )
+    else { throw GoalManagerError.getGoalsFailed }
     let goalResponse = JSON(getGoals)
 
     // The user may have logged out during the network operation. If so we have nothing to do
@@ -107,17 +109,13 @@ import SwiftyJSON
   /// Perform an incremental refresh of goals for regular updates
   private func refreshGoalsIncremental(user: User) async throws {
     logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
-    
-    guard let getUser = try await requestManager.get(
+    guard
+      let getUser = try await requestManager.get(
         url: "api/v1/users/{username}.json",
         parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1, "emaciated": "true"]
       )
-    else {
-      throw GoalManagerError.getUserFailed
-    }
-    
+    else { throw GoalManagerError.getUserFailed }
     let userResponse = JSON(getUser)
-    
     let goalResponse = userResponse["goals"]
     let deletedGoals = userResponse["deleted_goals"]
     // The user may have logged out during the network operation. If so we have nothing to do
@@ -134,17 +132,15 @@ import SwiftyJSON
     for goal in user.goals { goal.lastUpdatedLocal = now }
   }
   public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
-    guard
-      let goal = try modelContext.existingObject(with: goalID) as? Goal
-    else {
+    guard let goal = try modelContext.existingObject(with: goalID) as? Goal else {
       throw GoalManagerError.refreshGoalFailed(goalID: goalID, reason: "goal not found")
     }
-    guard let responseObject = try await requestManager.get(
-      url: "/api/v1/users/\(goal.owner.username)/goals/\(goal.slug)",
-      parameters: ["datapoints_count": "5", "emaciated": "true"]
-    ) else {
-      throw GoalManagerError.getGoalFailed(goalname: goal.slug, goalID: goal.id)
-    }
+    guard
+      let responseObject = try await requestManager.get(
+        url: "/api/v1/users/\(goal.owner.username)/goals/\(goal.slug)",
+        parameters: ["datapoints_count": "5", "emaciated": "true"]
+      )
+    else { throw GoalManagerError.getGoalFailed(goalname: goal.slug, goalID: goal.id) }
     let goalJSON = JSON(responseObject)
     // The goal may have changed during the network operation, reload latest version
     modelContext.refresh(goal, mergeChanges: false)
@@ -241,8 +237,8 @@ import SwiftyJSON
   }
 }
 
-private extension GoalManager {
-  enum GoalManagerError: Error {
+extension GoalManager {
+  fileprivate enum GoalManagerError: Error {
     case getUserFailed
     case getGoalsFailed
     case getGoalFailed(goalname: String, goalID: String)
@@ -253,10 +249,8 @@ private extension GoalManager {
 extension GoalManager.GoalManagerError: LocalizedError {
   public var errorDescription: String? {
     switch self {
-    case .getGoalsFailed:
-      return NSLocalizedString("Failed to get goals", comment: "getGoalsFailed")
-    case .getUserFailed:
-      return NSLocalizedString("Failed to get user", comment: "getUserFailed")
+    case .getGoalsFailed: return NSLocalizedString("Failed to get goals", comment: "getGoalsFailed")
+    case .getUserFailed: return NSLocalizedString("Failed to get user", comment: "getUserFailed")
     case .getGoalFailed(let goalname, let goalID):
       return NSLocalizedString("Failed to get goal: \(goalname) with id: \(goalID)", comment: "getGoalFailed")
     case .refreshGoalFailed(let goalID, let reason):
@@ -264,4 +258,3 @@ extension GoalManager.GoalManagerError: LocalizedError {
     }
   }
 }
-
