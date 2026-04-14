@@ -140,7 +140,7 @@ import SwiftyJSON
       throw GoalManagerError.refreshGoalFailed(goalID: goalID, reason: "goal not found")
     }
     guard let responseObject = try await requestManager.get(
-      url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)",
+      url: "/api/v1/users/\(goal.owner.username)/goals/\(goal.slug)",
       parameters: ["datapoints_count": "5", "emaciated": "true"]
     ) else {
       throw GoalManagerError.getGoalFailed(goalname: goal.slug, goalID: goal.id)
@@ -154,7 +154,7 @@ import SwiftyJSON
   }
   public func forceAutodataRefresh(_ goal: Goal) async throws {
     let _ = try await requestManager.get(
-      url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json"
+      url: "/api/v1/users/\(goal.owner.username)/goals/\(goal.slug)/refresh_graph.json"
     )
   }
 
