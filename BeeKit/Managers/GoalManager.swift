@@ -249,3 +249,19 @@ private extension GoalManager {
     case refreshGoalFailed(goalID: NSManagedObjectID, reason: String)
   }
 }
+
+extension GoalManager.GoalManagerError: LocalizedError {
+  public var errorDescription: String? {
+    switch self {
+    case .getGoalsFailed:
+      return NSLocalizedString("Failed to get goals", comment: "getGoalsFailed")
+    case .getUserFailed:
+      return NSLocalizedString("Failed to get user", comment: "getUserFailed")
+    case .getGoalFailed(let goalname, let goalID):
+      return NSLocalizedString("Failed to get goal: \(goalname) with id: \(goalID)", comment: "getGoalFailed")
+    case .refreshGoalFailed(let goalID, let reason):
+      return NSLocalizedString("Failed to refresh goal: \(goalID) because: \(reason)", comment: "refreshGoalFailed")
+    }
+  }
+}
+
