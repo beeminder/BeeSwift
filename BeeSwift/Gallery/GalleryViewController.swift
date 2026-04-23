@@ -145,7 +145,6 @@ class GalleryViewController: UIViewController {
     )
     self.view.addSubview(self.stackView)
     stackView.snp.makeConstraints { (make) -> Void in make.edges.equalToSuperview() }
-
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(self.keyboardWillShow),
@@ -158,7 +157,6 @@ class GalleryViewController: UIViewController {
       name: UIResponder.keyboardWillHideNotification,
       object: nil
     )
-
     configureDataSource()
     self.view.backgroundColor = .systemBackground
     self.title = "Goals"
@@ -171,7 +169,13 @@ class GalleryViewController: UIViewController {
         style: UIBarButtonItem.Style.plain,
         target: self,
         action: #selector(self.settingsButtonPressed)
-      )
+      ),
+      UIBarButtonItem(
+        image: UIImage(systemName: "text.line.magnify"),
+        style: UIBarButtonItem.Style.plain,
+        target: self,
+        action: #selector(self.pickSortTapped)
+      ),
     ]
     stackView.addArrangedSubview(self.freshnessIndicator)
     self.updateLastUpdatedLabel()
@@ -273,7 +277,6 @@ class GalleryViewController: UIViewController {
     let lastUpdated = currentUserManager.user(context: viewContext)?.lastUpdatedLocal ?? .distantPast
     self.freshnessIndicator.update(with: lastUpdated)
   }
-
   func setupHealthKit() {
     Task { @MainActor in
       logger.notice("setupHealthKit: Starting HealthKit setup")
@@ -335,7 +338,6 @@ class GalleryViewController: UIViewController {
     )
     self.navigationItem.leftBarButtonItem = searchItem
   }
-
   private func updateEmptyStateBackground() {
     guard self.filteredGoals.isEmpty else {
       self.collectionView.backgroundView = nil
@@ -420,7 +422,6 @@ class GalleryViewController: UIViewController {
       }
     )
   }
-
   private func configureDataSource() {
     let cellRegistration = UICollectionView.CellRegistration<GoalCollectionViewCell, NSManagedObjectID> {
       [weak self] cell, indexPath, goalObjectId in
@@ -454,6 +455,25 @@ extension GalleryViewController: SFSafariViewControllerDelegate {
   func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
     controller.dismiss(animated: true, completion: nil)
     self.fetchGoals()
+  }
+  @objc private func pickSortTapped() {
+    let alert = UIAlertController(title: "Gallery Sort Method", message: nil, preferredStyle: .actionSheet)
+    Constants.goalSortOptions.forEach { sortOption in
+      let isSelectedAlready =
+        UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String == sortOption
+      let title = isSelectedAlready ? "--> " + sortOption : "" + sortOption
+      let action = UIAlertAction(title: title, style: .default) { [weak self] _ in
+        UserDefaults.standard.set(sortOption, forKey: Constants.selectedGoalSortKey)
+        UserDefaults.standard.synchronize()
+        Task {
+          self?.fetchedResultsController.fetchRequest.sortDescriptors = Self.preferredSort
+          try? self?.fetchedResultsController.performFetch()
+        }
+      }
+      alert.addAction(action)
+    }
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+    self.present(alert, animated: true, completion: nil)
   }
 }
 

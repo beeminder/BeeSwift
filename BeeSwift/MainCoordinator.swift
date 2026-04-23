@@ -96,10 +96,6 @@ class MainCoordinator {
     controller.modalPresentationStyle = .fullScreen
     navigationController.present(controller, animated: true, completion: nil)
   }
-  func showChooseGallerySortAlgorithm() {
-    let controller = ChooseGoalSortViewController()
-    navigationController.pushViewController(controller, animated: true)
-  }
   func showConfigureNotifications() {
     let controller = ConfigureNotificationsViewController(
       goalManager: goalManager,
