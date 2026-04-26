@@ -104,7 +104,6 @@ class SettingsViewController: UIViewController {
     Task { @MainActor [weak self] in
       self?.tableView.isUserInteractionEnabled = false
       try? await self?.goalManager.refreshGoals()
-
       self?.tableView.reloadData()
       self?.tableView.layoutIfNeeded()
       self?.tableView.refreshControl?.endRefreshing()
@@ -137,11 +136,6 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
       cell.isUserInteractionEnabled = HKHealthStore.isHealthDataAvailable()
       return cell
     case 1:
-      let selectedGoalSort = UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String
-      cell.title = "Sort goals by: \(selectedGoalSort ?? "")"
-      cell.imageName = "arrow.up.arrow.down"
-      cell.accessoryType = .disclosureIndicator
-    case 2:
       UNUserNotificationCenter.current().getNotificationSettings { (settings) in
         DispatchQueue.main.async {
           cell.title = "Emergency notifications: \(settings.authorizationStatus == .authorized ? "on" : "off")"
@@ -149,13 +143,13 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
       }
       cell.imageName = "app.badge"
       cell.accessoryType = .disclosureIndicator
-    case 3:
+    case 2:
       let user = currentUserManager.user(context: viewContext)
       let timezone = user?.timezone ?? "Unknown"
       cell.title = "Time zone: \(timezone)"
       cell.imageName = "clock"
       cell.accessoryType = .none
-    case 4:
+    case 3:
       cell.title = "Sign out"
       cell.imageName = "rectangle.portrait.and.arrow.right"
       cell.accessoryType = .none
@@ -166,10 +160,9 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     switch indexPath.section {
     case 0 where HKHealthStore.isHealthDataAvailable(): coordinator?.showConfigureHealthKitIntegration()
-    case 1: coordinator?.showChooseGallerySortAlgorithm()
-    case 2: coordinator?.showConfigureNotifications()
-    case 3: print("nothing")
-    case 4: self.signOutButtonPressed()
+    case 1: coordinator?.showConfigureNotifications()
+    case 2: print("nothing")
+    case 3: self.signOutButtonPressed()
     default: break
     }
   }
