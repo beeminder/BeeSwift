@@ -80,7 +80,6 @@ extension RequestManager {
 extension RequestManager {
   fileprivate func signedParameters(_ params: [String: Any]?) -> [String: Any]? {
     guard let params else { return nil }
-    
     var signed = params
     var base = ""
     var keys = Array(params.keys)
@@ -96,7 +95,6 @@ extension RequestManager {
     }
     let token = base.hmac(algorithm: HMACAlgorithm.SHA1, key: Config().requestSigningKey)
     signed["beemios_token"] = token
-    
     return signed as [String: Any]
   }
 }
