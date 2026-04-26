@@ -4,22 +4,39 @@ Changes to be released in next version
 =================================================
 
 ✨ Features
- * 
+ * Add in-app Goal Settings page accessible from the goal menu, showing notification status and data source (#726)
+ * Add toggle for individual vs. daily-aggregate weight measurements (#724)
+ * Filter which workout types are included when syncing workout minutes from Apple Health (#709)
 
 🙌 Improvements
- * 
+ * Move the gallery sort control onto the gallery screen itself (#616)
+ * Show the full configuration preview when reconfiguring an Apple Health goal (#714)
+ * Display Goal, Metric, and Unit info at the top of the HealthKit metric configuration screen (#712)
+ * Datapoint list now uses three aligned columns (day, value, comment) (#713)
+ * Set sensible default precision for Exercise Minutes, Workout Minutes, and Water (#668)
+ * Refactor HealthKit authorization flow and improve error handling (#742)
+ * Rename refresh descriptor to drop "Apple" (#721)
 
 🐛 Bugfix
- * 
+ * Edit Notifications: 24h-mode picker now shows the right values, and deadlines can be set (#619)
+ * Goal thumbnail border no longer breaks when the goal is in deadbeat state (#749)
+ * Replace deprecated `.dance` workout type with `.socialDance` / `.cardioDance` for iOS 18 (#729)
+ * Avoid focus warning by lazily initializing SKView (#715)
 
 ⚠️  API Changes
  * 
 
 🧱 Build
- * 
+ * Convert Xcode project to automatic file pickup (#719)
+ * Replace LaunchScreen storyboard with Info.plist configuration to avoid TestFlight build failures (#725)
+ * Use dwarf (not dwarf-with-dsym) for Debug builds (#766)
+ * Remove UIKit imports from BeeKit (#736)
+ * Remove unused Core Data model and Firebase template (#717)
+ * Fix project settings for distribution (#722)
+ * Update third-party package and rubygem versions (#732 plus numerous dependabot bumps)
 
 Others
- * 
+ * Fix typos in logger subsystems (#740)
 
 6.7 (2024-12-14)
 =================================================
