@@ -1077,7 +1077,7 @@
 			repositoryURL = "https://github.com/evgenyneu/keychain-swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 20.0.0;
+				minimumVersion = 24.0.0;
 			};
 		};
 		E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
