@@ -47,7 +47,7 @@ class GalleryViewController: UIViewController {
     collectionView.register(
       UICollectionReusableView.self,
       forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
-      withReuseIdentifier: "footer"
+      withReuseIdentifier: "footer",
     )
     return collectionView
   }()
@@ -107,7 +107,7 @@ class GalleryViewController: UIViewController {
     goalManager: GoalManager,
     healthStoreManager: HealthStoreManager,
     requestManager: RequestManager,
-    coordinator: MainCoordinator
+    coordinator: MainCoordinator,
   ) {
     self.currentUserManager = currentUserManager
     self.viewContext = viewContext
@@ -122,7 +122,7 @@ class GalleryViewController: UIViewController {
       fetchRequest: fetchRequest,
       managedObjectContext: viewContext,
       sectionNameKeyPath: nil,
-      cacheName: nil
+      cacheName: nil,
     )
     self.fetchRequest = fetchRequest
     super.init(nibName: nil, bundle: nil)
@@ -135,13 +135,13 @@ class GalleryViewController: UIViewController {
       self,
       selector: #selector(self.userDefaultsDidChange),
       name: UserDefaults.didChangeNotification,
-      object: nil
+      object: nil,
     )
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(self.handleSignIn),
       name: CurrentUserManager.NotificationName.signedIn,
-      object: nil
+      object: nil,
     )
     self.view.addSubview(self.stackView)
     stackView.snp.makeConstraints { (make) -> Void in make.edges.equalToSuperview() }
@@ -149,13 +149,13 @@ class GalleryViewController: UIViewController {
       self,
       selector: #selector(self.keyboardWillShow),
       name: UIResponder.keyboardWillShowNotification,
-      object: nil
+      object: nil,
     )
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(self.keyboardWillHide),
       name: UIResponder.keyboardWillHideNotification,
-      object: nil
+      object: nil,
     )
     configureDataSource()
     self.view.backgroundColor = .systemBackground
@@ -168,14 +168,8 @@ class GalleryViewController: UIViewController {
         image: UIImage(systemName: "gearshape.fill"),
         style: UIBarButtonItem.Style.plain,
         target: self,
-        action: #selector(self.settingsButtonPressed)
-      ),
-      UIBarButtonItem(
-        image: UIImage(systemName: "text.line.magnify"),
-        style: UIBarButtonItem.Style.plain,
-        target: self,
-        action: #selector(self.pickSortTapped)
-      ),
+        action: #selector(self.settingsButtonPressed),
+      ), UIBarButtonItem(image: UIImage(systemName: "arrow.up.arrow.down"), menu: self.sortMenu()),
     ]
     stackView.addArrangedSubview(self.freshnessIndicator)
     self.updateLastUpdatedLabel()
@@ -297,7 +291,7 @@ class GalleryViewController: UIViewController {
           let alert = UIAlertController(
             title: "Error fetching goals",
             message: error.localizedDescription,
-            preferredStyle: .alert
+            preferredStyle: .alert,
           )
           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
           self.present(alert, animated: true, completion: nil)
@@ -334,7 +328,7 @@ class GalleryViewController: UIViewController {
     let searchItem = UIBarButtonItem(
       barButtonSystemItem: .search,
       target: self,
-      action: #selector(self.searchButtonPressed)
+      action: #selector(self.searchButtonPressed),
     )
     self.navigationItem.leftBarButtonItem = searchItem
   }
@@ -380,7 +374,7 @@ class GalleryViewController: UIViewController {
     // After a rotation or other size change the optimal width for our cells may have changed.
     coordinator.animate(
       alongsideTransition: { _ in },
-      completion: { _ in self.collectionViewLayout.invalidateLayout() }
+      completion: { _ in self.collectionViewLayout.invalidateLayout() },
     )
   }
   func openGoal(_ goal: Goal) { coordinator?.showGoal(goal) }
@@ -402,7 +396,7 @@ class GalleryViewController: UIViewController {
       animations: {
         self.collectionView.contentInset.bottom = bottomInset
         self.collectionView.verticalScrollIndicatorInsets.bottom = bottomInset
-      }
+      },
     )
   }
 
@@ -419,7 +413,7 @@ class GalleryViewController: UIViewController {
       animations: {
         self.collectionView.contentInset.bottom = 0
         self.collectionView.verticalScrollIndicatorInsets.bottom = 0
-      }
+      },
     )
   }
   private func configureDataSource() {
@@ -432,7 +426,7 @@ class GalleryViewController: UIViewController {
       collectionView: collectionView,
       cellProvider: { collectionView, indexPath, goalObjectId in
         collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: goalObjectId)
-      }
+      },
     )
     dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
       collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
@@ -444,7 +438,7 @@ class GalleryViewController: UIViewController {
 extension GalleryViewController: NSFetchedResultsControllerDelegate {
   func controller(
     _ controller: NSFetchedResultsController<any NSFetchRequestResult>,
-    didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference
+    didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference,
   ) {
     dataSource.apply(snapshot as GallerySnapshot, animatingDifferences: false)
     didUpdateGoals()
@@ -456,24 +450,24 @@ extension GalleryViewController: SFSafariViewControllerDelegate {
     controller.dismiss(animated: true, completion: nil)
     self.fetchGoals()
   }
-  @objc private func pickSortTapped() {
-    let alert = UIAlertController(title: "Gallery Sort Method", message: nil, preferredStyle: .actionSheet)
-    Constants.goalSortOptions.forEach { sortOption in
-      let isSelectedAlready =
-        UserDefaults.standard.value(forKey: Constants.selectedGoalSortKey) as? String == sortOption
-      let title = isSelectedAlready ? "--> " + sortOption : "" + sortOption
-      let action = UIAlertAction(title: title, style: .default) { [weak self] _ in
-        UserDefaults.standard.set(sortOption, forKey: Constants.selectedGoalSortKey)
-        UserDefaults.standard.synchronize()
-        Task {
+  private func sortMenu() -> UIMenu {
+    let deferred = UIDeferredMenuElement.uncached { [weak self] completion in
+      guard let self else {
+        completion([])
+        return
+      }
+      let currentSort =
+        UserDefaults.standard.string(forKey: Constants.selectedGoalSortKey) ?? Constants.urgencyGoalSortString
+      let actions = Constants.goalSortOptions.map { sortOption in
+        UIAction(title: sortOption, state: sortOption == currentSort ? .on : .off) { [weak self] _ in
+          UserDefaults.standard.set(sortOption, forKey: Constants.selectedGoalSortKey)
           self?.fetchedResultsController.fetchRequest.sortDescriptors = Self.preferredSort
           try? self?.fetchedResultsController.performFetch()
         }
       }
-      alert.addAction(action)
+      completion(actions)
     }
-    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-    self.present(alert, animated: true, completion: nil)
+    return UIMenu(title: "Sort by", options: .singleSelection, children: [deferred])
   }
 }
 
@@ -490,7 +484,7 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(
     _ collectionView: UICollectionView,
     layout collectionViewLayout: UICollectionViewLayout,
-    sizeForItemAt indexPath: IndexPath
+    sizeForItemAt indexPath: IndexPath,
   ) -> CGSize {
     let minimumWidth: CGFloat = 320
     let itemSpacing = self.collectionViewLayout.minimumInteritemSpacing
@@ -511,7 +505,7 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(
     _ collectionView: UICollectionView,
     layout collectionViewLayout: UICollectionViewLayout,
-    referenceSizeForFooterInSection section: Int
+    referenceSizeForFooterInSection section: Int,
   ) -> CGSize { return CGSize(width: 320, height: section == 0 && self.filteredGoals.count > 0 ? 5 : 0) }
 }
 
