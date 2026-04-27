@@ -11,63 +11,38 @@ import Foundation
 import OSLog
 import SwiftyJSON
 
-public enum ServerError: LocalizedError {
-  case notFound
-  case unauthorized
-  case forbidden
-  case serverError(Int)
-  case custom(String, requestError: Error?)
-  public var errorDescription: String? {
-    switch self {
-    case .notFound: return "Not found"
-    case .unauthorized: return "Unauthorized"
-    case .forbidden: return "Permission denied"
-    case .serverError(let code): return "Server error (\(code)). Please try again later"
-    case .custom(let message, _): return message
-    }
-  }
-  var requestError: Error? {
-    switch self {
-    case .custom(_, let error): return error
-    default: return nil
-    }
+public protocol RequestManaging { func request(endpoint: Endpoint) async throws -> Any? }
+
+public class RequestManager: RequestManaging {
+  public let baseURLString = Config().baseURLString
+  private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
+  public func request(endpoint: Endpoint) async throws -> Any? {
+    let parameters = endpoint.shouldSign ? signedParameters(endpoint.parameters) : endpoint.parameters
+    return try await rawRequest(
+      url: endpoint.url,
+      method: endpoint.method,
+      parameters: parameters,
+      headers: authenticationHeaders()
+    )
   }
 }
 
-public class RequestManager {
-  public let baseURLString = Config().baseURLString
-  private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
-  func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders) async throws
-    -> Any?
+extension RequestManager {
+  fileprivate func rawRequest(url: URL, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders)
+    async throws -> Any?
   {
-
-    var urlWithSubstitutions = url
-    if url.contains("{username}") {
-      guard let username = await ServiceLocator.currentUserManager.username else {
-        throw ServerError.custom(
-          "Attempted to make request to username-based URL \(url) while logged out",
-          requestError: nil
-        )
-      }
-      urlWithSubstitutions = urlWithSubstitutions.replacingOccurrences(of: "{username}", with: username)
-    }
-
-    let encoding: ParameterEncoding = if method == .get { URLEncoding.default } else { JSONEncoding.default }  // TODO
-    let response = await AF.request(
-      "\(baseURLString)/\(urlWithSubstitutions)",
-      method: method,
-      parameters: parameters,
-      encoding: encoding,
-      headers: HTTPHeaders.default + headers
-    ).validate().serializingData(emptyRequestMethods: [HTTPMethod.post]).response
-
+    let encoding: ParameterEncoding = method == .get ? URLEncoding.default : JSONEncoding.default
+    let headers = HTTPHeaders.default + headers
+    logger.debug("rawRequest: \(url.absoluteString), method \(method.rawValue)")
+    let response = await AF.request(url, method: method, parameters: parameters, encoding: encoding, headers: headers)
+      .validate().serializingData(emptyRequestMethods: [HTTPMethod.post]).response
     switch response.result {
     case .success(let data):
       let asJSON = try? JSONSerialization.jsonObject(with: data)
       return asJSON
 
     case .failure(let error):
-      logger.error("Error issuing request \(url): \(error, privacy: .public)")
+      logger.error("Error issuing request \(url.absoluteString): \(error, privacy: .public)")
 
       // Log out the user on an unauthorized response
       if case .responseValidationFailed(let reason) = error {
@@ -93,35 +68,39 @@ public class RequestManager {
           }
         }
       }
-
       throw error
     }
   }
-  public func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .get, parameters: parameters, headers: authenticationHeaders())
-  }
-  public func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .patch, parameters: parameters, headers: authenticationHeaders())
-  }
-  public func post(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .post, parameters: parameters, headers: authenticationHeaders())
-  }
-  public func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .delete, parameters: parameters, headers: authenticationHeaders())
-  }
-  func authenticationHeaders() -> HTTPHeaders {
+  fileprivate func authenticationHeaders() -> HTTPHeaders {
     guard let accessToken = ServiceLocator.currentUserManager.accessToken else { return HTTPHeaders() }
     return HTTPHeaders([HTTPHeader(name: "Authorization", value: "Bearer " + accessToken)])
   }
+}
 
-  public func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
-    let params = ["urtext": urtext, "requestid": requestId].compactMapValues { $0 }
-    return try await post(url: "api/v1/users/{username}/goals/\(slug)/datapoints.json", parameters: params)
+extension RequestManager {
+  fileprivate func signedParameters(_ params: [String: Any]?) -> [String: Any]? {
+    guard let params else { return nil }
+    var signed = params
+    var base = ""
+    var keys = Array(params.keys)
+    keys.sort(by: { $0 < $1 })
+    for key in keys {
+      let value: AnyObject? = params[key] as AnyObject?
+      if !(value is String) { return params }
+      let allowedCharacterSet = (CharacterSet(charactersIn: "@/").inverted)
+      let escapedKey = key.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet)
+      let escapedValue = (params[key] as AnyObject).addingPercentEncoding(withAllowedCharacters: allowedCharacterSet)
+      if base.count > 0 { base += "&" }
+      base += "\(escapedKey!)=\(escapedValue!)"
+    }
+    let token = base.hmac(algorithm: HMACAlgorithm.SHA1, key: Config().requestSigningKey)
+    signed["beemios_token"] = token
+    return signed as [String: Any]
   }
 }
 
 extension HTTPHeaders {
-  static func + (lhs: HTTPHeaders, rhs: HTTPHeaders) -> HTTPHeaders {
+  fileprivate static func + (lhs: HTTPHeaders, rhs: HTTPHeaders) -> HTTPHeaders {
     var allHeaders = [HTTPHeader]()
     allHeaders.append(contentsOf: lhs)
     allHeaders.append(contentsOf: rhs)
