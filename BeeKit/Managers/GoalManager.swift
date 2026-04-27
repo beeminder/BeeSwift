@@ -82,10 +82,17 @@ import SwiftyJSON
     logger.notice("Goals unknown, doing full fetch")
     // We must fetch the user object first, and then fetch goals afterwards, to guarantee User.updated_at is
     // a safe timestamp for future fetches without losing data
-    let userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json")!)
-    let goalResponse = JSON(
-      try await requestManager.get(url: "api/v1/users/{username}/goals.json", parameters: ["emaciated": "true"])!
-    )
+    guard let getUser = try await requestManager.get(url: "api/v1/users/{username}.json") else {
+      throw GoalManagerError.getUserFailed
+    }
+    let userResponse = JSON(getUser)
+    guard
+      let getGoals = try await requestManager.get(
+        url: "api/v1/users/{username}/goals.json",
+        parameters: ["emaciated": "true"]
+      )
+    else { throw GoalManagerError.getGoalsFailed }
+    let goalResponse = JSON(getGoals)
 
     // The user may have logged out during the network operation. If so we have nothing to do
     modelContext.refreshAllObjects()
@@ -97,17 +104,18 @@ import SwiftyJSON
       let goalsToDelete = user.goals.filter { !allGoalIds.contains($0.id) }
       for goal in goalsToDelete { modelContext.delete(goal) }
     }
-    updateGoalsFromJson(goalResponse)
+    try updateGoalsFromJson(goalResponse)
   }
   /// Perform an incremental refresh of goals for regular updates
   private func refreshGoalsIncremental(user: User) async throws {
     logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
-    let userResponse = JSON(
-      try await requestManager.get(
+    guard
+      let getUser = try await requestManager.get(
         url: "api/v1/users/{username}.json",
         parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1, "emaciated": "true"]
-      )!
-    )
+      )
+    else { throw GoalManagerError.getUserFailed }
+    let userResponse = JSON(getUser)
     let goalResponse = userResponse["goals"]
     let deletedGoals = userResponse["deleted_goals"]
     // The user may have logged out during the network operation. If so we have nothing to do
@@ -118,52 +126,58 @@ import SwiftyJSON
     let deletedGoalIds = Set(deletedGoals.arrayValue.map { $0["id"].stringValue })
     let goalsToDelete = user.goals.filter { deletedGoalIds.contains($0.id) }
     for goal in goalsToDelete { modelContext.delete(goal) }
-    updateGoalsFromJson(goalResponse)
+    try updateGoalsFromJson(goalResponse)
     // Update lastUpdatedLocal for all goals, even those not in response
     let now = Date()
     for goal in user.goals { goal.lastUpdatedLocal = now }
   }
-
   public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
-    let goal = try modelContext.existingObject(with: goalID) as! Goal
-
-    let responseObject = try await requestManager.get(
-      url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)",
-      parameters: ["datapoints_count": "5", "emaciated": "true"]
-    )
-    let goalJSON = JSON(responseObject!)
-
+    guard let goal = try modelContext.existingObject(with: goalID) as? Goal else {
+      throw GoalManagerError.refreshGoalFailed(goalID: goalID, reason: "goal not found")
+    }
+    guard
+      let responseObject = try await requestManager.get(
+        url: "/api/v1/users/\(goal.owner.username)/goals/\(goal.slug)",
+        parameters: ["datapoints_count": "5", "emaciated": "true"]
+      )
+    else { throw GoalManagerError.getGoalFailed(goalname: goal.slug, goalID: goal.id) }
+    let goalJSON = JSON(responseObject)
     // The goal may have changed during the network operation, reload latest version
     modelContext.refresh(goal, mergeChanges: false)
     goal.updateToMatch(json: goalJSON)
-
     try modelContext.save()
-
     await performPostGoalUpdateBookkeeping()
   }
-
   public func forceAutodataRefresh(_ goal: Goal) async throws {
     let _ = try await requestManager.get(
-      url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json"
+      url: "/api/v1/users/\(goal.owner.username)/goals/\(goal.slug)/refresh_graph.json"
     )
   }
 
-  private func updateGoalsFromJson(_ responseJSON: JSON) {
-    guard let responseGoals = responseJSON.array else { return }
+  private func updateGoalsFromJson(_ responseJSON: JSON) throws {
+    guard let responseGoals = responseJSON.array else {
+      logger.error("responseJSON apparently not array")
+      return
+    }
 
-    // The user may have logged out while waiting for the data, so ignore if so
-    guard let user = self.currentUserManager.user(context: modelContext) else { return }
+    guard let user = self.currentUserManager.user(context: modelContext) else {
+      logger.info("The user may have logged out while waiting for the data, so ignore if so")
+      return
+    }
 
     // Create and update existing goals
     for goalJSON in responseGoals {
-      let goalId = goalJSON["id"].stringValue
+      guard let goalId = goalJSON["id"].string else {
+        logger.error("goalJSON missing id")
+        continue
+      }
       let request = NSFetchRequest<Goal>(entityName: "Goal")
       request.predicate = NSPredicate(format: "id == %@", goalId)
-      // TODO: Better error handling of failure here?
-      if let existingGoal = try! modelContext.fetch(request).first {
+
+      if let existingGoal = try modelContext.fetch(request).first {
         existingGoal.updateToMatch(json: goalJSON)
       } else {
-        let _ = Goal(context: modelContext, owner: user, json: goalJSON)
+        _ = Goal(context: modelContext, owner: user, json: goalJSON)
       }
     }
 
@@ -220,5 +234,27 @@ import SwiftyJSON
 
   private func resetStateForSignOut() {
     // TODO: Delete from CoreData
+  }
+}
+
+extension GoalManager {
+  fileprivate enum GoalManagerError: Error {
+    case getUserFailed
+    case getGoalsFailed
+    case getGoalFailed(goalname: String, goalID: String)
+    case refreshGoalFailed(goalID: NSManagedObjectID, reason: String)
+  }
+}
+
+extension GoalManager.GoalManagerError: LocalizedError {
+  public var errorDescription: String? {
+    switch self {
+    case .getGoalsFailed: return NSLocalizedString("Failed to get goals", comment: "getGoalsFailed")
+    case .getUserFailed: return NSLocalizedString("Failed to get user", comment: "getUserFailed")
+    case .getGoalFailed(let goalname, let goalID):
+      return NSLocalizedString("Failed to get goal: \(goalname) with id: \(goalID)", comment: "getGoalFailed")
+    case .refreshGoalFailed(let goalID, let reason):
+      return NSLocalizedString("Failed to refresh goal: \(goalID) because: \(reason)", comment: "refreshGoalFailed")
+    }
   }
 }

@@ -85,7 +85,7 @@ class DatapointValueAccessory: UIInputView {
 
   @objc func colonButtonPressed() {
     guard let valueField = self.valueField else { return }
-    valueField.text = "\(valueField.text!):"
+    valueField.text = valueField.text?.appending(":")
   }
 
 }

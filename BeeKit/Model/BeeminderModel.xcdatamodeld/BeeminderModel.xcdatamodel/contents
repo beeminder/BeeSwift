@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788" systemVersion="24E263" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23G93" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="DataPoint" representedClassName="DataPoint" syncable="YES">
         <attribute name="comment" optional="YES" attributeType="String"/>
         <attribute name="daystampRaw" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
-        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO" elementID="lastUpdatedLocal"/>
+        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="requestid" optional="YES" attributeType="String"/>
         <attribute name="updatedAt" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="value" attributeType="Decimal" defaultValueString="0.0"/>
@@ -14,13 +14,12 @@
         <attribute name="alertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="autodata" optional="YES" attributeType="String"/>
         <attribute name="deadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="dueBy" optional="YES" attributeType="Transformable" valueTransformerName="DueByTableValueTransformer" customClassName="NSDictionary"/>
         <attribute name="graphUrl" attributeType="String"/>
         <attribute name="healthKitMetric" optional="YES" attributeType="String"/>
         <attribute name="hhmmFormat" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="initDay" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO" elementID="lastUpdatedLocal"/>
+        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastTouch" attributeType="String"/>
         <attribute name="leadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="limSum" attributeType="String"/>
@@ -45,9 +44,8 @@
         <attribute name="defaultAlertStart" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="defaultDeadline" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="defaultLeadTime" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO" elementID="lastUpdatedLocal"/>
+        <attribute name="lastModifiedLocal" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="timezone" attributeType="String"/>
-        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-978278400" usesScalarValueType="YES"/>
         <attribute name="username" attributeType="String"/>
         <relationship name="goals" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Goal" inverseName="owner" inverseEntity="Goal"/>
     </entity>

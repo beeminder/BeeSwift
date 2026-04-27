@@ -5,9 +5,9 @@ import XCTest
 
 class MigrationTests: XCTestCase {
   private struct TestData {
-    static let userLastModified = Date(timeIntervalSince1970: 1_600_000_000)
-    static let goalLastModified = Date(timeIntervalSince1970: 1_610_000_000)
-    static let dataPointLastModified = Date(timeIntervalSince1970: 1_620_000_000)
+    static let userLastModified = Date(timeIntervalSince1970: 0)
+    static let goalLastModified = Date(timeIntervalSince1970: 0)
+    static let dataPointLastModified = Date(timeIntervalSince1970: 0)
   }
   override func tearDown() {
     super.tearDown()
@@ -23,7 +23,7 @@ class MigrationTests: XCTestCase {
     }
   }
   // Creates a CoreData store with the old model version (v1)
-  private func createStoreWithOldModel() -> URL {
+  private func createStoreWithb54Model() -> URL {
     let storeURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(
       "TestMigration_\(UUID().uuidString).sqlite"
     )
@@ -52,8 +52,6 @@ class MigrationTests: XCTestCase {
       user.setValue("testuser", forKey: "username")
       user.setValue("America/Los_Angeles", forKey: "timezone")
       user.setValue(false, forKey: "deadbeat")
-      user.setValue(Date(), forKey: "updatedAt")
-      user.setValue(TestData.userLastModified, forKey: "lastModifiedLocal")
 
       // Create goal with minimal required fields
       let goal = NSEntityDescription.insertNewObject(forEntityName: "Goal", into: context)
@@ -68,15 +66,13 @@ class MigrationTests: XCTestCase {
         goal.setValue(0, forKey: field)
       }
       for field in ["hhmmFormat", "queued", "todayta", "useDefaults", "won"] { goal.setValue(false, forKey: field) }
-      goal.setValue(DueByDictionary(), forKey: "dueBy")
-      goal.setValue(TestData.goalLastModified, forKey: "lastModifiedLocal")
       goal.setValue(user, forKey: "owner")
       // Create datapoint
       let dataPoint = NSEntityDescription.insertNewObject(forEntityName: "DataPoint", into: context)
       dataPoint.setValue("dp1", forKey: "id")
       dataPoint.setValue("20230101", forKey: "daystampRaw")
       dataPoint.setValue(NSDecimalNumber(value: 1.0), forKey: "value")
-      dataPoint.setValue(TestData.dataPointLastModified, forKey: "lastModifiedLocal")
+
       dataPoint.setValue(goal, forKey: "goal")
       try context.save()
       return storeURL
@@ -89,7 +85,7 @@ class MigrationTests: XCTestCase {
   func testLastUpdatedLocalMigration() throws {
     DueByTableValueTransformer.register()
 
-    let storeURL = createStoreWithOldModel()
+    let storeURL = createStoreWithb54Model()
     let container = BeeminderPersistentContainer(name: "BeeminderModel")
     let description = NSPersistentStoreDescription(url: storeURL)
     container.persistentStoreDescriptions = [description]
@@ -106,43 +102,42 @@ class MigrationTests: XCTestCase {
     let userRequest = NSFetchRequest<User>(entityName: "User")
     let users = try context.fetch(userRequest)
     XCTAssertEqual(users.count, 1, "Should have one user after migration")
-    if let user = users.first {
-      XCTAssertEqual(
-        user.lastUpdatedLocal.timeIntervalSince1970,
-        TestData.userLastModified.timeIntervalSince1970,
-        accuracy: 0.001,
-        "User date value should be preserved during migration"
-      )
-    }
+    let user = try XCTUnwrap(users.first)
+    XCTAssertEqual(
+      user.lastUpdatedLocal.timeIntervalSince1970,
+      TestData.userLastModified.timeIntervalSince1970,
+      accuracy: 0.001,
+      "User date value should be preserved during migration"
+    )
     // Migration on Goal
     let goalRequest = NSFetchRequest<Goal>(entityName: "Goal")
     let goals = try context.fetch(goalRequest)
     XCTAssertEqual(goals.count, 1, "Should have one goal after migration")
-    if let goal = goals.first {
-      XCTAssertEqual(
-        goal.lastUpdatedLocal.timeIntervalSince1970,
-        TestData.goalLastModified.timeIntervalSince1970,
-        accuracy: 0.001,
-        "Goal date value should be preserved during migration"
-      )
-    }
+    let goal = try XCTUnwrap(goals.first)
+    XCTAssertEqual(
+      goal.lastUpdatedLocal.timeIntervalSince1970,
+      TestData.goalLastModified.timeIntervalSince1970,
+      accuracy: 0.001,
+      "Goal date value should be preserved during migration"
+    )
+
     // Migration on DataPoint
     let dataPointRequest = NSFetchRequest<DataPoint>(entityName: "DataPoint")
     let dataPoints = try context.fetch(dataPointRequest)
     XCTAssertEqual(dataPoints.count, 1, "Should have one data point after migration")
-    if let dataPoint = dataPoints.first {
-      XCTAssertEqual(
-        dataPoint.lastUpdatedLocal.timeIntervalSince1970,
-        TestData.dataPointLastModified.timeIntervalSince1970,
-        accuracy: 0.001,
-        "DataPoint date value should be preserved during migration"
-      )
-    }
+    let dataPoint = try XCTUnwrap(dataPoints.first)
+    XCTAssertEqual(
+      dataPoint.lastUpdatedLocal.timeIntervalSince1970,
+      TestData.dataPointLastModified.timeIntervalSince1970,
+      accuracy: 0.001,
+      "DataPoint date value should be preserved during migration"
+    )
+
   }
   func testAutodataConfigMigration() throws {
     DueByTableValueTransformer.register()
 
-    let storeURL = createStoreWithOldModel()
+    let storeURL = createStoreWithb54Model()
     let container = BeeminderPersistentContainer(name: "BeeminderModel")
     let description = NSPersistentStoreDescription(url: storeURL)
     container.persistentStoreDescriptions = [description]
