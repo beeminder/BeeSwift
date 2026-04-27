@@ -120,7 +120,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
     CGFloat.leastNormalMagnitude
   }
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat { 20 }
-  func numberOfSections(in tableView: UITableView) -> Int { 5 }
+  func numberOfSections(in tableView: UITableView) -> Int { 4 }
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 1 }
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     guard
