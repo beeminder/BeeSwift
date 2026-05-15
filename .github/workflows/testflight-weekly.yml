@@ -1,0 +1,62 @@
+name: Weekly TestFlight Build
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # Mondays 09:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: testflight-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 60
+    environment: testflight
+    permissions:
+      contents: write # push the per-build git tag
+
+    steps:
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '26.1'
+    - uses: actions/checkout@v6
+    - name: Write BeeKit configuration
+      env:
+        CONFIG_SWIFT: ${{ secrets.CONFIG_SWIFT }}
+      run: printf '%s' "$CONFIG_SWIFT" > BeeKit/Config.swift
+    - uses: actions/cache@v5
+      with:
+        path: SPMCache
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+    - name: Setup ruby and install gems
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3.5'
+        bundler-cache: true
+    - name: Enable Macros
+      run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+    - name: Configure git identity
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    - name: Set up SSH agent for match
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.MATCH_SSH_KEY }}
+    - name: Build and upload to TestFlight
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+        ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+      run: bundle exec fastlane beta_ci
+    - name: Upload build log
+      uses: actions/upload-artifact@v7
+      if: always()
+      with:
+        name: build-output
+        path: fastlane/build_output

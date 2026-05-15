@@ -91,6 +91,60 @@ platform :ios do
       ]
     )
   end
+  # Unattended TestFlight build for CI. Signing assets come from `match`
+  # (git storage repo, accessed over SSH); App Store Connect credentials and
+  # the match passphrase are supplied via environment variables.
+  lane :beta_ci do
+    app_store_connect_api_key(
+      key_id: ENV.fetch("ASC_KEY_ID"),
+      issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+      key_content: ENV.fetch("ASC_KEY_P8_BASE64"),
+      is_key_content_base64: true,
+      duration: 1200,
+      in_house: false
+    )
+
+    match(
+      type: "appstore",
+      readonly: false
+    )
+
+    increment_build_number(
+      build_number: latest_testflight_build_number + 1,
+      xcodeproj: "BeeSwift.xcodeproj"
+    )
+
+    # The project uses automatic signing for local development; flip the app
+    # target to the match-managed profile for the distribution archive.
+    profile_name = ENV.fetch("sigh_com.beeminder.beeminder_appstore_profile-name")
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "BeeSwift.xcodeproj",
+      targets: ["BeeSwift"],
+      team_id: "8TW9V9HVES",
+      code_sign_identity: "Apple Distribution",
+      bundle_identifier: "com.beeminder.beeminder",
+      profile_name: profile_name
+    )
+
+    build_app(
+      scheme: "BeeSwift",
+      export_method: "app-store",
+      buildlog_path: "fastlane/build_output",
+      export_options: {
+        provisioningProfiles: {
+          "com.beeminder.beeminder" => profile_name
+        }
+      }
+    )
+
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true
+    )
+
+    add_git_tag
+    push_git_tags
+  end
   lane :increment_major_version do
     increment_version_number(
       bump_type: "major",

@@ -1,0 +1,4 @@
+git_url("git@github.com:beeminder/BeeSwift-credentials.git")
+storage_mode("git")
+type("appstore")
+app_identifier(["com.beeminder.beeminder"])

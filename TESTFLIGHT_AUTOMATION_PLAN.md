@@ -56,32 +56,32 @@ developer Mac is in the loop.
 
 ## One-time setup (done by you — admin Mac + GitHub admin)
 
-1. Create a **private repo** for signing material, e.g. `beeminder/certificates`.
-2. From a Mac with the distribution signing rights, run:
-   - `bundle exec fastlane match init` → choose **git** storage → point at that repo
-   - choose a strong **passphrase**
-   - `bundle exec fastlane match appstore` — generates + uploads the distribution
-     cert/profile and populates the repo
-3. Generate an **SSH deploy key**; add the public half to `beeminder/certificates`
-   as a deploy key with **write** access.
+1. Create a **private repo** for signing material — done: `beeminder/BeeSwift-credentials`.
+2. From a Mac with the distribution signing rights (the `fastlane/Matchfile` is
+   already committed, so `match init` is not needed):
+   - `bundle exec fastlane match appstore` — prompts for a **passphrase**, then
+     generates + uploads the distribution cert/profile and populates the repo
+3. Generate an **SSH deploy key**; add the public half to
+   `beeminder/BeeSwift-credentials` as a deploy key with **write** access.
 4. Confirm the App Store Connect API key's role is **App Manager** (needs upload +
    cert/profile management). Created under App Store Connect → Users and Access →
    Integrations → App Store Connect API. Note the **Key ID**, **Issuer ID**, and the
    `.p8` file.
-5. Add **GitHub Actions secrets** on `beeminder/BeeSwift`:
+5. Add the secrets to a **`testflight` GitHub Environment** on `beeminder/BeeSwift`
+   (restricted to `master`), not repository-wide:
    - `MATCH_PASSWORD` — the match passphrase
-   - `MATCH_SSH_KEY` — private half of the certs-repo deploy key
+   - `MATCH_SSH_KEY` — private half of the credentials-repo deploy key
    - `ASC_KEY_ID`, `ASC_ISSUER_ID` — App Store Connect API key identifiers
    - `ASC_KEY_P8_BASE64` — the `.p8`, base64-encoded
-   - Real contents (or stubs) for `BeeKit/Config.swift`, `BeeSwift/Config.swift`,
-     `BeeSwift/GoogleService-Info.plist`, `BeeSwift/Sentry.sh`. Stubbing means: sample
-     API config + no Sentry dSYM upload.
+   - `CONFIG_SWIFT` — contents of `BeeKit/Config.swift`. (`BeeSwift/Config.swift`,
+     `BeeSwift/GoogleService-Info.plist`, and `BeeSwift/Sentry.sh` are not
+     referenced by the Xcode project and are not needed for the build.)
 6. Decide whether the workflow should push a git tag per build (the existing `beta`
    lane does `add_git_tag` / `push_git_tags`). Keeping it means the workflow needs
    `permissions: contents: write` and uses the built-in `GITHUB_TOKEN` (acts as the
    github-actions bot, not a user). Dropping it removes that requirement.
 
-## Repo changes (can be done on branch `claude/auto-testflight-builds-ZbOTz`)
+## Repo changes (implemented on branch `claude/auto-testflight-builds-ZbOTz`)
 
 1. **New `beta_ci` lane** in `fastlane/Fastfile`:
    - decode `ASC_KEY_P8_BASE64` and write it to `fastlane/AuthKey_<id>.p8`
@@ -131,7 +131,7 @@ developer Mac is in the loop.
 | `MATCH_SSH_KEY` | clone/push the `certificates` repo (deploy key) | no — repo-scoped machine key |
 | `ASC_KEY_ID` / `ASC_ISSUER_ID` | App Store Connect API key identifiers | no — team-level |
 | `ASC_KEY_P8_BASE64` | App Store Connect API private key (`.p8`) | no — team-level |
-| `BEEKIT_CONFIG_SWIFT` etc. | real app config / Firebase / Sentry script (or stub) | no |
+| `CONFIG_SWIFT` | contents of `BeeKit/Config.swift` | no |
 | `GITHUB_TOKEN` (built-in) | push the per-build git tag (if kept) | no — github-actions bot |
 
 ## Optional later
