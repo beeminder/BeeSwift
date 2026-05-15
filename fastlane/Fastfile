@@ -114,8 +114,10 @@ platform :ios do
       xcodeproj: "BeeSwift.xcodeproj"
     )
 
-    # The project uses automatic signing for local development; flip the app
-    # target to the match-managed profile for the distribution archive.
+    # The project uses automatic signing for local development; flip the
+    # targets that get archived to manual signing for CI. The app target uses
+    # the match-managed distribution profile; the embedded BeeKit framework is
+    # signed with the distribution identity but needs no provisioning profile.
     profile_name = ENV.fetch("sigh_com.beeminder.beeminder_appstore_profile-name")
     update_code_signing_settings(
       use_automatic_signing: false,
@@ -125,6 +127,13 @@ platform :ios do
       code_sign_identity: "Apple Distribution",
       bundle_identifier: "com.beeminder.beeminder",
       profile_name: profile_name
+    )
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "BeeSwift.xcodeproj",
+      targets: ["BeeKit"],
+      team_id: "8TW9V9HVES",
+      code_sign_identity: "Apple Distribution"
     )
 
     build_app(
