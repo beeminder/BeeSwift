@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 9 * * 1' # Mondays 09:00 UTC
   workflow_dispatch:
+  # TEMPORARY: pre-merge validation only. Remove this push trigger before merging.
+  push:
+    branches:
+      - claude/auto-testflight-builds-ZbOTz
 
 concurrency:
   group: testflight-build
