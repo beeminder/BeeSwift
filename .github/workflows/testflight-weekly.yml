@@ -9,6 +9,11 @@ concurrency:
   group: testflight-build
   cancel-in-progress: false
 
+# Least-privilege default for GITHUB_TOKEN; the build job opts up to
+# contents: write for the tag pushes.
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
