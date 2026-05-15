@@ -95,6 +95,11 @@ platform :ios do
   # (git storage repo, accessed over SSH); App Store Connect credentials and
   # the match passphrase are supplied via environment variables.
   lane :beta_ci do
+    # Create a temporary, unlocked keychain so codesign can use the match
+    # signing identity without an interactive keychain-access prompt, which
+    # would otherwise hang the archive indefinitely on a headless CI runner.
+    setup_ci
+
     app_store_connect_api_key(
       key_id: ENV.fetch("ASC_KEY_ID"),
       issuer_id: ENV.fetch("ASC_ISSUER_ID"),
