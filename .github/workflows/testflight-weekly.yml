@@ -21,29 +21,25 @@ jobs:
       should_build: ${{ steps.changes.outputs.should_build }}
     steps:
     - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0 # need full history + all tags to find the last build
-    - name: Check for changes since last build
+    - name: Check whether HEAD was already built
       id: changes
       run: |
         set -eu
-        last_tag="$(git tag --list 'builds/*' --sort=-creatordate | head -n1)"
+        git fetch --quiet --depth=1 origin 'refs/tags/ci-latest:refs/tags/ci-latest' || true
         head_commit="$(git rev-parse HEAD)"
-        if [ -z "$last_tag" ]; then
-          echo "No prior build tag; building."
-          echo "should_build=true" >> "$GITHUB_OUTPUT"
-          exit 0
-        fi
-        last_commit="$(git rev-list -n1 "$last_tag")"
-        echo "Last build: $last_tag -> $last_commit"
-        echo "HEAD:        $head_commit"
-        if [ "$last_commit" = "$head_commit" ]; then
-          echo "No changes since last build; skipping."
-          echo "should_build=false" >> "$GITHUB_OUTPUT"
+        if git rev-parse -q --verify refs/tags/ci-latest >/dev/null; then
+          last_commit="$(git rev-list -n1 ci-latest)"
+          echo "Last CI build: $last_commit"
+          echo "HEAD:          $head_commit"
+          if [ "$last_commit" = "$head_commit" ]; then
+            echo "No changes since last build; skipping."
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
         else
-          echo "Changes since last build; building."
-          echo "should_build=true" >> "$GITHUB_OUTPUT"
+          echo "No ci-latest tag yet; building."
         fi
+        echo "should_build=true" >> "$GITHUB_OUTPUT"
 
   build:
     needs: check
@@ -52,7 +48,7 @@ jobs:
     timeout-minutes: 60
     environment: testflight
     permissions:
-      contents: write # push the per-build git tag
+      contents: write # push the per-build and ci-latest tags
 
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
@@ -91,6 +87,11 @@ jobs:
         ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
       run: bundle exec fastlane beta_ci
+    - name: Update ci-latest pointer
+      if: success()
+      run: |
+        git tag -f ci-latest
+        git push -f origin refs/tags/ci-latest
     - name: Upload build log
       uses: actions/upload-artifact@v7
       if: always()
