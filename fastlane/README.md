@@ -47,6 +47,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 
 
+### ios beta_ci
+
+```sh
+[bundle exec] fastlane ios beta_ci
+```
+
+
+
 ### ios increment_major_version
 
 ```sh
