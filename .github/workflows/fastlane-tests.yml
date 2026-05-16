@@ -36,6 +36,14 @@ jobs:
     - name: Enable Macros
       run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
     - name: Run tests
+      env:
+        # Cold SPM cache (e.g. on a dependency-bump PR that changes
+        # Package.resolved and invalidates the cache key) makes
+        # `xcodebuild -showBuildSettings` block on package resolution
+        # longer than fastlane's default ~45s retry budget. Give it room
+        # instead of failing the test run.
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODEBUILD_SETTINGS_RETRIES: '5'
       run: bundle exec fastlane ci
     - name: Verify Package.resolved is consistent
       run: |

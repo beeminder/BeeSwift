@@ -87,6 +87,12 @@ jobs:
         ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
         ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+        # Cold SPM cache (e.g. after a dependency bump invalidates the
+        # Package.resolved cache key) makes `xcodebuild -showBuildSettings`
+        # block on package resolution longer than fastlane's default
+        # ~45s retry budget. Give it room instead of failing the build.
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODEBUILD_SETTINGS_RETRIES: '5'
       run: bundle exec fastlane beta_ci
     - name: Update ci-latest pointer
       if: success()
