@@ -21,6 +21,7 @@ xcuserdata/
 /build
 BeeKit/Config.swift
 fastlane/test_output/*
+fastlane/build_output/*
 fastlane/report.xml
 # Fastlane app store api credentials
 fastlane/*.p8
