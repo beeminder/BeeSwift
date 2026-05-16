@@ -1141,7 +1141,7 @@
 			repositoryURL = "https://github.com/apple/swift-collections";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 1.5.0;
 			};
 		};
 		E4ASYNC002E3A5B0100ASYNC /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
