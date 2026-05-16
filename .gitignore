@@ -20,9 +20,6 @@ xcuserdata/
 *.xcbkptlist
 /build
 BeeKit/Config.swift
-BeeSwift/Config.swift
-BeeSwift/GoogleService-Info.plist
-BeeSwift/Sentry.sh
 fastlane/test_output/*
 fastlane/report.xml
 # Fastlane app store api credentials
