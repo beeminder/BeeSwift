@@ -36,13 +36,13 @@ import SwiftyJSON
 
   internal static let keychainPrefix = "CurrentUserManager_"
 
-  private let requestManager: RequestManager
+  private let requestManager: RequestManaging
 
   fileprivate static var allKeys: [String] {
     [accessTokenKey, usernameKey, deadbeatKey, defaultLeadtimeKey, defaultAlertstartKey, defaultDeadlineKey, beemTZKey]
   }
 
-  init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
+  init(requestManager: RequestManaging, container: BeeminderPersistentContainer) {
     self.requestManager = requestManager
     self.modelContainer = container
     let context = container.newBackgroundContext()
@@ -123,10 +123,8 @@ import SwiftyJSON
   }
   public func signInWithEmail(_ email: String, password: String) async {
     do {
-      let response = try await requestManager.post(
-        url: "api/private/sign_in",
-        parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret]
-          as [String: Any]
+      let response = try await requestManager.request(
+        endpoint: .signIn(username: email, password: password, beemiosSecret: beemiosSecret)
       )
       try! await self.handleSuccessfulSignin(JSON(response!))
     } catch { try! await self.handleFailedSignin(error, errorMessage: error.localizedDescription) }

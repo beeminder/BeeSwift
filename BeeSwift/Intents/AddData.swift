@@ -32,11 +32,12 @@ struct AddData: DeprecatedAppIntent, CustomIntentMigratedAppIntent, PredictableI
   func perform() async throws -> some IntentResult & ProvidesDialog {
     guard let goalSlug = goal else { throw AddDataError.noGoal }
     guard let dataValue = value else { throw AddDataError.noValue }
+    guard let username = await ServiceLocator.currentUserManager.username else { throw AddDataError.noUser }
     let dataComment = comment ?? ""
     do {
-      let _ = try await ServiceLocator.requestManager.addDatapoint(
-        urtext: "^ \(dataValue) \"\(dataComment)\"",
-        slug: goalSlug
+      let urtext = "^ \(dataValue) \"\(dataComment)\""
+      let _ = try await ServiceLocator.requestManager.request(
+        endpoint: .createDatapoint(username: username, goalname: goalSlug, urtext: urtext)
       )
       return .result(dialog: .responseSuccess(goal: goalSlug, value: dataValue))
     } catch ServerError.notFound { throw AddDataError.apiError("Goal '\(goalSlug)' not found") } catch {
