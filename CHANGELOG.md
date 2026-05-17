@@ -1,6 +1,6 @@
 # Changelog
 
-Changes to be released in next version
+6.8 (2026-05-17)
 =================================================
 
 ✨ Features
