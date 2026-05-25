@@ -33,7 +33,7 @@
  * Fix project settings for distribution (#722)
  * Add an automated weekly TestFlight build via fastlane match (#776)
  * Pin GitHub Actions workflows to commit SHAs for supply-chain safety (#778)
- * Fix incompatible Package.resolved pins and guard against them in CI (#770)
+ * Guard against incompatible Package.resolved pins in CI (#770)
  * Update third-party package and rubygem versions (#732 plus numerous dependabot bumps)
 
 Others
