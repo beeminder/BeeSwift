@@ -9,19 +9,16 @@
  * Filter which workout types are included when syncing workout minutes from Apple Health (#709)
 
 🙌 Improvements
- * Move the gallery sort control onto the gallery screen itself, with a native menu and checkmark for the selected order (#616, #769, #771)
+ * Move the gallery sort control onto the gallery screen itself, with a native menu and checkmark for the selected order (#616, #769)
  * Show the full configuration preview when reconfiguring an Apple Health goal (#714)
  * Display Goal, Metric, and Unit info at the top of the HealthKit metric configuration screen (#712)
  * Datapoint list now uses three aligned columns (day, value, comment) (#713)
  * Set sensible default precision for Exercise Minutes, Workout Minutes, and Water (#668)
- * Refactor HealthKit authorization flow and improve error handling (#742)
  * Rename refresh descriptor to drop "Apple" (#721)
 
 🐛 Bugfix
  * Edit Notifications: 24h-mode picker now shows the right values, and deadlines can be set (#619)
  * Goal thumbnail border no longer breaks when the goal is in deadbeat state (#749)
- * Replace deprecated `.dance` workout type with `.socialDance` / `.cardioDance` for iOS 18 (#729)
- * Avoid focus warning by lazily initializing SKView (#715)
 
 ⚠️  API Changes
  * 
@@ -36,7 +33,7 @@
  * Fix project settings for distribution (#722)
  * Add an automated weekly TestFlight build via fastlane match (#776)
  * Pin GitHub Actions workflows to commit SHAs for supply-chain safety (#778)
- * Guard against incompatible Package.resolved pins in CI (#770)
+ * Fix incompatible Package.resolved pins and guard against them in CI (#770)
  * Update third-party package and rubygem versions (#732 plus numerous dependabot bumps)
 
 Others
