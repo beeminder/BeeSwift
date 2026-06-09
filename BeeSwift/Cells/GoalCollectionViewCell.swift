@@ -1,5 +1,5 @@
 //
-//  GoalTableViewCell.swift
+//  GoalCollectionViewCell.swift
 //  BeeSwift
 //
 //  Created by Andy Brett on 4/24/15.
@@ -10,73 +10,110 @@ import BeeKit
 import Foundation
 
 class GoalCollectionViewCell: UICollectionViewCell {
-  let slugLabel: BSLabel = BSLabel()
-  let titleLabel: BSLabel = BSLabel()
-  let todaytaLabel: BSLabel = BSLabel()
-  let thumbnailImageView = GoalImageView(isThumbnail: true)
-  let safesumLabel: BSLabel = BSLabel()
-  let margin = 8
+  private lazy var cardView: CardView = {
+    let view = CardView()
+    view.backgroundColor = .secondarySystemGroupedBackground
+    view.layer.cornerRadius = CardLookConstants.cornerRadius
+    view.layer.shadowColor = UIColor.black.cgColor
+    view.layer.shadowOpacity = 0.1
+    view.layer.shadowRadius = 4
+    view.layer.shadowOffset = CardLookConstants.shadowOffset
+    return view
+  }()
+
+  private lazy var thumbnailImageView: GoalImageView = { return GoalImageView(isThumbnail: true) }()
+
+  private lazy var titleLabel: BSLabel = {
+    let label = BSLabel()
+    label.font = UIFont.beeminder.defaultFontHeavy.withSize(17)
+    label.textColor = .label
+    return label
+  }()
+
+  private lazy var slugLabel: BSLabel = {
+    let label = BSLabel()
+    label.font = UIFont.beeminder.defaultFont.withSize(15)
+    label.textColor = .label
+    return label
+  }()
+
+  private lazy var countdownLabel: BSLabel = {
+    let label = BSLabel()
+    label.font = UIFont.beeminder.defaultBoldFont.withSize(13)
+    label.numberOfLines = 0
+    return label
+  }()
+
+  private lazy var todaytaLabel: BSLabel = {
+    let label = BSLabel()
+    label.textColor = .label
+    label.font = UIFont.beeminder.defaultFont.withSize(14)
+    label.textAlignment = .right
+    label.setContentCompressionResistancePriority(.required, for: .horizontal)
+    return label
+  }()
+
   override init(frame: CGRect) {
     super.init(frame: frame)
-    self.contentView.addSubview(self.slugLabel)
-    self.contentView.addSubview(self.titleLabel)
-    self.contentView.addSubview(self.todaytaLabel)
-    self.contentView.addSubview(self.thumbnailImageView)
-    self.contentView.addSubview(self.safesumLabel)
-    self.contentView.backgroundColor = .systemBackground
+    setUpView()
+  }
 
-    self.slugLabel.font = UIFont.beeminder.defaultFontHeavy
-    self.slugLabel.textColor = .label
-    self.slugLabel.snp.makeConstraints { (make) -> Void in
-      make.left.equalTo(self.margin)
-      make.top.equalTo(10)
-      make.width.lessThanOrEqualTo(self.contentView).multipliedBy(0.35)
-    }
-    self.titleLabel.font = UIFont.beeminder.defaultFont
-    self.titleLabel.textColor = .label
-    self.titleLabel.textAlignment = .left
-    self.titleLabel.snp.makeConstraints { (make) -> Void in
-      make.centerY.equalTo(self.slugLabel)
-      make.left.equalTo(self.slugLabel.snp.right).offset(10)
-      make.right.lessThanOrEqualTo(self.todaytaLabel.snp.left).offset(-10)
-    }
-    self.todaytaLabel.font = UIFont.beeminder.defaultFont
-    self.todaytaLabel.textColor = .label
-    self.todaytaLabel.textAlignment = .right
-    self.todaytaLabel.snp.makeConstraints { (make) -> Void in
-      make.centerY.equalTo(self.slugLabel)
-      make.right.equalTo(-self.margin)
-    }
-    self.todaytaLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+  required init?(coder aDecoder: NSCoder) {
+    super.init(coder: aDecoder)
+    setUpView()
+  }
 
-    self.thumbnailImageView.snp.makeConstraints { (make) -> Void in
-      make.left.equalTo(0).offset(self.margin)
-      make.top.equalTo(self.slugLabel.snp.bottom).offset(5)
-      make.height.equalTo(Constants.thumbnailHeight)
-      make.width.equalTo(Constants.thumbnailWidth)
+  private func setUpView() {
+    self.contentView.backgroundColor = .clear
+    self.contentView.addSubview(self.cardView)
+
+    self.cardView.snp.makeConstraints { make in make.edges.equalToSuperview().inset(6) }
+
+    [self.thumbnailImageView, self.titleLabel, self.todaytaLabel, self.slugLabel, self.countdownLabel].forEach {
+      self.cardView.addSubview($0)
     }
 
-    self.safesumLabel.textAlignment = NSTextAlignment.center
-    self.safesumLabel.font = UIFont.beeminder.defaultBoldFont.withSize(13)
-    self.safesumLabel.numberOfLines = 0
-    self.safesumLabel.snp.makeConstraints { (make) -> Void in
-      make.left.equalTo(self.thumbnailImageView.snp.right).offset(5)
-      make.centerY.equalTo(self.thumbnailImageView.snp.centerY)
-      make.right.equalTo(-self.margin)
+    self.thumbnailImageView.snp.makeConstraints { make in
+      make.left.top.bottom.equalToSuperview().inset(CardLookConstants.spacing)
+      make.width.equalTo(CGFloat(Constants.thumbnailWidth))
+      make.height.equalTo(CGFloat(Constants.thumbnailHeight))
+    }
+
+    self.titleLabel.snp.makeConstraints { make in
+      make.top.equalToSuperview().offset(CardLookConstants.verticalPadding)
+      make.left.equalTo(self.thumbnailImageView.snp.right).offset(CardLookConstants.spacing)
+      make.right.equalTo(self.todaytaLabel.snp.left).offset(-8)
+    }
+
+    self.todaytaLabel.snp.makeConstraints { make in
+      make.centerY.equalTo(self.titleLabel)
+      make.right.equalToSuperview().offset(-CardLookConstants.horizontalPadding)
+    }
+
+    self.slugLabel.snp.makeConstraints { make in
+      make.top.equalTo(self.titleLabel.snp.bottom).offset(2)
+      make.left.right.equalTo(self.titleLabel)
+    }
+
+    self.countdownLabel.snp.makeConstraints { make in
+      make.top.equalTo(self.slugLabel.snp.bottom).offset(4)
+      make.left.right.equalTo(self.titleLabel)
+      make.bottom.lessThanOrEqualToSuperview().offset(-CardLookConstants.verticalPadding)
     }
   }
-  required init?(coder aDecoder: NSCoder) { super.init(coder: aDecoder) }
+
   override func prepareForReuse() {
     super.prepareForReuse()
-    configure(with: nil)
+    self.configure(with: nil)
   }
+
   func configure(with goal: Goal?) {
     self.thumbnailImageView.goal = goal
     self.titleLabel.text = goal?.title
     self.slugLabel.text = goal?.slug
     self.titleLabel.isHidden = goal?.title == goal?.slug
     self.todaytaLabel.text = goal?.todayta == true ? "✓" : ""
-    self.safesumLabel.text = goal?.capitalSafesum()
-    self.safesumLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.gray
+    self.countdownLabel.text = goal?.capitalSafesum()
+    self.countdownLabel.textColor = goal?.countdownColor ?? UIColor.Beeminder.SafetyBuffer.gray
   }
 }
