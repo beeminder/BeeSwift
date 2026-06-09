@@ -70,14 +70,17 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
   }
   override func sendLeadTimeToServer(_ timer: Timer) {
     // We must not use `timer` in the Task as it may change once this method returns
-    let userInfo = timer.userInfo! as! [String: NSNumber]
+    guard let userInfo = timer.userInfo as? [String: NSNumber] else { return }
     Task { @MainActor in
-      let leadtime = userInfo["leadtime"]
-      let params = ["leadtime": leadtime, "use_defaults": false]
+      let leadtime = userInfo["leadtime"]?.intValue
       do {
-        let _ = try await self.requestManager.put(
-          url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-          parameters: params as [String: Any]
+        let _ = try await self.requestManager.request(
+          endpoint: .updateGoal(
+            username: goal.owner.username,
+            goalname: goal.slug,
+            leadtime: leadtime,
+            usesDefaultNotifications: false
+          )
         )
 
         try await self.goalManager.refreshGoal(self.goal.objectID)
@@ -92,12 +95,16 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
       let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
       hud.mode = .indeterminate
       if self.timePickerEditingMode == .alertstart {
-        self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
         do {
-          let params = ["alertstart": self.midnightOffsetFromTimePickerView(), "use_defaults": false]
-          let _ = try await self.requestManager.put(
-            url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-            parameters: params
+          let alertstart = self.midnightOffsetFromTimePickerView()
+          self.updateAlertstartLabel(alertstart)
+          let _ = try await self.requestManager.request(
+            endpoint: .updateGoal(
+              username: user.username,
+              goalname: goal.slug,
+              alertstart: alertstart,
+              usesDefaultNotifications: false
+            )
           )
           try await self.goalManager.refreshGoal(self.goal.objectID)
 
@@ -110,13 +117,16 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
         }
       }
       if self.timePickerEditingMode == .deadline {
-        let deadline = self.deadlineFromTimePickerView
-        self.updateDeadlineLabel(deadline)
         do {
-          let params = ["deadline": deadline, "use_defaults": false]
-          let _ = try await self.requestManager.put(
-            url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-            parameters: params
+          let deadline = self.deadlineFromTimePickerView
+          self.updateDeadlineLabel(deadline)
+          let _ = try await self.requestManager.request(
+            endpoint: .updateGoal(
+              username: user.username,
+              goalname: goal.slug,
+              deadline: deadline,
+              usesDefaultNotifications: false
+            )
           )
           try await self.goalManager.refreshGoal(self.goal.objectID)
 
@@ -153,10 +163,12 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
               let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
               hud.mode = .indeterminate
               do {
-                let params = ["use_defaults": true]
-                let _ = try await self.requestManager.put(
-                  url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-                  parameters: params
+                let _ = try await self.requestManager.request(
+                  endpoint: .updateGoal(
+                    username: self.user.username,
+                    goalname: self.goal.slug,
+                    usesDefaultNotifications: true
+                  )
                 )
                 try await self.goalManager.refreshGoal(self.goal.objectID)
                 hud.hide(animated: true, afterDelay: 0.5)
@@ -195,10 +207,8 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud.mode = .indeterminate
         do {
-          let params = ["use_defaults": false]
-          let _ = try await self.requestManager.put(
-            url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-            parameters: params
+          let _ = try await self.requestManager.request(
+            endpoint: .updateGoal(username: user.username, goalname: goal.slug, usesDefaultNotifications: false)
           )
           try await self.goalManager.refreshGoal(self.goal.objectID)
           hud.hide(animated: true, afterDelay: 0.5)

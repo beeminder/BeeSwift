@@ -5,8 +5,8 @@ import BeeKit
 import Foundation
 
 struct AddDataPointIntent: AppIntent {
-  static var title: LocalizedStringResource = "Add Data Point"
-  static var description = IntentDescription("Add a data point to a Beeminder goal")
+  static var title: LocalizedStringResource = "Add Datapoint"
+  static var description = IntentDescription("Add a datapoint to a Beeminder goal")
   @Parameter(title: "Goal") var goal: GoalEntity
   @Parameter(title: "Value") var value: Double
   @Parameter(title: "Comment", default: "Added via iOS Shortcut") var comment: String?
@@ -14,9 +14,10 @@ struct AddDataPointIntent: AppIntent {
   func perform() async throws -> some IntentResult & ProvidesDialog {
     let dataComment = comment ?? ""
     do {
-      let _ = try await ServiceLocator.requestManager.addDatapoint(
-        urtext: "^ \(value) \"\(dataComment)\"",
-        slug: goal.slug
+      guard let username = await ServiceLocator.currentUserManager.username else { throw AddDataError.noUser }
+      let urtext = "^ \(value) \"\(dataComment)\""
+      let _ = try await ServiceLocator.requestManager.request(
+        endpoint: .createDatapoint(username: username, goalname: goal.slug, urtext: urtext)
       )
       // Use displayTitle to show title with slug fallback
       let formatter = NumberFormatter()
