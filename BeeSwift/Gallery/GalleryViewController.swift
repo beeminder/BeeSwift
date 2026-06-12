@@ -137,12 +137,6 @@ class GalleryViewController: UIViewController {
       name: UserDefaults.didChangeNotification,
       object: nil,
     )
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(self.handleSignIn),
-      name: CurrentUserManager.NotificationName.signedIn,
-      object: nil,
-    )
     self.view.addSubview(self.stackView)
     stackView.snp.makeConstraints { (make) -> Void in make.edges.equalToSuperview() }
     NotificationCenter.default.addObserver(
@@ -206,16 +200,13 @@ class GalleryViewController: UIViewController {
     }()
     self.updateGoals()
     self.fetchGoals()
-    if currentUserManager.signedIn(context: viewContext) {
-      UNUserNotificationCenter.current().requestAuthorization(
-        options: UNAuthorizationOptions([.alert, .badge, .sound])
-      ) { [weak self] (success, error) in
-        self?.logger.info(
-          "Requested person’s authorization at GalleryVC load to allow local and remote notifications; successful? \(success)"
-        )
-        guard success else { return }
-        DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() }
-      }
+    UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) {
+      [weak self] (success, error) in
+      self?.logger.info(
+        "Requested person’s authorization at GalleryVC load to allow local and remote notifications; successful? \(success)"
+      )
+      guard success else { return }
+      DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() }
     }
     Task { @MainActor in
       do {
@@ -256,15 +247,6 @@ class GalleryViewController: UIViewController {
     }
   }
   @objc private func userDefaultsDidChange() { Task { @MainActor [weak self] in self?.updateGoals() } }
-  @objc func handleSignIn() {
-    self.fetchGoals()
-    UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) {
-      [weak self] (success, error) in
-      self?.logger.info(
-        "Requested person's authorization upon signin to allow local and remote notifications; successful? \(success)"
-      )
-    }
-  }
   func updateDeadbeatVisibility() { self.deadbeatView.isHidden = !isUserKnownDeadbeat }
   private var isUserKnownDeadbeat: Bool { currentUserManager.user(context: viewContext)?.deadbeat == true }
   @objc func updateLastUpdatedLabel() {

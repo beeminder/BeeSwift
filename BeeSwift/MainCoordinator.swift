@@ -49,6 +49,12 @@ class MainCoordinator {
     )
   }
   func start() {
+    navigationController.navigationBar.isTranslucent = false
+    navigationController.navigationBar.barStyle = .black
+    navigationController.navigationBar.tintColor = .white
+    if currentUserManager.signedIn(context: viewContext) { showGallery() } else { showSignIn() }
+  }
+  private func showGallery() {
     let galleryVC = GalleryViewController(
       currentUserManager: currentUserManager,
       viewContext: viewContext,
@@ -58,11 +64,8 @@ class MainCoordinator {
       requestManager: requestManager,
       coordinator: self,
     )
+    navigationController.setNavigationBarHidden(false, animated: false)
     navigationController.setViewControllers([galleryVC], animated: false)
-    navigationController.navigationBar.isTranslucent = false
-    navigationController.navigationBar.barStyle = .black
-    navigationController.navigationBar.tintColor = .white
-    if !currentUserManager.signedIn(context: viewContext) { showSignIn() }
   }
   func showGoal(_ goal: Goal) {
     let goalViewController = GoalViewController(
@@ -87,9 +90,9 @@ class MainCoordinator {
     navigationController.pushViewController(settingsVC, animated: true)
   }
   func showSignIn() {
-    let signInVC = SignInViewController(currentUserManager: currentUserManager, coordinator: self)
-    signInVC.modalPresentationStyle = .fullScreen
-    navigationController.present(signInVC, animated: true)
+    let signInVC = SignInViewController(currentUserManager: currentUserManager)
+    navigationController.setNavigationBarHidden(true, animated: false)
+    navigationController.setViewControllers([signInVC], animated: false)
   }
   func showTimerForGoal(_ goal: Goal) {
     let controller = TimerViewController(goal: goal, requestManager: requestManager)
@@ -195,13 +198,12 @@ class MainCoordinator {
     navigationController.pushViewController(controller, animated: true)
   }
   @objc private func handleSignIn() {
-    navigationController.dismiss(animated: true)
-    navigationController.popToRootViewController(animated: true)
+    navigationController.dismiss(animated: false)
     start()
   }
   @objc private func handleSignOut() {
-    navigationController.popToRootViewController(animated: true)
-    showSignIn()
+    navigationController.dismiss(animated: false)
+    start()
   }
   @objc private func openGoalFromNotification(_ notification: Notification) {
     var goalFromID: Goal? {
