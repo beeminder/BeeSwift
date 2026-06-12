@@ -34,12 +34,26 @@ import OSLog
   /// Protect concurrent modifications to the connections dictionary
   private nonisolated let monitorsSemaphore = DispatchSemaphore(value: 1)
 
+  private var lastSyncedMetricNames: Set<String>? = nil
+
   init(goalManager: GoalManager, container: NSPersistentContainer) {
     self.goalManager = goalManager
     self.modelContainer = container
     let context = container.newBackgroundContext()
     context.name = "HealthStoreManager"
     self.modelExecutor = .init(context: context)
+  }
+
+  public func listenForGoalChanges() async {
+    let objectsDidChange = NotificationCenter.default.notifications(
+      named: .NSManagedObjectContextObjectsDidChange,
+      object: modelContainer.viewContext,
+    )
+    for await _ in objectsDidChange {
+      do { try await ensureGoalsUpdateRegularly() } catch {
+        logger.error("Failed to ensure goals update regularly after goals changed: \(error)")
+      }
+    }
   }
 
   /// Request acess to HealthKit data for the supplied metric
@@ -69,10 +83,18 @@ import OSLog
       return
     }
     let metrics = goals.compactMap { $0.healthKitMetric }.filter { $0 != "" }
+    let metricSet = Set(metrics)
+
+    guard metricSet != lastSyncedMetricNames else { return }
     logger.notice(
       "ensureGoalsUpdateRegularly: Found \(goals.count, privacy: .public) goals, \(metrics.count, privacy: .public) with HealthKit metrics: \(metrics.joined(separator: ", "))"
     )
-    return try await ensureUpdatesRegularly(metricNames: metrics, removeMissing: true)
+    let previous = lastSyncedMetricNames
+    lastSyncedMetricNames = metricSet
+    do { try await ensureUpdatesRegularly(metricNames: metrics, removeMissing: true) } catch {
+      lastSyncedMetricNames = previous
+      throw error
+    }
   }
 
   /// Install observers for any goals we currently have permission to read

@@ -46,6 +46,7 @@ import UIKit
       ServiceLocator.healthStoreManager.silentlyInstallObservers(
         context: ServiceLocator.persistentContainer.viewContext
       )
+      Task { await ServiceLocator.healthStoreManager.listenForGoalChanges() }
     }
     NetworkActivityIndicatorManager.shared.isEnabled = true
     UNUserNotificationCenter.current().delegate = self
