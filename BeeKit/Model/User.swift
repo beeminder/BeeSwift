@@ -32,7 +32,7 @@ import SwiftyJSON
     updatedAt: Date,
     defaultAlertStart: Int,
     defaultDeadline: Int,
-    defaultLeadTime: Int
+    defaultLeadTime: Int,
   ) {
     let entity = NSEntityDescription.entity(forEntityName: "User", in: context)!
     super.init(entity: entity, insertInto: context)

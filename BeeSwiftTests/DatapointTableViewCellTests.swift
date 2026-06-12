@@ -21,7 +21,7 @@ final class DatapointTableViewCellTests: XCTestCase {
     let datapoint = MockDataPoint(
       daystamp: Daystamp(year: currentYear, month: currentMonth, day: 15),
       value: 1.0,
-      comment: ""
+      comment: "",
     )
 
     XCTAssertEqual(DatapointTableViewCell.formatDay(datapoint: datapoint), "15")
@@ -36,7 +36,7 @@ final class DatapointTableViewCellTests: XCTestCase {
     let datapoint = MockDataPoint(
       daystamp: Daystamp(year: currentYear, month: currentMonth, day: 5),
       value: 1.0,
-      comment: ""
+      comment: "",
     )
 
     XCTAssertEqual(DatapointTableViewCell.formatDay(datapoint: datapoint), "5")
@@ -52,7 +52,7 @@ final class DatapointTableViewCellTests: XCTestCase {
     let datapoint = MockDataPoint(
       daystamp: Daystamp(year: currentYear, month: previousMonth, day: 25),
       value: 1.0,
-      comment: ""
+      comment: "",
     )
 
     XCTAssertEqual(DatapointTableViewCell.formatDay(datapoint: datapoint), "\(previousMonth)/25")
@@ -67,7 +67,7 @@ final class DatapointTableViewCellTests: XCTestCase {
     let datapoint = MockDataPoint(
       daystamp: Daystamp(year: currentYear - 1, month: currentMonth, day: 31),
       value: 1.0,
-      comment: ""
+      comment: "",
     )
 
     XCTAssertEqual(DatapointTableViewCell.formatDay(datapoint: datapoint), "\(currentMonth)/31")

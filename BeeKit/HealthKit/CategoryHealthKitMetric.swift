@@ -38,7 +38,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
       deadline: deadline,
       healthStore: healthStore,
       autodataConfig: autodataConfig,
-      samplePredicate: nil
+      samplePredicate: nil,
     )
   }
 
@@ -47,7 +47,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
     deadline: Int,
     healthStore: HKHealthStore,
     autodataConfig: [String: Any],
-    samplePredicate: ((HKSample) -> Bool)?
+    samplePredicate: ((HKSample) -> Bool)?,
   ) async throws -> [BeeDataPoint] {
     let today = Daystamp.now(deadline: deadline)
     let startDate = today - days
@@ -59,7 +59,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
           date: date,
           deadline: deadline,
           healthStore: healthStore,
-          samplePredicate: samplePredicate
+          samplePredicate: samplePredicate,
         )
       )
     }
@@ -72,14 +72,14 @@ public class CategoryHealthKitMetric: HealthKitMetric {
     date: Daystamp,
     deadline: Int,
     healthStore: HKHealthStore,
-    samplePredicate: ((HKSample) -> Bool)? = nil
+    samplePredicate: ((HKSample) -> Bool)? = nil,
   ) async throws -> BeeDataPoint {
     var samples = try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<[HKSample], Error>) in
       let query = HKSampleQuery(
         sampleType: sampleType(),
         predicate: HKQuery.predicateForSamples(
           withStart: date.start(deadline: deadline),
-          end: date.end(deadline: deadline)
+          end: date.end(deadline: deadline),
         ),
         limit: 0,
         sortDescriptors: nil,
@@ -91,7 +91,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
           } else {
             continuation.resume(returning: samples!)
           }
-        }
+        },
       )
       healthStore.execute(query)
     })
@@ -104,7 +104,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
       requestid: id,
       daystamp: date,
       value: NSNumber(value: datapointValue),
-      comment: "Auto-entered via Apple Health"
+      comment: "Auto-entered via Apple Health",
     )
   }
 

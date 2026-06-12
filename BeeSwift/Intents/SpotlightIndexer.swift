@@ -26,7 +26,7 @@ actor SpotlightIndexer {
   init(
     container: BeeminderPersistentContainer,
     currentUserManager: CurrentUserManager,
-    searchableIndex: SearchableIndexing = CSSearchableIndex.default()
+    searchableIndex: SearchableIndexing = CSSearchableIndex.default(),
   ) {
     self.container = container
     self.currentUserManager = currentUserManager
@@ -36,7 +36,7 @@ actor SpotlightIndexer {
   func listenForNotifications() async {
     let objectsDidChange = NotificationCenter.default.notifications(
       named: .NSManagedObjectContextObjectsDidChange,
-      object: container.viewContext
+      object: container.viewContext,
     ).map { _ in IndexAction.reindex }
     let signedOut = NotificationCenter.default.notifications(named: CurrentUserManager.NotificationName.signedOut).map {
       _ in IndexAction.clear

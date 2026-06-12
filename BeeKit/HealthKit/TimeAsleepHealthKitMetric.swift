@@ -10,7 +10,7 @@ class TimeAsleepHealthKitMetric: CategoryHealthKitMetric {
       humanText: humanText,
       databaseString: databaseString,
       category: category,
-      hkSampleType: HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
+      hkSampleType: HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!,
     )
   }
 

@@ -7,7 +7,7 @@ final class WorkoutMinutesHealthKitMetricTests: XCTestCase {
   let metric = WorkoutMinutesHealthKitMetric(
     humanText: "Workout minutes",
     databaseString: "workout_minutes",
-    category: .Activity
+    category: .Activity,
   )
 
   // MARK: - Helper to create workouts
@@ -30,7 +30,7 @@ final class WorkoutMinutesHealthKitMetricTests: XCTestCase {
   func testFindByActivityTypeTraditionalStrengthTraining() {
     XCTAssertEqual(
       WorkoutActivityTypeInfo.find(byActivityType: .traditionalStrengthTraining)?.identifier,
-      "traditionalStrengthTraining"
+      "traditionalStrengthTraining",
     )
   }
 

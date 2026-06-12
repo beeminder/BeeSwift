@@ -64,7 +64,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
     requestManager: RequestManager,
     currentUserManager: CurrentUserManager,
     viewContext: NSManagedObjectContext,
-    coordinator: MainCoordinator
+    coordinator: MainCoordinator,
   ) {
     self.goal = goal
     self.healthStoreManager = healthStoreManager
@@ -219,7 +219,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
     self.valueTextField.addTarget(
       self,
       action: #selector(GoalViewController.valueTextFieldValueChanged),
-      for: .editingChanged
+      for: .editingChanged,
     )
     self.valueTextField.snp.makeConstraints { (make) -> Void in
       make.left.equalTo(self.dateTextField.snp.right).offset(elementSpacing)
@@ -285,7 +285,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
     self.valueStepper.addTarget(
       self,
       action: #selector(GoalViewController.valueStepperValueChanged),
-      for: .valueChanged
+      for: .valueChanged,
     )
     self.valueStepper.snp.makeConstraints { (make) -> Void in
       make.top.equalTo(self.dateStepper)
@@ -327,7 +327,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
       image: UIImage(systemName: "ellipsis.circle"),
       style: .plain,
       target: nil,
-      action: nil
+      action: nil,
     )
     menuBarItem.menu = createGoalMenu()
     self.navigationItem.rightBarButtonItems = [menuBarItem]
@@ -337,7 +337,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
           image: UIImage(systemName: "stopwatch"),
           style: .plain,
           target: self,
-          action: #selector(self.timerButtonPressed)
+          action: #selector(self.timerButtonPressed),
         )
       )
     }
@@ -346,7 +346,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
       self,
       selector: #selector(managedObjectContextObjectsDidChange),
       name: .NSManagedObjectContextObjectsDidChange,
-      object: viewContext
+      object: viewContext,
     )
 
     setValueTextField()
@@ -403,7 +403,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
 
   func datapointTableViewController(
     _ datapointTableViewController: DatapointTableViewController,
-    didSelectDatapoint datapoint: BeeDataPoint
+    didSelectDatapoint datapoint: BeeDataPoint,
   ) {
     guard !self.goal.hideDataEntry else { return }
     guard let existingDatapoint = datapoint as? DataPoint else { return }
@@ -425,7 +425,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
     self.dateTextField.text = DateFormatter.dateTextFieldString(
       from: self.date,
       isDifferentYear: isDifferentYear,
-      isDifferentMonth: isDifferentMonth
+      isDifferentMonth: isDifferentMonth,
     )
   }
 
@@ -514,7 +514,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
         let alertController = UIAlertController(
           title: "Error",
           message: "Failed to add datapoint",
-          preferredStyle: .alert
+          preferredStyle: .alert,
         )
         alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
         self.present(alertController, animated: true)
@@ -650,7 +650,7 @@ extension GoalViewController {
       handler: { [weak self] _ in
         guard let self else { return }
         self.coordinator?.showGoalSettings(self.goal)
-      }
+      },
     )
     let settingsMenu = UIMenu(title: "", options: .displayInline, children: [settingsAction])
 
@@ -666,19 +666,19 @@ extension GoalViewController {
             let link = option.action.makeLink(
               username: self.goal.owner.username,
               goalName: self.goal.slug,
-              currentUserManager: self.currentUserManager
+              currentUserManager: self.currentUserManager,
             )
           else { return }
           let safariVC = SFSafariViewController(url: link)
           safariVC.delegate = self
           self.showDetailViewController(safariVC, sender: self)
-        }
+        },
       )
     }
     let webMenu = UIMenu(
       title: "bmndr.com/\(goal.owner.username)/\(goal.slug)",
       options: .displayInline,
-      children: webActions
+      children: webActions,
     )
 
     return UIMenu(title: "", children: [settingsMenu, webMenu])

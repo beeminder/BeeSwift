@@ -85,7 +85,7 @@ class FreshnessIndicatorView: UIView {
       target: self,
       selector: #selector(timerFired),
       userInfo: nil,
-      repeats: false
+      repeats: false,
     )
   }
   func update(with date: Date) {

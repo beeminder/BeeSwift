@@ -51,7 +51,7 @@ class EditNotificationsViewController: UIViewController {
     self.leadTimeStepper.addTarget(
       self,
       action: #selector(EditNotificationsViewController.leadTimeStepperValueChanged),
-      for: .valueChanged
+      for: .valueChanged,
     )
     self.view.addSubview(self.leadTimeStepper)
     self.leadTimeStepper.snp.makeConstraints { (make) -> Void in
@@ -67,7 +67,7 @@ class EditNotificationsViewController: UIViewController {
     self.alertStartLabel.isUserInteractionEnabled = true
     let tapGR = UITapGestureRecognizer(
       target: self,
-      action: #selector(EditNotificationsViewController.alertstartLabelTapped)
+      action: #selector(EditNotificationsViewController.alertstartLabelTapped),
     )
     self.alertStartLabel.addGestureRecognizer(tapGR)
     self.updateAlertstartLabel(self.alertstart)
@@ -79,7 +79,7 @@ class EditNotificationsViewController: UIViewController {
     self.deadlineLabel.isUserInteractionEnabled = true
     let deadlineTapGR = UITapGestureRecognizer(
       target: self,
-      action: #selector(EditNotificationsViewController.deadlineLabelTapped)
+      action: #selector(EditNotificationsViewController.deadlineLabelTapped),
     )
     self.deadlineLabel.addGestureRecognizer(deadlineTapGR)
     self.updateDeadlineLabel(self.deadline)
@@ -124,7 +124,7 @@ class EditNotificationsViewController: UIViewController {
       target: self,
       selector: #selector(self.sendLeadTimeToServer(_:)),
       userInfo: ["leadtime": NSNumber(value: self.leadTimeStepper.value as Double)],
-      repeats: false
+      repeats: false,
     )
   }
   @objc func sendLeadTimeToServer(_ timer: Timer) { assertionFailure("this method must be overridden by a subclass") }

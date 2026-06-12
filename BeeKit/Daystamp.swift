@@ -62,7 +62,7 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
       }
     let adjustedDate = Daystamp.calendar.date(
       byAdding: DateComponents(calendar: Daystamp.calendar, day: dayOffsetFromDeadline),
-      to: date
+      to: date,
     )!
 
     self.init(fromDate: adjustedDate)
@@ -121,7 +121,10 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
       from: DateComponents(calendar: Daystamp.calendar, year: year, month: month, day: day)
     )!
 
-    let adjustedDate = Daystamp.calendar.date(byAdding: DateComponents(calendar: Daystamp.calendar, day: n), to: date)!
+    let adjustedDate = Daystamp.calendar.date(
+      byAdding: DateComponents(calendar: Daystamp.calendar, day: n),
+      to: date,
+    )!
     return Daystamp(fromDate: adjustedDate)
   }
 

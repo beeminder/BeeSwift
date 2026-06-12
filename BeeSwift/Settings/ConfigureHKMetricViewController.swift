@@ -48,7 +48,7 @@ class ConfigureHKMetricViewController: UIViewController {
     metric: HealthKitMetric,
     healthStoreManager: HealthStoreManager,
     requestManager: RequestManager,
-    goalManager: GoalManager? = nil
+    goalManager: GoalManager? = nil,
   ) {
     self.goal = goal
     self.metric = metric
@@ -126,11 +126,11 @@ class ConfigureHKMetricViewController: UIViewController {
       ("No Data Found\n\n", UIFont.beeminder.defaultBoldFont),
       (
         "This may be because you have not granted the app access to this data, or because there is no recent data in Apple Health.\n\n",
-        UIFont.beeminder.defaultFont
+        UIFont.beeminder.defaultFont,
       ),
       (
         "You can still connect the goal, and future data will be synced if it becomes available.",
-        UIFont.beeminder.defaultFont
+        UIFont.beeminder.defaultFont,
       ),
     ]
 
@@ -153,7 +153,7 @@ class ConfigureHKMetricViewController: UIViewController {
           days: 5,
           deadline: self.goal.deadline,
           healthStore: self.healthStoreManager.healthStore,
-          autodataConfig: currentConfig
+          autodataConfig: currentConfig,
         )
         self.datapointTableController.datapoints = datapoints
         updateEmptyState(hasData: !datapoints.isEmpty)
@@ -228,7 +228,7 @@ class ConfigureHKMetricViewController: UIViewController {
             days: 5,
             deadline: self.goal.deadline,
             healthStore: self.healthStoreManager.healthStore,
-            autodataConfig: currentConfig
+            autodataConfig: currentConfig,
           )
           self.datapointTableController.datapoints = datapoints
         } catch { self.logger.error("Failed to fetch preview data: \(error)") }
@@ -330,7 +330,7 @@ class ConfigureHKMetricViewController: UIViewController {
       do {
         let _ = try await self.requestManager.put(
           url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-          parameters: params
+          parameters: params,
         )
         hud.mode = .customView
         hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))
@@ -349,7 +349,7 @@ class ConfigureHKMetricViewController: UIViewController {
     let alert = UIAlertController(
       title: "Disconnect from Apple Health?",
       message: "This goal will no longer receive data from Apple Health.",
-      preferredStyle: .alert
+      preferredStyle: .alert,
     )
     alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
     alert.addAction(
@@ -371,7 +371,7 @@ class ConfigureHKMetricViewController: UIViewController {
       do {
         let _ = try await self.requestManager.put(
           url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-          parameters: params
+          parameters: params,
         )
 
         if let goalManager = self.goalManager { try await goalManager.refreshGoal(self.goal.objectID) }
@@ -382,7 +382,7 @@ class ConfigureHKMetricViewController: UIViewController {
         NotificationCenter.default.post(
           name: CurrentUserManager.NotificationName.healthKitMetricRemoved,
           object: self,
-          userInfo: ["goal": self.goal as Any]
+          userInfo: ["goal": self.goal as Any],
         )
 
         hud.hide(animated: true, afterDelay: 1)

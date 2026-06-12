@@ -73,7 +73,7 @@ import SwiftyJSON
       updatedAt: Date(timeIntervalSince1970: 0),
       defaultAlertStart: (userDefaults.object(forKey: CurrentUserManager.defaultAlertstartKey) ?? 0) as! Int,
       defaultDeadline: (userDefaults.object(forKey: CurrentUserManager.defaultDeadlineKey) ?? 0) as! Int,
-      defaultLeadTime: (userDefaults.object(forKey: CurrentUserManager.defaultLeadtimeKey) ?? 0) as! Int
+      defaultLeadTime: (userDefaults.object(forKey: CurrentUserManager.defaultLeadtimeKey) ?? 0) as! Int,
     )
     try! context.save()
   }
@@ -126,7 +126,7 @@ import SwiftyJSON
       let response = try await requestManager.post(
         url: "api/private/sign_in",
         parameters: ["user": ["login": email, "password": password], "beemios_secret": self.beemiosSecret]
-          as [String: Any]
+          as [String: Any],
       )
       try! await self.handleSuccessfulSignin(JSON(response!))
     } catch { try! await self.handleFailedSignin(error, errorMessage: error.localizedDescription) }
@@ -147,7 +147,7 @@ import SwiftyJSON
       NotificationCenter.default.post(
         name: CurrentUserManager.NotificationName.failedSignIn,
         object: self,
-        userInfo: ["error": responseError]
+        userInfo: ["error": responseError],
       )
     }.value
     try await self.signOut()

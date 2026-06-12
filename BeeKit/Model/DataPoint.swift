@@ -37,7 +37,7 @@ import SwiftyJSON
     value: NSNumber,
     updatedAt: Int,
     isDummy: Bool = false,
-    isInitial: Bool = false
+    isInitial: Bool = false,
   ) {
     let entity = NSEntityDescription.entity(forEntityName: "DataPoint", in: context)!
     super.init(entity: entity, insertInto: context)

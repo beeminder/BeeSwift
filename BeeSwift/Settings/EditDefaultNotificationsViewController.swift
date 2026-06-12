@@ -22,7 +22,7 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     currentUserManager: CurrentUserManager,
     requestManager: RequestManager,
     goalManager: GoalManager,
-    viewContext: NSManagedObjectContext
+    viewContext: NSManagedObjectContext,
   ) {
     self.currentUserManager = currentUserManager
     self.requestManager = requestManager

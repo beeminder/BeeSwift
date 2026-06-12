@@ -180,7 +180,7 @@ final class GoalTests: XCTestCase {
       updatedAt: Date(timeIntervalSince1970: 0),
       defaultAlertStart: 0,
       defaultDeadline: 0,
-      defaultLeadTime: 0
+      defaultLeadTime: 0,
     )
   }
 

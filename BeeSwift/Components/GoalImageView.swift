@@ -51,7 +51,7 @@ class GoalImageView: UIView {
     NotificationCenter.default.addObserver(
       forName: .NSManagedObjectContextObjectsDidChange,
       object: ServiceLocator.persistentContainer.viewContext,
-      queue: OperationQueue.main
+      queue: OperationQueue.main,
     ) { [weak self] _ in DispatchQueue.main.async { self?.refresh() } }
     refresh()
   }
@@ -86,7 +86,7 @@ class GoalImageView: UIView {
         self?.imageView.image = image
         self?.beeLemniscateView.isHidden = self?.goal == nil || self?.goal?.queued == false
         self?.updateBorder()
-      }
+      },
     ) { [weak self] _ in self?.currentlyShowingGraph = true }
   }
 
@@ -146,7 +146,7 @@ class GoalImageView: UIView {
           self.logger.error("Error downloading goal graph: \(error)")
           self.clearGoalGraph()
         }
-      }
+      },
     )
   }
 }

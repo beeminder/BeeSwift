@@ -20,7 +20,7 @@ public class SignedRequestManager {
       url: url,
       method: .get,
       parameters: params,
-      headers: requestManager.authenticationHeaders()
+      headers: requestManager.authenticationHeaders(),
     )
   }
   public func signedPOST(url: String, parameters: [String: Any]?) async throws -> Any? {
@@ -29,7 +29,7 @@ public class SignedRequestManager {
       url: url,
       method: .post,
       parameters: params,
-      headers: requestManager.authenticationHeaders()
+      headers: requestManager.authenticationHeaders(),
     )
   }
   fileprivate func signedParameters(_ params: [String: Any]?) -> [String: Any]? {

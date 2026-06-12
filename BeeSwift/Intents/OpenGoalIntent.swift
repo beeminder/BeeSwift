@@ -18,7 +18,7 @@ struct OpenGoalIntent: AppIntent, OpenIntent {
       NotificationCenter.default.post(
         name: GalleryViewController.NotificationName.openGoal,
         object: nil,
-        userInfo: ["slug": target.slug]
+        userInfo: ["slug": target.slug],
       )
     }
     return .result()
