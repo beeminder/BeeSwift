@@ -28,7 +28,6 @@ class GalleryViewController: UIViewController {
   private let viewContext: NSManagedObjectContext
   private let versionManager: VersionManager
   private let goalManager: GoalManager
-  private let healthStoreManager: HealthStoreManager
   private let requestManager: RequestManager
   private lazy var stackView: UIStackView = {
     let stackView = UIStackView()
@@ -105,7 +104,6 @@ class GalleryViewController: UIViewController {
     viewContext: NSManagedObjectContext,
     versionManager: VersionManager,
     goalManager: GoalManager,
-    healthStoreManager: HealthStoreManager,
     requestManager: RequestManager,
     coordinator: MainCoordinator,
   ) {
@@ -113,7 +111,6 @@ class GalleryViewController: UIViewController {
     self.viewContext = viewContext
     self.versionManager = versionManager
     self.goalManager = goalManager
-    self.healthStoreManager = healthStoreManager
     self.requestManager = requestManager
     self.coordinator = coordinator
     let fetchRequest = Goal.fetchRequest() as! NSFetchRequest<Goal>
@@ -200,14 +197,6 @@ class GalleryViewController: UIViewController {
     }()
     self.updateGoals()
     self.fetchGoals()
-    UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) {
-      [weak self] (success, error) in
-      self?.logger.info(
-        "Requested person’s authorization at GalleryVC load to allow local and remote notifications; successful? \(success)"
-      )
-      guard success else { return }
-      DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() }
-    }
     Task { @MainActor in
       do {
         let updateState = try await versionManager.updateState()
@@ -253,15 +242,6 @@ class GalleryViewController: UIViewController {
     let lastUpdated = currentUserManager.user(context: viewContext)?.lastUpdatedLocal ?? .distantPast
     self.freshnessIndicator.update(with: lastUpdated)
   }
-  func setupHealthKit() {
-    Task { @MainActor in
-      logger.notice("setupHealthKit: Starting HealthKit setup")
-      do {
-        try await healthStoreManager.ensureGoalsUpdateRegularly()
-        logger.notice("setupHealthKit: HealthKit setup completed successfully")
-      } catch { logger.error("setupHealthKit: Failed to setup HealthKit: \(error)") }
-    }
-  }
   @objc func fetchGoals() {
     Task { @MainActor in
       if self.filteredGoals.isEmpty { MBProgressHUD.showAdded(to: self.view, animated: true) }
@@ -301,7 +281,6 @@ class GalleryViewController: UIViewController {
   }
   private var filteredGoals: [Goal] { fetchedResultsController.fetchedObjects ?? [] }
   @objc func didUpdateGoals() {
-    self.setupHealthKit()
     self.collectionView.refreshControl?.endRefreshing()
     MBProgressHUD.hide(for: self.view, animated: true)
     self.updateDeadbeatVisibility()

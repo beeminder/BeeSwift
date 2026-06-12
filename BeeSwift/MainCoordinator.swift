@@ -10,6 +10,7 @@ class MainCoordinator {
   private let goalManager: GoalManager
   private let healthStoreManager: HealthStoreManager
   private let requestManager: RequestManager
+  private let sessionStartup: SessionStartup
   init(
     navigationController: UINavigationController,
     currentUserManager: CurrentUserManager,
@@ -26,6 +27,7 @@ class MainCoordinator {
     self.goalManager = goalManager
     self.healthStoreManager = healthStoreManager
     self.requestManager = requestManager
+    self.sessionStartup = SessionStartup(healthStoreManager: healthStoreManager)
     setUpNotifications()
   }
   private func setUpNotifications() {
@@ -60,12 +62,12 @@ class MainCoordinator {
       viewContext: viewContext,
       versionManager: versionManager,
       goalManager: goalManager,
-      healthStoreManager: healthStoreManager,
       requestManager: requestManager,
       coordinator: self,
     )
     navigationController.setNavigationBarHidden(false, animated: false)
     navigationController.setViewControllers([galleryVC], animated: false)
+    sessionStartup.run()
   }
   func showGoal(_ goal: Goal) {
     let goalViewController = GoalViewController(
