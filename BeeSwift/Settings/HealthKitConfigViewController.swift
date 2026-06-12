@@ -30,7 +30,7 @@ class HealthKitConfigViewController: UIViewController {
     viewContext: NSManagedObjectContext,
     healthStoreManager: HealthStoreManager,
     requestManager: RequestManager,
-    coordinator: MainCoordinator
+    coordinator: MainCoordinator,
   ) {
     self.goalManager = goalManager
     self.viewContext = viewContext
@@ -70,7 +70,7 @@ class HealthKitConfigViewController: UIViewController {
       self,
       selector: #selector(self.handleMetricRemovedNotification(notification:)),
       name: CurrentUserManager.NotificationName.healthKitMetricRemoved,
-      object: nil
+      object: nil,
     )
   }
 
@@ -100,7 +100,7 @@ class HealthKitConfigViewController: UIViewController {
           let alert = UIAlertController(
             title: "Error fetching goals",
             message: error.localizedDescription,
-            preferredStyle: .alert
+            preferredStyle: .alert,
           )
           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
           self.present(alert, animated: true, completion: nil)
@@ -161,7 +161,7 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
         let alert = UIAlertController(
           title: "Autodata Goal",
           message: "At the moment we don't have a way for you to swap data sources here yourself for autodata goals",
-          preferredStyle: .alert
+          preferredStyle: .alert,
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         return alert

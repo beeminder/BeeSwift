@@ -18,12 +18,12 @@ public class ServiceLocator {
   public static let signedRequestManager = SignedRequestManager(requestManager: requestManager)
   public static let currentUserManager = CurrentUserManager(
     requestManager: requestManager,
-    container: persistentContainer
+    container: persistentContainer,
   )
   public static let goalManager = GoalManager(
     requestManager: requestManager,
     currentUserManager: currentUserManager,
-    container: persistentContainer
+    container: persistentContainer,
   )
   public static let dataPointManager = DataPointManager(requestManager: requestManager, container: persistentContainer)
   public static let healthStoreManager = HealthStoreManager(goalManager: goalManager, container: persistentContainer)
@@ -31,6 +31,6 @@ public class ServiceLocator {
   public static let refreshManager = RefreshManager(
     healthStoreManager: healthStoreManager,
     goalManager: goalManager,
-    container: persistentContainer
+    container: persistentContainer,
   )
 }

@@ -32,20 +32,29 @@ final class TotalSleepMinutesTests: XCTestCase {
       type: sleepAnalysisCategoryType,
       value: value.rawValue,
       start: dateToday(start),
-      end: dateToday(end)
+      end: dateToday(end),
     )
   }
 
   func testCountsAnyMinuteContainingSleep() throws {
-    XCTAssertEqual(totalSleepMinutes(samples: [sample(value: .asleepUnspecified, start: "6:00:59", end: "6:01:01")]), 2)
+    XCTAssertEqual(
+      totalSleepMinutes(samples: [sample(value: .asleepUnspecified, start: "6:00:59", end: "6:01:01")]),
+      2,
+    )
   }
 
   func testCountsAllMinutesWithinRange() throws {
-    XCTAssertEqual(totalSleepMinutes(samples: [sample(value: .asleepUnspecified, start: "6:00:59", end: "6:02:01")]), 3)
+    XCTAssertEqual(
+      totalSleepMinutes(samples: [sample(value: .asleepUnspecified, start: "6:00:59", end: "6:02:01")]),
+      3,
+    )
   }
 
   func testEndTimeIsExclusive() throws {
-    XCTAssertEqual(totalSleepMinutes(samples: [sample(value: .asleepUnspecified, start: "6:00:00", end: "6:01:00")]), 1)
+    XCTAssertEqual(
+      totalSleepMinutes(samples: [sample(value: .asleepUnspecified, start: "6:00:00", end: "6:01:00")]),
+      1,
+    )
   }
 
   func testSeparateDataPointsAreAdded() throws {
@@ -54,7 +63,7 @@ final class TotalSleepMinutesTests: XCTestCase {
         sample(value: .asleepUnspecified, start: "6:00:59", end: "6:01:01"),
         sample(value: .asleepUnspecified, start: "7:00:59", end: "7:01:01"),
       ]),
-      4
+      4,
     )
   }
 
@@ -64,7 +73,7 @@ final class TotalSleepMinutesTests: XCTestCase {
         sample(value: .asleepUnspecified, start: "6:00:30", end: "6:01:30"),
         sample(value: .asleepUnspecified, start: "6:01:30", end: "6:02:30"),
       ]),
-      3
+      3,
     )
   }
 
@@ -74,7 +83,7 @@ final class TotalSleepMinutesTests: XCTestCase {
         sample(value: .asleepUnspecified, start: "6:00:59", end: "6:01:01"),
         sample(value: .asleepUnspecified, start: "6:01:59", end: "6:02:01"),
       ]),
-      3
+      3,
     )
   }
 
@@ -84,7 +93,7 @@ final class TotalSleepMinutesTests: XCTestCase {
         sample(value: .asleepUnspecified, start: "6:00:01", end: "6:00:02"),
         sample(value: .awake, start: "6:00:01", end: "6:00:30"),
       ]),
-      0
+      0,
     )
   }
 
@@ -94,7 +103,7 @@ final class TotalSleepMinutesTests: XCTestCase {
         sample(value: .asleepUnspecified, start: "6:00:01", end: "6:00:02"),
         sample(value: .awake, start: "6:00:01", end: "6:00:02"),
       ]),
-      1
+      1,
     )
   }
 
@@ -104,7 +113,7 @@ final class TotalSleepMinutesTests: XCTestCase {
         sample(value: .asleepUnspecified, start: "6:00:30", end: "6:05:59"),
         sample(value: .awake, start: "6:00:01", end: "6:05:59"),
       ]),
-      0
+      0,
     )
   }
 
@@ -114,7 +123,7 @@ final class TotalSleepMinutesTests: XCTestCase {
         sample(value: .asleepUnspecified, start: "6:00:01", end: "6:05:59"),
         sample(value: .awake, start: "6:00:30", end: "6:05:59"),
       ]),
-      6
+      6,
     )
   }
 
@@ -126,7 +135,7 @@ final class TotalSleepMinutesTests: XCTestCase {
         sample(value: .asleepUnspecified, start: "6:01:01", end: "6:01:02"),
         sample(value: .awake, start: "6:01:01", end: "6:01:02"),
       ]),
-      1
+      1,
     )
   }
 }

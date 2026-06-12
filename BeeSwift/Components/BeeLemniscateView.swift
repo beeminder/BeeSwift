@@ -75,7 +75,7 @@ class BeeLemniscateView: UIView {
       x: (scene.size.width - width) / 2,
       y: (scene.size.height - height) / 2,
       width: width,
-      height: height
+      height: height,
     )
     let centerPoint = CGPoint(x: lemniscateBounds.midX, y: lemniscateBounds.midY)
 
@@ -85,12 +85,12 @@ class BeeLemniscateView: UIView {
     path.addCurve(
       to: centerPoint,
       control1: CGPoint(x: lemniscateBounds.maxX, y: lemniscateBounds.minY),
-      control2: CGPoint(x: lemniscateBounds.maxX, y: lemniscateBounds.maxY)
+      control2: CGPoint(x: lemniscateBounds.maxX, y: lemniscateBounds.maxY),
     )
     path.addCurve(
       to: centerPoint,
       control1: CGPoint(x: lemniscateBounds.minX, y: lemniscateBounds.minY),
-      control2: CGPoint(x: lemniscateBounds.minX, y: lemniscateBounds.maxY)
+      control2: CGPoint(x: lemniscateBounds.minX, y: lemniscateBounds.maxY),
     )
 
     let followPath = SKAction.follow(path, asOffset: false, orientToPath: true, duration: 2.0)

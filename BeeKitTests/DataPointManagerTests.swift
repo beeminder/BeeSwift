@@ -75,7 +75,7 @@ class DataPointManagerTests: XCTestCase {
       updatedAt: Date(timeIntervalSince1970: 1_740_350_182),
       defaultAlertStart: 34200,
       defaultDeadline: 0,
-      defaultLeadTime: 0
+      defaultLeadTime: 0,
     )
     goal = Goal(context: context, owner: user, json: createTestGoalJSON())
     try context.save()
@@ -111,17 +111,17 @@ class DataPointManagerTests: XCTestCase {
       daystamp: try Daystamp(fromString: "20221201"),
       value: NSNumber(value: 15),
       comment: "Updated workout comment",
-      requestid: "hk_workout_1"
+      requestid: "hk_workout_1",
     )
     let newHealthKitDatapoint = MockHealthKitDataPoint(
       daystamp: try Daystamp(fromString: "20221201"),
       value: NSNumber(value: 25),
       comment: "New workout",
-      requestid: "hk_workout_2"
+      requestid: "hk_workout_2",
     )
     try! await dataPointManager.updateToMatchDataPoints(
       goalID: goal.objectID,
-      healthKitDataPoints: [updatedHealthKitDatapoint, newHealthKitDatapoint]
+      healthKitDataPoints: [updatedHealthKitDatapoint, newHealthKitDatapoint],
     )
 
     // Should update the existing datapoint by requestId
@@ -155,7 +155,7 @@ class DataPointManagerTests: XCTestCase {
       daystamp: try Daystamp(fromString: "20221201"),
       value: NSNumber(value: 30),
       comment: "Morning run",
-      requestid: "hk_workout_uuid_1"
+      requestid: "hk_workout_uuid_1",
     )
     try! await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: [remainingWorkout])
 
@@ -184,13 +184,13 @@ class DataPointManagerTests: XCTestCase {
         daystamp: try Daystamp(fromString: "20221201"),
         value: NSNumber(value: 30),
         comment: "Run",
-        requestid: "uuid_1"
+        requestid: "uuid_1",
       ),
       MockHealthKitDataPoint(
         daystamp: try Daystamp(fromString: "20221201"),
         value: NSNumber(value: 20),
         comment: "Yoga",
-        requestid: "uuid_3"
+        requestid: "uuid_3",
       ),
     ]
     let day2Workouts = [
@@ -198,12 +198,12 @@ class DataPointManagerTests: XCTestCase {
         daystamp: try Daystamp(fromString: "20221202"),
         value: NSNumber(value: 60),
         comment: "Long bike ride",
-        requestid: "uuid_4"
+        requestid: "uuid_4",
       )
     ]
     try! await dataPointManager.updateToMatchDataPoints(
       goalID: goal.objectID,
-      healthKitDataPoints: day1Workouts + day2Workouts
+      healthKitDataPoints: day1Workouts + day2Workouts,
     )
 
     // Should delete day2 old workout, but not update day1 unchanged workout

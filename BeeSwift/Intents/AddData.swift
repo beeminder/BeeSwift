@@ -36,7 +36,7 @@ struct AddData: DeprecatedAppIntent, CustomIntentMigratedAppIntent, PredictableI
     do {
       let _ = try await ServiceLocator.requestManager.addDatapoint(
         urtext: "^ \(dataValue) \"\(dataComment)\"",
-        slug: goalSlug
+        slug: goalSlug,
       )
       return .result(dialog: .responseSuccess(goal: goalSlug, value: dataValue))
     } catch ServerError.notFound { throw AddDataError.apiError("Goal '\(goalSlug)' not found") } catch {

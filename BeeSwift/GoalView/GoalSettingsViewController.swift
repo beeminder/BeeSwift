@@ -29,7 +29,7 @@ class GoalSettingsViewController: UIViewController {
     currentUserManager: CurrentUserManager,
     requestManager: RequestManager,
     goalManager: GoalManager,
-    coordinator: MainCoordinator
+    coordinator: MainCoordinator,
   ) {
     self.goal = goal
     self.currentUserManager = currentUserManager

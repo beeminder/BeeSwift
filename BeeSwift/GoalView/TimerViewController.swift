@@ -112,7 +112,7 @@ class TimerViewController: UIViewController {
         target: self,
         selector: #selector(self.updateTimerLabel),
         userInfo: nil,
-        repeats: true
+        repeats: true,
       )
     } else {
       self.accumulatedSeconds += Int(Date().timeIntervalSince(self.timingSince!))
@@ -152,7 +152,7 @@ class TimerViewController: UIViewController {
         hud.label.text = "Added!"
         DispatchQueue.main.asyncAfter(
           deadline: .now() + 2,
-          execute: { MBProgressHUD.hide(for: self.view, animated: true) }
+          execute: { MBProgressHUD.hide(for: self.view, animated: true) },
         )
         if let goalVC = self.presentingViewController?.children.last as? GoalViewController {
           try await goalVC.updateGoalAndInterface()
@@ -163,7 +163,7 @@ class TimerViewController: UIViewController {
         let alertController = UIAlertController(
           title: "Error",
           message: "Failed to add datapoint",
-          preferredStyle: .alert
+          preferredStyle: .alert,
         )
         alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
         self.present(alertController, animated: true)

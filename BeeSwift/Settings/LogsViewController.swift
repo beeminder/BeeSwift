@@ -65,7 +65,7 @@ class LogsViewController: UIViewController {
       let hud = MBProgressHUD.showAdded(to: view, animated: false)
       self.logTextView.text = await self.logReader.getLogMessages(
         showSystemMessages: showSystemMessages,
-        errorLevel: errorLevel
+        errorLevel: errorLevel,
       )
       hud.hide(animated: false)
     }

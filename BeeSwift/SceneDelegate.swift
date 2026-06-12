@@ -13,7 +13,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
-    options connectionOptions: UIScene.ConnectionOptions
+    options connectionOptions: UIScene.ConnectionOptions,
   ) {
     guard let windowScene = (scene as? UIWindowScene) else { return }
     windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: .all))
@@ -26,7 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       versionManager: ServiceLocator.versionManager,
       goalManager: ServiceLocator.goalManager,
       healthStoreManager: ServiceLocator.healthStoreManager,
-      requestManager: ServiceLocator.requestManager
+      requestManager: ServiceLocator.requestManager,
     )
     window = UIWindow(windowScene: windowScene)
     window?.rootViewController = navigationController
@@ -42,7 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     NotificationCenter.default.post(
       name: GalleryViewController.NotificationName.openGoal,
       object: nil,
-      userInfo: ["slug": goalname]
+      userInfo: ["slug": goalname],
     )
   }
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -55,7 +55,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     NotificationCenter.default.post(
       name: GalleryViewController.NotificationName.openGoal,
       object: nil,
-      userInfo: ["slug": goalname]
+      userInfo: ["slug": goalname],
     )
   }
   func sceneWillEnterForeground(_ scene: UIScene) {

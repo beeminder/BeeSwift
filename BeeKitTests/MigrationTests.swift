@@ -35,7 +35,7 @@ class MigrationTests: XCTestCase {
       let oldVersionURL = bundle.url(
         forResource: "BeeminderModel",
         withExtension: "mom",
-        subdirectory: "BeeminderModel.momd"
+        subdirectory: "BeeminderModel.momd",
       ), let oldModel = NSManagedObjectModel(contentsOf: oldVersionURL)
     else {
       XCTFail("Failed to load old data model")
@@ -111,7 +111,7 @@ class MigrationTests: XCTestCase {
         user.lastUpdatedLocal.timeIntervalSince1970,
         TestData.userLastModified.timeIntervalSince1970,
         accuracy: 0.001,
-        "User date value should be preserved during migration"
+        "User date value should be preserved during migration",
       )
     }
     // Migration on Goal
@@ -123,7 +123,7 @@ class MigrationTests: XCTestCase {
         goal.lastUpdatedLocal.timeIntervalSince1970,
         TestData.goalLastModified.timeIntervalSince1970,
         accuracy: 0.001,
-        "Goal date value should be preserved during migration"
+        "Goal date value should be preserved during migration",
       )
     }
     // Migration on DataPoint
@@ -135,7 +135,7 @@ class MigrationTests: XCTestCase {
         dataPoint.lastUpdatedLocal.timeIntervalSince1970,
         TestData.dataPointLastModified.timeIntervalSince1970,
         accuracy: 0.001,
-        "DataPoint date value should be preserved during migration"
+        "DataPoint date value should be preserved during migration",
       )
     }
   }

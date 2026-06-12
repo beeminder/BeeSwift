@@ -25,7 +25,7 @@ class SettingsViewController: UIViewController {
     viewContext: NSManagedObjectContext,
     goalManager: GoalManager,
     requestManager: RequestManager,
-    coordinator: MainCoordinator
+    coordinator: MainCoordinator,
   ) {
     self.currentUserManager = currentUserManager
     self.viewContext = viewContext
@@ -42,7 +42,7 @@ class SettingsViewController: UIViewController {
       self,
       selector: #selector(self.userDefaultsDidChange),
       name: UserDefaults.didChangeNotification,
-      object: nil
+      object: nil,
     )
     self.view.addSubview(self.tableView)
 

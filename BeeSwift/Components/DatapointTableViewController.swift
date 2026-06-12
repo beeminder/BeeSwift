@@ -21,7 +21,7 @@ struct DatapointColumnWidths {
 protocol DatapointTableViewControllerDelegate: AnyObject {
   func datapointTableViewController(
     _ datapointTableViewController: DatapointTableViewController,
-    didSelectDatapoint datapoint: BeeDataPoint
+    didSelectDatapoint datapoint: BeeDataPoint,
   )
 }
 

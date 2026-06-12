@@ -10,7 +10,7 @@ class StandHoursHealthKitMetric: CategoryHealthKitMetric {
       humanText: humanText,
       databaseString: databaseString,
       category: category,
-      hkSampleType: HKObjectType.categoryType(forIdentifier: .appleStandHour)!
+      hkSampleType: HKObjectType.categoryType(forIdentifier: .appleStandHour)!,
     )
   }
 

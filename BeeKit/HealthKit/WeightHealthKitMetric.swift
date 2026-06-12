@@ -13,7 +13,7 @@ public class WeightHealthKitMetric: QuantityHealthKitMetric {
       databaseString: databaseString,
       category: category,
       hkQuantityTypeIdentifier: .bodyMass,
-      precision: [HKUnit.pound(): 1, HKUnit.gramUnit(with: .kilo): 2]
+      precision: [HKUnit.pound(): 1, HKUnit.gramUnit(with: .kilo): 2],
     )
   }
 
@@ -21,7 +21,7 @@ public class WeightHealthKitMetric: QuantityHealthKitMetric {
     days: Int,
     deadline: Int,
     healthStore: HKHealthStore,
-    autodataConfig: [String: Any]
+    autodataConfig: [String: Any],
   ) async throws -> [BeeDataPoint] {
     let dailyAggregate = autodataConfig["daily_aggregate"] as? Bool ?? true
     if dailyAggregate {
@@ -29,7 +29,7 @@ public class WeightHealthKitMetric: QuantityHealthKitMetric {
         days: days,
         deadline: deadline,
         healthStore: healthStore,
-        autodataConfig: autodataConfig
+        autodataConfig: autodataConfig,
       )
     } else {
       return try await individualWeightDataPoints(days: days, deadline: deadline, healthStore: healthStore)
@@ -57,7 +57,7 @@ public class WeightHealthKitMetric: QuantityHealthKitMetric {
             requestid: id,
             daystamp: date,
             value: NSNumber(value: weightValue),
-            comment: "Weight via \(sourceName) at \(timeString)"
+            comment: "Weight via \(sourceName) at \(timeString)",
           )
         )
       }
@@ -77,7 +77,7 @@ public class WeightHealthKitMetric: QuantityHealthKitMetric {
         sampleType: quantityType,
         predicate: HKQuery.predicateForSamples(
           withStart: date.start(deadline: deadline),
-          end: date.end(deadline: deadline)
+          end: date.end(deadline: deadline),
         ),
         limit: 0,
         sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)],
@@ -89,7 +89,7 @@ public class WeightHealthKitMetric: QuantityHealthKitMetric {
           } else {
             continuation.resume(returning: [])
           }
-        }
+        },
       )
       healthStore.execute(query)
     }

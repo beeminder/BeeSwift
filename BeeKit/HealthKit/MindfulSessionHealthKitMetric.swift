@@ -9,7 +9,7 @@ class MindfulSessionHealthKitMetric: CategoryHealthKitMetric {
       humanText: humanText,
       databaseString: databaseString,
       category: category,
-      hkSampleType: HKObjectType.categoryType(forIdentifier: .mindfulSession)!
+      hkSampleType: HKObjectType.categoryType(forIdentifier: .mindfulSession)!,
     )
   }
 

@@ -19,12 +19,12 @@ import UIKit
   let backgroundUpdates = BackgroundUpdates()
   let spotlightIndexer = SpotlightIndexer(
     container: ServiceLocator.persistentContainer,
-    currentUserManager: ServiceLocator.currentUserManager
+    currentUserManager: ServiceLocator.currentUserManager,
   )
 
   func application(
     _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
   ) -> Bool {
     logger.notice("application:didFinishLaunchingWithOptions")
 
@@ -36,7 +36,7 @@ import UIKit
     ]
     UIBarButtonItem.appearance().setTitleTextAttributes(
       [NSAttributedString.Key.font: UIFont.beeminder.defaultFontPlain.withSize(18)],
-      for: UIControl.State()
+      for: UIControl.State(),
     )
 
     IQKeyboardManager.shared.isEnabled = true
@@ -54,13 +54,13 @@ import UIKit
       self,
       selector: #selector(self.handleManagedObjectContextObjectsDidChange),
       name: .NSManagedObjectContextObjectsDidChange,
-      object: ServiceLocator.persistentContainer.viewContext
+      object: ServiceLocator.persistentContainer.viewContext,
     )
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(self.handleUserSignedOut),
       name: CurrentUserManager.NotificationName.signedOut,
-      object: nil
+      object: nil,
     )
 
     Task {
@@ -94,7 +94,7 @@ import UIKit
       do {
         let _ = try await ServiceLocator.signedRequestManager.signedPOST(
           url: "/api/private/device_tokens",
-          parameters: parameters
+          parameters: parameters,
         )
       } catch { logger.error("Error sending device push token: \(error)") }
     }
@@ -124,7 +124,7 @@ import UIKit
   func userNotificationCenter(
     _ center: UNUserNotificationCenter,
     didReceive response: UNNotificationResponse,
-    withCompletionHandler completionHandler: @escaping () -> Void
+    withCompletionHandler completionHandler: @escaping () -> Void,
   ) {
     logger.notice("\(#function)")
     guard response.actionIdentifier == UNNotificationDefaultActionIdentifier else {
@@ -143,7 +143,7 @@ import UIKit
     NotificationCenter.default.post(
       name: GalleryViewController.NotificationName.openGoal,
       object: nil,
-      userInfo: ["slug": slug]
+      userInfo: ["slug": slug],
     )
 
     completionHandler()

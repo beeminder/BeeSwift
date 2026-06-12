@@ -29,43 +29,43 @@ public struct WorkoutActivityTypeInfo {
       activityType: .swimming,
       identifier: "swimming",
       displayName: "Swimming",
-      category: .cardio
+      category: .cardio,
     ),
     WorkoutActivityTypeInfo(
       activityType: .elliptical,
       identifier: "elliptical",
       displayName: "Elliptical",
-      category: .cardio
+      category: .cardio,
     ), WorkoutActivityTypeInfo(activityType: .rowing, identifier: "rowing", displayName: "Rowing", category: .cardio),
     WorkoutActivityTypeInfo(
       activityType: .stairClimbing,
       identifier: "stairClimbing",
       displayName: "Stair Climbing",
-      category: .cardio
+      category: .cardio,
     ),
     WorkoutActivityTypeInfo(
       activityType: .jumpRope,
       identifier: "jumpRope",
       displayName: "Jump Rope",
-      category: .cardio
+      category: .cardio,
     ),
     WorkoutActivityTypeInfo(
       activityType: .mixedCardio,
       identifier: "mixedCardio",
       displayName: "Mixed Cardio",
-      category: .cardio
+      category: .cardio,
     ),
     WorkoutActivityTypeInfo(
       activityType: .highIntensityIntervalTraining,
       identifier: "highIntensityIntervalTraining",
       displayName: "HIIT",
-      category: .cardio
+      category: .cardio,
     ),
     WorkoutActivityTypeInfo(
       activityType: .crossTraining,
       identifier: "crossTraining",
       displayName: "Cross Training",
-      category: .cardio
+      category: .cardio,
     ), WorkoutActivityTypeInfo(activityType: .hiking, identifier: "hiking", displayName: "Hiking", category: .cardio),
 
     // Strength
@@ -73,60 +73,64 @@ public struct WorkoutActivityTypeInfo {
       activityType: .traditionalStrengthTraining,
       identifier: "traditionalStrengthTraining",
       displayName: "Traditional Strength Training",
-      category: .strength
+      category: .strength,
     ),
     WorkoutActivityTypeInfo(
       activityType: .coreTraining,
       identifier: "coreTraining",
       displayName: "Core Training",
-      category: .strength
+      category: .strength,
     ),
     WorkoutActivityTypeInfo(
       activityType: .functionalStrengthTraining,
       identifier: "functionalStrengthTraining",
       displayName: "Functional Strength Training",
-      category: .strength
+      category: .strength,
     ),
 
     // Mind & Body
     WorkoutActivityTypeInfo(activityType: .yoga, identifier: "yoga", displayName: "Yoga", category: .mindBody),
-    WorkoutActivityTypeInfo(activityType: .pilates, identifier: "pilates", displayName: "Pilates", category: .mindBody),
-    WorkoutActivityTypeInfo(activityType: .barre, identifier: "barre", displayName: "Barre", category: .mindBody),
+    WorkoutActivityTypeInfo(
+      activityType: .pilates,
+      identifier: "pilates",
+      displayName: "Pilates",
+      category: .mindBody,
+    ), WorkoutActivityTypeInfo(activityType: .barre, identifier: "barre", displayName: "Barre", category: .mindBody),
     WorkoutActivityTypeInfo(
       activityType: .flexibility,
       identifier: "flexibility",
       displayName: "Flexibility",
-      category: .mindBody
+      category: .mindBody,
     ),
     WorkoutActivityTypeInfo(
       activityType: .mindAndBody,
       identifier: "mindAndBody",
       displayName: "Mind And Body",
-      category: .mindBody
+      category: .mindBody,
     ),
     WorkoutActivityTypeInfo(
       activityType: .socialDance,
       identifier: "socialDance",
       displayName: "Social Dance",
-      category: .mindBody
+      category: .mindBody,
     ),
     WorkoutActivityTypeInfo(
       activityType: .cardioDance,
       identifier: "cardioDance",
       displayName: "Cardio Dance",
-      category: .mindBody
+      category: .mindBody,
     ),
     WorkoutActivityTypeInfo(
       activityType: .cooldown,
       identifier: "cooldown",
       displayName: "Cool Down",
-      category: .mindBody
+      category: .mindBody,
     ),
     WorkoutActivityTypeInfo(
       activityType: .preparationAndRecovery,
       identifier: "preparationAndRecovery",
       displayName: "Preparation And Recovery",
-      category: .mindBody
+      category: .mindBody,
     ),
 
     // Racquet Sports
@@ -134,31 +138,31 @@ public struct WorkoutActivityTypeInfo {
       activityType: .tennis,
       identifier: "tennis",
       displayName: "Tennis",
-      category: .racquetSports
+      category: .racquetSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .badminton,
       identifier: "badminton",
       displayName: "Badminton",
-      category: .racquetSports
+      category: .racquetSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .racquetball,
       identifier: "racquetball",
       displayName: "Racquetball",
-      category: .racquetSports
+      category: .racquetSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .squash,
       identifier: "squash",
       displayName: "Squash",
-      category: .racquetSports
+      category: .racquetSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .tableTennis,
       identifier: "tableTennis",
       displayName: "Table Tennis",
-      category: .racquetSports
+      category: .racquetSports,
     ),
 
     // Team Sports
@@ -166,26 +170,26 @@ public struct WorkoutActivityTypeInfo {
       activityType: .basketball,
       identifier: "basketball",
       displayName: "Basketball",
-      category: .teamSports
+      category: .teamSports,
     ),
     WorkoutActivityTypeInfo(activityType: .soccer, identifier: "soccer", displayName: "Soccer", category: .teamSports),
     WorkoutActivityTypeInfo(
       activityType: .americanFootball,
       identifier: "americanFootball",
       displayName: "American Football",
-      category: .teamSports
+      category: .teamSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .baseball,
       identifier: "baseball",
       displayName: "Baseball",
-      category: .teamSports
+      category: .teamSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .volleyball,
       identifier: "volleyball",
       displayName: "Volleyball",
-      category: .teamSports
+      category: .teamSports,
     ),
     WorkoutActivityTypeInfo(activityType: .hockey, identifier: "hockey", displayName: "Hockey", category: .teamSports),
     WorkoutActivityTypeInfo(activityType: .rugby, identifier: "rugby", displayName: "Rugby", category: .teamSports),
@@ -193,19 +197,19 @@ public struct WorkoutActivityTypeInfo {
       activityType: .cricket,
       identifier: "cricket",
       displayName: "Cricket",
-      category: .teamSports
+      category: .teamSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .lacrosse,
       identifier: "lacrosse",
       displayName: "Lacrosse",
-      category: .teamSports
+      category: .teamSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .softball,
       identifier: "softball",
       displayName: "Softball",
-      category: .teamSports
+      category: .teamSports,
     ),
 
     // Individual Sports
@@ -214,37 +218,37 @@ public struct WorkoutActivityTypeInfo {
       activityType: .trackAndField,
       identifier: "trackAndField",
       displayName: "Track And Field",
-      category: .individualSports
+      category: .individualSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .martialArts,
       identifier: "martialArts",
       displayName: "Martial Arts",
-      category: .individualSports
+      category: .individualSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .boxing,
       identifier: "boxing",
       displayName: "Boxing",
-      category: .individualSports
+      category: .individualSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .wrestling,
       identifier: "wrestling",
       displayName: "Wrestling",
-      category: .individualSports
+      category: .individualSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .archery,
       identifier: "archery",
       displayName: "Archery",
-      category: .individualSports
+      category: .individualSports,
     ),
     WorkoutActivityTypeInfo(
       activityType: .bowling,
       identifier: "bowling",
       displayName: "Bowling",
-      category: .individualSports
+      category: .individualSports,
     ),
 
     // Outdoor & Adventure
@@ -252,31 +256,31 @@ public struct WorkoutActivityTypeInfo {
       activityType: .climbing,
       identifier: "climbing",
       displayName: "Climbing",
-      category: .outdoor
+      category: .outdoor,
     ),
     WorkoutActivityTypeInfo(
       activityType: .snowSports,
       identifier: "snowSports",
       displayName: "Snow Sports",
-      category: .outdoor
+      category: .outdoor,
     ),
     WorkoutActivityTypeInfo(
       activityType: .waterSports,
       identifier: "waterSports",
       displayName: "Water Sports",
-      category: .outdoor
+      category: .outdoor,
     ),
     WorkoutActivityTypeInfo(
       activityType: .waterFitness,
       identifier: "waterFitness",
       displayName: "Water Fitness",
-      category: .outdoor
+      category: .outdoor,
     ),
     WorkoutActivityTypeInfo(
       activityType: .paddleSports,
       identifier: "paddleSports",
       displayName: "Paddle Sports",
-      category: .outdoor
+      category: .outdoor,
     ),
     WorkoutActivityTypeInfo(activityType: .fishing, identifier: "fishing", displayName: "Fishing", category: .outdoor),
     WorkoutActivityTypeInfo(activityType: .hunting, identifier: "hunting", displayName: "Hunting", category: .outdoor),
@@ -343,7 +347,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
     days: Int,
     deadline: Int,
     healthStore: HKHealthStore,
-    autodataConfig: [String: Any]
+    autodataConfig: [String: Any],
   ) async throws -> [BeeDataPoint] {
     let dailyAggregate = autodataConfig["daily_aggregate"] as? Bool ?? true
     if !dailyAggregate {
@@ -351,7 +355,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
         days: days,
         deadline: deadline,
         healthStore: healthStore,
-        autodataConfig: autodataConfig
+        autodataConfig: autodataConfig,
       )
     } else {
       return try await super.recentDataPoints(
@@ -359,7 +363,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
         deadline: deadline,
         healthStore: healthStore,
         autodataConfig: autodataConfig,
-        samplePredicate: { self.workoutMatchesFilter($0, config: autodataConfig) }
+        samplePredicate: { self.workoutMatchesFilter($0, config: autodataConfig) },
       )
     }
   }
@@ -368,7 +372,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
     days: Int,
     deadline: Int,
     healthStore: HKHealthStore,
-    autodataConfig: [String: Any]
+    autodataConfig: [String: Any],
   ) async throws -> [BeeDataPoint] {
     let today = Daystamp.now(deadline: deadline)
     let startDate = today - days
@@ -386,7 +390,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
             requestid: id,
             daystamp: date,
             value: NSNumber(value: workoutMinutes),
-            comment: workoutDescription
+            comment: workoutDescription,
           )
         )
       }
@@ -400,7 +404,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
         sampleType: sampleType(),
         predicate: HKQuery.predicateForSamples(
           withStart: date.start(deadline: deadline),
-          end: date.end(deadline: deadline)
+          end: date.end(deadline: deadline),
         ),
         limit: 0,
         sortDescriptors: nil,
@@ -412,7 +416,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
           } else {
             continuation.resume(throwing: HealthKitError("HKSampleQuery did not return samples"))
           }
-        }
+        },
       )
       healthStore.execute(query)
     }

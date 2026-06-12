@@ -36,13 +36,13 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
       self,
       selector: #selector(self.handleFailedSignIn(_:)),
       name: CurrentUserManager.NotificationName.failedSignIn,
-      object: nil
+      object: nil,
     )
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(self.handleSignedIn(_:)),
       name: CurrentUserManager.NotificationName.signedIn,
-      object: nil
+      object: nil,
     )
     self.view.backgroundColor = UIColor.systemBackground
     self.beeImageView.image = UIImage(named: "website_logo_mid")
@@ -93,7 +93,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     self.signInButton.addTarget(
       self,
       action: #selector(SignInViewController.signInButtonPressed),
-      for: UIControl.Event.touchUpInside
+      for: UIControl.Event.touchUpInside,
     )
     self.signInButton.snp.makeConstraints { (make) -> Void in
       make.left.equalTo(self.passwordTextField)
@@ -123,7 +123,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     let lackOfCredentials = UIAlertController(
       title: "Incomplete Account Details",
       message: "Username and Password are required",
-      preferredStyle: .alert
+      preferredStyle: .alert,
     )
     lackOfCredentials.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
     return lackOfCredentials
@@ -132,7 +132,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     let controller = UIAlertController(
       title: "Could not sign in",
       message: "Invalid credentials",
-      preferredStyle: .alert
+      preferredStyle: .alert,
     )
     controller.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
     return controller

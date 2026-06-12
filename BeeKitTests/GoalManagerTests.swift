@@ -26,7 +26,7 @@ class GoalManagerTests: XCTestCase {
     goalManager = GoalManager(
       requestManager: mockRequestManager,
       currentUserManager: currentUserManager,
-      container: container
+      container: container,
     )
     let context = container.viewContext
     let _ = User(
@@ -37,7 +37,7 @@ class GoalManagerTests: XCTestCase {
       updatedAt: Date(timeIntervalSince1970: 1_740_350_182),
       defaultAlertStart: 34200,
       defaultDeadline: 0,
-      defaultLeadTime: 0
+      defaultLeadTime: 0,
     )
     try context.save()
   }
@@ -87,11 +87,11 @@ class GoalManagerTests: XCTestCase {
     mockRequestManager.responses = [
       "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
         with: userResponse.data(using: .utf8)!,
-        options: []
+        options: [],
       ),
       "api/v1/users/{username}/goals.json": try JSONSerialization.jsonObject(
         with: goalsResponse.data(using: .utf8)!,
-        options: []
+        options: [],
       ),
     ]
     try await goalManager.refreshGoals()
@@ -125,7 +125,7 @@ class GoalManagerTests: XCTestCase {
     mockRequestManager.responses = [
       "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
         with: deletionResponse.data(using: .utf8)!,
-        options: []
+        options: [],
       )
     ]
     try await goalManager.refreshGoals()
@@ -196,11 +196,11 @@ class GoalManagerTests: XCTestCase {
     mockRequestManager.responses = [
       "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
         with: userResponse.data(using: .utf8)!,
-        options: []
+        options: [],
       ),
       "api/v1/users/{username}/goals.json": try JSONSerialization.jsonObject(
         with: initialGoalsResponse.data(using: .utf8)!,
-        options: []
+        options: [],
       ),
     ]
     try await goalManager.refreshGoals()
@@ -255,7 +255,7 @@ class GoalManagerTests: XCTestCase {
     mockRequestManager.responses = [
       "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
         with: incrementalResponse.data(using: .utf8)!,
-        options: []
+        options: [],
       )
     ]
     try await goalManager.refreshGoals()
@@ -266,12 +266,12 @@ class GoalManagerTests: XCTestCase {
     XCTAssertGreaterThan(
       updatedGoalOne.lastUpdatedLocal,
       originalGoalOneTimestamp,
-      "Goal One should have updated timestamp"
+      "Goal One should have updated timestamp",
     )
     XCTAssertGreaterThan(
       updatedGoalTwo.lastUpdatedLocal,
       originalGoalTwoTimestamp,
-      "Goal Two should have updated timestamp even though it wasn't in the response"
+      "Goal Two should have updated timestamp even though it wasn't in the response",
     )
     // 5. Verify other properties updated correctly
     XCTAssertEqual(updatedGoalOne.title, "Goal One Updated")

@@ -33,7 +33,7 @@ import SwiftyJSON
     let params = ["value": "\(datapointValue)", "comment": comment]
     let _ = try await requestManager.put(
       url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json",
-      parameters: params
+      parameters: params,
     )
   }
 
@@ -51,7 +51,7 @@ import SwiftyJSON
     let params = ["sort": sort, "per": per, "page": page] as [String: Any]
     let response = try await requestManager.get(
       url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json",
-      parameters: params
+      parameters: params,
     )
     let responseJSON = JSON(response!)
 
@@ -98,7 +98,7 @@ import SwiftyJSON
 
     let datapoints = try await datapointsSince(
       goal: goal,
-      daystamp: try! Daystamp(fromString: firstDaystamp.description)
+      daystamp: try! Daystamp(fromString: firstDaystamp.description),
     )
     let realDatapoints = datapoints.filter { !$0.isDummy && !$0.isInitial }
 
@@ -108,12 +108,12 @@ import SwiftyJSON
         group.addTask {
           let existingDatapointsForDay = await self.datapointsMatchingDaystamp(
             datapoints: realDatapoints,
-            daystamp: daystamp
+            daystamp: daystamp,
           )
           try await self.updateToMatchDataPointsForDay(
             goal: goal,
             newDataPoints: dayDataPoints,
-            existingDatapoints: existingDatapointsForDay
+            existingDatapoints: existingDatapointsForDay,
           )
         }
       }
@@ -121,9 +121,11 @@ import SwiftyJSON
     }
   }
 
-  private func updateToMatchDataPointsForDay(goal: Goal, newDataPoints: [BeeDataPoint], existingDatapoints: [DataPoint])
-    async throws
-  {
+  private func updateToMatchDataPointsForDay(
+    goal: Goal,
+    newDataPoints: [BeeDataPoint],
+    existingDatapoints: [DataPoint],
+  ) async throws {
     try await withThrowingTaskGroup(of: Void.self) { group in
       var processedDatapoints: Set<String> = []
       for newDataPoint in newDataPoints {
@@ -140,7 +142,7 @@ import SwiftyJSON
                 goal: goal,
                 datapoint: existingDatapoint,
                 datapointValue: newDataPoint.value,
-                comment: newDataPoint.comment
+                comment: newDataPoint.comment,
               )
             }
           }

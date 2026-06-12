@@ -23,7 +23,7 @@ public class QuantityHealthKitMetric: HealthKitMetric {
     databaseString: String,
     category: HealthKitCategory,
     hkQuantityTypeIdentifier: HKQuantityTypeIdentifier,
-    precision: [HKUnit: Int] = [:]
+    precision: [HKUnit: Int] = [:],
   ) {
     self.humanText = humanText
     self.databaseString = databaseString
@@ -60,7 +60,7 @@ public class QuantityHealthKitMetric: HealthKitMetric {
         quantitySamplePredicate: predicate,
         options: options,
         anchorDate: today.start(deadline: deadline),
-        intervalComponents: DateComponents(day: 1)
+        intervalComponents: DateComponents(day: 1),
       )
       query.initialResultsHandler = { query, collection, error in
         if error != nil {
@@ -79,7 +79,7 @@ public class QuantityHealthKitMetric: HealthKitMetric {
       startDate: startDate,
       endDate: today,
       deadline: deadline,
-      healthStore: healthStore
+      healthStore: healthStore,
     )
   }
 
@@ -94,7 +94,7 @@ public class QuantityHealthKitMetric: HealthKitMetric {
     startDate: Daystamp,
     endDate: Daystamp,
     deadline: Int,
-    healthStore: HKHealthStore
+    healthStore: HKHealthStore,
   ) async throws -> [BeeDataPoint] {
 
     var results: [BeeDataPoint] = []
@@ -139,7 +139,7 @@ public class QuantityHealthKitMetric: HealthKitMetric {
           requestid: id,
           daystamp: daystamp,
           value: NSNumber(value: datapointValue),
-          comment: "Auto-entered via Apple Health"
+          comment: "Auto-entered via Apple Health",
         )
       )
     }

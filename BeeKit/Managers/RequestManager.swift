@@ -46,7 +46,7 @@ public class RequestManager {
       guard let username = await ServiceLocator.currentUserManager.username else {
         throw ServerError.custom(
           "Attempted to make request to username-based URL \(url) while logged out",
-          requestError: nil
+          requestError: nil,
         )
       }
       urlWithSubstitutions = urlWithSubstitutions.replacingOccurrences(of: "{username}", with: username)
@@ -58,7 +58,7 @@ public class RequestManager {
       method: method,
       parameters: parameters,
       encoding: encoding,
-      headers: HTTPHeaders.default + headers
+      headers: HTTPHeaders.default + headers,
     ).validate().serializingData(emptyRequestMethods: [HTTPMethod.post]).response
 
     switch response.result {

@@ -89,7 +89,7 @@ import SwiftyJSON
     urgencyKey: String,
     useDefaults: Bool,
     won: Bool,
-    yAxis: String
+    yAxis: String,
   ) {
     let entity = NSEntityDescription.entity(forEntityName: "Goal", in: context)!
     super.init(entity: entity, insertInto: context)

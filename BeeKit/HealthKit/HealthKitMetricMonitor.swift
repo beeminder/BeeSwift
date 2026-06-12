@@ -61,7 +61,7 @@ class HealthKitMetricMonitor {
           await self.onUpdate(self.metric)
           completionHandler()
         }
-      }
+      },
     )
     healthStore.execute(query)
 

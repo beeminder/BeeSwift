@@ -27,7 +27,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
     currentUserManager: CurrentUserManager,
     requestManager: RequestManager,
     goalManager: GoalManager,
-    viewContext: NSManagedObjectContext
+    viewContext: NSManagedObjectContext,
   ) {
     self.currentUserManager = currentUserManager
     self.requestManager = requestManager
@@ -61,7 +61,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
     self.useDefaultsSwitch.addTarget(
       self,
       action: #selector(EditGoalNotificationsViewController.useDefaultsSwitchValueChanged),
-      for: .valueChanged
+      for: .valueChanged,
     )
     self.leadTimeLabel.snp.remakeConstraints { (make) -> Void in
       make.top.equalTo(self.useDefaultsSwitch.snp.bottom).offset(20)
@@ -77,7 +77,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
       do {
         let _ = try await self.requestManager.put(
           url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-          parameters: params as [String: Any]
+          parameters: params as [String: Any],
         )
 
         try await self.goalManager.refreshGoal(self.goal.objectID)
@@ -97,7 +97,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
           let params = ["alertstart": self.midnightOffsetFromTimePickerView(), "use_defaults": false]
           let _ = try await self.requestManager.put(
             url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-            parameters: params
+            parameters: params,
           )
           try await self.goalManager.refreshGoal(self.goal.objectID)
 
@@ -116,7 +116,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
           let params = ["deadline": deadline, "use_defaults": false]
           let _ = try await self.requestManager.put(
             url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-            parameters: params
+            parameters: params,
           )
           try await self.goalManager.refreshGoal(self.goal.objectID)
 
@@ -128,7 +128,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
           let alert = UIAlertController(
             title: "Error saving to Beeminder",
             message: errorString,
-            preferredStyle: .alert
+            preferredStyle: .alert,
           )
           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
           self.present(alert, animated: true, completion: nil)
@@ -142,7 +142,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
       let alertController = UIAlertController(
         title: "Confirm",
         message: "This will set this goal's notification settings to your default ones. Are you sure?",
-        preferredStyle: .alert
+        preferredStyle: .alert,
       )
       alertController.addAction(
         UIAlertAction(
@@ -156,7 +156,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
                 let params = ["use_defaults": true]
                 let _ = try await self.requestManager.put(
                   url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-                  parameters: params
+                  parameters: params,
                 )
                 try await self.goalManager.refreshGoal(self.goal.objectID)
                 hud.hide(animated: true, afterDelay: 0.5)
@@ -183,11 +183,15 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
               self.deadline = self.user.defaultDeadline
               self.timePickerEditingMode = self.timePickerEditingMode  // trigger the setter which updates the timePicker components
             }
-          }
+          },
         )
       )
       alertController.addAction(
-        UIAlertAction(title: "No", style: .cancel, handler: { (action) -> Void in self.useDefaultsSwitch.isOn = false })
+        UIAlertAction(
+          title: "No",
+          style: .cancel,
+          handler: { (action) -> Void in self.useDefaultsSwitch.isOn = false },
+        )
       )
       self.present(alertController, animated: true, completion: nil)
     } else {
@@ -198,7 +202,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
           let params = ["use_defaults": false]
           let _ = try await self.requestManager.put(
             url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-            parameters: params
+            parameters: params,
           )
           try await self.goalManager.refreshGoal(self.goal.objectID)
           hud.hide(animated: true, afterDelay: 0.5)

@@ -16,7 +16,7 @@ struct AddDataPointIntent: AppIntent {
     do {
       let _ = try await ServiceLocator.requestManager.addDatapoint(
         urtext: "^ \(value) \"\(dataComment)\"",
-        slug: goal.slug
+        slug: goal.slug,
       )
       // Use displayTitle to show title with slug fallback
       let formatter = NumberFormatter()

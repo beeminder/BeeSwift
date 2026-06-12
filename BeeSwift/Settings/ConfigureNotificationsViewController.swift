@@ -30,7 +30,7 @@ class ConfigureNotificationsViewController: UIViewController {
     viewContext: NSManagedObjectContext,
     currentUserManager: CurrentUserManager,
     requestManager: RequestManager,
-    coordinator: MainCoordinator
+    coordinator: MainCoordinator,
   ) {
     self.goalManager = goalManager
     self.viewContext = viewContext
@@ -77,7 +77,7 @@ class ConfigureNotificationsViewController: UIViewController {
       self,
       selector: #selector(self.foregroundEntered),
       name: UIApplication.willEnterForegroundNotification,
-      object: nil
+      object: nil,
     )
   }
 
@@ -132,7 +132,7 @@ class ConfigureNotificationsViewController: UIViewController {
           let alert = UIAlertController(
             title: "Error fetching goals",
             message: error.localizedDescription,
-            preferredStyle: .alert
+            preferredStyle: .alert,
           )
           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
           self.present(alert, animated: true, completion: nil)

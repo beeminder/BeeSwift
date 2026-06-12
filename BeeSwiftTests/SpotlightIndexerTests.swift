@@ -60,7 +60,7 @@ final class SpotlightIndexerTests: XCTestCase {
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
-      searchableIndex: mockSearchableIndex
+      searchableIndex: mockSearchableIndex,
     )
 
     await indexer.reindexAllGoals()
@@ -77,7 +77,7 @@ final class SpotlightIndexerTests: XCTestCase {
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
-      searchableIndex: mockSearchableIndex
+      searchableIndex: mockSearchableIndex,
     )
 
     await indexer.reindexAllGoals()
@@ -101,7 +101,7 @@ final class SpotlightIndexerTests: XCTestCase {
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
-      searchableIndex: mockSearchableIndex
+      searchableIndex: mockSearchableIndex,
     )
     let listenerTask = Task { await indexer.listenForNotifications() }
 
@@ -124,7 +124,7 @@ final class SpotlightIndexerTests: XCTestCase {
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
-      searchableIndex: mockSearchableIndex
+      searchableIndex: mockSearchableIndex,
     )
     let listenerTask = Task { await indexer.listenForNotifications() }
 
@@ -149,7 +149,7 @@ final class SpotlightIndexerTests: XCTestCase {
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
-      searchableIndex: mockSearchableIndex
+      searchableIndex: mockSearchableIndex,
     )
 
     await indexer.reindexAllGoals()
@@ -166,7 +166,7 @@ final class SpotlightIndexerTests: XCTestCase {
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
-      searchableIndex: mockSearchableIndex
+      searchableIndex: mockSearchableIndex,
     )
 
     // First indexing
@@ -192,7 +192,7 @@ final class SpotlightIndexerTests: XCTestCase {
     let indexer = SpotlightIndexer(
       container: container,
       currentUserManager: currentUserManager,
-      searchableIndex: mockSearchableIndex
+      searchableIndex: mockSearchableIndex,
     )
 
     // First indexing with 2 goals
@@ -225,7 +225,7 @@ final class SpotlightIndexerTests: XCTestCase {
       updatedAt: Date(timeIntervalSince1970: 0),
       defaultAlertStart: 0,
       defaultDeadline: 0,
-      defaultLeadTime: 0
+      defaultLeadTime: 0,
     )
   }
 

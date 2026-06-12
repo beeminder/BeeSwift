@@ -139,7 +139,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
     let deleteButton = UIBarButtonItem(
       barButtonSystemItem: .trash,
       target: self,
-      action: #selector(self.deleteButtonPressed)
+      action: #selector(self.deleteButtonPressed),
     )
     deleteButton.tintColor = .red
     self.navigationItem.rightBarButtonItem = deleteButton
@@ -202,7 +202,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         let params = ["urtext": self.urtext()]
         let _ = try await self.requestManager.put(
           url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json",
-          parameters: params
+          parameters: params,
         )
         try await self.goalManager.refreshGoal(self.goal.objectID)
 
@@ -246,7 +246,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
         title: "Cancel",
         style: .cancel,
         handler: { _ in  //
-        }
+        },
       )
     )
     self.present(alert, animated: true, completion: nil)

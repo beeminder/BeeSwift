@@ -40,7 +40,7 @@ import SwiftyJSON
       self,
       selector: #selector(self.onSignedOutNotification),
       name: CurrentUserManager.NotificationName.signedOut,
-      object: nil
+      object: nil,
     )
   }
 
@@ -105,7 +105,7 @@ import SwiftyJSON
     let userResponse = JSON(
       try await requestManager.get(
         url: "api/v1/users/{username}.json",
-        parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1, "emaciated": "true"]
+        parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1, "emaciated": "true"],
       )!
     )
     let goalResponse = userResponse["goals"]
@@ -129,7 +129,7 @@ import SwiftyJSON
 
     let responseObject = try await requestManager.get(
       url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)",
-      parameters: ["datapoints_count": "5", "emaciated": "true"]
+      parameters: ["datapoints_count": "5", "emaciated": "true"],
     )
     let goalJSON = JSON(responseObject!)
 

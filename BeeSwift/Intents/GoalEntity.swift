@@ -44,7 +44,7 @@ struct GoalEntity: AppEntity, IndexedEntity, Equatable {
     limSum: String = "",
     won: Bool = false,
     autodata: String? = nil,
-    thumbUrl: String? = nil
+    thumbUrl: String? = nil,
   ) {
     self.id = id
     self.slug = slug

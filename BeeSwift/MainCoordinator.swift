@@ -17,7 +17,7 @@ class MainCoordinator {
     versionManager: VersionManager,
     goalManager: GoalManager,
     healthStoreManager: HealthStoreManager,
-    requestManager: RequestManager
+    requestManager: RequestManager,
   ) {
     self.navigationController = navigationController
     self.currentUserManager = currentUserManager
@@ -33,19 +33,19 @@ class MainCoordinator {
       self,
       selector: #selector(handleSignIn),
       name: CurrentUserManager.NotificationName.signedIn,
-      object: nil
+      object: nil,
     )
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(handleSignOut),
       name: CurrentUserManager.NotificationName.signedOut,
-      object: nil
+      object: nil,
     )
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(openGoalFromNotification(_:)),
       name: GalleryViewController.NotificationName.openGoal,
-      object: nil
+      object: nil,
     )
   }
   func start() {
@@ -56,7 +56,7 @@ class MainCoordinator {
       goalManager: goalManager,
       healthStoreManager: healthStoreManager,
       requestManager: requestManager,
-      coordinator: self
+      coordinator: self,
     )
     navigationController.setViewControllers([galleryVC], animated: false)
     navigationController.navigationBar.isTranslucent = false
@@ -72,7 +72,7 @@ class MainCoordinator {
       requestManager: requestManager,
       currentUserManager: currentUserManager,
       viewContext: viewContext,
-      coordinator: self
+      coordinator: self,
     )
     navigationController.pushViewController(goalViewController, animated: true)
   }
@@ -82,7 +82,7 @@ class MainCoordinator {
       viewContext: viewContext,
       goalManager: goalManager,
       requestManager: requestManager,
-      coordinator: self
+      coordinator: self,
     )
     navigationController.pushViewController(settingsVC, animated: true)
   }
@@ -102,7 +102,7 @@ class MainCoordinator {
       viewContext: viewContext,
       currentUserManager: currentUserManager,
       requestManager: requestManager,
-      coordinator: self
+      coordinator: self,
     )
     navigationController.pushViewController(controller, animated: true)
   }
@@ -112,7 +112,7 @@ class MainCoordinator {
       viewContext: viewContext,
       healthStoreManager: ServiceLocator.healthStoreManager,
       requestManager: requestManager,
-      coordinator: self
+      coordinator: self,
     )
     navigationController.pushViewController(controller, animated: true)
   }
@@ -121,7 +121,7 @@ class MainCoordinator {
       let alert = UIAlertController(
         title: "Unknown Metric",
         message: "Unable to find configuration for this Apple Health metric. The metric may no longer be supported.",
-        preferredStyle: .alert
+        preferredStyle: .alert,
       )
       alert.addAction(UIAlertAction(title: "OK", style: .default))
       navigationController.present(alert, animated: true)
@@ -132,7 +132,7 @@ class MainCoordinator {
       metric: metric,
       healthStoreManager: healthStoreManager,
       requestManager: requestManager,
-      goalManager: goalManager
+      goalManager: goalManager,
     )
     navigationController.pushViewController(controller, animated: true)
   }
@@ -146,7 +146,7 @@ class MainCoordinator {
       currentUserManager: currentUserManager,
       requestManager: requestManager,
       goalManager: goalManager,
-      viewContext: viewContext
+      viewContext: viewContext,
     )
     navigationController.pushViewController(controller, animated: true)
   }
@@ -156,7 +156,7 @@ class MainCoordinator {
       currentUserManager: currentUserManager,
       requestManager: requestManager,
       goalManager: goalManager,
-      coordinator: self
+      coordinator: self,
     )
     navigationController.pushViewController(controller, animated: true)
   }
@@ -165,7 +165,7 @@ class MainCoordinator {
       currentUserManager: currentUserManager,
       requestManager: requestManager,
       goalManager: goalManager,
-      viewContext: viewContext
+      viewContext: viewContext,
     )
     navigationController.pushViewController(controller, animated: true)
   }
@@ -174,7 +174,7 @@ class MainCoordinator {
       goal: goal,
       metric: metric,
       healthStoreManager: healthStoreManager,
-      requestManager: requestManager
+      requestManager: requestManager,
     )
     navigationController.pushViewController(controller, animated: true)
   }
@@ -183,7 +183,7 @@ class MainCoordinator {
       goal: goal,
       datapoint: datapoint,
       requestManager: self.requestManager,
-      goalManager: self.goalManager
+      goalManager: self.goalManager,
     )
 
     let navigationController = UINavigationController(rootViewController: editDatapointViewController)

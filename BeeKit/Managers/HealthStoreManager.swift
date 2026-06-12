@@ -161,7 +161,7 @@ import OSLog
           metric: metric,
           onUpdate: { [weak self] metric in
             await self?.updateGoalsForMetricChange(metricName: metricName, metric: metric)
-          }
+          },
         )
       }
     }
@@ -205,7 +205,7 @@ import OSLog
       days: days,
       deadline: goal.deadline,
       healthStore: healthStore,
-      autodataConfig: goal.autodataConfig
+      autodataConfig: goal.autodataConfig,
     )
     // TODO: In the future we should gain confidence this code is correct and remove the filter so we handle deleted data better
     let nonZeroDataPoints = newDataPoints.filter { dataPoint in dataPoint.value != 0 }
@@ -214,7 +214,7 @@ import OSLog
     )
     try await ServiceLocator.dataPointManager.updateToMatchDataPoints(
       goalID: goal.objectID,
-      healthKitDataPoints: nonZeroDataPoints
+      healthKitDataPoints: nonZeroDataPoints,
     )
   }
 }

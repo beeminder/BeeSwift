@@ -18,63 +18,63 @@ public enum HealthKitConfig {
         databaseString: "activeEnergy",
         category: .Activity,
         hkQuantityTypeIdentifier: .activeEnergyBurned,
-        precision: [HKUnit.largeCalorie(): 0]
+        precision: [HKUnit.largeCalorie(): 0],
       ),
       QuantityHealthKitMetric(
         humanText: "Cycling distance",
         databaseString: "cyclingDistance",
         category: .Activity,
-        hkQuantityTypeIdentifier: .distanceCycling
+        hkQuantityTypeIdentifier: .distanceCycling,
       ),
       QuantityHealthKitMetric(
         humanText: "Exercise time",
         databaseString: "exerciseTime",
         category: .Activity,
         hkQuantityTypeIdentifier: .appleExerciseTime,
-        precision: [HKUnit.minute(): 1]
+        precision: [HKUnit.minute(): 1],
       ),
       QuantityHealthKitMetric(
         humanText: "Nike Fuel",
         databaseString: "nikeFuel",
         category: .Activity,
-        hkQuantityTypeIdentifier: .nikeFuel
+        hkQuantityTypeIdentifier: .nikeFuel,
       ),
       QuantityHealthKitMetric(
         humanText: "Resting energy",
         databaseString: "basalEnergy",
         category: .Activity,
         hkQuantityTypeIdentifier: .basalEnergyBurned,
-        precision: [HKUnit.largeCalorie(): 0]
+        precision: [HKUnit.largeCalorie(): 0],
       ), StandHoursHealthKitMetric(humanText: "Stand hours", databaseString: "standHour", category: .Activity),
       QuantityHealthKitMetric(
         humanText: "Steps",
         databaseString: "steps",
         category: .Activity,
         hkQuantityTypeIdentifier: .stepCount,
-        precision: [HKUnit.count(): 0]
+        precision: [HKUnit.count(): 0],
       ),
       QuantityHealthKitMetric(
         humanText: "Swimming distance",
         databaseString: "swimDistance",
         category: .Activity,
-        hkQuantityTypeIdentifier: .distanceSwimming
+        hkQuantityTypeIdentifier: .distanceSwimming,
       ),
       QuantityHealthKitMetric(
         humanText: "Swimming strokes",
         databaseString: "swimStrokes",
         category: .Activity,
-        hkQuantityTypeIdentifier: .swimmingStrokeCount
+        hkQuantityTypeIdentifier: .swimmingStrokeCount,
       ),
       QuantityHealthKitMetric(
         humanText: "Walking/running distance",
         databaseString: "walkRunDistance",
         category: .Activity,
-        hkQuantityTypeIdentifier: .distanceWalkingRunning
+        hkQuantityTypeIdentifier: .distanceWalkingRunning,
       ),
       WorkoutMinutesHealthKitMetric(
         humanText: "Workout minutes",
         databaseString: "workoutMinutes",
-        category: .Activity
+        category: .Activity,
       ),
 
       // Body Measurements
@@ -86,7 +86,7 @@ public enum HealthKitConfig {
       MindfulSessionHealthKitMetric(
         humanText: "Mindful minutes",
         databaseString: "mindfulMinutes",
-        category: .Mindfulness
+        category: .Mindfulness,
       ),
 
       // Nutrition
@@ -94,104 +94,104 @@ public enum HealthKitConfig {
         humanText: "Dietary Caffeine",
         databaseString: "caffeine",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryCaffeine
+        hkQuantityTypeIdentifier: .dietaryCaffeine,
       ),
       QuantityHealthKitMetric(
         humanText: "Dietary carbs",
         databaseString: "dietaryCarbs",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryCarbohydrates
+        hkQuantityTypeIdentifier: .dietaryCarbohydrates,
       ),
       QuantityHealthKitMetric(
         humanText: "Dietary energy",
         databaseString: "dietaryEnergy",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryEnergyConsumed
+        hkQuantityTypeIdentifier: .dietaryEnergyConsumed,
       ),
       QuantityHealthKitMetric(
         humanText: "Dietary fat",
         databaseString: "dietaryFat",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryFatTotal
+        hkQuantityTypeIdentifier: .dietaryFatTotal,
       ),
       QuantityHealthKitMetric(
         humanText: "Dietary fiber",
         databaseString: "dietaryFiber",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryFiber
+        hkQuantityTypeIdentifier: .dietaryFiber,
       ),
       QuantityHealthKitMetric(
         humanText: "Dietary protein",
         databaseString: "dietaryProtein",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryProtein
+        hkQuantityTypeIdentifier: .dietaryProtein,
       ),
       QuantityHealthKitMetric(
         humanText: "Dietary saturated fat",
         databaseString: "dietarySaturatedFat",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryFatSaturated
+        hkQuantityTypeIdentifier: .dietaryFatSaturated,
       ),
       QuantityHealthKitMetric(
         humanText: "Dietary sodium",
         databaseString: "dietarySodium",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietarySodium
+        hkQuantityTypeIdentifier: .dietarySodium,
       ),
       QuantityHealthKitMetric(
         humanText: "Dietary sugar",
         databaseString: "dietarySugar",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietarySugar
+        hkQuantityTypeIdentifier: .dietarySugar,
       ),
       QuantityHealthKitMetric(
         humanText: "Vitamin A",
         databaseString: "dietaryVitaminA",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryVitaminA
+        hkQuantityTypeIdentifier: .dietaryVitaminA,
       ),
       QuantityHealthKitMetric(
         humanText: "Vitamin B6",
         databaseString: "dietaryVitaminB6",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryVitaminB6
+        hkQuantityTypeIdentifier: .dietaryVitaminB6,
       ),
       QuantityHealthKitMetric(
         humanText: "Vitamin B12",
         databaseString: "dietaryVitaminB12",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryVitaminB12
+        hkQuantityTypeIdentifier: .dietaryVitaminB12,
       ),
       QuantityHealthKitMetric(
         humanText: "Vitamin C",
         databaseString: "dietaryVitaminC",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryVitaminC
+        hkQuantityTypeIdentifier: .dietaryVitaminC,
       ),
       QuantityHealthKitMetric(
         humanText: "Vitamin D",
         databaseString: "dietaryVitaminD",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryVitaminD
+        hkQuantityTypeIdentifier: .dietaryVitaminD,
       ),
       QuantityHealthKitMetric(
         humanText: "Vitamin E",
         databaseString: "dietaryVitaminE",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryVitaminE
+        hkQuantityTypeIdentifier: .dietaryVitaminE,
       ),
       QuantityHealthKitMetric(
         humanText: "Vitamin K",
         databaseString: "dietaryVitaminK",
         category: .Nutrition,
-        hkQuantityTypeIdentifier: .dietaryVitaminK
+        hkQuantityTypeIdentifier: .dietaryVitaminK,
       ),
       QuantityHealthKitMetric(
         humanText: "Water",
         databaseString: "water",
         category: .Nutrition,
         hkQuantityTypeIdentifier: .dietaryWater,
-        precision: [HKUnit.fluidOunceUS(): 1]
+        precision: [HKUnit.fluidOunceUS(): 1],
       ),
       // Sleep
       TimeInBedHealthKitMetric(humanText: "Time in bed", databaseString: "timeInBed", category: .Sleep),
@@ -202,7 +202,7 @@ public enum HealthKitConfig {
         humanText: "Time in Daylight",
         databaseString: "timeInDaylight",
         category: .Other,
-        hkQuantityTypeIdentifier: .timeInDaylight
+        hkQuantityTypeIdentifier: .timeInDaylight,
       ),
     ]
   }
