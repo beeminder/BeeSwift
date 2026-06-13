@@ -99,6 +99,7 @@ class GalleryViewController: UIViewController {
   private var dataSource: UICollectionViewDiffableDataSource<Section, NSManagedObjectID>!
   private let fetchedResultsController: NSFetchedResultsController<Goal>!
   private var fetchRequest: NSFetchRequest<Goal>?
+  private var hasCompletedInitialFetch = false
   init(
     currentUserManager: CurrentUserManager,
     viewContext: NSManagedObjectContext,
@@ -247,6 +248,7 @@ class GalleryViewController: UIViewController {
       if self.filteredGoals.isEmpty { MBProgressHUD.showAdded(to: self.view, animated: true) }
       do {
         try await goalManager.refreshGoals()
+        self.hasCompletedInitialFetch = true
         self.updateGoals()
       } catch {
         if UIApplication.shared.applicationState == .active {
@@ -295,6 +297,12 @@ class GalleryViewController: UIViewController {
   }
   private func updateEmptyStateBackground() {
     guard self.filteredGoals.isEmpty else {
+      self.collectionView.backgroundView = nil
+      return
+    }
+
+    let isSearching = !(searchBar.text ?? "").isEmpty
+    guard hasCompletedInitialFetch || isSearching else {
       self.collectionView.backgroundView = nil
       return
     }
