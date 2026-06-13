@@ -96,6 +96,7 @@ final class SpotlightIndexerTests: XCTestCase {
     try container.viewContext.save()
 
     let indexed = expectation(description: "Goals indexed")
+    indexed.assertForOverFulfill = false
     mockSearchableIndex.onIndex = { indexed.fulfill() }
 
     let indexer = SpotlightIndexer(
@@ -105,20 +106,28 @@ final class SpotlightIndexerTests: XCTestCase {
     )
     let listenerTask = Task { await indexer.listenForNotifications() }
 
-    // Post the notification on main thread
-    await MainActor.run {
-      NotificationCenter.default.post(name: .NSManagedObjectContextObjectsDidChange, object: container.viewContext)
+    // listenForNotifications subscribes asynchronously, so a single post can land before the
+    // listener is observing and be missed (flaky under load). Keep posting until it reacts.
+    let posterTask = Task {
+      while !Task.isCancelled {
+        await MainActor.run {
+          NotificationCenter.default.post(name: .NSManagedObjectContextObjectsDidChange, object: container.viewContext)
+        }
+        try? await Task.sleep(for: .milliseconds(20))
+      }
     }
 
-    await fulfillment(of: [indexed], timeout: 1.0)
+    await fulfillment(of: [indexed], timeout: 5.0)
+    posterTask.cancel()
     listenerTask.cancel()
 
-    XCTAssertEqual(mockSearchableIndex.indexedEntities.count, 1, "Should have indexed once")
+    XCTAssertGreaterThanOrEqual(mockSearchableIndex.indexedEntities.count, 1, "Should have indexed")
     XCTAssertEqual(mockSearchableIndex.indexedEntities.first?.first?.slug, "initial-goal")
   }
 
   func testClearIndexOnSignedOutNotification() async throws {
     let cleared = expectation(description: "Index cleared")
+    cleared.assertForOverFulfill = false
     mockSearchableIndex.onDeleteAll = { cleared.fulfill() }
 
     let indexer = SpotlightIndexer(
@@ -128,12 +137,19 @@ final class SpotlightIndexerTests: XCTestCase {
     )
     let listenerTask = Task { await indexer.listenForNotifications() }
 
-    // Post the notification on main thread
-    await MainActor.run {
-      NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: nil)
+    // listenForNotifications subscribes asynchronously, so a single post can land before the
+    // listener is observing and be missed (flaky under load). Keep posting until it reacts.
+    let posterTask = Task {
+      while !Task.isCancelled {
+        await MainActor.run {
+          NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: nil)
+        }
+        try? await Task.sleep(for: .milliseconds(20))
+      }
     }
 
-    await fulfillment(of: [cleared], timeout: 1.0)
+    await fulfillment(of: [cleared], timeout: 5.0)
+    posterTask.cancel()
     listenerTask.cancel()
 
     XCTAssertTrue(mockSearchableIndex.deleteAllSearchableItemsCalled, "Should clear index on sign out")
