@@ -19,10 +19,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
   var signInButton = BSButton()
   var divider = UIView()
   private let currentUserManager: CurrentUserManager
-  private weak var coordinator: MainCoordinator?
-  init(currentUserManager: CurrentUserManager, coordinator: MainCoordinator?) {
+  init(currentUserManager: CurrentUserManager) {
     self.currentUserManager = currentUserManager
-    self.coordinator = coordinator
     super.init(nibName: nil, bundle: nil)
   }
   required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -141,10 +139,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     self.present(couldNotSignInAlertController, animated: true, completion: nil)
     MBProgressHUD.hide(for: self.view, animated: true)
   }
-  @objc func handleSignedIn(_ notification: Notification) {
-    MBProgressHUD.hide(for: self.view, animated: true)
-    coordinator?.start()
-  }
+  @objc func handleSignedIn(_ notification: Notification) { MBProgressHUD.hide(for: self.view, animated: true) }
   @objc func signInButtonPressed() {
     Task { @MainActor in
       guard let email = self.emailTextField.text?.trimmingCharacters(in: .whitespaces),

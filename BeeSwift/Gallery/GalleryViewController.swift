@@ -28,7 +28,6 @@ class GalleryViewController: UIViewController {
   private let viewContext: NSManagedObjectContext
   private let versionManager: VersionManager
   private let goalManager: GoalManager
-  private let healthStoreManager: HealthStoreManager
   private let requestManager: RequestManager
   private lazy var stackView: UIStackView = {
     let stackView = UIStackView()
@@ -100,12 +99,12 @@ class GalleryViewController: UIViewController {
   private var dataSource: UICollectionViewDiffableDataSource<Section, NSManagedObjectID>!
   private let fetchedResultsController: NSFetchedResultsController<Goal>!
   private var fetchRequest: NSFetchRequest<Goal>?
+  private var hasCompletedInitialFetch = false
   init(
     currentUserManager: CurrentUserManager,
     viewContext: NSManagedObjectContext,
     versionManager: VersionManager,
     goalManager: GoalManager,
-    healthStoreManager: HealthStoreManager,
     requestManager: RequestManager,
     coordinator: MainCoordinator,
   ) {
@@ -113,7 +112,6 @@ class GalleryViewController: UIViewController {
     self.viewContext = viewContext
     self.versionManager = versionManager
     self.goalManager = goalManager
-    self.healthStoreManager = healthStoreManager
     self.requestManager = requestManager
     self.coordinator = coordinator
     let fetchRequest = Goal.fetchRequest() as! NSFetchRequest<Goal>
@@ -135,12 +133,6 @@ class GalleryViewController: UIViewController {
       self,
       selector: #selector(self.userDefaultsDidChange),
       name: UserDefaults.didChangeNotification,
-      object: nil,
-    )
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(self.handleSignIn),
-      name: CurrentUserManager.NotificationName.signedIn,
       object: nil,
     )
     self.view.addSubview(self.stackView)
@@ -206,17 +198,6 @@ class GalleryViewController: UIViewController {
     }()
     self.updateGoals()
     self.fetchGoals()
-    if currentUserManager.signedIn(context: viewContext) {
-      UNUserNotificationCenter.current().requestAuthorization(
-        options: UNAuthorizationOptions([.alert, .badge, .sound])
-      ) { [weak self] (success, error) in
-        self?.logger.info(
-          "Requested person’s authorization at GalleryVC load to allow local and remote notifications; successful? \(success)"
-        )
-        guard success else { return }
-        DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() }
-      }
-    }
     Task { @MainActor in
       do {
         let updateState = try await versionManager.updateState()
@@ -256,35 +237,18 @@ class GalleryViewController: UIViewController {
     }
   }
   @objc private func userDefaultsDidChange() { Task { @MainActor [weak self] in self?.updateGoals() } }
-  @objc func handleSignIn() {
-    self.fetchGoals()
-    UNUserNotificationCenter.current().requestAuthorization(options: UNAuthorizationOptions([.alert, .badge, .sound])) {
-      [weak self] (success, error) in
-      self?.logger.info(
-        "Requested person's authorization upon signin to allow local and remote notifications; successful? \(success)"
-      )
-    }
-  }
   func updateDeadbeatVisibility() { self.deadbeatView.isHidden = !isUserKnownDeadbeat }
   private var isUserKnownDeadbeat: Bool { currentUserManager.user(context: viewContext)?.deadbeat == true }
   @objc func updateLastUpdatedLabel() {
     let lastUpdated = currentUserManager.user(context: viewContext)?.lastUpdatedLocal ?? .distantPast
     self.freshnessIndicator.update(with: lastUpdated)
   }
-  func setupHealthKit() {
-    Task { @MainActor in
-      logger.notice("setupHealthKit: Starting HealthKit setup")
-      do {
-        try await healthStoreManager.ensureGoalsUpdateRegularly()
-        logger.notice("setupHealthKit: HealthKit setup completed successfully")
-      } catch { logger.error("setupHealthKit: Failed to setup HealthKit: \(error)") }
-    }
-  }
   @objc func fetchGoals() {
     Task { @MainActor in
       if self.filteredGoals.isEmpty { MBProgressHUD.showAdded(to: self.view, animated: true) }
       do {
         try await goalManager.refreshGoals()
+        self.hasCompletedInitialFetch = true
         self.updateGoals()
       } catch {
         if UIApplication.shared.applicationState == .active {
@@ -319,7 +283,6 @@ class GalleryViewController: UIViewController {
   }
   private var filteredGoals: [Goal] { fetchedResultsController.fetchedObjects ?? [] }
   @objc func didUpdateGoals() {
-    self.setupHealthKit()
     self.collectionView.refreshControl?.endRefreshing()
     MBProgressHUD.hide(for: self.view, animated: true)
     self.updateDeadbeatVisibility()
@@ -334,6 +297,12 @@ class GalleryViewController: UIViewController {
   }
   private func updateEmptyStateBackground() {
     guard self.filteredGoals.isEmpty else {
+      self.collectionView.backgroundView = nil
+      return
+    }
+
+    let isSearching = !(searchBar.text ?? "").isEmpty
+    guard hasCompletedInitialFetch || isSearching else {
       self.collectionView.backgroundView = nil
       return
     }
