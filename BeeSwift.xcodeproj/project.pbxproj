@@ -1069,7 +1069,7 @@
 			repositoryURL = "https://github.com/fatbobman/CoreDataEvolution";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.0;
+				minimumVersion = 0.9.2;
 			};
 		};
 		E41286EF2A62E6840093D598 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
