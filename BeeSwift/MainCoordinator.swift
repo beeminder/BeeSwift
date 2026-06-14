@@ -33,12 +33,6 @@ class MainCoordinator {
   private func setUpNotifications() {
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(handleSignIn),
-      name: CurrentUserManager.NotificationName.signedIn,
-      object: nil,
-    )
-    NotificationCenter.default.addObserver(
-      self,
       selector: #selector(handleSignOut),
       name: CurrentUserManager.NotificationName.signedOut,
       object: nil,
@@ -92,9 +86,31 @@ class MainCoordinator {
     navigationController.pushViewController(settingsVC, animated: true)
   }
   func showSignIn() {
-    let signInVC = SignInViewController(currentUserManager: currentUserManager)
+    let signInVC = SignInViewController(
+      currentUserManager: currentUserManager,
+      goalManager: goalManager,
+      coordinator: self,
+    )
     navigationController.setNavigationBarHidden(true, animated: false)
     navigationController.setViewControllers([signInVC], animated: false)
+  }
+  /// Called by the sign-in screen once its success animation has played, to reveal the gallery.
+  /// Makes the gallery the root, then fades the real sign-in view out over it across
+  /// `revealDuration` so the reveal lands as the flying bee reaches the corner. We fade the actual
+  /// view (not a snapshot-based transition, which can leave a frozen "ghost" of the bee behind);
+  /// the bee has been lifted onto the window, above this view, so it keeps flying over the gallery.
+  func completeSignIn(revealDuration: TimeInterval = 0.3) {
+    let outgoingSignInView = navigationController.viewControllers.first?.view
+    showGallery()
+    guard let outgoingSignInView else { return }
+    navigationController.view.addSubview(outgoingSignInView)
+    UIView.animate(
+      withDuration: revealDuration,
+      delay: 0,
+      options: .curveEaseInOut,
+      animations: { outgoingSignInView.alpha = 0 },
+      completion: { _ in outgoingSignInView.removeFromSuperview() },
+    )
   }
   func showTimerForGoal(_ goal: Goal) {
     let controller = TimerViewController(goal: goal, requestManager: requestManager)
@@ -198,10 +214,6 @@ class MainCoordinator {
   func showLogs() {
     let controller = LogsViewController()
     navigationController.pushViewController(controller, animated: true)
-  }
-  @objc private func handleSignIn() {
-    navigationController.dismiss(animated: false)
-    start()
   }
   @objc private func handleSignOut() {
     navigationController.dismiss(animated: false)
