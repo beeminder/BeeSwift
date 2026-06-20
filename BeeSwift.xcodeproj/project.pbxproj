@@ -1125,7 +1125,7 @@
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
+				minimumVersion = 6.0.0;
 			};
 		};
 		E462BA5829AEF02500E80EF0 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
