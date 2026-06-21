@@ -52,6 +52,13 @@ class TimerViewController: UIViewController {
     view.setTitle("Add Datapoint to \(self.goal.slug)", for: .normal)
     return view
   }()
+  private lazy var resetButton: BSButton = {
+    let view = BSButton(type: .system)
+    view.configuration = .filled()
+    view.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
+    view.setTitle("Reset", for: .normal)
+    return view
+  }()
 
   private lazy var exitButton: BSButton = {
     let view = BSButton(type: .system)
@@ -107,8 +114,6 @@ class TimerViewController: UIViewController {
       make.centerX.equalTo(self.view)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    let resetButton = BSButton(type: .system)
-    resetButton.configuration = .filled()
     self.view.addSubview(resetButton)
     resetButton.snp.makeConstraints { (make) in
       make.left.equalTo(self.view.snp.centerX).offset(10)
@@ -116,8 +121,7 @@ class TimerViewController: UIViewController {
       make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    resetButton.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
-    resetButton.setTitle("Reset", for: .normal)
+
     self.view.addSubview(self.commentTextField)
     self.commentTextField.snp.makeConstraints { (make) in
       make.top.equalTo(addDatapointButton.snp.bottom).offset(20)
