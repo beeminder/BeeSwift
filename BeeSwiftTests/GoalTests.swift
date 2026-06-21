@@ -31,6 +31,7 @@ final class GoalTests: XCTestCase {
           "slug": "test-goal",
           "title": "Goal for Testing Purposes",
           "graph_url": "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.png",
+          "svg_url": "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.svg",
           "thumb_url": "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc-thumb.png",
           "deadline": 0,
           "leadtime": 0,
@@ -90,6 +91,7 @@ final class GoalTests: XCTestCase {
     XCTAssertEqual(goal.slug, "test-goal")
     XCTAssertEqual(goal.title, "Goal for Testing Purposes")
     XCTAssertEqual(goal.graphUrl, "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.png")
+    XCTAssertEqual(goal.svgUrl, "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc.svg")
     XCTAssertEqual(goal.thumbUrl, "https://cdn.beeminder.com/uploads/879fb101-0111-4f06-a704-1e5e316c5afc-thumb.png")
     XCTAssertEqual(goal.deadline, 0)
     XCTAssertEqual(goal.leadTime, 0)

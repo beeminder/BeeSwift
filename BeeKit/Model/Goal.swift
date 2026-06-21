@@ -15,6 +15,8 @@ import SwiftyJSON
   @NSManaged public var deadline: Int
   /// URL for the goal's graph image. E.g., "http://static.beeminder.com/alice/weight.png".
   @NSManaged public var graphUrl: String
+  /// URL for the goal's graph SVG. E.g., "http://static.beeminder.com/alice/weight.svg".
+  @NSManaged public var svgUrl: String
   /// The internal app identifier for the healthkit metric to sync to this goal
   @NSManaged public var healthKitMetric: String?
   @NSManaged public var autodataConfig: [String: Any]
@@ -73,6 +75,7 @@ import SwiftyJSON
     autodata: String?,
     deadline: Int,
     graphUrl: String,
+    svgUrl: String,
     healthKitMetric: String,
     hhmmFormat: Bool,
     initDay: Int,
@@ -100,6 +103,7 @@ import SwiftyJSON
     self.autodata = autodata
     self.deadline = deadline
     self.graphUrl = graphUrl
+    self.svgUrl = svgUrl
     self.healthKitMetric = healthKitMetric
     self.hhmmFormat = hhmmFormat
     self.initDay = initDay
@@ -151,6 +155,7 @@ import SwiftyJSON
     self.autodataConfig = json["autodata_config"].dictionaryObject ?? [:]
     self.deadline = json["deadline"].intValue
     self.graphUrl = json["graph_url"].stringValue
+    self.svgUrl = json["svg_url"].stringValue
     self.healthKitMetric = json["healthkitmetric"].string
     self.hhmmFormat = json["hhmmformat"].boolValue
     self.initDay = json["initday"].intValue

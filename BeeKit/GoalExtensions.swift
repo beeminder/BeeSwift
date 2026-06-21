@@ -40,6 +40,11 @@ extension Goal {
     return cacheBuster(graphUrlStr)
   }
 
+  public var cacheBustingSvgUrl: String {
+    let svgUrlStr = self.svgUrl
+    return cacheBuster(svgUrlStr)
+  }
+
   private func cacheBuster(_ originUrlStr: String) -> String {
     let queryCharacter = originUrlStr.range(of: "&") == nil ? "?" : "&"
 

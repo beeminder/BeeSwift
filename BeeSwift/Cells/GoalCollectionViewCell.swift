@@ -49,11 +49,10 @@ class GoalCollectionViewCell: UICollectionViewCell {
     }
     self.todaytaLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
+    // GoalImageView owns its own (fixed) thumbnail size; the cell only positions it.
     self.thumbnailImageView.snp.makeConstraints { (make) -> Void in
       make.left.equalTo(0).offset(self.margin)
       make.top.equalTo(self.slugLabel.snp.bottom).offset(5)
-      make.height.equalTo(Constants.thumbnailHeight)
-      make.width.equalTo(Constants.thumbnailWidth)
     }
 
     self.safesumLabel.textAlignment = NSTextAlignment.center
