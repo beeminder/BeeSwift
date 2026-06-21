@@ -16,7 +16,23 @@ class TimerViewController: UIViewController {
 
   let timerLabel = BSLabel()
   let startStopButton = BSButton(type: .system)
-  let commentTextField = UITextField()
+  private lazy var commentTextField: UITextField = {
+    let view = UITextField()
+    view.font = UIFont.beeminder.defaultFontPlain.withSize(16)
+    view.leftViewMode = .always
+    view.rightViewMode = .always
+    view.tintColor = UIColor.Beeminder.gray
+    view.layer.borderColor = UIColor.Beeminder.gray.cgColor
+    view.layer.borderWidth = 1
+    view.layer.cornerRadius = 6
+    view.backgroundColor = UIColor(white: 0.15, alpha: 1.0)
+    view.textColor = .white
+    view.text = TimerViewController.commentDefault
+    view.clearsOnBeginEditing = true
+    view.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
+    view.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
+    return view
+  }()
   
   private static let commentDefault = "Automatically entered from iOS timer interface"
 
@@ -92,19 +108,6 @@ class TimerViewController: UIViewController {
     resetButton.setTitle("Reset", for: .normal)
     
     self.view.addSubview(self.commentTextField)
-    self.commentTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
-    self.commentTextField.leftViewMode = .always
-    self.commentTextField.rightViewMode = .always
-    self.commentTextField.tintColor = UIColor.Beeminder.gray
-    self.commentTextField.layer.borderColor = UIColor.Beeminder.gray.cgColor
-    self.commentTextField.layer.borderWidth = 1
-    self.commentTextField.layer.cornerRadius = 6
-    self.commentTextField.backgroundColor = UIColor(white: 0.15, alpha: 1.0)
-    self.commentTextField.textColor = .white
-    self.commentTextField.text = TimerViewController.commentDefault
-    self.commentTextField.clearsOnBeginEditing = true
-    self.commentTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
-    self.commentTextField.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
     self.commentTextField.snp.makeConstraints { (make) in
       make.top.equalTo(addDatapointButton.snp.bottom).offset(20)
       make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(20)
