@@ -15,7 +15,13 @@ class TimerViewController: UIViewController {
   private enum TimerUnit { case hours, minutes }
 
   let timerLabel = BSLabel()
-  let startStopButton = BSButton(type: .system)
+  private lazy var startStopButton: BSButton = {
+    let view = BSButton(type: .system)
+    view.addTarget(self, action: #selector(self.startStopButtonPressed), for: .touchUpInside)
+    view.setTitle("Start", for: .normal)
+    view.configuration = .filled()
+    return view
+  }()
   private lazy var commentTextField: UITextField = {
     let view = UITextField()
     view.font = UIFont.beeminder.defaultFontPlain.withSize(16)
@@ -33,7 +39,6 @@ class TimerViewController: UIViewController {
     view.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
     return view
   }()
-  
   private static let commentDefault = "Automatically entered from iOS timer interface"
 
   let goal: Goal
@@ -77,14 +82,11 @@ class TimerViewController: UIViewController {
     exitButton.addTarget(self, action: #selector(self.exitButtonPressed), for: .touchUpInside)
     exitButton.setTitle("Exit", for: .normal)
     self.view.addSubview(self.startStopButton)
-    startStopButton.configuration = .filled()
     self.startStopButton.snp.makeConstraints { (make) in
       make.top.equalTo(self.view.snp.centerY).offset(10)
       make.centerX.equalTo(self.view)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    self.startStopButton.addTarget(self, action: #selector(self.startStopButtonPressed), for: .touchUpInside)
-    self.startStopButton.setTitle("Start", for: .normal)
     let addDatapointButton = BSButton(type: .system)
     addDatapointButton.configuration = .filled()
     self.view.addSubview(addDatapointButton)
@@ -106,7 +108,6 @@ class TimerViewController: UIViewController {
     }
     resetButton.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
     resetButton.setTitle("Reset", for: .normal)
-    
     self.view.addSubview(self.commentTextField)
     self.commentTextField.snp.makeConstraints { (make) in
       make.top.equalTo(addDatapointButton.snp.bottom).offset(20)
