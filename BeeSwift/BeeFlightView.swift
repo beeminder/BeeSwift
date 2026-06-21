@@ -113,14 +113,8 @@ final class BeeFlightView: UIView {
     // increasingly long arc-length steps; setting durationScale = pace'(0) makes the initial speed
     // exactly the loop speed, ramping to (1 + accel) / pace'(0) times that by the corner.
     let accel: CGFloat = 0.5
-    let pace: (CGFloat) -> CGFloat = { (1 - accel) * $0 + accel * $0 * $0 }
-    // Inverse of `pace` (kept here so the two can't drift apart): given a fraction of arc length,
-    // returns the fraction of time at which the bee reaches it. Used to time the exit's trail dashes.
-    let paceInverse: (CGFloat) -> CGFloat = { fraction in
-      let y = max(0, min(1, fraction))
-      guard accel > 0.0001 else { return y }
-      return (-(1 - accel) + sqrt((1 - accel) * (1 - accel) + 4 * accel * y)) / (2 * accel)
-    }
+    let pace: (CGFloat) -> CGFloat = { Self.pace($0, accel: accel) }
+    let paceInverse: (CGFloat) -> CGFloat = { Self.paceInverse($0, accel: accel) }
     let durationScale = Double(1 - accel)
     let duration = Double(flightKeyframes(densePoints: exitPath).length / flightSpeed) * durationScale
 
@@ -181,6 +175,23 @@ final class BeeFlightView: UIView {
     DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [self] in removeFromSuperview() }
   }
 
+  // MARK: - Exit acceleration curve
+
+  /// Maps an even time fraction onto an arc-length fraction for the accelerating exit. Because
+  /// `pace'(0) = 1 - accel`, scaling the exit's duration by `1 - accel` makes the bee leave the loop
+  /// at exactly the loop speed (no jolt at the hand-off) and ramp up to `(1 + accel)/(1 - accel)×`
+  /// that by the corner. `pace(0) = 0` and `pace(1) = 1`, so the path is covered exactly once.
+  static func pace(_ u: CGFloat, accel: CGFloat) -> CGFloat { (1 - accel) * u + accel * u * u }
+
+  /// The analytic inverse of `pace` (lives alongside it so the two can't drift apart): given a
+  /// fraction of arc length, the fraction of time at which the bee reaches it. Used to time each
+  /// exit trail dash to the moment the bee is `trailGap` ahead of it. Input is clamped to [0, 1].
+  static func paceInverse(_ fraction: CGFloat, accel: CGFloat) -> CGFloat {
+    let y = max(0, min(1, fraction))
+    guard accel > 0.0001 else { return y }
+    return (-(1 - accel) + sqrt((1 - accel) * (1 - accel) + 4 * accel * y)) / (2 * accel)
+  }
+
   // MARK: - Flight geometry
 
   private func prepareFlightGeometry() {
@@ -238,7 +249,7 @@ final class BeeFlightView: UIView {
   /// circular-arc turn of radius `minRadius`, tangent to `headingAngle` at `start`, that rotates to
   /// face `target`, followed by a straight run out past it. Bounding the arc radius keeps the
   /// lemniscate→exit transition from ever becoming a sharp corner.
-  private func exitPathPoints(from start: CGPoint, headingAngle: CGFloat, toward target: CGPoint, minRadius: CGFloat)
+  func exitPathPoints(from start: CGPoint, headingAngle: CGFloat, toward target: CGPoint, minRadius: CGFloat)
     -> [CGPoint]
   {
     let aim = atan2(target.y - start.y, target.x - start.x)
@@ -359,7 +370,7 @@ final class BeeFlightView: UIView {
   /// Resamples an already-dense polyline at equal (or `pace`-warped) arc-length stations and
   /// computes a head-leading rotation at each. Used for paths that aren't Bézier cubics, such as
   /// the arc-based exit.
-  private func flightKeyframes(densePoints dense: [CGPoint], pace: (CGFloat) -> CGFloat = { $0 }) -> (
+  func flightKeyframes(densePoints dense: [CGPoint], pace: (CGFloat) -> CGFloat = { $0 }) -> (
     positions: [CGPoint], rotations: [CGFloat], length: CGFloat
   ) {
     var cumulative: [CGFloat] = [0]
