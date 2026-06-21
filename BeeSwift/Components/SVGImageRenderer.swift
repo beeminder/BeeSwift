@@ -286,6 +286,17 @@ import WebKit
     .dp.red, .ap.red, .autophages.red, .derails { fill: #ff453a !important; }
     .dp.blu, .ap.blu, .autophages.blu { fill: #5e7bff !important; }
     .horizontext { fill: #6b8cff !important; }
+
+    /* Defensive: elements that are invisible-on-white in light mode but would render wrong on black.
+       None occur in common goals, so these are added pre-emptively (see bgraph dotcolor/arcregion):
+       - black datapoints (dotcolor returns BLCK for points before the goal's start) -> light dot
+       - autophage slash (black) -> light stroke
+       - archived-road region (light gray, only removed in the editor) -> dark gray */
+    .dp.blk, .ap.blk, .autophages.blk { fill: #c7c7cc !important; }
+    .autophage-slash { stroke: #6e6e73 !important; }
+    .arcregion { fill: #2a2a2a !important; }
+    /* odometer tare/restart/archive markers: light-gray zigzag lines (drawn in the static graph) -> dim gray */
+    .tarings, .restarts, .archives { stroke: #48484a !important; }
     """
 
   /// The appearance (background + dark theme) that is injected into the DOM after load.
