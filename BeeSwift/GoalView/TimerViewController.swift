@@ -14,7 +14,13 @@ import UIKit
 class TimerViewController: UIViewController {
   private enum TimerUnit { case hours, minutes }
 
-  let timerLabel = BSLabel()
+  private lazy var timerLabel: BSLabel = {
+    let view = BSLabel()
+    view.text = "00:00:00"
+    view.textColor = .white
+    view.font = UIFont.beeminder.defaultBoldFont.withSize(48)
+    return view
+  }()
   private lazy var startStopButton: BSButton = {
     let view = BSButton(type: .system)
     view.addTarget(self, action: #selector(self.startStopButtonPressed), for: .touchUpInside)
@@ -67,9 +73,6 @@ class TimerViewController: UIViewController {
       make.bottom.equalTo(self.view.snp.centerY).offset(-10)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    self.timerLabel.text = "00:00:00"
-    self.timerLabel.textColor = .white
-    self.timerLabel.font = UIFont.beeminder.defaultBoldFont.withSize(48)
     let exitButton = BSButton(type: .system)
     exitButton.configuration = .filled()
     self.view.addSubview(exitButton)
