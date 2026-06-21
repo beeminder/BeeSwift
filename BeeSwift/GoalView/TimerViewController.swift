@@ -45,6 +45,14 @@ class TimerViewController: UIViewController {
     view.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
     return view
   }()
+  private lazy var addDatapointButton: BSButton = {
+    let view = BSButton(type: .system)
+    view.configuration = .filled()
+    view.addTarget(self, action: #selector(self.addDatapointButtonPressed), for: .touchUpInside)
+    view.setTitle("Add Datapoint to \(self.goal.slug)", for: .normal)
+    return view
+  }()
+
   private lazy var exitButton: BSButton = {
     let view = BSButton(type: .system)
     view.configuration = .filled()
@@ -93,16 +101,12 @@ class TimerViewController: UIViewController {
       make.centerX.equalTo(self.view)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    let addDatapointButton = BSButton(type: .system)
-    addDatapointButton.configuration = .filled()
     self.view.addSubview(addDatapointButton)
     addDatapointButton.snp.makeConstraints { (make) in
       make.top.equalTo(self.startStopButton.snp.bottom).offset(Constants.defaultTextFieldHeight)
       make.centerX.equalTo(self.view)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    addDatapointButton.addTarget(self, action: #selector(self.addDatapointButtonPressed), for: .touchUpInside)
-    addDatapointButton.setTitle("Add Datapoint to \(self.goal.slug)", for: .normal)
     let resetButton = BSButton(type: .system)
     resetButton.configuration = .filled()
     self.view.addSubview(resetButton)
