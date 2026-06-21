@@ -45,6 +45,13 @@ class TimerViewController: UIViewController {
     view.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
     return view
   }()
+  private lazy var exitButton: BSButton = {
+    let view = BSButton(type: .system)
+    view.configuration = .filled()
+    view.addTarget(self, action: #selector(self.exitButtonPressed), for: .touchUpInside)
+    view.setTitle("Exit", for: .normal)
+    return view
+  }()
   private static let commentDefault = "Automatically entered from iOS timer interface"
 
   let goal: Goal
@@ -73,8 +80,6 @@ class TimerViewController: UIViewController {
       make.bottom.equalTo(self.view.snp.centerY).offset(-10)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    let exitButton = BSButton(type: .system)
-    exitButton.configuration = .filled()
     self.view.addSubview(exitButton)
     exitButton.snp.makeConstraints { (make) in
       make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(10)
@@ -82,8 +87,6 @@ class TimerViewController: UIViewController {
       make.right.equalTo(self.view.snp.centerX).offset(-10)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    exitButton.addTarget(self, action: #selector(self.exitButtonPressed), for: .touchUpInside)
-    exitButton.setTitle("Exit", for: .normal)
     self.view.addSubview(self.startStopButton)
     self.startStopButton.snp.makeConstraints { (make) in
       make.top.equalTo(self.view.snp.centerY).offset(10)
