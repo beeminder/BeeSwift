@@ -16,6 +16,10 @@ class TimerViewController: UIViewController {
 
   let timerLabel = BSLabel()
   let startStopButton = BSButton(type: .system)
+  let commentTextField = UITextField()
+  
+  private static let commentDefault = "Automatically entered from iOS timer interface"
+
   let goal: Goal
   var timingSince: Date?
   var timer: Timer?
@@ -86,6 +90,27 @@ class TimerViewController: UIViewController {
     }
     resetButton.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
     resetButton.setTitle("Reset", for: .normal)
+    
+    self.view.addSubview(self.commentTextField)
+    self.commentTextField.font = UIFont.beeminder.defaultFontPlain.withSize(16)
+    self.commentTextField.leftViewMode = .always
+    self.commentTextField.rightViewMode = .always
+    self.commentTextField.tintColor = UIColor.Beeminder.gray
+    self.commentTextField.layer.borderColor = UIColor.Beeminder.gray.cgColor
+    self.commentTextField.layer.borderWidth = 1
+    self.commentTextField.layer.cornerRadius = 6
+    self.commentTextField.backgroundColor = UIColor(white: 0.15, alpha: 1.0)
+    self.commentTextField.textColor = .white
+    self.commentTextField.text = TimerViewController.commentDefault
+    self.commentTextField.clearsOnBeginEditing = true
+    self.commentTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
+    self.commentTextField.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
+    self.commentTextField.snp.makeConstraints { (make) in
+      make.top.equalTo(addDatapointButton.snp.bottom).offset(20)
+      make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(20)
+      make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-20)
+      make.height.equalTo(Constants.defaultTextFieldHeight)
+    }
   }
   @objc func exitButtonPressed() { self.presentingViewController?.dismiss(animated: true, completion: nil) }
   func totalSeconds() -> Double {
@@ -129,6 +154,7 @@ class TimerViewController: UIViewController {
     self.timingSince = nil
     self.accumulatedSeconds = 0
     self.updateTimerLabel()
+    self.commentTextField.text = TimerViewController.commentDefault
   }
   func urtext() -> String {
     let urtextDaystamp = Daystamp.makeUrtextDaystamp(submissionDate: Date(), deadline: goal.deadline)
@@ -138,7 +164,7 @@ class TimerViewController: UIViewController {
     case .minutes: value = self.totalSeconds() / 60.0
     case .hours: value = self.totalSeconds() / 3600.0
     }
-    let comment = "Automatically entered from iOS timer interface"
+    let comment = self.commentTextField.text ?? ""
     return "\(urtextDaystamp) \(value) \"\(comment)\""
   }
   @objc func addDatapointButtonPressed() {
