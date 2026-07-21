@@ -14,8 +14,61 @@ import UIKit
 class TimerViewController: UIViewController {
   private enum TimerUnit { case hours, minutes }
 
-  let timerLabel = BSLabel()
-  let startStopButton = BSButton(type: .system)
+  private lazy var timerLabel: BSLabel = {
+    let view = BSLabel()
+    view.text = "00:00:00"
+    view.textColor = .white
+    view.font = UIFont.beeminder.defaultBoldFont.withSize(48)
+    return view
+  }()
+  private lazy var startStopButton: BSButton = {
+    let view = BSButton(type: .system)
+    view.addTarget(self, action: #selector(self.startStopButtonPressed), for: .touchUpInside)
+    view.setTitle("Start", for: .normal)
+    view.configuration = .filled()
+    return view
+  }()
+  private lazy var commentTextField: UITextField = {
+    let view = UITextField()
+    view.font = UIFont.beeminder.defaultFontPlain.withSize(16)
+    view.leftViewMode = .always
+    view.rightViewMode = .always
+    view.tintColor = UIColor.Beeminder.gray
+    view.layer.borderColor = UIColor.Beeminder.gray.cgColor
+    view.layer.borderWidth = 1
+    view.layer.cornerRadius = 6
+    view.backgroundColor = UIColor(white: 0.15, alpha: 1.0)
+    view.textColor = .white
+    view.text = TimerViewController.commentDefault
+    view.clearsOnBeginEditing = true
+    view.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
+    view.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
+    return view
+  }()
+  private lazy var addDatapointButton: BSButton = {
+    let view = BSButton(type: .system)
+    view.configuration = .filled()
+    view.addTarget(self, action: #selector(self.addDatapointButtonPressed), for: .touchUpInside)
+    view.setTitle("Add Datapoint to \(self.goal.slug)", for: .normal)
+    return view
+  }()
+  private lazy var resetButton: BSButton = {
+    let view = BSButton(type: .system)
+    view.configuration = .filled()
+    view.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
+    view.setTitle("Reset", for: .normal)
+    return view
+  }()
+
+  private lazy var exitButton: BSButton = {
+    let view = BSButton(type: .system)
+    view.configuration = .filled()
+    view.addTarget(self, action: #selector(self.exitButtonPressed), for: .touchUpInside)
+    view.setTitle("Exit", for: .normal)
+    return view
+  }()
+  private static let commentDefault = "Automatically entered from iOS timer interface"
+
   let goal: Goal
   var timingSince: Date?
   var timer: Timer?
@@ -42,11 +95,6 @@ class TimerViewController: UIViewController {
       make.bottom.equalTo(self.view.snp.centerY).offset(-10)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    self.timerLabel.text = "00:00:00"
-    self.timerLabel.textColor = .white
-    self.timerLabel.font = UIFont.beeminder.defaultBoldFont.withSize(48)
-    let exitButton = BSButton(type: .system)
-    exitButton.configuration = .filled()
     self.view.addSubview(exitButton)
     exitButton.snp.makeConstraints { (make) in
       make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(10)
@@ -54,29 +102,18 @@ class TimerViewController: UIViewController {
       make.right.equalTo(self.view.snp.centerX).offset(-10)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    exitButton.addTarget(self, action: #selector(self.exitButtonPressed), for: .touchUpInside)
-    exitButton.setTitle("Exit", for: .normal)
     self.view.addSubview(self.startStopButton)
-    startStopButton.configuration = .filled()
     self.startStopButton.snp.makeConstraints { (make) in
       make.top.equalTo(self.view.snp.centerY).offset(10)
       make.centerX.equalTo(self.view)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    self.startStopButton.addTarget(self, action: #selector(self.startStopButtonPressed), for: .touchUpInside)
-    self.startStopButton.setTitle("Start", for: .normal)
-    let addDatapointButton = BSButton(type: .system)
-    addDatapointButton.configuration = .filled()
     self.view.addSubview(addDatapointButton)
     addDatapointButton.snp.makeConstraints { (make) in
       make.top.equalTo(self.startStopButton.snp.bottom).offset(Constants.defaultTextFieldHeight)
       make.centerX.equalTo(self.view)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    addDatapointButton.addTarget(self, action: #selector(self.addDatapointButtonPressed), for: .touchUpInside)
-    addDatapointButton.setTitle("Add Datapoint to \(self.goal.slug)", for: .normal)
-    let resetButton = BSButton(type: .system)
-    resetButton.configuration = .filled()
     self.view.addSubview(resetButton)
     resetButton.snp.makeConstraints { (make) in
       make.left.equalTo(self.view.snp.centerX).offset(10)
@@ -84,8 +121,14 @@ class TimerViewController: UIViewController {
       make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    resetButton.addTarget(self, action: #selector(self.resetButtonPressed), for: .touchUpInside)
-    resetButton.setTitle("Reset", for: .normal)
+
+    self.view.addSubview(self.commentTextField)
+    self.commentTextField.snp.makeConstraints { (make) in
+      make.top.equalTo(addDatapointButton.snp.bottom).offset(20)
+      make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(20)
+      make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-20)
+      make.height.equalTo(Constants.defaultTextFieldHeight)
+    }
   }
   @objc func exitButtonPressed() { self.presentingViewController?.dismiss(animated: true, completion: nil) }
   func totalSeconds() -> Double {
@@ -129,6 +172,7 @@ class TimerViewController: UIViewController {
     self.timingSince = nil
     self.accumulatedSeconds = 0
     self.updateTimerLabel()
+    self.commentTextField.text = TimerViewController.commentDefault
   }
   func urtext() -> String {
     let urtextDaystamp = Daystamp.makeUrtextDaystamp(submissionDate: Date(), deadline: goal.deadline)
@@ -138,7 +182,7 @@ class TimerViewController: UIViewController {
     case .minutes: value = self.totalSeconds() / 60.0
     case .hours: value = self.totalSeconds() / 3600.0
     }
-    let comment = "Automatically entered from iOS timer interface"
+    let comment = self.commentTextField.text ?? ""
     return "\(urtextDaystamp) \(value) \"\(comment)\""
   }
   @objc func addDatapointButtonPressed() {
