@@ -37,12 +37,13 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
   required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
   override func sendLeadTimeToServer(_ timer: Timer) {
     // We must not use `timer` in the Task as it may change once this method returns
-    let userInfo = timer.userInfo! as! [String: NSNumber]
+    guard let userInfo = timer.userInfo as? [String: NSNumber] else { return }
     Task { @MainActor in
-      guard let leadtime = userInfo["leadtime"] else { return }
-      let params = ["default_leadtime": leadtime]
+      guard let leadtime = userInfo["leadtime"]?.intValue else { return }
       do {
-        let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
+        let _ = try await requestManager.request(
+          endpoint: .updateUser(username: user.username, default_leadtime: leadtime)
+        )
         try await goalManager.refreshGoals()
       } catch {
         logger.error("Error setting default leadtime: \(error)")  // show alert
@@ -59,10 +60,12 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
       hud.mode = .indeterminate
       switch self.timePickerEditingMode {
       case .alertstart:
-        self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
-        let params = ["default_alertstart": self.midnightOffsetFromTimePickerView()]
+        let alertstart = self.midnightOffsetFromTimePickerView()
+        self.updateAlertstartLabel(alertstart)
         do {
-          let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
+          let _ = try await requestManager.request(
+            endpoint: .updateUser(username: user.username, default_alertstart: alertstart)
+          )
           try await goalManager.refreshGoals()
           hud.hide(animated: true, afterDelay: 0.5)
         } catch {
@@ -72,9 +75,10 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
       case .deadline:
         let deadline = self.deadlineFromTimePickerView
         self.updateDeadlineLabel(deadline)
-        let params = ["default_deadline": deadline]
         do {
-          let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
+          let _ = try await requestManager.request(
+            endpoint: .updateUser(username: user.username, default_deadline: deadline)
+          )
           try await goalManager.refreshGoals()
           hud.hide(animated: true, afterDelay: 0.5)
         } catch {
