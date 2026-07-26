@@ -22,7 +22,7 @@ public class RequestManager: RequestManaging {
       url: endpoint.url,
       method: endpoint.method,
       parameters: parameters,
-      headers: authenticationHeaders()
+      headers: authenticationHeaders(),
     )
   }
 }

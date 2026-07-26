@@ -21,8 +21,11 @@ import SwiftyJSON
 
   private var queuedGoalsBackgroundTaskRunning: Bool = false
 
-  init(requestManager: RequestManaging, currentUserManager: CurrentUserManager, container: BeeminderPersistentContainer)
-  {
+  init(
+    requestManager: RequestManaging,
+    currentUserManager: CurrentUserManager,
+    container: BeeminderPersistentContainer,
+  ) {
     modelContainer = container
     let context = container.newBackgroundContext()
     context.name = "GoalManager"
@@ -107,7 +110,7 @@ import SwiftyJSON
         endpoint: .getUser(
           username: user.username,
           diff_since: user.updatedAt.timeIntervalSince1970 + 1,
-          emaciated: true
+          emaciated: true,
         )
       )!
     )
@@ -135,7 +138,7 @@ import SwiftyJSON
         username: goal.owner.username,
         goalname: goal.slug,
         datapoints_count: 5,
-        emaciated: true
+        emaciated: true,
       )
     )
     let goalJSON = JSON(responseObject!)

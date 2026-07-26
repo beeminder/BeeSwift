@@ -204,7 +204,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
             username: goal.owner.username,
             goalname: goal.slug,
             datapointID: datapoint.id,
-            urtext: urtext()
+            urtext: urtext(),
           )
         )
         try await self.goalManager.refreshGoal(self.goal.objectID)

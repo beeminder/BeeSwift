@@ -48,7 +48,7 @@ struct DeeplinkGenerator {
     tab: GoalTab,
     username: String,
     goalName: String,
-    accessToken: String
+    accessToken: String,
   ) -> URL {
     let destinationURL = webURLToGoal(username: username, goalName: goalName, tab: tab)
     return generateAuthenticatedDeepLink(accessToken: accessToken, username: username, destinationURL: destinationURL)

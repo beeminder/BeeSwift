@@ -79,7 +79,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
             username: goal.owner.username,
             goalname: goal.slug,
             leadtime: leadtime,
-            usesDefaultNotifications: false
+            usesDefaultNotifications: false,
           )
         )
 
@@ -103,7 +103,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
               username: user.username,
               goalname: goal.slug,
               alertstart: alertstart,
-              usesDefaultNotifications: false
+              usesDefaultNotifications: false,
             )
           )
           try await self.goalManager.refreshGoal(self.goal.objectID)
@@ -125,7 +125,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
               username: user.username,
               goalname: goal.slug,
               deadline: deadline,
-              usesDefaultNotifications: false
+              usesDefaultNotifications: false,
             )
           )
           try await self.goalManager.refreshGoal(self.goal.objectID)
@@ -167,7 +167,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
                   endpoint: .updateGoal(
                     username: self.user.username,
                     goalname: self.goal.slug,
-                    usesDefaultNotifications: true
+                    usesDefaultNotifications: true,
                   )
                 )
                 try await self.goalManager.refreshGoal(self.goal.objectID)

@@ -37,7 +37,7 @@ import SwiftyJSON
         goalname: goal.slug,
         datapointID: datapoint.id,
         value: datapointValue,
-        comment: comment
+        comment: comment,
       )
     )
   }
@@ -54,7 +54,7 @@ import SwiftyJSON
         username: goal.owner.username,
         goalname: goal.slug,
         urtext: urText,
-        requestID: requestId
+        requestID: requestId,
       )
     )
   }

@@ -21,7 +21,7 @@ public enum Endpoint {
     sort: String? = nil,
     count: Int? = nil,
     page: Int? = nil,
-    per: Int? = nil
+    per: Int? = nil,
   )
 
   // Get all goals for a user
@@ -36,7 +36,7 @@ public enum Endpoint {
     timestamp: Double? = nil,
     value: NSNumber? = nil,
     comment: String? = nil,
-    urtext: String? = nil
+    urtext: String? = nil,
   )
   // Update a goal for a user
   case updateGoal(
@@ -52,14 +52,14 @@ public enum Endpoint {
     leadtime: Int? = nil,
     alertstart: Int? = nil,
     deadline: Int? = nil,
-    usesDefaultNotifications: Bool? = nil
+    usesDefaultNotifications: Bool? = nil,
   )
   // Update the user
   case updateUser(
     username: String,
     default_alertstart: Int? = nil,
     default_deadline: Int? = nil,
-    default_leadtime: Int? = nil
+    default_leadtime: Int? = nil,
   )
   // Add a new datapoint to user u's goal g — beeminder.com/u/g.
   case createDatapoint(
@@ -70,7 +70,7 @@ public enum Endpoint {
     daystamp: String? = nil,
     comment: String? = nil,
     urtext: String? = nil,
-    requestID: String? = nil
+    requestID: String? = nil,
   )
   case deletedDatapoint(username: String, goalname: String, datapointID: String)
   case registerDeviceToken(token: String, environment: String? = nil)
@@ -162,7 +162,7 @@ public enum Endpoint {
       let leadtime,
       let alertstart,
       let deadline,
-      let usesDefaultNotifications
+      let usesDefaultNotifications,
     ):
       var parameters: [String: Any] = [:]
       if let title { parameters["title"] = title }
