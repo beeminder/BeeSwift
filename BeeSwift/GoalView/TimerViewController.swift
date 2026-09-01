@@ -19,6 +19,7 @@ class TimerViewController: UIViewController {
     view.text = "00:00:00"
     view.textColor = .white
     view.font = UIFont.beeminder.defaultBoldFont.withSize(48)
+    view.textAlignment = .center
     return view
   }()
   private lazy var startStopButton: BSButton = {
@@ -88,12 +89,6 @@ class TimerViewController: UIViewController {
     super.viewDidLoad()
     self.view.backgroundColor = .darkGray
 
-    self.view.addSubview(self.timerLabel)
-    self.timerLabel.snp.makeConstraints { (make) in
-      make.centerX.equalTo(self.view)
-      make.bottom.equalTo(self.view.snp.centerY).offset(-10)
-      make.height.equalTo(Constants.defaultTextFieldHeight)
-    }
     self.view.addSubview(exitButton)
     exitButton.snp.makeConstraints { (make) in
       make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(10)
@@ -101,18 +96,7 @@ class TimerViewController: UIViewController {
       make.right.equalTo(self.view.snp.centerX).offset(-10)
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
-    self.view.addSubview(self.startStopButton)
-    self.startStopButton.snp.makeConstraints { (make) in
-      make.top.equalTo(self.view.snp.centerY).offset(10)
-      make.centerX.equalTo(self.view)
-      make.height.equalTo(Constants.defaultTextFieldHeight)
-    }
-    self.view.addSubview(addDatapointButton)
-    addDatapointButton.snp.makeConstraints { (make) in
-      make.top.equalTo(self.startStopButton.snp.bottom).offset(Constants.defaultTextFieldHeight)
-      make.centerX.equalTo(self.view)
-      make.height.equalTo(Constants.defaultTextFieldHeight)
-    }
+
     self.view.addSubview(resetButton)
     resetButton.snp.makeConstraints { (make) in
       make.left.equalTo(self.view.snp.centerX).offset(10)
@@ -121,12 +105,51 @@ class TimerViewController: UIViewController {
       make.height.equalTo(Constants.defaultTextFieldHeight)
     }
 
-    self.view.addSubview(self.commentTextField)
-    self.commentTextField.snp.makeConstraints { (make) in
-      make.top.equalTo(addDatapointButton.snp.bottom).offset(20)
+    let scrollView = UIScrollView()
+    self.view.addSubview(scrollView)
+    scrollView.snp.makeConstraints { (make) in
+      make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
       make.left.equalTo(self.view.safeAreaLayoutGuide.snp.leftMargin).offset(20)
       make.right.equalTo(self.view.safeAreaLayoutGuide.snp.rightMargin).offset(-20)
-      make.height.equalTo(Constants.defaultTextFieldHeight)
+      make.bottom.equalTo(self.exitButton.snp.top).offset(-10)
+    }
+
+    let containerView = UIView()
+    scrollView.addSubview(containerView)
+    containerView.snp.makeConstraints { (make) in
+      make.top.equalToSuperview().offset(10)
+      make.left.equalToSuperview()
+      make.right.equalToSuperview()
+      make.bottom.equalToSuperview().offset(-10)
+      make.width.equalToSuperview()
+      make.height.greaterThanOrEqualTo(scrollView.snp.height)
+    }
+
+    let contentStackView = UIStackView()
+    contentStackView.axis = .vertical
+    contentStackView.alignment = .center
+    contentStackView.distribution = .fill
+    contentStackView.spacing = 16
+    containerView.addSubview(contentStackView)
+    contentStackView.snp.makeConstraints { (make) in
+      make.centerX.equalToSuperview()
+      make.centerY.equalToSuperview()
+      make.left.equalToSuperview()
+      make.right.equalToSuperview()
+      make.width.equalToSuperview()
+    }
+
+    contentStackView.addArrangedSubview(self.timerLabel)
+    contentStackView.addArrangedSubview(self.startStopButton)
+    contentStackView.addArrangedSubview(self.addDatapointButton)
+    contentStackView.addArrangedSubview(self.commentTextField)
+
+    self.timerLabel.snp.makeConstraints { (make) in make.width.equalToSuperview() }
+    self.startStopButton.snp.makeConstraints { (make) in make.width.equalTo(200) }
+    self.addDatapointButton.snp.makeConstraints { (make) in make.width.equalTo(self.startStopButton) }
+    self.commentTextField.snp.makeConstraints { (make) in
+      make.width.equalToSuperview()
+      make.height.greaterThanOrEqualTo(Constants.defaultTextFieldHeight)
     }
   }
   @objc func exitButtonPressed() { self.presentingViewController?.dismiss(animated: true, completion: nil) }
