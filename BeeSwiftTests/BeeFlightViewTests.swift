@@ -171,48 +171,48 @@ import XCTest
 
   // MARK: - End-to-end smoke tests
 
+  // These drive real Core Animation on a window, so they necessarily take wall-clock time. To keep
+  // them from flaking on a slow CI runner, the flight is run at a tiny loop duration so every phase
+  // collapses to its minimum length (a fraction of a second), and the waits below allow many times
+  // that. The "let it fly a bit" pauses exercise the live trail sampler; they are not timing
+  // assumptions, since nothing asserted depends on how far the bee got.
+
   /// Drive a real flight all the way through the accelerating exit and confirm the view runs the
   /// entry/loop/exit (including the live and pre-baked trail paths) without crashing and removes
   /// itself from the window when done.
   func testFlyAwaySmokeRunsToCompletionAndRemovesItself() {
-    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
-    let view = BeeFlightView(beeImage: nil, beeSize: 80)
-    view.frame = window.bounds
-    window.addSubview(view)
-    window.isHidden = false
+    let (window, view) = makeFlightOnWindow()
 
     view.start(home: CGPoint(x: 195, y: 300))
     XCTAssertTrue(view.isFlying)
 
-    spinRunLoop(0.3)  // let the entry + loop run a few frames (exercises the live trail sampler)
+    spinRunLoop(0.2)  // let the entry + loop run a few frames (exercises the live trail sampler)
 
     var revealedDuration: TimeInterval?
     view.flyAway { revealedDuration = $0 }
     XCTAssertNotNil(revealedDuration, "reveal should be invoked with the exit duration")
     XCTAssertFalse(view.isFlying)
 
-    waitForRemoval(of: view, timeout: 6)
+    wait(for: [removalExpectation(for: view)], timeout: 10)
     XCTAssertNil(view.superview, "the flight view should remove itself once the exit has finished")
+    _ = window  // keep the window alive until the view has removed itself
   }
 
   /// Drive the failure path: the bee glides home, the completion fires, and the view tears down.
   func testAbortHomeSmokeRunsToCompletionAndRemovesItself() {
-    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
-    let view = BeeFlightView(beeImage: nil, beeSize: 80)
-    view.frame = window.bounds
-    window.addSubview(view)
-    window.isHidden = false
+    let (window, view) = makeFlightOnWindow()
 
     view.start(home: CGPoint(x: 195, y: 300))
-    spinRunLoop(0.3)
+    spinRunLoop(0.2)
 
     let landed = expectation(description: "bee glided home")
     view.abortHome { landed.fulfill() }
     XCTAssertFalse(view.isFlying)
-    wait(for: [landed], timeout: 5)
+    wait(for: [landed], timeout: 10)
 
-    waitForRemoval(of: view, timeout: 3)
+    wait(for: [removalExpectation(for: view)], timeout: 10)
     XCTAssertNil(view.superview)
+    _ = window
   }
 
   /// Starting a second flight while one is in progress must be ignored, not crash or double-start.
@@ -232,11 +232,22 @@ import XCTest
 
   private func makeView() -> BeeFlightView { BeeFlightView(beeImage: nil, beeSize: 80) }
 
+  /// A flight view mounted on a visible window, running at a near-instant loop duration (see the
+  /// note above the smoke tests).
+  private func makeFlightOnWindow() -> (UIWindow, BeeFlightView) {
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+    let view = BeeFlightView(beeImage: nil, beeSize: 80)
+    view.loopDuration = 0.01
+    view.frame = window.bounds
+    window.addSubview(view)
+    window.isHidden = false
+    return (window, view)
+  }
+
   private func spinRunLoop(_ seconds: TimeInterval) { RunLoop.current.run(until: Date().addingTimeInterval(seconds)) }
 
-  private func waitForRemoval(of view: UIView, timeout: TimeInterval) {
-    let deadline = Date().addingTimeInterval(timeout)
-    while view.superview != nil && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.05)) }
+  private func removalExpectation(for view: UIView) -> XCTestExpectation {
+    expectation(for: NSPredicate { _, _ in view.superview == nil }, evaluatedWith: nil)
   }
 
   /// Smallest unsigned angle between two headings, in [0, π].

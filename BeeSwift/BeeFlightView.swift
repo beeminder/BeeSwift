@@ -22,6 +22,9 @@ final class BeeFlightView: UIView {
   private struct Cubic { let p0, p1, p2, p3: CGPoint }
 
   private let flightStations = 120
+  /// Seconds per figure-8 loop; lower is faster. Sets the shared flight speed for every phase (the
+  /// exit ramps up from it). Set before `start`; tests shrink it so flights resolve near-instantly.
+  var loopDuration: TimeInterval = 1.67
   private(set) var isFlying = false
   private var flightHome: CGPoint = .zero
   private var lemniscateCenter: CGPoint = .zero
@@ -201,9 +204,8 @@ final class BeeFlightView: UIView {
     lemniscateCenter = CGPoint(x: bounds.midX, y: flightHome.y - 18)
     // Baseline perceptual speed: pick the speed from one loop and reuse it for entry and looping.
     // The exit ramps up from this speed (see flyAway).
-    let loopDuration = 1.67  // seconds per figure-8 loop; lower is faster
     let loopLength = flightKeyframes(loopCubics()).length
-    flightSpeed = max(1, loopLength / loopDuration)
+    flightSpeed = max(1, loopLength / CGFloat(loopDuration))
   }
 
   private func loopCubics() -> [Cubic] {
