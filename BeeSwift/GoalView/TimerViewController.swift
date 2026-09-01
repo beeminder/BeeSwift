@@ -205,12 +205,8 @@ class TimerViewController: UIViewController {
     case .hours: value = self.totalSeconds() / 3600.0
     }
     let comment = {
-      guard let commentText = self.commentTextField.text else {
-        return TimerViewController.commentDefault
-      }
-      return commentText.isEmpty
-      ? TimerViewController.commentDefault
-      : commentText
+      guard let commentText = self.commentTextField.text else { return TimerViewController.commentDefault }
+      return commentText.isEmpty ? TimerViewController.commentDefault : commentText
     }()
     return "\(urtextDaystamp) \(value) \"\(comment)\""
   }
