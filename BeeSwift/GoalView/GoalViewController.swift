@@ -16,8 +16,8 @@ import OSLog
 import SafariServices
 import SwiftyJSON
 
-class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTableViewControllerDelegate,
-  UITextFieldDelegate, SFSafariViewControllerDelegate
+class GoalViewController: UIViewController, DatapointTableViewControllerDelegate, UITextFieldDelegate,
+  SFSafariViewControllerDelegate
 {
   let elementSpacing = 10
   let sideMargin = 10
@@ -33,7 +33,7 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
   private let viewContext: NSManagedObjectContext
   private weak var coordinator: MainCoordinator?
   private let timeElapsedView = FreshnessIndicatorView()
-  fileprivate var goalImageView = GoalImageView(isThumbnail: false)
+  fileprivate var goalGraphView = GoalGraphView()
   fileprivate var datapointTableController = DatapointTableViewController()
   fileprivate var dateTextField = UITextField()
   fileprivate var valueTextField = UITextField()
@@ -41,7 +41,6 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
   fileprivate var dateStepper = UIStepper()
   fileprivate var valueStepper = UIStepper()
   fileprivate var valueDecimalRemnant: Double = 0.0
-  fileprivate var goalImageScrollView = UIScrollView()
   fileprivate var countdownLabel = BSLabel()
   private lazy var deltasLabel: BSLabel = {
     let label = BSLabel()
@@ -129,43 +128,28 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
       make.width.equalTo(countdownView)
     }
 
-    self.scrollView.addSubview(self.goalImageScrollView)
-    self.goalImageScrollView.showsHorizontalScrollIndicator = false
-    self.goalImageScrollView.showsVerticalScrollIndicator = false
-    self.goalImageScrollView.minimumZoomScale = 1.0
-    self.goalImageScrollView.maximumZoomScale = 3.0
-    self.goalImageScrollView.delegate = self
-    self.goalImageScrollView.snp.makeConstraints { (make) -> Void in
+    // The graph is a live web view that handles its own pinch/double-tap zoom (re-rasterizing the
+    // SVG crisply), so it isn't wrapped in a zooming scroll view.
+    self.scrollView.addSubview(self.goalGraphView)
+    self.goalGraphView.snp.makeConstraints { (make) -> Void in
       make.centerX.equalTo(self.view)
       make.left.greaterThanOrEqualTo(self.scrollView.safeAreaLayoutGuide.snp.leftMargin)
       make.right.lessThanOrEqualTo(self.scrollView.safeAreaLayoutGuide.snp.rightMargin)
 
       make.top.equalTo(countdownView.snp.bottom)
       make.width.equalTo(self.scrollView)
-      make.height.equalTo(self.goalImageScrollView.snp.width).multipliedBy(
+      make.height.equalTo(self.goalGraphView.snp.width).multipliedBy(
         Float(Constants.graphHeight) / Float(Constants.graphWidth)
       )
     }
+    self.goalGraphView.goal = self.goal
 
-    self.goalImageScrollView.addSubview(self.goalImageView)
-    let tapGR = UITapGestureRecognizer(target: self, action: #selector(GoalViewController.goalImageTapped))
-    tapGR.numberOfTapsRequired = 2
-    self.goalImageScrollView.addGestureRecognizer(tapGR)
-    self.goalImageView.snp.makeConstraints { (make) -> Void in
-      make.top.equalTo(0)
-      make.bottom.equalTo(0)
-      make.width.equalTo(self.goalImageScrollView)
-      make.height.equalTo(self.goalImageScrollView)
-      make.left.equalTo(self.goalImageScrollView)
-      make.right.equalTo(self.goalImageScrollView)
-    }
-    self.goalImageView.goal = self.goal
     self.scrollView.addSubview(deltasLabel)
     self.deltasLabel.snp.makeConstraints { make in
-      make.top.equalTo(self.goalImageScrollView.snp.bottom).offset(elementSpacing)
+      make.top.equalTo(self.goalGraphView.snp.bottom).offset(elementSpacing)
       make.height.equalTo(Constants.defaultFontSize)
-      make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
-      make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
+      make.left.equalTo(self.goalGraphView).offset(sideMargin)
+      make.right.equalTo(self.goalGraphView).offset(-sideMargin)
     }
 
     self.addChild(self.datapointTableController)
@@ -173,8 +157,8 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
     self.datapointTableController.delegate = self
     self.datapointTableController.view.snp.makeConstraints { (make) -> Void in
       make.top.equalTo(self.deltasLabel.snp.bottom).offset(elementSpacing)
-      make.left.equalTo(self.goalImageScrollView).offset(sideMargin)
-      make.right.equalTo(self.goalImageScrollView).offset(-sideMargin)
+      make.left.equalTo(self.goalGraphView).offset(sideMargin)
+      make.right.equalTo(self.goalGraphView).offset(-sideMargin)
     }
 
     let dataEntryView = UIView()
@@ -397,10 +381,6 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
     self.countdownLabel.text = self.goal.capitalSafesum()
   }
 
-  @objc func goalImageTapped() {
-    self.goalImageScrollView.setZoomScale(self.goalImageScrollView.zoomScale == 1.0 ? 2.0 : 1.0, animated: true)
-  }
-
   func datapointTableViewController(
     _ datapointTableViewController: DatapointTableViewController,
     didSelectDatapoint datapoint: BeeDataPoint,
@@ -542,7 +522,6 @@ class GoalViewController: UIViewController, UIScrollViewDelegate, DatapointTable
     self.updateLastUpdatedLabel()
   }
 
-  func viewForZooming(in scrollView: UIScrollView) -> UIView? { return self.goalImageView }
   private static func makeInitialDateStepperValue(date: Date = Date(), for goal: Goal) -> Double {
     let daystampAccountingForTheGoalsDeadline = Daystamp(fromDate: date, deadline: goal.deadline)
     let daystampAssumingMidnightDeadline = Daystamp(fromDate: date, deadline: 0)

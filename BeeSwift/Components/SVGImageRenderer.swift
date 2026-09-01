@@ -122,7 +122,9 @@ import WebKit
 
   // MARK: - Downloading
 
-  private func svgData(for urlString: String) async throws -> Data {
+  /// Downloads (and caches) the SVG document for a cache-busting URL. Shared with the live detail
+  /// graph view so it reuses any SVG already fetched for the thumbnail.
+  func svgData(for urlString: String) async throws -> Data {
     if let cached = dataCache.object(forKey: urlString as NSString) { return cached as Data }
     if let existing = inFlightDownloads[urlString] { return try await existing.value }
 
@@ -256,7 +258,9 @@ import WebKit
   /// safe region) and keep the meaningful datapoint/line colors, nudging the darker ones brighter on
   /// black. Note this couples us to those class names — if they change, affected elements fall back
   /// to their light-mode colors until updated.
-  private static let darkThemeCSS = """
+  /// The dark-appearance overrides (shared with the live detail graph view, which wraps them in a
+  /// `@media (prefers-color-scheme: dark)` query). Includes the `html, body` dark background.
+  static let darkThemeCSS = """
     /* page / plot background */
     html, body { background: #000000; }
 
@@ -267,7 +271,9 @@ import WebKit
     .axis text, .axislabel, .tick text,
     .pasttext, .ctxtodaytext, .ctxhortext, .hashtag { fill: #c7c7cc !important; }
     .waterbuf, .waterbux { fill: #ffffff !important; }
-    #svg1 .dp, circle.dots, #svg1 .autophages { stroke: #000000 !important; }
+    /* Datapoint outlines are black (to separate dots from the white page and from each other). On
+       black they'd vanish and densely-packed dots would merge into a blob, so make them light. */
+    #svg1 .dp, circle.dots, #svg1 .autophages { stroke: #c7c7cc !important; }
     circle.hp { fill: #cfcfd4 !important; }
 
     /* akrasia-horizon lockout band: was a light pink hatch -> subtle dark maroon */
@@ -299,8 +305,9 @@ import WebKit
     .tarings, .restarts, .archives { stroke: #48484a !important; }
     """
 
-  /// The appearance (background + dark theme) that is injected into the DOM after load.
-  private static func appearanceCSS(darkMode: Bool) -> String {
+  /// The appearance (background + dark theme) applied to a graph SVG. Shared with the live detail
+  /// graph view so the snapshot and live renderings stay identical.
+  static func appearanceCSS(darkMode: Bool) -> String {
     darkMode ? darkThemeCSS : "html, body { background: #ffffff; }"
   }
 
