@@ -4,10 +4,9 @@ import OSLog
 import SnapKit
 import UIKit
 
-/// Shows the thumbnail graph for a goal in the gallery: the SVG rasterized (via `SVGImageRenderer`) and
-/// cropped to its plot box, at a fixed size. Handles placeholders for loading and queued states, and
-/// automatically updates when the goal changes or the appearance flips. (The goal-detail screen uses
-/// the live, zoomable `GoalGraphView` instead.)
+/// The graph thumbnail shown for a goal in the gallery. Shows a placeholder until the graph is
+/// rendered and a loading indicator while the goal is queued, and updates when the goal or the
+/// appearance changes. The goal-detail screen uses `GoalGraphView` instead.
 class GoalThumbnailView: UIView {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalThumbnailView")
 
@@ -15,18 +14,15 @@ class GoalThumbnailView: UIView {
   private let beeLemniscateView = BeeLemniscateView()
 
   private var currentlyShowingGraph = false
-  /// Invalidates in-flight renders so their callbacks no-op (avoids races when the goal changes or
-  /// renders finish out of order).
+  /// Identifies the latest render so that callbacks from superseded ones are ignored.
   private var currentRenderToken: UUID? = nil
   private var currentRenderTask: Task<Void, Never>? = nil
-  /// The render key currently displayed, to avoid redundant re-rendering.
+  /// Key of the render currently displayed.
   private var shownRenderKey: String? = nil
-  /// The render key currently being rendered, so a burst of identical requests (e.g. repeated Core
-  /// Data change notifications) starts only one render.
+  /// Key of the render in progress, so repeated refreshes don't start duplicate renders.
   private var inFlightRenderKey: String? = nil
 
-  /// The fixed point size of the view, which is also the resolution the graph is rasterized at. Being
-  /// fixed (rather than layout-driven) means transient layout passes can never trigger a re-render.
+  /// Fixed size, which is also the rasterization resolution, so layout passes never trigger a render.
   static let size = CGSize(width: Constants.thumbnailWidth, height: Constants.thumbnailHeight)
 
   public var goal: Goal? {
@@ -58,11 +54,9 @@ class GoalThumbnailView: UIView {
     beeLemniscateView.snp.makeConstraints { (make) in make.edges.equalToSuperview() }
     beeLemniscateView.isHidden = true
 
-    // Re-render when the user switches between light and dark mode.
     registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (self: Self, _: UITraitCollection) in self.refresh() }
 
-    // Re-check appearance when the scene becomes active again — catches genuine light/dark changes
-    // made while we were backgrounded or inactive (where we deliberately skip rendering; see refresh).
+    // Renders are skipped while backgrounded (see refresh), so re-check on activation.
     NotificationCenter.default.addObserver(
       forName: UIScene.didActivateNotification,
       object: nil,
@@ -80,10 +74,8 @@ class GoalThumbnailView: UIView {
   @MainActor private func clearGoalGraph() {
     currentRenderTask?.cancel()
     currentRenderTask = nil
-    // Invalidate the token so the cancelled task's callbacks (and its deferred cleanup) no-op, and
-    // forget the in-flight key: the cancelled render will never display, so a subsequent request for
-    // the same key (e.g. a reused cell re-bound to the same goal) must start a fresh render rather
-    // than being treated as already in progress.
+    // The cancelled render never displays, so drop its key too: a later request for the same key
+    // (e.g. a reused cell re-bound to the same goal) must start afresh.
     currentRenderToken = nil
     inFlightRenderKey = nil
     shownRenderKey = nil
@@ -99,8 +91,7 @@ class GoalThumbnailView: UIView {
   }
 
   @MainActor private func showGraphImage(image: UIImage) {
-    // Deliberately not animated: a transition interacts badly with cell re-use in the gallery, e.g.
-    // it would briefly show the image from a different goal before animating to the correct one.
+    // Not animated: with cell re-use a transition can briefly show the previous goal's graph.
     imageView.image = image
     beeLemniscateView.isHidden = goal == nil || goal?.queued == false
     updateBorder()
@@ -127,27 +118,22 @@ class GoalThumbnailView: UIView {
     let outputWidth = Self.size.width
     let urlString = goal.cacheBustingSvgUrl
     guard !urlString.isEmpty else {
-      // No SVG URL yet (e.g. a goal cached before this field existed); leave the placeholder until
-      // the next data refresh populates it.
+      // Goals cached before svgUrl existed have none until the next refresh; keep the placeholder.
       return
     }
 
     let darkMode = traitCollection.userInterfaceStyle == .dark
     let renderKey = "\(urlString)|w\(Int(outputWidth))|\(darkMode)"
 
-    // Already showing — or already rendering — exactly this; nothing to do. (refresh() is called
-    // frequently via Core Data change notifications.)
+    // refresh() runs on every Core Data change; bail if nothing relevant changed.
     if renderKey == shownRenderKey || renderKey == inFlightRenderKey { return }
 
-    // Don't start a render while the scene is backgrounded. When backgrounding, iOS re-renders the
-    // app in the opposite appearance to cache an app-switcher snapshot, transiently flipping our
-    // trait collection; any refresh() during that window (trait change or Core Data notification)
-    // would otherwise render a wrong-appearance graph that briefly flashes on return.
-    // UIScene.didActivateNotification re-runs refresh() once we're active again.
+    // When backgrounding, iOS briefly flips the appearance to capture an app-switcher snapshot for
+    // the other mode. A render started then would show the wrong appearance on return, so skip it;
+    // the scene-activation observer refreshes once active again.
     if window?.windowScene?.activationState == .background { return }
 
-    // Synchronous cache hit: display in this same runloop so a reused cell's placeholder is replaced
-    // immediately rather than flashing until an async render completes.
+    // Show cache hits synchronously so a reused cell doesn't flash the placeholder.
     if let cached = SVGImageRenderer.shared.cachedImage(
       urlString: urlString,
       outputWidth: outputWidth,
@@ -162,7 +148,6 @@ class GoalThumbnailView: UIView {
       return
     }
 
-    // Invalidate any in-flight render and start a new one.
     let token = UUID()
     currentRenderToken = token
     inFlightRenderKey = renderKey
@@ -172,8 +157,6 @@ class GoalThumbnailView: UIView {
       guard let self else { return }
       defer { if token == self.currentRenderToken { self.inFlightRenderKey = nil } }
       do {
-        // Renders the current appearance (displayed via the callback as soon as it's ready) and, from
-        // the same page load, also caches the opposite appearance so a light/dark switch is instant.
         try await SVGImageRenderer.shared.renderBothAppearances(
           urlString: urlString,
           outputWidth: outputWidth,
@@ -185,7 +168,7 @@ class GoalThumbnailView: UIView {
           self.showGraphImage(image: image)
         }
       } catch is CancellationError {
-        // Superseded by a newer render; ignore.
+        // Superseded by a newer render.
       } catch {
         if token != self.currentRenderToken { return }
         self.logger.error("Error rendering goal graph: \(error)")

@@ -6,12 +6,8 @@ import WebKit
 
 /// Live, zoomable graph for the goal-detail screen.
 ///
-/// Unlike the gallery thumbnails (`GoalThumbnailView`, which snapshots the SVG to a `UIImage`), this
-/// hosts the SVG in a live `WKWebView`, so pinch- and double-tap-zoom re-rasterize the vector
-/// crisply rather than upscaling a bitmap. Light/dark is handled natively via a
-/// `@media (prefers-color-scheme: dark)` query (WebKit re-themes when the trait collection flips,
-/// in step with the rest of the UI — no JavaScript round-trip), reusing the exact same theme and
-/// download cache as `SVGImageRenderer`.
+/// Unlike the gallery thumbnails, this hosts the SVG in a web view so that pinch and double-tap zoom
+/// re-rasterize the vector rather than upscaling a bitmap.
 @MainActor final class GoalGraphView: UIView {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalGraphView")
 
@@ -39,9 +35,8 @@ import WebKit
     setupView()
   }
 
-  /// The graph is static markup — nothing in it needs to run script — so content JavaScript is off.
-  /// (The SVG is fetched from the CDN, so this also limits what a tampered asset could do.) Zooming is
-  /// handled by the web view's scroll view natively and does not depend on script.
+  /// The graph needs no script, so content JavaScript is off. This also limits what a tampered CDN
+  /// asset could do.
   private static func makeConfiguration() -> WKWebViewConfiguration {
     let configuration = WKWebViewConfiguration()
     configuration.defaultWebpagePreferences.allowsContentJavaScript = false
@@ -63,16 +58,13 @@ import WebKit
     addSubview(webView)
     webView.snp.makeConstraints { (make) in make.edges.equalToSuperview() }
 
-    // Our own double-tap zoom. WebKit's built-in one is disabled from the document side with
-    // `touch-action: manipulation` (see htmlDocument) because it zooms to the top-left of an SVG
-    // rather than to the tapped point.
+    // Replaces WebKit's double-tap zoom, which zooms to the SVG's top-left rather than the tapped
+    // point. The document disables the built-in one via touch-action.
     let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
     doubleTap.numberOfTapsRequired = 2
     webView.addGestureRecognizer(doubleTap)
 
-    // Reload when the goal's data changes (e.g. a new datapoint regenerates the graph, changing its
-    // cache-busting URL). refresh() is a no-op when nothing relevant changed. (Light/dark needs no
-    // handling here — the @media query re-themes natively.)
+    // A new datapoint regenerates the graph, changing its cache-busting URL.
     NotificationCenter.default.addObserver(
       forName: .NSManagedObjectContextObjectsDidChange,
       object: ServiceLocator.persistentContainer.viewContext,
@@ -127,8 +119,7 @@ import WebKit
   // MARK: - HTML
 
   private static func htmlDocument(svg: String) -> String {
-    // Both appearances are baked in: light is the default, the dark overrides live behind a
-    // prefers-color-scheme media query so WebKit applies them automatically with the trait change.
+    // Light is the default; WebKit applies the dark theme itself when the trait collection changes.
     """
     <!DOCTYPE html>
     <html>
@@ -137,8 +128,7 @@ import WebKit
     <meta name="color-scheme" content="light dark">
     <style>
       :root { color-scheme: light dark; }
-      /* `manipulation` keeps panning and pinch-zoom but turns off WebKit's double-tap-to-zoom, which
-         GoalGraphView replaces with its own tap-centred zoom. */
+      /* Allows pan and pinch-zoom but not WebKit's double-tap zoom, which is replaced natively. */
       html, body { margin: 0; padding: 0; background: #ffffff; touch-action: manipulation; }
       svg { display: block; width: 100%; height: auto; touch-action: manipulation; }
       @media (prefers-color-scheme: dark) {

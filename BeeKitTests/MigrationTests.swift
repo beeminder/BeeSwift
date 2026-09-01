@@ -138,11 +138,9 @@ class MigrationTests: XCTestCase {
       )
     }
   }
-  // Shipped model versions must never be edited in place: Core Data locates a store's source model by
-  // matching its version hashes against the bundled versions, so changing a shipped version means
-  // existing stores no longer match anything and `loadPersistentStores` fails ("Can't find model for
-  // source store"). Schema changes go in a new version. These checksums are the ones Xcode prints at
-  // build time (they are what `GoalManager` compares to force a full refresh after a model change).
+  // Core Data finds a store's source model by matching version hashes against the bundled versions, so
+  // editing a shipped version in place leaves existing stores with no source model and they fail to
+  // open. Schema changes go in a new version. Checksums are as Xcode prints them at build time.
   func testShippedModelVersionsAreUnchanged() throws {
     let shippedChecksums = [
       "BeeminderModel": "Z6+a9G/hRxFiCm6y8ogfqoWpYvVUbDA7WmLpeKtwD00=",
@@ -162,8 +160,7 @@ class MigrationTests: XCTestCase {
       )
     }
   }
-  // Model version 3 shipped (6.8 stores were created with it), so the current model must be reachable
-  // from it by lightweight migration, with the new `svgUrl` attribute taking its default.
+  // Version 3 shipped in 6.8, so the current model must be reachable from it by lightweight migration.
   func testMigrationFromModelVersion3() throws {
     DueByTableValueTransformer.register()
 

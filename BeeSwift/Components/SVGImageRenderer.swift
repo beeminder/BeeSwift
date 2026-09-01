@@ -5,13 +5,8 @@ import WebKit
 
 /// Renders Beeminder goal graph SVGs into `UIImage`s.
 ///
-/// SVGs cannot be rasterized natively on iOS, so we render them faithfully with a `WKWebView` and
-/// snapshot the result. Using a web view also lets us inject CSS overrides (e.g. for dark mode).
-///
-/// Rendering goes through a single, reused web view (web views are main-thread only and relatively
-/// expensive), so the actual rasterization is serialized. Downloads run concurrently and both the
-/// downloaded SVG data and the rendered bitmaps are cached so that re-rendering at a new size or for
-/// a different appearance does not hit the network again.
+/// iOS has no native SVG rasterizer, so the SVG is loaded into an off-screen `WKWebView` and
+/// snapshotted. That also lets the dark-mode theme be applied as CSS.
 @MainActor final class SVGImageRenderer {
   static let shared = SVGImageRenderer()
 
@@ -26,35 +21,25 @@ import WebKit
 
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "SVGImageRenderer")
 
-  /// Cache of downloaded SVG documents, keyed by their (cache-busting) URL string.
+  /// Downloaded SVG documents, keyed by cache-busting URL.
   private let dataCache = NSCache<NSString, NSData>()
-  /// Cache of rendered bitmaps, keyed by URL + size + appearance.
+  /// Rendered bitmaps, keyed by URL, size and appearance.
   private let imageCache = NSCache<NSString, UIImage>()
 
-  /// In-flight downloads, so two views requesting the same goal share a single network request.
+  /// Shared so that concurrent requests for the same goal download it once.
   private var inFlightDownloads: [String: Task<Data, Error>] = [:]
 
-  private init() {
-    imageCache.totalCostLimit = 64 * 1024 * 1024  // ~64MB of rendered graphs
-  }
+  private init() { imageCache.totalCostLimit = 64 * 1024 * 1024 }
 
-  /// The natural size of a Beeminder graph SVG (its viewBox). We always lay the SVG out at this size
-  /// — which renders reliably — and downscale the snapshot to the requested output width. Rendering
-  /// directly into a small (e.g. thumbnail-sized) viewport is unreliable: WebKit lays the SVG out at
-  /// a larger default viewport and the snapshot captures only a corner of it.
+  /// The graph SVG's viewBox size. The SVG is always laid out at this size and the snapshot downscaled,
+  /// because laying it out directly in a small (thumbnail-sized) viewport is unreliable: WebKit falls
+  /// back to a larger default viewport and the snapshot captures only a corner of it.
   private static let naturalSize = CGSize(width: Constants.graphWidth, height: Constants.graphHeight)
 
-  /// Renders the graph for `darkMode` and, from the *same* page load, also renders and caches the
-  /// opposite appearance, so a later light/dark switch is an instant cache hit. Loading and laying
-  /// out the (large) SVG is the expensive step; the dark theme is a pure recolor, so rather than
-  /// loading the SVG twice we load once, snapshot, swap the theme stylesheet in the DOM, and snapshot
-  /// again.
+  /// Renders the graph for `darkMode`, passing the image to `primaryReady` as soon as it is captured,
+  /// then also renders and caches the opposite appearance so a later light/dark switch is instant.
   ///
-  /// `primaryReady` is called (on the main actor) with the `darkMode` image as soon as it has been
-  /// captured — before the opposite appearance is rendered — so display latency is unchanged.
-  ///
-  /// When `cropToPlot` is true the snapshot is cropped to just the graph's plot box (no axis labels,
-  /// dates, or margins) — used for thumbnails, matching the old dedicated thumbnail images.
+  /// `cropToPlot` restricts the image to the plot box (no axis labels or margins), as thumbnails need.
   func renderBothAppearances(
     urlString: String,
     outputWidth: CGFloat,
@@ -78,8 +63,7 @@ import WebKit
       cropToPlot: cropToPlot,
     )
 
-    // Toggle path: the requested appearance was already rendered (as the opposite of an earlier
-    // render), so display it immediately with no web-view work.
+    // Typically already rendered as the opposite appearance of an earlier render.
     if let cached = imageCache.object(forKey: primaryKey) {
       primaryReady(cached)
       return
@@ -91,8 +75,7 @@ import WebKit
     await renderLock.acquire()
     defer { renderLock.release() }
 
-    // If the requester gave up while we were queued (e.g. a gallery cell scrolled off-screen), don't
-    // spend web-view time rendering something nobody will display.
+    // The requester may have given up (e.g. its cell scrolled off-screen) while we were queued.
     try Task.checkCancellation()
 
     // Another waiter may have rendered the same thing while we were queued.
@@ -113,9 +96,7 @@ import WebKit
     imageCache.setObject(secondary, forKey: secondaryKey, cost: Self.cost(of: secondary))
   }
 
-  /// Synchronous cache lookup, so a cache hit can be displayed in the same runloop — avoiding a
-  /// placeholder flash when, for example, a reused collection-view cell re-requests a graph it has
-  /// already rendered. Returns nil on a miss, in which case `renderBothAppearances` should be used.
+  /// Synchronous cache lookup, so a hit can be shown in the same runloop without a placeholder flash.
   func cachedImage(urlString: String, outputWidth: CGFloat, darkMode: Bool, cropToPlot: Bool) -> UIImage? {
     let key = Self.imageCacheKey(
       urlString: urlString,
@@ -128,8 +109,7 @@ import WebKit
 
   // MARK: - Downloading
 
-  /// Downloads (and caches) the SVG document for a cache-busting URL. Shared with the live detail
-  /// graph view so it reuses any SVG already fetched for the thumbnail.
+  /// Downloads and caches the SVG document at `urlString`. Concurrent callers share one download.
   func svgData(for urlString: String) async throws -> Data {
     if let cached = dataCache.object(forKey: urlString as NSString) { return cached as Data }
     if let existing = inFlightDownloads[urlString] { return try await existing.value }
@@ -157,11 +137,10 @@ import WebKit
     webView.backgroundColor = .clear
     webView.scrollView.backgroundColor = .clear
     webView.isUserInteractionEnabled = false
-    // The web view is an off-screen rendering surface attached to the key window; keep VoiceOver
-    // from discovering (and trying to read) the graph SVG's text inside it.
+    // Off-screen rendering surface; keep VoiceOver out of it.
     webView.accessibilityElementsHidden = true
-    // Stop the web view's scroll view from inadvertently insetting (and so shifting/clipping) the
-    // content for safe areas — otherwise the snapshot loses the graph's bottom axis labels.
+    // Otherwise the scroll view insets the content for the safe area and the snapshot loses the
+    // graph's bottom axis labels.
     webView.scrollView.contentInsetAdjustmentBehavior = .never
     webView.navigationDelegate = navigationDelegate
     return webView
@@ -170,10 +149,9 @@ import WebKit
   private let navigationDelegate = NavigationDelegate()
   private let renderLock = AsyncLock()
 
-  /// Loads the SVG once and captures both appearances: snapshots `primaryDarkMode` (invoking
-  /// `onPrimary` with it), then swaps the theme stylesheet in the DOM and snapshots the opposite
-  /// appearance, which is returned. Colours change but geometry doesn't, so the second snapshot only
-  /// costs a recalc + repaint rather than another full load.
+  /// Loads the SVG once and snapshots both appearances: `primaryDarkMode` first (passed to
+  /// `onPrimary`), then the opposite, which is returned. Swapping the theme stylesheet is only a
+  /// recolor, so the second snapshot avoids a second load and layout of the large SVG.
   private func rasterizeBoth(
     svgData: Data,
     outputWidth: CGFloat,
@@ -182,46 +160,36 @@ import WebKit
     onPrimary: @escaping (UIImage) -> Void,
   ) async throws -> UIImage {
     let svg = String(decoding: svgData, as: UTF8.self)
-    // The document loads with only structural CSS (sizing). Appearance (background + theme) and the
-    // plot-box measurement are applied via the DOM after load — see `themeAndMeasureJS`.
     let html = Self.htmlDocument(svg: svg, pointSize: Self.naturalSize)
 
     attachToWindowIfNeeded()
-    // The SVG is always laid out at its natural size; the snapshot is downscaled to the requested
-    // output width. The web view's own content lives at (0, 0); its frame is positioned off-screen so
-    // it is never visible. takeSnapshot's rect is in the web view's coordinate space, so the
-    // off-screen position does not affect it.
+    // Laid out at natural size (see naturalSize) and parked off-screen. Snapshot rects are in the web
+    // view's own coordinates, so its position is irrelevant.
     webView.frame = CGRect(x: -20000, y: -20000, width: Self.naturalSize.width, height: Self.naturalSize.height)
 
     try await load(html: html)
 
-    // Apply the primary appearance and read the plot box (in viewBox coordinates, mapped through the
-    // element's CTM so it's robust to transforms) in a single round-trip.
+    // Theme and measure the plot box in one round-trip.
     let measurement = try await evaluateJavaScript(
       Self.themeAndMeasureJS(css: Self.appearanceCSS(darkMode: primaryDarkMode))
     )
     let plotRect = Self.rect(from: measurement)
 
-    // For thumbnails, capture only the plot box (no axis labels/margins). The SVG renders 1:1 with
-    // its viewBox, so the plot rect is also the snapshot rect in web-view points.
+    // The SVG renders 1:1 with its viewBox, so the plot box is also the snapshot rect in points.
     let snapshotRect = (cropToPlot ? plotRect : nil) ?? CGRect(origin: .zero, size: Self.naturalSize)
 
-    // The style was just applied; wait for the web view to paint a frame with it before snapshotting
-    // (this also covers the layout/paint lag of a large, complex graph SVG right after load).
+    // Let the theme (and, right after load, the initial layout) paint before snapshotting.
     try await waitForPaint()
     let primary = try await snapshot(rect: snapshotRect, outputWidth: outputWidth)
     onPrimary(primary)
 
-    // Swap to the opposite appearance — only the colours change, so this is a recalc + repaint, not
-    // a reload — and wait for that repaint before the second snapshot.
+    // Recolor only; no reload.
     _ = try await evaluateJavaScript(Self.setThemeJS(css: Self.appearanceCSS(darkMode: !primaryDarkMode)))
     try await waitForPaint()
     return try await snapshot(rect: snapshotRect, outputWidth: outputWidth)
   }
 
-  /// How long a document load may take before the render is abandoned. Loads normally complete in
-  /// well under a second; this only guards against a load that never reports completion, which would
-  /// otherwise hold the render lock forever and stop every graph in the app from rendering.
+  /// Guards against a load that never reports completion, which would hold the render lock forever.
   private static let loadTimeout: Duration = .seconds(15)
 
   /// Loads `html` into the shared web view and returns once the document has finished loading.
@@ -241,11 +209,9 @@ import WebKit
     }
   }
 
-  /// Returns once the web view has painted a frame reflecting the current DOM, so a snapshot taken
-  /// afterwards includes any style or content change made before the call. Two
-  /// `requestAnimationFrame`s are needed: the first callback runs just *before* the next frame is
-  /// rendered, the second only after that frame has been committed. A timer fallback ensures this
-  /// can never stall a render if animation frames are throttled for the off-screen web view.
+  /// Returns once the web view has painted the current DOM. The first requestAnimationFrame callback
+  /// runs before the next frame renders; the second runs after it has been committed. The timer is a
+  /// fallback in case frames are throttled for the off-screen view.
   private func waitForPaint() async throws {
     let winner = try await callAsyncJavaScript(
       """
@@ -287,8 +253,8 @@ import WebKit
     window?.addSubview(webView)
   }
 
-  /// Runs JavaScript in the web view and returns its result. Uses the completion-handler API (rather
-  /// than the async overload, which can crash bridging a `null`/`undefined` result).
+  /// Runs JavaScript and returns its result. Uses the completion-handler API: the async overload can
+  /// crash bridging a `null`/`undefined` result.
   private func evaluateJavaScript(_ js: String) async throws -> Any? {
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any?, Error>) in
       webView.evaluateJavaScript(js) { result, error in
@@ -297,8 +263,8 @@ import WebKit
     }
   }
 
-  /// Runs an async JavaScript function body (it may `await`) and returns its result. The body must
-  /// return a non-null value — see `evaluateJavaScript` for why.
+  /// Runs an async JavaScript function body and returns its result, which must be non-null (see
+  /// `evaluateJavaScript`).
   private func callAsyncJavaScript(_ functionBody: String) async throws -> Any {
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any, Error>) in
       webView.callAsyncJavaScript(functionBody, arguments: [:], in: nil, in: .page) { result in
@@ -309,15 +275,12 @@ import WebKit
 
   // MARK: - HTML / CSS
 
-  /// Dark-mode theme for the graph. Rather than blanket-inverting the image (which turns the bright
-  /// red line pink, the yellow safe region black, etc.), we override Beeminder's own `bgraph` SVG
-  /// classes: invert only the neutrals (dark canvas, light axes/text, dimmed gridlines, dimmed amber
-  /// safe region) and keep the meaningful datapoint/line colors, nudging the darker ones brighter on
-  /// black. Note this couples us to those class names — if they change, affected elements fall back
-  /// to their light-mode colors until updated.
+  /// Dark-mode theme for the graph, overriding bgraph's SVG classes. Only the neutrals are inverted
+  /// (canvas, axes, text, grid, safe region); the meaningful datapoint and line colors are kept. A
+  /// blanket inversion would turn the red line pink and the safe region black. If bgraph renames a
+  /// class, the affected elements keep their light-mode colors.
   ///
-  /// Shared with the live detail graph view (`GoalGraphView`), which wraps these overrides in a
-  /// `@media (prefers-color-scheme: dark)` query. Includes the `html, body` dark background.
+  /// `GoalGraphView` applies the same CSS behind a `prefers-color-scheme: dark` media query.
   static let darkThemeCSS = """
     /* page / plot background */
     html, body { background: #000000; }
@@ -329,22 +292,19 @@ import WebKit
     .axis text, .axislabel, .tick text,
     .pasttext, .ctxtodaytext, .ctxhortext, .hashtag { fill: #c7c7cc !important; }
     .waterbuf, .waterbux { fill: #ffffff !important; }
-    /* The ∞ safe-days watermark is a <use> of #inf: a solid black ∞ with the two loop holes painted
-       white on top. Those paths carry their own fill attributes, so the .waterbuf override above does
-       not reach them; swap both so the holes read as background on black, as they do on white. */
+    /* The ∞ watermark is a <use> of #inf: a black ∞ with the loop holes painted white on top. Its
+       paths set their own fills, so the .waterbuf rule above doesn't reach them. */
     #inf path[fill="black"] { fill: #ffffff !important; }
     #inf path[fill="white"] { fill: #000000 !important; }
-    /* Datapoint outlines are black (to separate dots from the white page and from each other). On
-       black they'd vanish and densely-packed dots would merge into a blob, so make them light. */
+    /* Black datapoint outlines would vanish, merging dense dots into a blob. */
     #svg1 .dp, circle.dots, #svg1 .autophages { stroke: #c7c7cc !important; }
     circle.hp { fill: #cfcfd4 !important; }
 
     /* akrasia-horizon lockout band: was a light pink hatch -> subtle dark maroon */
     .pinkregion { fill: #2c1a1a !important; }
 
-    /* Yellow safe region (bright on white) -> subtle dark on black. Match by fill VALUE, not the
-       `.halfplaneN` index: the yellow half-planes use different indices per goal, and the unused
-       ones are `fill="none"` (which we must leave transparent rather than paint a phantom region). */
+    /* Safe region. Match by fill value: which .halfplaneN is yellow varies per goal, and the unused
+       ones are fill="none". */
     .ybhp[fill="#ffff88"] { fill: #26210e !important; }
     .ybhp[fill="#ffffbd"] { fill: #322c16 !important; }
     .guides { stroke: #2f2a18 !important; }
@@ -356,27 +316,23 @@ import WebKit
     .dp.blu, .ap.blu, .autophages.blu { fill: #5e7bff !important; }
     .horizontext { fill: #6b8cff !important; }
 
-    /* Defensive: elements that are invisible-on-white in light mode but would render wrong on black.
-       None occur in common goals, so these are added pre-emptively (see bgraph dotcolor/arcregion):
-       - black datapoints (dotcolor returns BLCK for points before the goal's start) -> light dot
-       - autophage slash (black) -> light stroke
-       - archived-road region (light gray, only removed in the editor) -> dark gray */
+    /* Rare in practice but would render wrong on black (see bgraph dotcolor/arcregion): black
+       datapoints, the autophage slash, and the archived-road region. */
     .dp.blk, .ap.blk, .autophages.blk { fill: #c7c7cc !important; }
     .autophage-slash { stroke: #6e6e73 !important; }
     .arcregion { fill: #2a2a2a !important; }
-    /* odometer tare/restart/archive markers: light-gray zigzag lines (drawn in the static graph) -> dim gray */
+    /* odometer tare/restart/archive markers */
     .tarings, .restarts, .archives { stroke: #48484a !important; }
     """
 
-  /// The appearance (background + dark theme) applied to a graph SVG. Shared with the live detail
-  /// graph view so the snapshot and live renderings stay identical.
+  /// The CSS applied to the loaded SVG for an appearance.
   static func appearanceCSS(darkMode: Bool) -> String {
     darkMode ? darkThemeCSS : "html, body { background: #ffffff; }"
   }
 
-  /// The structural document: pins the layout viewport and the SVG to exactly the target size (in CSS
-  /// px == points). Without this the web view lays the SVG out at a default viewport width and the
-  /// snapshot only captures its top-left corner. Appearance is applied separately via the DOM.
+  /// Wraps the SVG in a document whose viewport and SVG are pinned to `pointSize` (CSS px = points).
+  /// Without this WebKit lays the SVG out at a default viewport width and the snapshot captures only
+  /// its top-left corner.
   private static func htmlDocument(svg: String, pointSize: CGSize) -> String {
     let width = Int(pointSize.width.rounded())
     let height = Int(pointSize.height.rounded())
@@ -396,10 +352,9 @@ import WebKit
       """
   }
 
-  /// JavaScript that applies the appearance stylesheet (creating the reusable `#bm-theme` style
-  /// element) and returns the `.zoomarea` plot box in viewBox coordinates (mapped through its CTM, so
-  /// it survives ancestor transforms). Returns an empty object if there is no plot box. Always
-  /// returns an object (never `undefined`) to keep the bridged result well-defined.
+  /// JavaScript that installs `css` as the `#bm-theme` stylesheet and returns the `.zoomarea` plot box
+  /// in viewBox coordinates (mapped through its CTM to account for ancestor transforms), or an empty
+  /// object if there is none. Always returns an object so the bridged result is well-defined.
   private static func themeAndMeasureJS(css: String) -> String {
     return """
       (function() {
@@ -427,8 +382,7 @@ import WebKit
       """
   }
 
-  /// JavaScript that swaps the `#bm-theme` stylesheet's contents — a recalc + repaint, no reload —
-  /// used to re-theme the already-loaded SVG for its opposite appearance.
+  /// JavaScript that replaces the `#bm-theme` stylesheet's contents.
   private static func setThemeJS(css: String) -> String {
     return """
       (function() {
@@ -477,9 +431,8 @@ import WebKit
 /// Bridges `WKNavigationDelegate` callbacks into a single completion closure.
 private final class NavigationDelegate: NSObject, WKNavigationDelegate {
   var onComplete: ((Result<Void, Error>) -> Void)?
-  /// The navigation `onComplete` is waiting on. Callbacks for any other navigation are ignored — in
-  /// particular the failure WebKit reports for a load we abandoned (timed out and stopped), which can
-  /// arrive after the next load has already started and must not complete *that* one.
+  /// Callbacks for other navigations are ignored, in particular the failure WebKit reports for a load
+  /// we timed out and stopped, which can arrive after the next load has started.
   var expectedNavigation: WKNavigation?
 
   func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { finish(.success(()), for: navigation) }
@@ -497,15 +450,13 @@ private final class NavigationDelegate: NSObject, WKNavigationDelegate {
     finish(result)
   }
 
-  /// If WebKit's content process is killed mid-load (e.g. under memory pressure) no didFinish/didFail
-  /// callback arrives. Fail the pending load so the render lock is released and later renders (which
-  /// relaunch the process on their next load) aren't blocked forever.
+  /// No didFinish/didFail arrives when the content process dies; fail the load so the render lock is
+  /// released.
   func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
     finish(.failure(SVGImageRenderer.RenderError.webContentProcessTerminated))
   }
 
-  /// Completes the pending load (if any) regardless of navigation; used for whole-web-view events
-  /// (process termination, timeout).
+  /// Completes the pending load regardless of navigation (process termination, timeout).
   func finish(_ result: Result<Void, Error>) {
     let completion = onComplete
     onComplete = nil

@@ -127,8 +127,7 @@ class GoalViewController: UIViewController, DatapointTableViewControllerDelegate
       make.width.equalTo(countdownView)
     }
 
-    // The graph is a live web view that handles its own pinch/double-tap zoom (re-rasterizing the
-    // SVG crisply), so it isn't wrapped in a zooming scroll view.
+    // The graph view handles its own zooming.
     self.scrollView.addSubview(self.goalGraphView)
     self.goalGraphView.snp.makeConstraints { (make) -> Void in
       make.centerX.equalTo(self.view)
