@@ -329,6 +329,11 @@ import WebKit
     .axis text, .axislabel, .tick text,
     .pasttext, .ctxtodaytext, .ctxhortext, .hashtag { fill: #c7c7cc !important; }
     .waterbuf, .waterbux { fill: #ffffff !important; }
+    /* The ∞ safe-days watermark is a <use> of #inf: a solid black ∞ with the two loop holes painted
+       white on top. Those paths carry their own fill attributes, so the .waterbuf override above does
+       not reach them; swap both so the holes read as background on black, as they do on white. */
+    #inf path[fill="black"] { fill: #ffffff !important; }
+    #inf path[fill="white"] { fill: #000000 !important; }
     /* Datapoint outlines are black (to separate dots from the white page and from each other). On
        black they'd vanish and densely-packed dots would merge into a blob, so make them light. */
     #svg1 .dp, circle.dots, #svg1 .autophages { stroke: #c7c7cc !important; }
