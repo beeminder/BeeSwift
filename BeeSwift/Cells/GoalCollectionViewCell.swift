@@ -13,7 +13,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
   let slugLabel: BSLabel = BSLabel()
   let titleLabel: BSLabel = BSLabel()
   let todaytaLabel: BSLabel = BSLabel()
-  let thumbnailImageView = GoalImageView(isThumbnail: true)
+  let thumbnailImageView = GoalThumbnailView()
   let safesumLabel: BSLabel = BSLabel()
   let margin = 8
   override init(frame: CGRect) {
@@ -49,11 +49,10 @@ class GoalCollectionViewCell: UICollectionViewCell {
     }
     self.todaytaLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
+    // The view sizes itself; only position it here.
     self.thumbnailImageView.snp.makeConstraints { (make) -> Void in
       make.left.equalTo(0).offset(self.margin)
       make.top.equalTo(self.slugLabel.snp.bottom).offset(5)
-      make.height.equalTo(Constants.thumbnailHeight)
-      make.width.equalTo(Constants.thumbnailWidth)
     }
 
     self.safesumLabel.textAlignment = NSTextAlignment.center

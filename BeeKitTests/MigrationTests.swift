@@ -22,8 +22,10 @@ class MigrationTests: XCTestCase {
       }
     }
   }
-  // Creates a CoreData store with the old model version (v1)
-  private func createStoreWithOldModel() -> URL {
+  // Creates a CoreData store with an old model version (defaults to v1, "BeeminderModel")
+  private func createStoreWithOldModel(version: String = "BeeminderModel") -> URL {
+    // v1 named the local-modification timestamp `lastModifiedLocal`; it was renamed in v2.
+    let lastUpdatedKey = version == "BeeminderModel" ? "lastModifiedLocal" : "lastUpdatedLocal"
     let storeURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(
       "TestMigration_\(UUID().uuidString).sqlite"
     )
@@ -32,11 +34,8 @@ class MigrationTests: XCTestCase {
     // Load the old model version
     let bundle = Bundle(for: BeeminderPersistentContainer.self)
     guard
-      let oldVersionURL = bundle.url(
-        forResource: "BeeminderModel",
-        withExtension: "mom",
-        subdirectory: "BeeminderModel.momd",
-      ), let oldModel = NSManagedObjectModel(contentsOf: oldVersionURL)
+      let oldVersionURL = bundle.url(forResource: version, withExtension: "mom", subdirectory: "BeeminderModel.momd"),
+      let oldModel = NSManagedObjectModel(contentsOf: oldVersionURL)
     else {
       XCTFail("Failed to load old data model")
       fatalError()
@@ -53,7 +52,7 @@ class MigrationTests: XCTestCase {
       user.setValue("America/Los_Angeles", forKey: "timezone")
       user.setValue(false, forKey: "deadbeat")
       user.setValue(Date(), forKey: "updatedAt")
-      user.setValue(TestData.userLastModified, forKey: "lastModifiedLocal")
+      user.setValue(TestData.userLastModified, forKey: lastUpdatedKey)
 
       // Create goal with minimal required fields
       let goal = NSEntityDescription.insertNewObject(forEntityName: "Goal", into: context)
@@ -69,14 +68,14 @@ class MigrationTests: XCTestCase {
       }
       for field in ["hhmmFormat", "queued", "todayta", "useDefaults", "won"] { goal.setValue(false, forKey: field) }
       goal.setValue(DueByDictionary(), forKey: "dueBy")
-      goal.setValue(TestData.goalLastModified, forKey: "lastModifiedLocal")
+      goal.setValue(TestData.goalLastModified, forKey: lastUpdatedKey)
       goal.setValue(user, forKey: "owner")
       // Create datapoint
       let dataPoint = NSEntityDescription.insertNewObject(forEntityName: "DataPoint", into: context)
       dataPoint.setValue("dp1", forKey: "id")
       dataPoint.setValue("20230101", forKey: "daystampRaw")
       dataPoint.setValue(NSDecimalNumber(value: 1.0), forKey: "value")
-      dataPoint.setValue(TestData.dataPointLastModified, forKey: "lastModifiedLocal")
+      dataPoint.setValue(TestData.dataPointLastModified, forKey: lastUpdatedKey)
       dataPoint.setValue(goal, forKey: "goal")
       try context.save()
       return storeURL
@@ -138,6 +137,51 @@ class MigrationTests: XCTestCase {
         "DataPoint date value should be preserved during migration",
       )
     }
+  }
+  // Core Data finds a store's source model by matching version hashes against the bundled versions, so
+  // editing a shipped version in place leaves existing stores with no source model and they fail to
+  // open. Schema changes go in a new version. Checksums are as Xcode prints them at build time.
+  func testShippedModelVersionsAreUnchanged() throws {
+    let shippedChecksums = [
+      "BeeminderModel": "Z6+a9G/hRxFiCm6y8ogfqoWpYvVUbDA7WmLpeKtwD00=",
+      "BeeminderModel2": "0LI7wEnFZnYJFWYS3TGErsHhIZofUp7xrJ/1pg7XQvE=",
+      "BeeminderModel3": "DS6ijiKCKtwHb87IGYWZDkBXvlu0COQmp0MUhjFWWkI=",
+    ]
+    let bundle = Bundle(for: BeeminderPersistentContainer.self)
+    for (version, checksum) in shippedChecksums {
+      let url = try XCTUnwrap(
+        bundle.url(forResource: version, withExtension: "mom", subdirectory: "BeeminderModel.momd")
+      )
+      let model = try XCTUnwrap(NSManagedObjectModel(contentsOf: url))
+      XCTAssertEqual(
+        model.versionChecksum,
+        checksum,
+        "\(version) has shipped and must not change; add a new model version for schema changes",
+      )
+    }
+  }
+  // Version 3 shipped in 6.8, so the current model must be reachable from it by lightweight migration.
+  func testMigrationFromModelVersion3() throws {
+    DueByTableValueTransformer.register()
+
+    let storeURL = createStoreWithOldModel(version: "BeeminderModel3")
+    let container = BeeminderPersistentContainer(name: "BeeminderModel")
+    let description = NSPersistentStoreDescription(url: storeURL)
+    container.persistentStoreDescriptions = [description]
+    let expectation = XCTestExpectation(description: "Load store")
+    var loadError: Error?
+    container.loadPersistentStores { _, error in
+      loadError = error
+      expectation.fulfill()
+    }
+    wait(for: [expectation], timeout: 5.0)
+    XCTAssertNil(loadError, "Migration from model version 3 should succeed")
+    let context = container.viewContext
+    let goals = try context.fetch(NSFetchRequest<Goal>(entityName: "Goal"))
+    XCTAssertEqual(goals.count, 1, "Should have one goal after migration")
+    let goal: Goal! = goals.first
+    XCTAssertEqual(goal.slug, "test-goal")
+    XCTAssertEqual(goal.svgUrl, "", "svgUrl should default to empty for migrated goals")
   }
   func testAutodataConfigMigration() throws {
     DueByTableValueTransformer.register()

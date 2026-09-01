@@ -30,14 +30,9 @@ extension Goal {
     return try! Daystamp(fromString: dateString)
   }
 
-  public var cacheBustingThumbUrl: String {
-    let thumbUrlStr = self.thumbUrl
-    return cacheBuster(thumbUrlStr)
-  }
-
-  public var cacheBustingGraphUrl: String {
-    let graphUrlStr = self.graphUrl
-    return cacheBuster(graphUrlStr)
+  public var cacheBustingSvgUrl: String {
+    let svgUrlStr = self.svgUrl
+    return cacheBuster(svgUrlStr)
   }
 
   private func cacheBuster(_ originUrlStr: String) -> String {
