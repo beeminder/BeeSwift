@@ -8,6 +8,7 @@
 
 import BeeKit
 import Foundation
+import MBProgressHUD
 import SafariServices
 import UIKit
 
@@ -18,8 +19,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
   var passwordTextField = BSTextField()
   // The bee is split out from the wordmark so it can be the *same* view that animates,
   // avoiding any discontinuity between the resting logo and the flying bee.
-  var beeImageView = UIImageView()
-  var wordmarkImageView = UIImageView()
+  private let beeImageView = UIImageView()
+  private let wordmarkImageView = UIImageView()
   var signInButton = BSButton()
   var divider = UIView()
   private let logoContainer = UIView()
@@ -30,6 +31,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
 
   // The bee flight + trail animation, mounted on the window while a sign-in is in progress.
   private var flightView: BeeFlightView?
+
+  // The bee's take-off, while it waits for the keyboard to finish hiding (see `launchBeeWhenSettled`).
+  private var pendingLaunch: DispatchWorkItem?
+  private var keyboardDidHideObserver: NSObjectProtocol?
 
   // True from when a sign-in attempt starts until the form is restored (failure) or the screen is
   // handed off (success). The bee's home glide on failure clears the flight view's `isFlying` ~1.6s
@@ -51,6 +56,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     super.init(nibName: nil, bundle: nil)
   }
   required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+  deinit {
+    // Block-based observers are not removed automatically.
+    if let observer = keyboardDidHideObserver { NotificationCenter.default.removeObserver(observer) }
+  }
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -216,7 +225,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     Task { @MainActor in
       // Ignore repeat taps and Return-key presses while an attempt (including its failure glide) is
       // still in progress, so we never spawn a second flight or desync the restored form.
-      guard !signInInProgress else { return }
+      guard !self.signInInProgress else { return }
       guard let email = self.emailTextField.text?.trimmingCharacters(in: .whitespaces),
         let password = self.passwordTextField.text, !email.isEmpty, !password.isEmpty
       else {
@@ -224,32 +233,36 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         return
       }
 
-      signInInProgress = true
-      self.startSignInAnimation()
-      await currentUserManager.signInWithEmail(email, password: password)
+      self.signInInProgress = true
+      self.showSignInProgress()
+      await self.currentUserManager.signInWithEmail(email, password: password)
     }
   }
 
   @objc func handleFailedSignIn(_ notification: Notification) {
-    if let flightView, flightView.isFlying {
+    self.cancelPendingLaunch()
+    if let flightView = self.flightView, flightView.isFlying {
       // Fly the bee home, then restore the form and report the error.
       flightView.abortHome { [weak self] in self?.restoreFormAndShowFailure() }
     } else {
-      self.present(couldNotSignInAlertController, animated: true, completion: nil)
+      // Reduce Motion, or the server answered before the bee even took off.
+      self.restoreFormAndShowFailure()
     }
   }
 
   @objc func handleSignedIn(_ notification: Notification) {
-    guard let flightView, flightView.isFlying else {
-      // No animation in flight (shouldn't happen during an interactive sign-in) — just hand off.
-      coordinator?.completeSignIn()
-      return
-    }
     // Keep the bee looping until the gallery's goals have actually been fetched, so we never
     // reveal an empty "no goals yet" gallery. Then fly off and reveal the populated gallery.
     Task { @MainActor in
-      try? await goalManager.refreshGoals()
-      flightView.flyAway { [weak self] duration in self?.coordinator?.completeSignIn(revealDuration: duration) }
+      try? await self.goalManager.refreshGoals()
+      if let flightView = self.flightView, flightView.isFlying {
+        flightView.flyAway { [weak self] duration in self?.coordinator?.completeSignIn(revealDuration: duration) }
+      } else {
+        // Reduce Motion, or the bee never took off: hand off with the coordinator's plain cross-fade.
+        self.cancelPendingLaunch()
+        MBProgressHUD.hide(for: self.view, animated: true)
+        self.coordinator?.completeSignIn()
+      }
     }
   }
 
@@ -264,32 +277,75 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
 
   // MARK: - Sign-in flight
 
-  /// Hands the bee off to a window-mounted `BeeFlightView` (so it can keep flying as this screen is
-  /// torn down) and dims the form behind it. The bee launches from exactly where the resting logo
-  /// bee sits, which is then hidden so the swap is invisible.
-  private func startSignInAnimation() {
-    guard flightView?.isFlying != true else { return }
+  /// Shows that a sign-in attempt is under way. Normally that is the bee flight: the form dims at
+  /// once and the bee takes off as soon as the keyboard has finished hiding. With Reduce Motion on,
+  /// the flight is replaced by the app's usual progress HUD.
+  private func showSignInProgress() {
+    self.signInButton.isUserInteractionEnabled = false
+    let keyboardWasShowing = self.emailTextField.isFirstResponder || self.passwordTextField.isFirstResponder
     self.view.endEditing(true)
-    self.view.layoutIfNeeded()  // make sure the logo is laid out before we read its position
 
-    let host: UIView = view.window ?? view
-    let flight = BeeFlightView(beeImage: UIImage(named: "Infinibee"), beeSize: beeSize)
-    flight.frame = host.bounds
-    host.addSubview(flight)
-    flightView = flight
+    guard !UIAccessibility.isReduceMotionEnabled else {
+      MBProgressHUD.showAdded(to: self.view, animated: true)
+      return
+    }
 
-    let home = flight.convert(CGPoint(x: beeImageView.bounds.midX, y: beeImageView.bounds.midY), from: beeImageView)
-    beeImageView.isHidden = true
-    signInButton.isUserInteractionEnabled = false
-
-    // Fade the wordmark out entirely and the rest of the form back to the background.
+    // Dim the form straight away so the tap has immediate feedback, even though the bee may wait
+    // a moment for the keyboard.
     UIView.animate(withDuration: 0.3) {
-      self.wordmarkImageView.alpha = 0
       self.headerLabel.alpha = 0.15
       self.emailTextField.alpha = 0.15
       self.passwordTextField.alpha = 0.15
       self.signInButton.alpha = 0.15
     }
+    if keyboardWasShowing { self.launchBeeWhenSettled() } else { self.launchBee() }
+  }
+
+  /// Defers the take-off until the keyboard has gone. Dismissing the keyboard makes the keyboard
+  /// manager scroll the form back to its resting layout with an animation, so reading the logo's
+  /// position now would launch the bee from (and glide it home to) a spot the logo is about to leave.
+  /// Waits for `keyboardDidHide`, with a short timeout in case no keyboard notification arrives
+  /// (e.g. a hardware keyboard).
+  private func launchBeeWhenSettled() {
+    let launch = DispatchWorkItem { [weak self] in self?.launchBee() }
+    self.pendingLaunch = launch
+    self.keyboardDidHideObserver = NotificationCenter.default.addObserver(
+      forName: UIResponder.keyboardDidHideNotification,
+      object: nil,
+      queue: .main,
+    ) { [weak self] _ in self?.pendingLaunch?.perform() }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: launch)
+  }
+
+  private func cancelPendingLaunch() {
+    self.pendingLaunch?.cancel()
+    self.pendingLaunch = nil
+    if let observer = self.keyboardDidHideObserver {
+      NotificationCenter.default.removeObserver(observer)
+      self.keyboardDidHideObserver = nil
+    }
+  }
+
+  /// Hands the bee off to a window-mounted `BeeFlightView` (so it can keep flying as this screen is
+  /// torn down). The bee launches from exactly where the resting logo bee sits, which is then
+  /// hidden so the swap is invisible.
+  private func launchBee() {
+    self.cancelPendingLaunch()  // whichever of the keyboard notification and the timeout fired first wins
+    guard self.signInInProgress, self.flightView == nil else { return }
+    self.view.layoutIfNeeded()  // make sure the logo is laid out before we read its position
+
+    let host: UIView = self.view.window ?? self.view
+    let flight = BeeFlightView(beeImage: UIImage(named: "Infinibee"), beeSize: self.beeSize)
+    flight.frame = host.bounds
+    host.addSubview(flight)
+    self.flightView = flight
+
+    let beeCentre = CGPoint(x: self.beeImageView.bounds.midX, y: self.beeImageView.bounds.midY)
+    let home = flight.convert(beeCentre, from: self.beeImageView)
+    self.beeImageView.isHidden = true
+
+    // The wordmark goes with the bee: fade it out as the bee leaves its spot.
+    UIView.animate(withDuration: 0.3) { self.wordmarkImageView.alpha = 0 }
 
     flight.start(home: home)
   }
@@ -297,10 +353,11 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
   /// Restores the form after a failed sign-in. The bee has already glided home (and the flight view
   /// tears itself down once its trail finishes fading), so we just bring the logo and form back.
   private func restoreFormAndShowFailure() {
-    signInInProgress = false
-    flightView = nil  // it removes itself from the window once its trail has faded
-    beeImageView.isHidden = false
-    signInButton.isUserInteractionEnabled = true
+    self.signInInProgress = false
+    self.flightView = nil  // it removes itself from the window once its trail has faded
+    MBProgressHUD.hide(for: self.view, animated: true)
+    self.beeImageView.isHidden = false
+    self.signInButton.isUserInteractionEnabled = true
     UIView.animate(withDuration: 0.3) {
       self.wordmarkImageView.alpha = 1
       self.headerLabel.alpha = 1
@@ -308,6 +365,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
       self.passwordTextField.alpha = 1
       self.signInButton.alpha = 1
     }
-    self.present(couldNotSignInAlertController, animated: true, completion: nil)
+    self.present(self.couldNotSignInAlertController, animated: true, completion: nil)
   }
 }
