@@ -139,8 +139,8 @@ import WebKit
     webView.isUserInteractionEnabled = false
     // Off-screen rendering surface; keep VoiceOver out of it.
     webView.accessibilityElementsHidden = true
-    // Otherwise the scroll view insets the content for the safe area and the snapshot loses the
-    // graph's bottom axis labels.
+    // Keeps the scroll view from insetting the content for the safe area, which would clip the
+    // graph's bottom axis labels from the snapshot.
     webView.scrollView.contentInsetAdjustmentBehavior = .never
     webView.navigationDelegate = navigationDelegate
     return webView
@@ -276,11 +276,10 @@ import WebKit
   // MARK: - HTML / CSS
 
   /// Dark-mode theme for the graph, overriding bgraph's SVG classes. Only the neutrals are inverted
-  /// (canvas, axes, text, grid, safe region); the meaningful datapoint and line colors are kept. A
-  /// blanket inversion would turn the red line pink and the safe region black. If bgraph renames a
-  /// class, the affected elements keep their light-mode colors.
+  /// (canvas, axes, text, grid, safe region); the meaningful datapoint and line colors are kept. If
+  /// bgraph renames a class, the affected elements keep their light-mode colors.
   ///
-  /// `GoalGraphView` applies the same CSS behind a `prefers-color-scheme: dark` media query.
+  /// Used for both the rasterized thumbnails and the live detail graph.
   static let darkThemeCSS = """
     /* page / plot background */
     html, body { background: #000000; }

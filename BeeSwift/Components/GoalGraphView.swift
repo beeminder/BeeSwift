@@ -4,10 +4,8 @@ import OSLog
 import UIKit
 import WebKit
 
-/// Live, zoomable graph for the goal-detail screen.
-///
-/// Unlike the gallery thumbnails, this hosts the SVG in a web view so that pinch and double-tap zoom
-/// re-rasterize the vector rather than upscaling a bitmap.
+/// Live, zoomable graph for the goal-detail screen. Hosts the SVG in a web view so that pinch and
+/// double-tap zoom re-rasterize the vector.
 @MainActor final class GoalGraphView: UIView {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalGraphView")
 
@@ -58,8 +56,8 @@ import WebKit
     addSubview(webView)
     webView.snp.makeConstraints { (make) in make.edges.equalToSuperview() }
 
-    // Replaces WebKit's double-tap zoom, which zooms to the SVG's top-left rather than the tapped
-    // point. The document disables the built-in one via touch-action.
+    // Double-tap zooms to the tapped point. WebKit's own double-tap zoom (which targets the SVG's
+    // top-left) is disabled by the document's touch-action rule.
     let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
     doubleTap.numberOfTapsRequired = 2
     webView.addGestureRecognizer(doubleTap)
@@ -128,7 +126,7 @@ import WebKit
     <meta name="color-scheme" content="light dark">
     <style>
       :root { color-scheme: light dark; }
-      /* Allows pan and pinch-zoom but not WebKit's double-tap zoom, which is replaced natively. */
+      /* Allows pan and pinch-zoom; double-tap is left to the native gesture recognizer. */
       html, body { margin: 0; padding: 0; background: #ffffff; touch-action: manipulation; }
       svg { display: block; width: 100%; height: auto; touch-action: manipulation; }
       @media (prefers-color-scheme: dark) {

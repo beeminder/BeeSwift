@@ -127,7 +127,6 @@ class GoalViewController: UIViewController, DatapointTableViewControllerDelegate
       make.width.equalTo(countdownView)
     }
 
-    // The graph view handles its own zooming.
     self.scrollView.addSubview(self.goalGraphView)
     self.goalGraphView.snp.makeConstraints { (make) -> Void in
       make.centerX.equalTo(self.view)

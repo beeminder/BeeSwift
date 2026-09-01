@@ -6,7 +6,7 @@ import UIKit
 
 /// The graph thumbnail shown for a goal in the gallery. Shows a placeholder until the graph is
 /// rendered and a loading indicator while the goal is queued, and updates when the goal or the
-/// appearance changes. The goal-detail screen uses `GoalGraphView` instead.
+/// appearance changes.
 class GoalThumbnailView: UIView {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalThumbnailView")
 
@@ -74,8 +74,8 @@ class GoalThumbnailView: UIView {
   @MainActor private func clearGoalGraph() {
     currentRenderTask?.cancel()
     currentRenderTask = nil
-    // The cancelled render never displays, so drop its key too: a later request for the same key
-    // (e.g. a reused cell re-bound to the same goal) must start afresh.
+    // Drop the in-flight key too, so a later request for the same key (e.g. a reused cell re-bound
+    // to the same goal) starts a fresh render; the cancelled one will not display.
     currentRenderToken = nil
     inFlightRenderKey = nil
     shownRenderKey = nil
@@ -128,12 +128,9 @@ class GoalThumbnailView: UIView {
     // refresh() runs on every Core Data change; bail if nothing relevant changed.
     if renderKey == shownRenderKey || renderKey == inFlightRenderKey { return }
 
-    // When backgrounding, iOS briefly flips the appearance to capture an app-switcher snapshot for
-    // the other mode. A render started then would show the wrong appearance on return, so skip it;
-    // the scene-activation observer refreshes once active again.
-    if window?.windowScene?.activationState == .background { return }
-
-    // Show cache hits synchronously so a reused cell doesn't flash the placeholder.
+    // Show cache hits synchronously so a reused cell doesn't flash the placeholder. This also covers
+    // the app-switcher snapshot iOS captures for the other appearance when backgrounding, since the
+    // renderer caches both appearances.
     if let cached = SVGImageRenderer.shared.cachedImage(
       urlString: urlString,
       outputWidth: outputWidth,
@@ -147,6 +144,11 @@ class GoalThumbnailView: UIView {
       showGraphImage(image: cached)
       return
     }
+
+    // Start no new render while backgrounded: one begun during the app-switcher snapshot pass would
+    // finish after the appearance has flipped back and show the wrong one. The scene-activation
+    // observer refreshes once active again.
+    if window?.windowScene?.activationState == .background { return }
 
     let token = UUID()
     currentRenderToken = token

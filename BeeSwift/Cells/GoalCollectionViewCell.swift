@@ -49,7 +49,7 @@ class GoalCollectionViewCell: UICollectionViewCell {
     }
     self.todaytaLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-    // GoalThumbnailView has a fixed size of its own; the cell only positions it.
+    // The view sizes itself; only position it here.
     self.thumbnailImageView.snp.makeConstraints { (make) -> Void in
       make.left.equalTo(0).offset(self.margin)
       make.top.equalTo(self.slugLabel.snp.bottom).offset(5)
