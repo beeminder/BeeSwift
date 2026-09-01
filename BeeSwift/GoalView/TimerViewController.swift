@@ -39,8 +39,7 @@ class TimerViewController: UIViewController {
     view.layer.cornerRadius = 6
     view.backgroundColor = UIColor(white: 0.15, alpha: 1.0)
     view.textColor = .white
-    view.text = TimerViewController.commentDefault
-    view.clearsOnBeginEditing = true
+    view.placeholder = TimerViewController.commentDefault
     view.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
     view.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
     return view
@@ -172,7 +171,7 @@ class TimerViewController: UIViewController {
     self.timingSince = nil
     self.accumulatedSeconds = 0
     self.updateTimerLabel()
-    self.commentTextField.text = TimerViewController.commentDefault
+    self.commentTextField.text = nil
   }
   func urtext() -> String {
     let urtextDaystamp = Daystamp.makeUrtextDaystamp(submissionDate: Date(), deadline: goal.deadline)
@@ -182,7 +181,14 @@ class TimerViewController: UIViewController {
     case .minutes: value = self.totalSeconds() / 60.0
     case .hours: value = self.totalSeconds() / 3600.0
     }
-    let comment = self.commentTextField.text ?? ""
+    let comment = {
+      guard let commentText = self.commentTextField.text else {
+        return TimerViewController.commentDefault
+      }
+      return commentText.isEmpty
+      ? TimerViewController.commentDefault
+      : commentText
+    }()
     return "\(urtextDaystamp) \(value) \"\(comment)\""
   }
   @objc func addDatapointButtonPressed() {
