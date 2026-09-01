@@ -20,6 +20,8 @@ import WebKit
     case invalidURL
     case zeroSize
     case snapshotFailed
+    case webContentProcessTerminated
+    case loadTimedOut
   }
 
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "SVGImageRenderer")
@@ -89,6 +91,10 @@ import WebKit
     await renderLock.acquire()
     defer { renderLock.release() }
 
+    // If the requester gave up while we were queued (e.g. a gallery cell scrolled off-screen), don't
+    // spend web-view time rendering something nobody will display.
+    try Task.checkCancellation()
+
     // Another waiter may have rendered the same thing while we were queued.
     if let cached = imageCache.object(forKey: primaryKey) {
       primaryReady(cached)
@@ -151,6 +157,9 @@ import WebKit
     webView.backgroundColor = .clear
     webView.scrollView.backgroundColor = .clear
     webView.isUserInteractionEnabled = false
+    // The web view is an off-screen rendering surface attached to the key window; keep VoiceOver
+    // from discovering (and trying to read) the graph SVG's text inside it.
+    webView.accessibilityElementsHidden = true
     // Stop the web view's scroll view from inadvertently insetting (and so shifting/clipping) the
     // content for safe areas — otherwise the snapshot loses the graph's bottom axis labels.
     webView.scrollView.contentInsetAdjustmentBehavior = .never
@@ -184,10 +193,7 @@ import WebKit
     // off-screen position does not affect it.
     webView.frame = CGRect(x: -20000, y: -20000, width: Self.naturalSize.width, height: Self.naturalSize.height)
 
-    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-      navigationDelegate.onComplete = { result in continuation.resume(with: result) }
-      webView.loadHTMLString(html, baseURL: nil)
-    }
+    try await load(html: html)
 
     // Apply the primary appearance and read the plot box (in viewBox coordinates, mapped through the
     // element's CTM so it's robust to transforms) in a single round-trip.
@@ -200,17 +206,58 @@ import WebKit
     // its viewBox, so the plot rect is also the snapshot rect in web-view points.
     let snapshotRect = (cropToPlot ? plotRect : nil) ?? CGRect(origin: .zero, size: Self.naturalSize)
 
-    // The style was just applied; give the web view a moment to repaint before snapshotting (this
-    // also covers the paint lag of a large, complex graph SVG).
-    try? await Task.sleep(for: .milliseconds(80))
+    // The style was just applied; wait for the web view to paint a frame with it before snapshotting
+    // (this also covers the layout/paint lag of a large, complex graph SVG right after load).
+    try await waitForPaint()
     let primary = try await snapshot(rect: snapshotRect, outputWidth: outputWidth)
     onPrimary(primary)
 
     // Swap to the opposite appearance — only the colours change, so this is a recalc + repaint, not
-    // a reload. A short delay lets that repaint land before the second snapshot.
+    // a reload — and wait for that repaint before the second snapshot.
     _ = try await evaluateJavaScript(Self.setThemeJS(css: Self.appearanceCSS(darkMode: !primaryDarkMode)))
-    try? await Task.sleep(for: .milliseconds(50))
+    try await waitForPaint()
     return try await snapshot(rect: snapshotRect, outputWidth: outputWidth)
+  }
+
+  /// How long a document load may take before the render is abandoned. Loads normally complete in
+  /// well under a second; this only guards against a load that never reports completion, which would
+  /// otherwise hold the render lock forever and stop every graph in the app from rendering.
+  private static let loadTimeout: Duration = .seconds(15)
+
+  /// Loads `html` into the shared web view and returns once the document has finished loading.
+  private func load(html: String) async throws {
+    let timeout = Task { [weak self] in
+      try await Task.sleep(for: Self.loadTimeout)
+      guard let self else { return }
+      self.logger.error("SVG document load timed out")
+      self.navigationDelegate.finish(.failure(RenderError.loadTimedOut))
+      self.webView.stopLoading()
+    }
+    defer { timeout.cancel() }
+
+    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+      navigationDelegate.onComplete = { result in continuation.resume(with: result) }
+      navigationDelegate.expectedNavigation = webView.loadHTMLString(html, baseURL: nil)
+    }
+  }
+
+  /// Returns once the web view has painted a frame reflecting the current DOM, so a snapshot taken
+  /// afterwards includes any style or content change made before the call. Two
+  /// `requestAnimationFrame`s are needed: the first callback runs just *before* the next frame is
+  /// rendered, the second only after that frame has been committed. A timer fallback ensures this
+  /// can never stall a render if animation frames are throttled for the off-screen web view.
+  private func waitForPaint() async throws {
+    let winner = try await callAsyncJavaScript(
+      """
+      return await Promise.race([
+        new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve('frame')))),
+        new Promise(resolve => setTimeout(() => resolve('timeout'), 250)),
+      ]);
+      """
+    )
+    if winner as? String != "frame" {
+      logger.debug("Paint wait fell back to the timer (animation frames not delivered)")
+    }
   }
 
   /// Snapshots the current web-view content within `rect`, downscaled to `outputWidth` points wide.
@@ -250,6 +297,16 @@ import WebKit
     }
   }
 
+  /// Runs an async JavaScript function body (it may `await`) and returns its result. The body must
+  /// return a non-null value — see `evaluateJavaScript` for why.
+  private func callAsyncJavaScript(_ functionBody: String) async throws -> Any {
+    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any, Error>) in
+      webView.callAsyncJavaScript(functionBody, arguments: [:], in: nil, in: .page) { result in
+        continuation.resume(with: result)
+      }
+    }
+  }
+
   // MARK: - HTML / CSS
 
   /// Dark-mode theme for the graph. Rather than blanket-inverting the image (which turns the bright
@@ -258,8 +315,9 @@ import WebKit
   /// safe region) and keep the meaningful datapoint/line colors, nudging the darker ones brighter on
   /// black. Note this couples us to those class names — if they change, affected elements fall back
   /// to their light-mode colors until updated.
-  /// The dark-appearance overrides (shared with the live detail graph view, which wraps them in a
-  /// `@media (prefers-color-scheme: dark)` query). Includes the `html, body` dark background.
+  ///
+  /// Shared with the live detail graph view (`GoalGraphView`), which wraps these overrides in a
+  /// `@media (prefers-color-scheme: dark)` query. Includes the `html, body` dark background.
   static let darkThemeCSS = """
     /* page / plot background */
     html, body { background: #000000; }
@@ -414,20 +472,39 @@ import WebKit
 /// Bridges `WKNavigationDelegate` callbacks into a single completion closure.
 private final class NavigationDelegate: NSObject, WKNavigationDelegate {
   var onComplete: ((Result<Void, Error>) -> Void)?
+  /// The navigation `onComplete` is waiting on. Callbacks for any other navigation are ignored — in
+  /// particular the failure WebKit reports for a load we abandoned (timed out and stopped), which can
+  /// arrive after the next load has already started and must not complete *that* one.
+  var expectedNavigation: WKNavigation?
 
-  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { finish(.success(())) }
+  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { finish(.success(()), for: navigation) }
 
   func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-    finish(.failure(error))
+    finish(.failure(error), for: navigation)
   }
 
   func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-    finish(.failure(error))
+    finish(.failure(error), for: navigation)
   }
 
-  private func finish(_ result: Result<Void, Error>) {
+  private func finish(_ result: Result<Void, Error>, for navigation: WKNavigation?) {
+    if let navigation, let expectedNavigation, navigation !== expectedNavigation { return }
+    finish(result)
+  }
+
+  /// If WebKit's content process is killed mid-load (e.g. under memory pressure) no didFinish/didFail
+  /// callback arrives. Fail the pending load so the render lock is released and later renders (which
+  /// relaunch the process on their next load) aren't blocked forever.
+  func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+    finish(.failure(SVGImageRenderer.RenderError.webContentProcessTerminated))
+  }
+
+  /// Completes the pending load (if any) regardless of navigation; used for whole-web-view events
+  /// (process termination, timeout).
+  func finish(_ result: Result<Void, Error>) {
     let completion = onComplete
     onComplete = nil
+    expectedNavigation = nil
     completion?(result)
   }
 }

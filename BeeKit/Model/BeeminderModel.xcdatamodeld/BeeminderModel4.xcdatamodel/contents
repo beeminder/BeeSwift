@@ -41,6 +41,7 @@
         <attribute name="safeBuf" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="safeSum" attributeType="String"/>
         <attribute name="slug" attributeType="String" spotlightIndexingEnabled="YES"/>
+        <attribute name="svgUrl" attributeType="String" defaultValueString=""/>
         <attribute name="thumbUrl" attributeType="String"/>
         <attribute name="title" attributeType="String" spotlightIndexingEnabled="YES"/>
         <attribute name="todayta" attributeType="Boolean" usesScalarValueType="YES"/>

@@ -23,7 +23,6 @@
 		E458C8352AD1266B000DCA5C /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8342AD1266B000DCA5C /* SwiftyJSON */; };
 		E458C8372AD12671000DCA5C /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E458C8362AD12671000DCA5C /* KeychainSwift */; };
 		E462BA3629AC44EA00E80EF0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3529AC44EA00E80EF0 /* Alamofire */; };
-		E462BA3929AC450000E80EF0 /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3829AC450000E80EF0 /* AlamofireImage */; };
 		E462BA3C29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */; };
 		E462BA3F29AC456500E80EF0 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA3E29AC456500E80EF0 /* SwiftyJSON */; };
 		E462BA4229AC458B00E80EF0 /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = E462BA4129AC458B00E80EF0 /* MBProgressHUD */; };
@@ -183,7 +182,6 @@
 				A1B6723E1B0989DF00584782 /* Foundation.framework in Frameworks */,
 				A17E930C1B09032F0098FCA0 /* QuartzCore.framework in Frameworks */,
 				E462BA3629AC44EA00E80EF0 /* Alamofire in Frameworks */,
-				E462BA3929AC450000E80EF0 /* AlamofireImage in Frameworks */,
 				E462BA4229AC458B00E80EF0 /* MBProgressHUD in Frameworks */,
 				A12BA94E1AFF202200AFEF32 /* SystemConfiguration.framework in Frameworks */,
 				A158DDB61E46EEA10031BD4F /* HealthKit.framework in Frameworks */,
@@ -307,7 +305,6 @@
 			name = BeeSwift;
 			packageProductDependencies = (
 				E462BA3529AC44EA00E80EF0 /* Alamofire */,
-				E462BA3829AC450000E80EF0 /* AlamofireImage */,
 				E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */,
 				E462BA3E29AC456500E80EF0 /* SwiftyJSON */,
 				E462BA4129AC458B00E80EF0 /* MBProgressHUD */,
@@ -489,7 +486,6 @@
 			mainGroup = A196CB0B1AE4142E00B90A3E;
 			packageReferences = (
 				E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */,
-				E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */,
 				E462BA3A29AC453D00E80EF0 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */,
 				E462BA3D29AC456500E80EF0 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				E462BA4029AC458B00E80EF0 /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
@@ -1088,14 +1084,6 @@
 				minimumVersion = 5.12.0;
 			};
 		};
-		E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/AlamofireImage";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.4.0;
-			};
-		};
 		E462BA3A29AC453D00E80EF0 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/AlamofireNetworkActivityIndicator";
@@ -1199,11 +1187,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E462BA3429AC44EA00E80EF0 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		E462BA3829AC450000E80EF0 /* AlamofireImage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E462BA3729AC450000E80EF0 /* XCRemoteSwiftPackageReference "AlamofireImage" */;
-			productName = AlamofireImage;
 		};
 		E462BA3B29AC453D00E80EF0 /* AlamofireNetworkActivityIndicator */ = {
 			isa = XCSwiftPackageProductDependency;

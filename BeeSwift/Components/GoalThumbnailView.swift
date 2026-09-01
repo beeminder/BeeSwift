@@ -4,10 +4,12 @@ import OSLog
 import SnapKit
 import UIKit
 
-/// Shows the current graph for a goal
-/// Handles placeholders for loading and queued states, and automatically updates when the goal changes
-class GoalImageView: UIView {
-  private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalImageView")
+/// Shows the thumbnail graph for a goal in the gallery: the SVG rasterized (via `SVGImageRenderer`) and
+/// cropped to its plot box, at a fixed size. Handles placeholders for loading and queued states, and
+/// automatically updates when the goal changes or the appearance flips. (The goal-detail screen uses
+/// the live, zoomable `GoalGraphView` instead.)
+class GoalThumbnailView: UIView {
+  private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalThumbnailView")
 
   private let imageView = UIImageView()
   private let beeLemniscateView = BeeLemniscateView()
@@ -19,23 +21,13 @@ class GoalImageView: UIView {
   private var currentRenderTask: Task<Void, Never>? = nil
   /// The render key currently displayed, to avoid redundant re-rendering.
   private var shownRenderKey: String? = nil
-  /// The render key currently being rendered, so a burst of identical requests (e.g. repeated layout
-  /// passes) starts only one render.
+  /// The render key currently being rendered, so a burst of identical requests (e.g. repeated Core
+  /// Data change notifications) starts only one render.
   private var inFlightRenderKey: String? = nil
 
-  public let isThumbnail: Bool
-
-  // MARK: Sizing
-  //
-  // GoalImageView owns the resolution it rasterizes at. Thumbnails are a fixed size (so transient
-  // layout passes never change it, and thus never trigger a re-render); the detail view rasterizes
-  // at whatever width its container lays it out to.
-
-  /// The fixed point size of a thumbnail graph view.
-  static let thumbnailSize = CGSize(width: Constants.thumbnailWidth, height: Constants.thumbnailHeight)
-
-  /// The width (in points) the graph is rasterized at.
-  private var renderWidth: CGFloat { isThumbnail ? Self.thumbnailSize.width : bounds.width }
+  /// The fixed point size of the view, which is also the resolution the graph is rasterized at. Being
+  /// fixed (rather than layout-driven) means transient layout passes can never trigger a re-render.
+  static let size = CGSize(width: Constants.thumbnailWidth, height: Constants.thumbnailHeight)
 
   public var goal: Goal? {
     didSet {
@@ -45,20 +37,18 @@ class GoalImageView: UIView {
     }
   }
 
-  init(isThumbnail: Bool) {
-    self.isThumbnail = isThumbnail
-    super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+  init() {
+    super.init(frame: CGRect(origin: .zero, size: Self.size))
     setupView()
   }
 
   required init?(coder: NSCoder) {
-    self.isThumbnail = false
     super.init(coder: coder)
     setupView()
   }
 
   private func setupView() {
-    if isThumbnail { self.snp.makeConstraints { (make) in make.size.equalTo(Self.thumbnailSize) } }
+    self.snp.makeConstraints { (make) in make.size.equalTo(Self.size) }
 
     self.addSubview(imageView)
     imageView.snp.makeConstraints { (make) in make.edges.equalToSuperview() }
@@ -77,7 +67,7 @@ class GoalImageView: UIView {
       forName: UIScene.didActivateNotification,
       object: nil,
       queue: OperationQueue.main,
-    ) { [weak self] _ in self?.refresh() }
+    ) { [weak self] _ in DispatchQueue.main.async { self?.refresh() } }
 
     NotificationCenter.default.addObserver(
       forName: .NSManagedObjectContextObjectsDidChange,
@@ -87,16 +77,15 @@ class GoalImageView: UIView {
     refresh()
   }
 
-  override func layoutSubviews() {
-    super.layoutSubviews()
-    // The detail view rasterizes at its laid-out width (often zero until the first layout pass), so
-    // re-render when that changes. Thumbnails render at a fixed width and don't depend on layout.
-    if !isThumbnail { refresh() }
-  }
-
   @MainActor private func clearGoalGraph() {
     currentRenderTask?.cancel()
     currentRenderTask = nil
+    // Invalidate the token so the cancelled task's callbacks (and its deferred cleanup) no-op, and
+    // forget the in-flight key: the cancelled render will never display, so a subsequent request for
+    // the same key (e.g. a reused cell re-bound to the same goal) must start a fresh render rather
+    // than being treated as already in progress.
+    currentRenderToken = nil
+    inFlightRenderKey = nil
     shownRenderKey = nil
     imageView.image = UIImage(named: "GraphPlaceholder")
     currentlyShowingGraph = false
@@ -105,31 +94,17 @@ class GoalImageView: UIView {
   }
 
   @MainActor private func updateBorder() {
-    if isThumbnail {
-      imageView.layer.borderColor = goal?.countdownColor.cgColor
-      imageView.layer.borderWidth = goal == nil ? 0 : 1
-    } else {
-      imageView.layer.borderColor = nil
-      imageView.layer.borderWidth = 0
-    }
+    imageView.layer.borderColor = goal?.countdownColor.cgColor
+    imageView.layer.borderWidth = goal == nil ? 0 : 1
   }
 
   @MainActor private func showGraphImage(image: UIImage) {
-    // Animating the thumbnail view interacts badly with cell re-use in the gallery
-    // e.g. it would cause us to show the image from a different goal before animating
-    // to the corrent one.
-    let duration = isThumbnail ? 0 : 0.4
-
-    UIView.transition(
-      with: imageView,
-      duration: duration,
-      options: .transitionCrossDissolve,
-      animations: { [weak self] in
-        self?.imageView.image = image
-        self?.beeLemniscateView.isHidden = self?.goal == nil || self?.goal?.queued == false
-        self?.updateBorder()
-      },
-    ) { [weak self] _ in self?.currentlyShowingGraph = true }
+    // Deliberately not animated: a transition interacts badly with cell re-use in the gallery, e.g.
+    // it would briefly show the image from a different goal before animating to the correct one.
+    imageView.image = image
+    beeLemniscateView.isHidden = goal == nil || goal?.queued == false
+    updateBorder()
+    currentlyShowingGraph = true
   }
 
   @MainActor private func refresh() {
@@ -149,11 +124,7 @@ class GoalImageView: UIView {
     // but not over the placeholder image.
     if goal.queued { beeLemniscateView.isHidden = !currentlyShowingGraph }
 
-    // The detail view needs a laid-out width before it can rasterize; layoutSubviews calls us again
-    // once it has one. (Thumbnails use a fixed renderWidth, so this is always satisfied for them.)
-    let outputWidth = renderWidth
-    guard outputWidth > 0 else { return }
-
+    let outputWidth = Self.size.width
     let urlString = goal.cacheBustingSvgUrl
     guard !urlString.isEmpty else {
       // No SVG URL yet (e.g. a goal cached before this field existed); leave the placeholder until
@@ -165,13 +136,13 @@ class GoalImageView: UIView {
     let renderKey = "\(urlString)|w\(Int(outputWidth))|\(darkMode)"
 
     // Already showing — or already rendering — exactly this; nothing to do. (refresh() is called
-    // frequently via Core Data change notifications and, for the detail view, layout passes.)
+    // frequently via Core Data change notifications.)
     if renderKey == shownRenderKey || renderKey == inFlightRenderKey { return }
 
     // Don't start a render while the scene is backgrounded. When backgrounding, iOS re-renders the
     // app in the opposite appearance to cache an app-switcher snapshot, transiently flipping our
-    // trait collection; any refresh() during that window (trait change, layout pass, or Core Data
-    // notification) would otherwise render a wrong-appearance graph that briefly flashes on return.
+    // trait collection; any refresh() during that window (trait change or Core Data notification)
+    // would otherwise render a wrong-appearance graph that briefly flashes on return.
     // UIScene.didActivateNotification re-runs refresh() once we're active again.
     if window?.windowScene?.activationState == .background { return }
 
@@ -181,7 +152,7 @@ class GoalImageView: UIView {
       urlString: urlString,
       outputWidth: outputWidth,
       darkMode: darkMode,
-      cropToPlot: isThumbnail,
+      cropToPlot: true,
     ) {
       currentRenderTask?.cancel()
       currentRenderToken = UUID()
@@ -207,7 +178,7 @@ class GoalImageView: UIView {
           urlString: urlString,
           outputWidth: outputWidth,
           darkMode: darkMode,
-          cropToPlot: isThumbnail,
+          cropToPlot: true,
         ) { [weak self] image in
           guard let self, !Task.isCancelled, token == self.currentRenderToken else { return }
           self.shownRenderKey = renderKey
