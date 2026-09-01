@@ -216,6 +216,10 @@ class MainCoordinator {
     navigationController.pushViewController(controller, animated: true)
   }
   @objc private func handleSignOut() {
+    // A failed sign-in also posts signedOut (CurrentUserManager signs out to clear partial state).
+    // If the sign-in screen is already up, leave it alone so it can finish its failure animation,
+    // keep the typed credentials, and show its error alert, rather than being replaced mid-flight.
+    if navigationController.viewControllers.first is SignInViewController { return }
     navigationController.dismiss(animated: false)
     start()
   }

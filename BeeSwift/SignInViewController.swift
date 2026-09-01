@@ -298,6 +298,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
   /// tears itself down once its trail finishes fading), so we just bring the logo and form back.
   private func restoreFormAndShowFailure() {
     signInInProgress = false
+    flightView = nil  // it removes itself from the window once its trail has faded
     beeImageView.isHidden = false
     signInButton.isUserInteractionEnabled = true
     UIView.animate(withDuration: 0.3) {

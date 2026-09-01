@@ -373,6 +373,11 @@ final class BeeFlightView: UIView {
   func flightKeyframes(densePoints dense: [CGPoint], pace: (CGFloat) -> CGFloat = { $0 }) -> (
     positions: [CGPoint], rotations: [CGFloat], length: CGFloat
   ) {
+    // A degenerate path (fewer than two points) has no direction; park every station on the point.
+    guard dense.count >= 2 else {
+      let point = dense.first ?? flightHome
+      return (Array(repeating: point, count: flightStations + 1), Array(repeating: 0, count: flightStations + 1), 0)
+    }
     var cumulative: [CGFloat] = [0]
     cumulative.reserveCapacity(dense.count)
     for i in 1..<dense.count {
