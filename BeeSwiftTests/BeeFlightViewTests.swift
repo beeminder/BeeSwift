@@ -2,9 +2,6 @@
 //  BeeFlightViewTests.swift
 //  BeeSwiftTests
 //
-//  Tests for the pure geometry/timing math behind the sign-in bee flight, plus end-to-end smoke
-//  tests that drive a real BeeFlightView through its phases and confirm it tears itself down.
-//
 
 import UIKit
 import XCTest
@@ -37,9 +34,7 @@ import XCTest
     XCTAssertEqual(BeeFlightView.paceInverse(1.5, accel: accel), 1, accuracy: 1e-9)
   }
 
-  /// The smooth loop→exit hand-off depends on the bee leaving the loop at exactly the loop speed,
-  /// i.e. the exit's initial speed (∝ pace'(0)) equals the loop speed. The exit scales its duration
-  /// by `1 - accel`, which only matches if `pace'(0) == 1 - accel`. Verify the slope numerically.
+  /// The exit scales its duration by `1 - accel` assuming `pace'(0) == 1 - accel`.
   func testPaceLeavesAtLoopSpeed() {
     let accel: CGFloat = 0.5
     let h: CGFloat = 1e-5
@@ -47,7 +42,6 @@ import XCTest
     XCTAssertEqual(slopeAtZero, 1 - accel, accuracy: 1e-3)
   }
 
-  /// The exit should accelerate: equal time steps cover progressively more arc length.
   func testPaceAccelerates() {
     let accel: CGFloat = 0.5
     var previousStep: CGFloat = -1
@@ -65,7 +59,7 @@ import XCTest
 
   func testResamplingIsEvenlySpacedAndPreservesLength() {
     let view = makeView()
-    // A straight but unevenly-sampled polyline from (0,0) to (300,0).
+    // A straight but unevenly sampled polyline.
     let dense = [0, 5, 7, 100, 250, 300].map { CGPoint(x: CGFloat($0), y: 0) }
     let result = view.flightKeyframes(densePoints: dense)
 
@@ -74,7 +68,6 @@ import XCTest
     XCTAssertEqual(result.positions.first!.x, 0, accuracy: 1e-6)
     XCTAssertEqual(result.positions.last!.x, 300, accuracy: 1e-6)
 
-    // With the identity pace, stations must be equally spaced in arc length.
     let firstStep = result.positions[1].x - result.positions[0].x
     for i in 1..<result.positions.count {
       let step = result.positions[i].x - result.positions[i - 1].x
@@ -84,7 +77,7 @@ import XCTest
 
   func testResamplingRotationsAreHeadLeadingAndContinuous() {
     let view = makeView()
-    // A smooth quarter-circle turn of radius 100, from (100,0) round to (0,100).
+    // A quarter-circle turn.
     let n = 200
     let dense = (0...n).map { i -> CGPoint in
       let a = (CGFloat.pi / 2) * CGFloat(i) / CGFloat(n)
@@ -92,12 +85,10 @@ import XCTest
     }
     let result = view.flightKeyframes(densePoints: dense)
 
-    // No adjacent rotation should jump by more than ~pi — the unwrapping must keep the turn smooth.
     for i in 1..<result.rotations.count {
       let delta = abs(result.rotations[i] - result.rotations[i - 1])
       XCTAssertLessThan(delta, .pi, "rotation jump too large at station \(i)")
     }
-    // A quarter turn rotates the heading (and so the head-leading rotation) by ~90°.
     let totalTurn = abs(result.rotations.last! - result.rotations.first!)
     XCTAssertEqual(totalTurn, .pi / 2, accuracy: 0.2)
   }
@@ -108,8 +99,7 @@ import XCTest
     let warped = view.flightKeyframes(densePoints: dense, pace: { BeeFlightView.pace($0, accel: 0.9) })
     let even = view.flightKeyframes(densePoints: dense)
 
-    // pace is convex (pace(u) < u for u in (0,1)), so an early station sits nearer the start than
-    // the evenly-spaced one.
+    // pace(u) < u for u in (0,1), so an early station sits nearer the start than the even one.
     let idx = warped.positions.count / 4
     XCTAssertLessThan(warped.positions[idx].x, even.positions[idx].x)
   }
@@ -126,16 +116,13 @@ import XCTest
 
     XCTAssertGreaterThan(path.count, 3)
 
-    // Starts exactly at `start`.
     XCTAssertEqual(path[0].x, start.x, accuracy: 1e-6)
     XCTAssertEqual(path[0].y, start.y, accuracy: 1e-6)
 
-    // First segment is tangent to the heading: the hand-off is never a sharp corner.
     let firstDir = atan2(path[1].y - path[0].y, path[1].x - path[0].x)
     XCTAssertEqual(angleDifference(firstDir, heading), 0, accuracy: 0.05)
 
-    // The arc bends at the requested radius. Its centre is one radius perpendicular to the heading;
-    // an arc point sits exactly one radius from whichever side it actually curved toward.
+    // The arc's centre is one radius perpendicular to the heading, on whichever side it turned.
     let centerLeft = CGPoint(
       x: start.x + radius * cos(heading + .pi / 2),
       y: start.y + radius * sin(heading + .pi / 2),
@@ -149,7 +136,6 @@ import XCTest
     let offRight = abs(hypot(arcPoint.x - centerRight.x, arcPoint.y - centerRight.y) - radius)
     XCTAssertEqual(min(offLeft, offRight), 0, accuracy: 0.5)
 
-    // Runs out past the target so the bee leaves the screen.
     let endFromStart = hypot(path.last!.x - start.x, path.last!.y - start.y)
     let targetFromStart = hypot(target.x - start.x, target.y - start.y)
     XCTAssertGreaterThan(endFromStart, targetFromStart)
@@ -161,8 +147,6 @@ import XCTest
     let target = CGPoint(x: 400, y: -200)
     let path = view.exitPathPoints(from: start, headingAngle: .pi / 2, toward: target, minRadius: 70)
 
-    // The arc finishes with the bee already facing `aim` (start → target), and the straight run-off
-    // continues in that direction — so the final segment points along start → target.
     let aim = atan2(target.y - start.y, target.x - start.x)
     let n = path.count
     let finalDir = atan2(path[n - 1].y - path[n - 2].y, path[n - 1].x - path[n - 2].x)
@@ -171,22 +155,17 @@ import XCTest
 
   // MARK: - End-to-end smoke tests
 
-  // These drive real Core Animation on a window, so they necessarily take wall-clock time. To keep
-  // them from flaking on a slow CI runner, the flight is run at a tiny loop duration so every phase
-  // collapses to its minimum length (a fraction of a second), and the waits below allow many times
-  // that. The "let it fly a bit" pauses exercise the live trail sampler; they are not timing
-  // assumptions, since nothing asserted depends on how far the bee got.
+  // These run real Core Animation on a window, at a tiny loop duration so every phase collapses to
+  // its minimum length. The short pauses exercise the live trail sampler; nothing asserted depends
+  // on how far the bee got.
 
-  /// Drive a real flight all the way through the accelerating exit and confirm the view runs the
-  /// entry/loop/exit (including the live and pre-baked trail paths) without crashing and removes
-  /// itself from the window when done.
   func testFlyAwaySmokeRunsToCompletionAndRemovesItself() {
     let (window, view) = makeFlightOnWindow()
 
     view.start(home: CGPoint(x: 195, y: 300))
     XCTAssertTrue(view.isFlying)
 
-    spinRunLoop(0.2)  // let the entry + loop run a few frames (exercises the live trail sampler)
+    spinRunLoop(0.2)
 
     var revealedDuration: TimeInterval?
     view.flyAway { revealedDuration = $0 }
@@ -198,7 +177,6 @@ import XCTest
     _ = window  // keep the window alive until the view has removed itself
   }
 
-  /// Drive the failure path: the bee glides home, the completion fires, and the view tears down.
   func testAbortHomeSmokeRunsToCompletionAndRemovesItself() {
     let (window, view) = makeFlightOnWindow()
 
@@ -215,7 +193,6 @@ import XCTest
     _ = window
   }
 
-  /// Starting a second flight while one is in progress must be ignored, not crash or double-start.
   func testStartingWhileFlyingIsIgnored() {
     let view = BeeFlightView(beeImage: nil, beeSize: 80)
     view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
@@ -232,8 +209,6 @@ import XCTest
 
   private func makeView() -> BeeFlightView { BeeFlightView(beeImage: nil, beeSize: 80) }
 
-  /// A flight view mounted on a visible window, running at a near-instant loop duration (see the
-  /// note above the smoke tests).
   private func makeFlightOnWindow() -> (UIWindow, BeeFlightView) {
     let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
     let view = BeeFlightView(beeImage: nil, beeSize: 80)

@@ -17,8 +17,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
   var headerLabel = BSLabel()
   var emailTextField = BSTextField()
   var passwordTextField = BSTextField()
-  // The bee is split out from the wordmark so it can be the *same* view that animates,
-  // avoiding any discontinuity between the resting logo and the flying bee.
+  // The bee is separate from the wordmark so it can be swapped for the flying bee seamlessly.
   private let beeImageView = UIImageView()
   private let wordmarkImageView = UIImageView()
   var signInButton = BSButton()
@@ -29,20 +28,17 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
   private let goalManager: GoalManager
   private weak var coordinator: MainCoordinator?
 
-  // The bee flight + trail animation, mounted on the window while a sign-in is in progress.
+  // Mounted on the window while a sign-in is in progress.
   private var flightView: BeeFlightView?
 
-  // The bee's take-off, while it waits for the keyboard to finish hiding (see `launchBeeWhenSettled`).
+  // The bee's take-off while it waits for the keyboard to finish hiding.
   private var pendingLaunch: DispatchWorkItem?
   private var keyboardDidHideObserver: NSObjectProtocol?
 
-  // True from when a sign-in attempt starts until the form is restored (failure) or the screen is
-  // handed off (success). The bee's home glide on failure clears the flight view's `isFlying` ~1.6s
-  // before the form is back, so this flag — not the flight state — is what gates re-entry.
+  // True from the start of an attempt until the form is restored or the screen is handed off.
   private var signInInProgress = false
 
-  // The bee in the logo occupies the left ~28% of the wordmark image; slice it off so we
-  // show only the "BEEMINDER" text. (Measured from website_logo_mid: bee 0-158px, text 184px+.)
+  // Fraction of the logo image's width taken up by the bee, which is cropped off for the wordmark.
   private let wordmarkCropFraction: CGFloat = 170.0 / 574.0
   private let beeSize: CGFloat = 80
   private let logoGap: CGFloat = 6
@@ -80,7 +76,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     )
     self.view.backgroundColor = UIColor.systemBackground
 
-    // Logo: a standalone bee + the sliced "BEEMINDER" wordmark, laid out to read as one logo.
     scrollView.addSubview(self.logoContainer)
     self.logoContainer.snp.makeConstraints { (make) in
       make.centerX.equalTo(scrollView)
@@ -163,7 +158,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     self.divider.backgroundColor = UIColor.Beeminder.gray
     self.chooseSignInButtonPressed()
 
-    // Re-slice the wordmark when switching between light and dark mode.
     registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (self: Self, _: UITraitCollection) in
       self.updateWordmark()
     }
@@ -187,7 +181,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
 
   private func updateWordmark() { self.wordmarkImageView.image = self.slicedWordmark() }
 
-  /// The full Beeminder logo with the bee sliced off, leaving only the "BEEMINDER" text.
+  /// The logo image with the bee cropped off, resolved for the current appearance.
   private func slicedWordmark() -> UIImage? {
     guard let asset = UIImage(named: "website_logo_mid") else { return nil }
     let resolved = asset.imageAsset?.image(with: traitCollection) ?? asset
@@ -223,8 +217,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
 
   @objc func signInButtonPressed() {
     Task { @MainActor in
-      // Ignore repeat taps and Return-key presses while an attempt (including its failure glide) is
-      // still in progress, so we never spawn a second flight or desync the restored form.
       guard !self.signInInProgress else { return }
       guard let email = self.emailTextField.text?.trimmingCharacters(in: .whitespaces),
         let password = self.passwordTextField.text, !email.isEmpty, !password.isEmpty
@@ -242,23 +234,19 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
   @objc func handleFailedSignIn(_ notification: Notification) {
     self.cancelPendingLaunch()
     if let flightView = self.flightView, flightView.isFlying {
-      // Fly the bee home, then restore the form and report the error.
       flightView.abortHome { [weak self] in self?.restoreFormAndShowFailure() }
     } else {
-      // Reduce Motion, or the server answered before the bee even took off.
       self.restoreFormAndShowFailure()
     }
   }
 
   @objc func handleSignedIn(_ notification: Notification) {
-    // Keep the bee looping until the gallery's goals have actually been fetched, so we never
-    // reveal an empty "no goals yet" gallery. Then fly off and reveal the populated gallery.
+    // Fetch goals before revealing the gallery so it doesn't appear empty.
     Task { @MainActor in
       try? await self.goalManager.refreshGoals()
       if let flightView = self.flightView, flightView.isFlying {
         flightView.flyAway { [weak self] duration in self?.coordinator?.completeSignIn(revealDuration: duration) }
       } else {
-        // Reduce Motion, or the bee never took off: hand off with the coordinator's plain cross-fade.
         self.cancelPendingLaunch()
         MBProgressHUD.hide(for: self.view, animated: true)
         self.coordinator?.completeSignIn()
@@ -277,9 +265,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
 
   // MARK: - Sign-in flight
 
-  /// Shows that a sign-in attempt is under way. Normally that is the bee flight: the form dims at
-  /// once and the bee takes off as soon as the keyboard has finished hiding. With Reduce Motion on,
-  /// the flight is replaced by the app's usual progress HUD.
+  /// Shows that a sign-in attempt is under way: the bee flight, or a progress HUD under Reduce Motion.
   private func showSignInProgress() {
     self.signInButton.isUserInteractionEnabled = false
     let keyboardWasShowing = self.emailTextField.isFirstResponder || self.passwordTextField.isFirstResponder
@@ -290,8 +276,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
       return
     }
 
-    // Dim the form straight away so the tap has immediate feedback, even though the bee may wait
-    // a moment for the keyboard.
+    // Dim the form straight away for feedback, even if the bee has to wait for the keyboard.
     UIView.animate(withDuration: 0.3) {
       self.headerLabel.alpha = 0.15
       self.emailTextField.alpha = 0.15
@@ -301,11 +286,9 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     if keyboardWasShowing { self.launchBeeWhenSettled() } else { self.launchBee() }
   }
 
-  /// Defers the take-off until the keyboard has gone. Dismissing the keyboard makes the keyboard
-  /// manager scroll the form back to its resting layout with an animation, so reading the logo's
-  /// position now would launch the bee from (and glide it home to) a spot the logo is about to leave.
-  /// Waits for `keyboardDidHide`, with a short timeout in case no keyboard notification arrives
-  /// (e.g. a hardware keyboard).
+  /// Launches the bee once the keyboard has hidden and the form has scrolled back to its resting
+  /// layout, so the bee's home matches where the logo will be. Times out in case no notification
+  /// arrives (e.g. a hardware keyboard).
   private func launchBeeWhenSettled() {
     let launch = DispatchWorkItem { [weak self] in self?.launchBee() }
     self.pendingLaunch = launch
@@ -326,13 +309,11 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     }
   }
 
-  /// Hands the bee off to a window-mounted `BeeFlightView` (so it can keep flying as this screen is
-  /// torn down). The bee launches from exactly where the resting logo bee sits, which is then
-  /// hidden so the swap is invisible.
+  /// Replaces the logo bee with a window-mounted `BeeFlightView` launching from the same spot.
   private func launchBee() {
-    self.cancelPendingLaunch()  // whichever of the keyboard notification and the timeout fired first wins
+    self.cancelPendingLaunch()
     guard self.signInInProgress, self.flightView == nil else { return }
-    self.view.layoutIfNeeded()  // make sure the logo is laid out before we read its position
+    self.view.layoutIfNeeded()
 
     let host: UIView = self.view.window ?? self.view
     let flight = BeeFlightView(beeImage: UIImage(named: "Infinibee"), beeSize: self.beeSize)
@@ -344,17 +325,14 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     let home = flight.convert(beeCentre, from: self.beeImageView)
     self.beeImageView.isHidden = true
 
-    // The wordmark goes with the bee: fade it out as the bee leaves its spot.
     UIView.animate(withDuration: 0.3) { self.wordmarkImageView.alpha = 0 }
 
     flight.start(home: home)
   }
 
-  /// Restores the form after a failed sign-in. The bee has already glided home (and the flight view
-  /// tears itself down once its trail finishes fading), so we just bring the logo and form back.
   private func restoreFormAndShowFailure() {
     self.signInInProgress = false
-    self.flightView = nil  // it removes itself from the window once its trail has faded
+    self.flightView = nil  // it removes itself from the window
     MBProgressHUD.hide(for: self.view, animated: true)
     self.beeImageView.isHidden = false
     self.signInButton.isUserInteractionEnabled = true

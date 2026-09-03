@@ -2,16 +2,12 @@
 //  BeeFlightView.swift
 //  BeeSwift
 //
-//  A self-contained, window-mounted overlay that flies a bee from a home point through a figure-8
-//  loop and then off the top-right corner, trailing a short "train" of orange dashes.
-//
 
 import UIKit
 
-/// Owns the flying bee, its trail, and the display link, and removes itself once the animation
-/// finishes. Because it is mounted on the window (not on the sign-in screen) and tears itself down,
-/// it keeps flying after the view controller that started it is dismissed mid-exit — the "outlives
-/// its owner" requirement holds by construction, not by lifecycle juggling.
+/// An overlay that flies a bee from a home point through a figure-8 loop and then either off the
+/// top-right corner or back home, trailing orange dashes. Removes itself once the flight is over,
+/// so it can be mounted on the window and outlive the screen that started it.
 final class BeeFlightView: UIView {
   private let beeSize: CGFloat
   private let flyingBee = UIImageView()
@@ -22,8 +18,7 @@ final class BeeFlightView: UIView {
   private struct Cubic { let p0, p1, p2, p3: CGPoint }
 
   private let flightStations = 120
-  /// Seconds per figure-8 loop; lower is faster. Sets the shared flight speed for every phase (the
-  /// exit ramps up from it). Set before `start`; tests shrink it so flights resolve near-instantly.
+  /// Seconds per figure-8 loop, which sets the flight speed for every phase. Set before `start`.
   var loopDuration: TimeInterval = 1.67
   private(set) var isFlying = false
   private var flightHome: CGPoint = .zero
@@ -34,8 +29,7 @@ final class BeeFlightView: UIView {
 
   // MARK: Trail state
 
-  // Orange "train" trailing the bee: dashes are dropped at the bee's passing positions and then
-  // stay put, fading out with age, so the most recent few are visible behind it.
+  // Dashes are dropped along the bee's path and stay put, fading with age.
   private var trailLink: CADisplayLink?
   private var trailPath: [(point: CGPoint, length: CGFloat)] = []  // bee-centre flight path history
   private var trailTotalLength: CGFloat = 0
@@ -68,8 +62,8 @@ final class BeeFlightView: UIView {
 
   // MARK: - Public API
 
-  /// Launches the bee from `home` (in this view's coordinates) and loops the figure-8 indefinitely
-  /// until `flyAway` or `abortHome` is called.
+  /// Launches the bee from `home` (in this view's coordinates) and loops until `flyAway` or
+  /// `abortHome` is called.
   func start(home: CGPoint) {
     guard !isFlying else { return }
     layoutIfNeeded()
@@ -88,8 +82,7 @@ final class BeeFlightView: UIView {
   }
 
   /// Sends the bee off the top-right corner from wherever it is, accelerating as it goes. `reveal`
-  /// is called with the flight duration so the caller can cross-fade its screen away in step. The
-  /// view removes itself once the bee has left and the last trail dash has faded.
+  /// is called synchronously with the exit duration so the caller can fade its screen out in step.
   func flyAway(reveal: (TimeInterval) -> Void) {
     guard isFlying else { return }
     isFlying = false
@@ -102,8 +95,6 @@ final class BeeFlightView: UIView {
     flyingBee.layer.position = current
     flyingBee.layer.transform = CATransform3DMakeRotation(currentRotation, 0, 0, 1)
 
-    // Turn from the current heading toward the top-right corner along an arc of at least
-    // `minCornerRadius`, so the lemniscate→exit hand-off is never a sharp corner, then run off.
     let heading = currentRotation - .pi / 2  // bee image points up; travel angle = rotation - 90°
     let corner = CGPoint(x: bounds.width + 120, y: -160)
     let minCornerRadius: CGFloat = 70
@@ -111,34 +102,27 @@ final class BeeFlightView: UIView {
 
     let bee = flyingBee
 
-    // Accelerating exit: front-load the path sampling so the bee leaves at the loop's speed (no
-    // jolt at the hand-off) and speeds up as it flies off. `pace` maps even time steps onto
-    // increasingly long arc-length steps; setting durationScale = pace'(0) makes the initial speed
-    // exactly the loop speed, ramping to (1 + accel) / pace'(0) times that by the corner.
+    // Scaling the duration by pace'(0) = 1 - accel makes the bee leave at exactly the loop speed.
     let accel: CGFloat = 0.5
     let pace: (CGFloat) -> CGFloat = { Self.pace($0, accel: accel) }
     let paceInverse: (CGFloat) -> CGFloat = { Self.paceInverse($0, accel: accel) }
     let durationScale = Double(1 - accel)
     let duration = Double(flightKeyframes(densePoints: exitPath).length / flightSpeed) * durationScale
 
-    // Commit the bee's exit to the render server FIRST, so it keeps flying smoothly at the loop's
-    // speed even while the caller's reveal briefly blocks the main thread (building the gallery).
     UIView.animate(withDuration: duration * 0.55, delay: duration * 0.35, options: .curveEaseIn) { bee.alpha = 0 }
 
-    // The display-link trail would freeze during the exit (the reveal blocks the main thread), so
-    // stop it and pre-bake the exit's dashes into Core Animation alongside the bee instead.
+    // The caller's reveal may block the main thread, which would freeze the display-link trail, so
+    // the exit's dashes are pre-baked into Core Animation instead.
     stopTrail()
     bakeExitTrail(along: exitPath, duration: duration, paceInverse: paceInverse)
 
     runPhase(densePoints: exitPath, key: "exit", pace: pace, durationScale: durationScale) { bee.isHidden = true }
-    // Remove ourselves once the bee has flown off and the last dash has faded.
     removeSelf(after: duration + trailDashLifetime + 0.1)
 
     reveal(duration)
   }
 
-  /// Glides the bee back to its launch point and calls `completion` when it lands (the caller can
-  /// restore whatever it hid). The view removes itself once the trail has faded.
+  /// Glides the bee back to its launch point and calls `completion` when it lands.
   func abortHome(completion: @escaping () -> Void) {
     guard isFlying else { return }
     isFlying = false
@@ -159,7 +143,7 @@ final class BeeFlightView: UIView {
       p2: CGPoint(x: current.x + dx * 0.66, y: current.y + dy * 0.66),
       p3: flightHome,
     )
-    // Settle gradually back to upright as it glides home.
+    // Settle back to upright as it glides home.
     let rotations = (0...flightStations).map { i in currentRotation * (1 - CGFloat(i) / CGFloat(flightStations)) }
     runPhase(cubics: [home], key: "return", rotationsOverride: rotations) { [weak self] in
       guard let self else { return }
@@ -172,23 +156,18 @@ final class BeeFlightView: UIView {
     }
   }
 
-  /// Removes the view (and everything it hosts) after `delay`, keeping it alive until then so its
-  /// in-flight dashes finish fading.
   private func removeSelf(after delay: TimeInterval) {
     DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [self] in removeFromSuperview() }
   }
 
   // MARK: - Exit acceleration curve
 
-  /// Maps an even time fraction onto an arc-length fraction for the accelerating exit. Because
-  /// `pace'(0) = 1 - accel`, scaling the exit's duration by `1 - accel` makes the bee leave the loop
-  /// at exactly the loop speed (no jolt at the hand-off) and ramp up to `(1 + accel)/(1 - accel)×`
-  /// that by the corner. `pace(0) = 0` and `pace(1) = 1`, so the path is covered exactly once.
+  /// Maps a time fraction onto an arc-length fraction for the accelerating exit. Its initial slope
+  /// is `1 - accel`, rising to `1 + accel` at the end.
   static func pace(_ u: CGFloat, accel: CGFloat) -> CGFloat { (1 - accel) * u + accel * u * u }
 
-  /// The analytic inverse of `pace` (lives alongside it so the two can't drift apart): given a
-  /// fraction of arc length, the fraction of time at which the bee reaches it. Used to time each
-  /// exit trail dash to the moment the bee is `trailGap` ahead of it. Input is clamped to [0, 1].
+  /// The inverse of `pace`: the time fraction at which a given arc-length fraction is reached.
+  /// Input is clamped to [0, 1].
   static func paceInverse(_ fraction: CGFloat, accel: CGFloat) -> CGFloat {
     let y = max(0, min(1, fraction))
     guard accel > 0.0001 else { return y }
@@ -200,10 +179,8 @@ final class BeeFlightView: UIView {
   private func prepareFlightGeometry() {
     let width = bounds.width
     lemniscateHalfWidth = min(width * 0.22, 100)
-    lemniscateHalfHeight = lemniscateHalfWidth / 1.25  // matches BeeLemniscateView's aspect ratio
+    lemniscateHalfHeight = lemniscateHalfWidth / 1.25
     lemniscateCenter = CGPoint(x: bounds.midX, y: flightHome.y - 18)
-    // Baseline perceptual speed: pick the speed from one loop and reuse it for entry and looping.
-    // The exit ramps up from this speed (see flyAway).
     let loopLength = flightKeyframes(loopCubics()).length
     flightSpeed = max(1, loopLength / CGFloat(loopDuration))
   }
@@ -212,8 +189,7 @@ final class BeeFlightView: UIView {
     let c = lemniscateCenter
     let hw = lemniscateHalfWidth
     let hh = lemniscateHalfHeight
-    // Bottom-first traversal so the crossing tangent points down-right, letting the entry
-    // descend into the figure-8. Same shape as BeeLemniscateView, traced the other way.
+    // Traversed bottom-first so the crossing tangent points down-right, matching the entry's end.
     return [
       Cubic(p0: c, p1: CGPoint(x: c.x + hw, y: c.y + hh), p2: CGPoint(x: c.x + hw, y: c.y - hh), p3: c),
       Cubic(p0: c, p1: CGPoint(x: c.x - hw, y: c.y + hh), p2: CGPoint(x: c.x - hw, y: c.y - hh), p3: c),
@@ -224,8 +200,7 @@ final class BeeFlightView: UIView {
     let c = lemniscateCenter
     let hw = lemniscateHalfWidth
     let hh = lemniscateHalfHeight
-    // Launch straight up (control point directly above the start) to above the figure-8,
-    // then curve down into the crossing heading down-right to match the loop's start tangent.
+    // Straight up past the figure-8, then curve down into the crossing along the loop's start tangent.
     let entry = Cubic(
       p0: flightHome,
       p1: CGPoint(x: flightHome.x, y: c.y - hh - 30),
@@ -240,17 +215,14 @@ final class BeeFlightView: UIView {
 
   private func runLoop() {
     guard isFlying else { return }
-    // Loop indefinitely until sign-in finishes; flyAway() interrupts us from wherever we are.
     runPhase(cubics: loopCubics(), key: "loop") { [weak self] in
       guard let self, self.isFlying else { return }
       self.runLoop()
     }
   }
 
-  /// Builds the exit path as a dense polyline (in the same coordinate space as the inputs): a
-  /// circular-arc turn of radius `minRadius`, tangent to `headingAngle` at `start`, that rotates to
-  /// face `target`, followed by a straight run out past it. Bounding the arc radius keeps the
-  /// lemniscate→exit transition from ever becoming a sharp corner.
+  /// The exit path as a dense polyline: an arc of radius `minRadius`, tangent to `headingAngle` at
+  /// `start`, turning to face `target`, then a straight run out past it.
   func exitPathPoints(from start: CGPoint, headingAngle: CGFloat, toward target: CGPoint, minRadius: CGFloat)
     -> [CGPoint]
   {
@@ -273,15 +245,14 @@ final class BeeFlightView: UIView {
       }
     }
 
-    // From the arc's end the bee faces `aim`; run straight out past the target to leave the screen.
     let arcEnd = points.last ?? start
     let runLength = hypot(target.x - arcEnd.x, target.y - arcEnd.y) + 200
     points.append(CGPoint(x: arcEnd.x + cos(aim) * runLength, y: arcEnd.y + sin(aim) * runLength))
     return points
   }
 
-  /// Animates the flying bee along the given cubic path(s) at the shared flight speed, with the
-  /// bee's head leading the direction of travel (unless `rotationsOverride` is supplied).
+  /// Animates the bee along the given cubics at the flight speed, head leading unless
+  /// `rotationsOverride` is supplied.
   private func runPhase(
     cubics: [Cubic],
     key: String,
@@ -301,7 +272,7 @@ final class BeeFlightView: UIView {
     )
   }
 
-  /// Like `runPhase(cubics:…)` but drives the bee along a dense polyline (used for the arc exit).
+  /// Like `runPhase(cubics:…)` but along a dense polyline.
   private func runPhase(
     densePoints: [CGPoint],
     key: String,
@@ -353,10 +324,7 @@ final class BeeFlightView: UIView {
     CATransaction.commit()
   }
 
-  /// Resamples cubic Bézier segments along arc length and computes a head-leading rotation at each
-  /// station. With the default identity `pace` the stations are equally spaced (constant speed);
-  /// a non-linear `pace` (mapping [0,1] → [0,1]) front- or back-loads them to vary speed over the
-  /// path. Returns the keyframe positions, rotations and total length.
+  /// Keyframes for a chain of cubic Béziers; see `flightKeyframes(densePoints:pace:)`.
   private func flightKeyframes(_ cubics: [Cubic], pace: (CGFloat) -> CGFloat = { $0 }) -> (
     positions: [CGPoint], rotations: [CGFloat], length: CGFloat
   ) {
@@ -369,13 +337,11 @@ final class BeeFlightView: UIView {
     return flightKeyframes(densePoints: dense, pace: pace)
   }
 
-  /// Resamples an already-dense polyline at equal (or `pace`-warped) arc-length stations and
-  /// computes a head-leading rotation at each. Used for paths that aren't Bézier cubics, such as
-  /// the arc-based exit.
+  /// Resamples a polyline at arc-length stations, spaced evenly or warped by `pace` (a map of
+  /// [0,1] onto [0,1]), with a head-leading rotation at each. Also returns the path's total length.
   func flightKeyframes(densePoints dense: [CGPoint], pace: (CGFloat) -> CGFloat = { $0 }) -> (
     positions: [CGPoint], rotations: [CGFloat], length: CGFloat
   ) {
-    // A degenerate path (fewer than two points) has no direction; park every station on the point.
     guard dense.count >= 2 else {
       let point = dense.first ?? flightHome
       return (Array(repeating: point, count: flightStations + 1), Array(repeating: 0, count: flightStations + 1), 0)
@@ -404,7 +370,7 @@ final class BeeFlightView: UIView {
       }
     }
 
-    // Head-leading: the bee image points up, so rotation = travel angle + 90 degrees.
+    // The bee image points up, so rotation = travel angle + 90°.
     var rotations: [CGFloat] = []
     rotations.reserveCapacity(flightStations + 1)
     for i in 0...flightStations {
@@ -412,7 +378,7 @@ final class BeeFlightView: UIView {
       let b = positions[min(flightStations, i + 1)]
       rotations.append(atan2(b.y - a.y, b.x - a.x) + .pi / 2)
     }
-    // Unwrap so the bee never spins the long way round between stations.
+    // Unwrap so the bee never spins the long way round.
     for i in 1...flightStations {
       var d = rotations[i] - rotations[i - 1]
       while d > .pi {
@@ -442,11 +408,8 @@ final class BeeFlightView: UIView {
 
   // MARK: - Bee trail
 
-  /// Starts the orange dash "train". A display link samples the bee's live (presentation) position
-  /// each frame and drops a stationary dash every `trailDashSpacing` points of travel; each dash
-  /// then fades out over the time the bee takes to lay down `trailDashCount` dashes, so roughly that
-  /// many are visible at once — brightest nearest the bee. The dashes never move: the trail follows
-  /// the bee purely by new dashes appearing ahead and old ones fading behind.
+  /// Starts sampling the bee's live position each frame, dropping a dash every `trailDashSpacing`
+  /// points of travel.
   private func startTrail() {
     stopTrail()
     trailPath.removeAll()
@@ -467,12 +430,10 @@ final class BeeFlightView: UIView {
     guard let presentation = flyingBee.layer.presentation(), !flyingBee.isHidden else { return }
     let position = presentation.position
 
-    // Record the bee centre's actual flight path, tracking cumulative arc length along it.
     if let last = trailPath.last {
       let step = hypot(position.x - last.point.x, position.y - last.point.y)
-      // The presentation layer can report a stale position (typically the origin) on the very first
-      // frame, before the flight animation is committed. Re-anchor on any implausibly large jump so
-      // we never lay a line of dashes from the corner to the bee's starting point.
+      // The presentation layer can report a stale position on the first frame; re-anchor on any
+      // implausibly large jump rather than laying dashes across it.
       if step > max(60, flightSpeed * 0.25) {
         trailPath = [(position, last.length)]
         return
@@ -482,12 +443,8 @@ final class BeeFlightView: UIView {
     }
     trailPath.append((position, trailTotalLength))
 
-    // Lay down dash stations spaced along that path, but only once each is at least `trailGap`
-    // behind the bee. Placing them on the real path (not an offset of it) keeps the trail tracing
-    // the smooth route the bee flew; the gap means the bee's swinging tail never reaches the trail.
+    // Lay each dash once it is at least `trailGap` behind the bee, so the bee's tail never touches it.
     while trailNextStation + trailGap <= trailTotalLength {
-      // Stop (rather than skip the station) if the path isn't long enough to interpolate yet, e.g.
-      // just after a re-anchor; the station gets laid on a later frame once history has caught up.
       guard let (point, angle) = trailPoint(atLength: trailNextStation) else { break }
       dropDash(at: point, travelAngle: angle)
       trailNextStation += trailDashSpacing
@@ -495,8 +452,7 @@ final class BeeFlightView: UIView {
     pruneTrailHistory()
   }
 
-  /// Interpolates the recorded flight path to find the point at arc length `target` and the path's
-  /// travel direction there, so a dash laid at it reads as a streak along the route.
+  /// The point on the recorded flight path at arc length `target`, and the heading there.
   private func trailPoint(atLength target: CGFloat) -> (CGPoint, CGFloat)? {
     guard trailPath.count >= 2 else { return nil }
     for i in 1..<trailPath.count where trailPath[i].length >= target {
@@ -510,7 +466,7 @@ final class BeeFlightView: UIView {
     return nil
   }
 
-  /// Discards path history the trail has already passed, keeping the buffer small.
+  /// Discards path history the trail has already passed.
   private func pruneTrailHistory() {
     let keepFrom = trailNextStation - trailDashSpacing
     if let idx = trailPath.firstIndex(where: { $0.length >= keepFrom }), idx > 1 { trailPath.removeFirst(idx - 1) }
@@ -540,10 +496,8 @@ final class BeeFlightView: UIView {
     }
   }
 
-  /// Pre-bakes the trail for the exit flight straight into Core Animation, continuing the same dash
-  /// grid the live sampler laid during the loop. The caller's reveal briefly blocks the main thread
-  /// (building the gallery), which freezes the display-link-driven trail; baking the exit dashes —
-  /// timed to the bee's already-committed exit — keeps the trail flowing across that stall.
+  /// Lays the exit's dashes up front as Core Animation fades timed to the bee's exit, continuing the
+  /// dash spacing the live sampler had reached.
   private func bakeExitTrail(
     along exitPath: [CGPoint],
     duration: TimeInterval,
@@ -551,7 +505,6 @@ final class BeeFlightView: UIView {
   ) {
     guard exitPath.count >= 2, duration > 0 else { return }
 
-    // Arc lengths along the exit path, and its total, for the pace→time mapping below.
     var exitLengths: [CGFloat] = [0]
     exitLengths.reserveCapacity(exitPath.count)
     for i in 1..<exitPath.count {
@@ -561,14 +514,10 @@ final class BeeFlightView: UIView {
     }
     guard let exitTotal = exitLengths.last, exitTotal > 0 else { return }
 
-    // The bee's keyframes are warped so arcLength(u) = exitTotal · pace(u); invert pace to find the
-    // time the bee reaches a given arc length, i.e. when the dash `trailGap` behind it should appear.
+    // The bee's exit keyframes are warped so arcLength(u) = exitTotal · pace(u).
     let timeForArcLength: (CGFloat) -> Double = { arcLength in Double(paceInverse(arcLength / exitTotal)) * duration }
 
-    // Build one continuous path — the recorded loop tail the bee just flew, then the exit arc and run
-    // off-screen — sharing a single arc-length scale. Walking dash stations along this combined path
-    // makes the loop→exit transition just another stretch of path: the ordinary interpolation covers
-    // the seam, with no special-casing of where the two meet.
+    // Append the exit to the recorded path so dash stations run straight across the seam.
     let handoff = exitPath[0]
     let handoffGap = trailPath.last.map { hypot(handoff.x - $0.point.x, handoff.y - $0.point.y) } ?? 0
     let exitStartLength = trailTotalLength + handoffGap  // global arc length at the hand-off
@@ -582,11 +531,8 @@ final class BeeFlightView: UIView {
     let start = CACurrentMediaTime()
     let lifetime = trailDashLifetime
 
-    // Commit the dashes explicitly, here and now. They carry future `beginTime`s relative to `start`,
-    // and the caller blocks the main thread (the reveal) immediately after baking — so if these were
-    // left in the implicit transaction they wouldn't reach the render server until that block ended,
-    // by which point the earliest dashes' begin times have already passed. They'd be skipped, leaving
-    // a gap in the trail just as the bee peels away. Flushing now ships them with the bee.
+    // Commit now: the dashes carry absolute begin times, and if the caller blocks the main thread
+    // before the implicit transaction flushes, the earliest ones would be skipped.
     CATransaction.begin()
     while trailNextStation - exitStartLength <= exitTotal - trailGap {
       if let (point, angle) = pointOnPath(points, lengths, atLength: trailNextStation) {
@@ -608,12 +554,9 @@ final class BeeFlightView: UIView {
     fade.duration = lifetime
     fade.beginTime = beginAt
     dash.layer.add(fade, forKey: "trailFade")
-    // No per-dash removal needed: the baked dashes are torn down wholesale with this view once the
-    // exit finishes (see flyAway), which is when the last of them has finished fading.
   }
 
-  /// Interpolates a polyline (with precomputed cumulative `lengths`) at arc length `target`,
-  /// returning the point and the path's heading there.
+  /// The point on a polyline (with cumulative `lengths`) at arc length `target`, and the heading there.
   private func pointOnPath(_ path: [CGPoint], _ lengths: [CGFloat], atLength target: CGFloat) -> (CGPoint, CGFloat)? {
     guard path.count >= 2 else { return nil }
     for i in 1..<path.count where lengths[i] >= target {
@@ -631,9 +574,7 @@ final class BeeFlightView: UIView {
   }
 }
 
-/// Forwards display-link ticks to the flight view without the link retaining it. CADisplayLink holds
-/// a strong reference to its target, so targeting the view directly would keep it alive until the
-/// link is invalidated; the weak hop here avoids depending on that.
+/// Forwards display-link ticks to the flight view without the link retaining it.
 private final class TrailDisplayLinkProxy {
   private weak var target: BeeFlightView?
   init(target: BeeFlightView) { self.target = target }

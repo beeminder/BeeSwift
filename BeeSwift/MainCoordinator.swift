@@ -94,11 +94,7 @@ class MainCoordinator {
     navigationController.setNavigationBarHidden(true, animated: false)
     navigationController.setViewControllers([signInVC], animated: false)
   }
-  /// Called by the sign-in screen once its success animation has played, to reveal the gallery.
-  /// Makes the gallery the root, then fades the real sign-in view out over it across
-  /// `revealDuration` so the reveal lands as the flying bee reaches the corner. We fade the actual
-  /// view (not a snapshot-based transition, which can leave a frozen "ghost" of the bee behind);
-  /// the bee has been lifted onto the window, above this view, so it keeps flying over the gallery.
+  /// Replaces the sign-in screen with the gallery, cross-fading over `revealDuration`.
   func completeSignIn(revealDuration: TimeInterval = 0.3) {
     let outgoingSignInView = navigationController.viewControllers.first?.view
     showGallery()
@@ -216,9 +212,7 @@ class MainCoordinator {
     navigationController.pushViewController(controller, animated: true)
   }
   @objc private func handleSignOut() {
-    // A failed sign-in also posts signedOut (CurrentUserManager signs out to clear partial state).
-    // If the sign-in screen is already up, leave it alone so it can finish its failure animation,
-    // keep the typed credentials, and show its error alert, rather than being replaced mid-flight.
+    // A failed sign-in also posts signedOut; don't replace a sign-in screen that is already showing.
     if navigationController.viewControllers.first is SignInViewController { return }
     navigationController.dismiss(animated: false)
     start()
