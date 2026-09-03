@@ -38,8 +38,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
   // True from the start of an attempt until the form is restored or the screen is handed off.
   private var signInInProgress = false
 
-  // Fraction of the logo image's width taken up by the bee, which is cropped off for the wordmark.
-  private let wordmarkCropFraction: CGFloat = 170.0 / 574.0
   private let beeSize: CGFloat = 80
   private let logoGap: CGFloat = 6
   private let wordmarkWidth: CGFloat = 202
@@ -93,6 +91,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
       make.width.height.equalTo(beeSize)
     }
 
+    self.wordmarkImageView.image = UIImage(named: "website_wordmark")
     self.wordmarkImageView.contentMode = .scaleAspectFit
     self.logoContainer.addSubview(self.wordmarkImageView)
     self.wordmarkImageView.snp.makeConstraints { (make) in
@@ -101,7 +100,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
       make.width.equalTo(wordmarkWidth)
       make.height.equalTo(logoHeight)
     }
-    self.updateWordmark()
 
     scrollView.addSubview(self.headerLabel)
     self.headerLabel.textAlignment = NSTextAlignment.center
@@ -157,10 +155,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     self.divider.isHidden = true
     self.divider.backgroundColor = UIColor.Beeminder.gray
     self.chooseSignInButtonPressed()
-
-    registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (self: Self, _: UITraitCollection) in
-      self.updateWordmark()
-    }
   }
 
   @objc func chooseSignInButtonPressed() {
@@ -175,21 +169,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
       make.height.equalTo(1)
       make.top.equalTo(self.signInButton.snp.bottom).offset(15)
     }
-  }
-
-  // MARK: - Wordmark slicing
-
-  private func updateWordmark() { self.wordmarkImageView.image = self.slicedWordmark() }
-
-  /// The logo image with the bee cropped off, resolved for the current appearance.
-  private func slicedWordmark() -> UIImage? {
-    guard let asset = UIImage(named: "website_logo_mid") else { return nil }
-    let resolved = asset.imageAsset?.image(with: traitCollection) ?? asset
-    guard let cg = resolved.cgImage else { return resolved }
-    let cropX = Int((CGFloat(cg.width) * wordmarkCropFraction).rounded())
-    let rect = CGRect(x: cropX, y: 0, width: cg.width - cropX, height: cg.height)
-    guard let cropped = cg.cropping(to: rect) else { return resolved }
-    return UIImage(cgImage: cropped, scale: resolved.scale, orientation: resolved.imageOrientation)
   }
 
   // MARK: - Alerts
