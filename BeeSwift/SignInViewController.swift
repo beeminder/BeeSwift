@@ -39,9 +39,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
   private var signInInProgress = false
 
   private let beeSize: CGFloat = 80
-  private let logoGap: CGFloat = 6
-  private let wordmarkWidth: CGFloat = 202
-  private let logoHeight: CGFloat = 80
+  private let wordmarkSize = CGSize(width: 195, height: 22.5)
+  // Spacing and vertical offset of the text relative to the bee, as in the original logo.
+  private let wordmarkGap: CGFloat = 13
+  private let wordmarkCenterYOffset: CGFloat = -6
 
   init(currentUserManager: CurrentUserManager, goalManager: GoalManager, coordinator: MainCoordinator?) {
     self.currentUserManager = currentUserManager
@@ -78,8 +79,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     self.logoContainer.snp.makeConstraints { (make) in
       make.centerX.equalTo(scrollView)
       make.centerY.equalToSuperview().multipliedBy(0.55)
-      make.width.equalTo(beeSize + logoGap + wordmarkWidth)
-      make.height.equalTo(logoHeight)
+      make.width.equalTo(beeSize + wordmarkGap + wordmarkSize.width)
+      make.height.equalTo(beeSize)
     }
 
     self.beeImageView.image = UIImage(named: "Infinibee")
@@ -95,10 +96,9 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     self.wordmarkImageView.contentMode = .scaleAspectFit
     self.logoContainer.addSubview(self.wordmarkImageView)
     self.wordmarkImageView.snp.makeConstraints { (make) in
-      make.leading.equalTo(self.beeImageView.snp.trailing).offset(logoGap)
-      make.centerY.equalTo(self.logoContainer)
-      make.width.equalTo(wordmarkWidth)
-      make.height.equalTo(logoHeight)
+      make.leading.equalTo(self.beeImageView.snp.trailing).offset(wordmarkGap)
+      make.centerY.equalTo(self.beeImageView).offset(wordmarkCenterYOffset)
+      make.size.equalTo(wordmarkSize)
     }
 
     scrollView.addSubview(self.headerLabel)
