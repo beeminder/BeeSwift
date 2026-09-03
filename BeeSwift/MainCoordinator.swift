@@ -33,12 +33,6 @@ class MainCoordinator {
   private func setUpNotifications() {
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(handleSignIn),
-      name: CurrentUserManager.NotificationName.signedIn,
-      object: nil,
-    )
-    NotificationCenter.default.addObserver(
-      self,
       selector: #selector(handleSignOut),
       name: CurrentUserManager.NotificationName.signedOut,
       object: nil,
@@ -92,9 +86,27 @@ class MainCoordinator {
     navigationController.pushViewController(settingsVC, animated: true)
   }
   func showSignIn() {
-    let signInVC = SignInViewController(currentUserManager: currentUserManager)
+    let signInVC = SignInViewController(
+      currentUserManager: currentUserManager,
+      goalManager: goalManager,
+      coordinator: self,
+    )
     navigationController.setNavigationBarHidden(true, animated: false)
     navigationController.setViewControllers([signInVC], animated: false)
+  }
+  /// Replaces the sign-in screen with the gallery, cross-fading over `revealDuration`.
+  func completeSignIn(revealDuration: TimeInterval = 0.3) {
+    let outgoingSignInView = navigationController.viewControllers.first?.view
+    showGallery()
+    guard let outgoingSignInView else { return }
+    navigationController.view.addSubview(outgoingSignInView)
+    UIView.animate(
+      withDuration: revealDuration,
+      delay: 0,
+      options: .curveEaseInOut,
+      animations: { outgoingSignInView.alpha = 0 },
+      completion: { _ in outgoingSignInView.removeFromSuperview() },
+    )
   }
   func showTimerForGoal(_ goal: Goal) {
     let controller = TimerViewController(goal: goal, requestManager: requestManager)
@@ -199,11 +211,9 @@ class MainCoordinator {
     let controller = LogsViewController()
     navigationController.pushViewController(controller, animated: true)
   }
-  @objc private func handleSignIn() {
-    navigationController.dismiss(animated: false)
-    start()
-  }
   @objc private func handleSignOut() {
+    // A failed sign-in also posts signedOut; don't replace a sign-in screen that is already showing.
+    if navigationController.viewControllers.first is SignInViewController { return }
     navigationController.dismiss(animated: false)
     start()
   }
