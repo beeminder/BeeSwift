@@ -10,13 +10,11 @@ import WebKit
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalGraphView")
 
   private let webView: WKWebView
-  /// Shown instead of the graph when the owner has an unpaid charge (is "deadbeat").
   private let placeholderImageView = UIImageView(image: UIImage(named: "GraphPlaceholder"))
 
   /// The graph URL currently loaded, to avoid redundant reloads.
   private var loadedURL: String?
 
-  /// Whether the graph is currently replaced by the placeholder. Exposed for tests.
   var isShowingPlaceholder: Bool { !placeholderImageView.isHidden }
 
   var goal: Goal? {
@@ -72,8 +70,7 @@ import WebKit
     doubleTap.numberOfTapsRequired = 2
     webView.addGestureRecognizer(doubleTap)
 
-    // A new datapoint regenerates the graph, changing its cache-busting URL. The owner's deadbeat
-    // status is also refreshed this way, so the graph appears again once a charge succeeds.
+    // A new datapoint regenerates the graph, changing its cache-busting URL.
     NotificationCenter.default.addObserver(
       forName: .NSManagedObjectContextObjectsDidChange,
       object: ServiceLocator.persistentContainer.viewContext,
@@ -84,8 +81,7 @@ import WebKit
   private func refresh() {
     guard let goal else { return }
 
-    // Deadbeat users can't see their graphs, matching the gallery thumbnails. Forget the loaded
-    // URL so the graph is fetched again if the user stops being deadbeat.
+    // Forget the loaded URL so the graph is fetched again if the user stops being deadbeat.
     if goal.owner.deadbeat {
       showPlaceholder(true)
       loadedURL = nil
@@ -113,7 +109,6 @@ import WebKit
   }
 
   private func showPlaceholder(_ show: Bool) {
-    // refresh() runs on every Core Data change, so bail if nothing changed.
     guard placeholderImageView.isHidden == show else { return }
     placeholderImageView.isHidden = !show
     webView.isHidden = show
