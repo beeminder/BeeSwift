@@ -10,9 +10,14 @@ import WebKit
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalGraphView")
 
   private let webView: WKWebView
+  /// Shown instead of the graph when the owner has an unpaid charge (is "deadbeat").
+  private let placeholderImageView = UIImageView(image: UIImage(named: "GraphPlaceholder"))
 
   /// The graph URL currently loaded, to avoid redundant reloads.
   private var loadedURL: String?
+
+  /// Whether the graph is currently replaced by the placeholder. Exposed for tests.
+  var isShowingPlaceholder: Bool { !placeholderImageView.isHidden }
 
   var goal: Goal? {
     didSet {
@@ -56,13 +61,19 @@ import WebKit
     addSubview(webView)
     webView.snp.makeConstraints { (make) in make.edges.equalToSuperview() }
 
+    placeholderImageView.contentMode = .scaleAspectFit
+    placeholderImageView.isHidden = true
+    addSubview(placeholderImageView)
+    placeholderImageView.snp.makeConstraints { (make) in make.edges.equalToSuperview() }
+
     // Double-tap zooms to the tapped point. WebKit's own double-tap zoom (which targets the SVG's
     // top-left) is disabled by the document's touch-action rule.
     let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
     doubleTap.numberOfTapsRequired = 2
     webView.addGestureRecognizer(doubleTap)
 
-    // A new datapoint regenerates the graph, changing its cache-busting URL.
+    // A new datapoint regenerates the graph, changing its cache-busting URL. The owner's deadbeat
+    // status is also refreshed this way, so the graph appears again once a charge succeeds.
     NotificationCenter.default.addObserver(
       forName: .NSManagedObjectContextObjectsDidChange,
       object: ServiceLocator.persistentContainer.viewContext,
@@ -72,6 +83,16 @@ import WebKit
 
   private func refresh() {
     guard let goal else { return }
+
+    // Deadbeat users can't see their graphs, matching the gallery thumbnails. Forget the loaded
+    // URL so the graph is fetched again if the user stops being deadbeat.
+    if goal.owner.deadbeat {
+      showPlaceholder(true)
+      loadedURL = nil
+      return
+    }
+    showPlaceholder(false)
+
     let urlString = goal.cacheBustingSvgUrl
     guard !urlString.isEmpty, urlString != loadedURL else { return }
 
@@ -89,6 +110,15 @@ import WebKit
         if urlString == self.loadedURL { self.loadedURL = nil }
       }
     }
+  }
+
+  private func showPlaceholder(_ show: Bool) {
+    // refresh() runs on every Core Data change, so bail if nothing changed.
+    guard placeholderImageView.isHidden == show else { return }
+    placeholderImageView.isHidden = !show
+    webView.isHidden = show
+    // Drop any graph already rendered so it can't be revealed (e.g. via the app switcher snapshot).
+    if show { webView.loadHTMLString("", baseURL: nil) }
   }
 
   // MARK: - Zoom
