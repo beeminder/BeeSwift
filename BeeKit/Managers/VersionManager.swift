@@ -56,7 +56,7 @@ public class VersionManager {
     return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
   }
   private func checkIfUpdateRequired() async throws -> Bool {
-    let responseJSON = try await requestManager.get(url: "api/private/app_versions.json")
+    let responseJSON = try await requestManager.request(endpoint: .appVersions)
 
     guard let response = JSON(responseJSON!).dictionary else { throw VersionError.invalidServerResponse }
     guard let minVersion = response["min_ios"]?.number?.decimalValue else { throw VersionError.noMinimumVersion }
