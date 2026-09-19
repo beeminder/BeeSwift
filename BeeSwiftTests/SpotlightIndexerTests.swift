@@ -37,15 +37,10 @@ final class MockSearchableIndex: SearchableIndexing, @unchecked Sendable {
   }
 }
 
-/// Runs on the main actor so every direct use of `container.viewContext` (a main-queue context)
-/// happens on the main queue. XCTest otherwise runs `async` tests on a background thread, which
-/// races the indexer's own `context.perform` work on the main thread.
 @MainActor final class SpotlightIndexerTests: XCTestCase {
   var container: BeeminderPersistentContainer!
   var currentUserManager: CurrentUserManager!
   var mockSearchableIndex: MockSearchableIndex!
-  /// A private center so the notification tests don't wake the host app's own observers
-  /// (MainCoordinator, GoalManager, the app's SpotlightIndexer, ...) with a global sign-out.
   var notificationCenter: NotificationCenter!
 
   override func setUp() {
@@ -127,7 +122,6 @@ final class MockSearchableIndex: SearchableIndexing, @unchecked Sendable {
     await fulfillment(of: [indexed], timeout: 5.0)
     posterTask.cancel()
     listenerTask.cancel()
-    // Wait for both to finish so no post or reindex outlives this test and lands in the next one.
     await posterTask.value
     await listenerTask.value
 
@@ -160,7 +154,6 @@ final class MockSearchableIndex: SearchableIndexing, @unchecked Sendable {
     await fulfillment(of: [cleared], timeout: 5.0)
     posterTask.cancel()
     listenerTask.cancel()
-    // Wait for both to finish so no post or clear outlives this test and lands in the next one.
     await posterTask.value
     await listenerTask.value
 
