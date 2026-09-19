@@ -37,22 +37,30 @@ final class MockSearchableIndex: SearchableIndexing, @unchecked Sendable {
   }
 }
 
-final class SpotlightIndexerTests: XCTestCase {
+/// Runs on the main actor so every direct use of `container.viewContext` (a main-queue context)
+/// happens on the main queue. XCTest otherwise runs `async` tests on a background thread, which
+/// races the indexer's own `context.perform` work on the main thread.
+@MainActor final class SpotlightIndexerTests: XCTestCase {
   var container: BeeminderPersistentContainer!
   var currentUserManager: CurrentUserManager!
   var mockSearchableIndex: MockSearchableIndex!
+  /// A private center so the notification tests don't wake the host app's own observers
+  /// (MainCoordinator, GoalManager, the app's SpotlightIndexer, ...) with a global sign-out.
+  var notificationCenter: NotificationCenter!
 
   override func setUp() {
     super.setUp()
     container = BeeminderPersistentContainer.createMemoryBackedForTests()
     currentUserManager = CurrentUserManager(requestManager: RequestManager(), container: container)
     mockSearchableIndex = MockSearchableIndex()
+    notificationCenter = NotificationCenter()
   }
 
   override func tearDown() {
     container = nil
     currentUserManager = nil
     mockSearchableIndex = nil
+    notificationCenter = nil
     super.tearDown()
   }
 
@@ -103,6 +111,7 @@ final class SpotlightIndexerTests: XCTestCase {
       container: container,
       currentUserManager: currentUserManager,
       searchableIndex: mockSearchableIndex,
+      notificationCenter: notificationCenter,
     )
     let listenerTask = Task { await indexer.listenForNotifications() }
 
@@ -110,9 +119,7 @@ final class SpotlightIndexerTests: XCTestCase {
     // listener is observing and be missed (flaky under load). Keep posting until it reacts.
     let posterTask = Task {
       while !Task.isCancelled {
-        await MainActor.run {
-          NotificationCenter.default.post(name: .NSManagedObjectContextObjectsDidChange, object: container.viewContext)
-        }
+        notificationCenter.post(name: .NSManagedObjectContextObjectsDidChange, object: container.viewContext)
         try? await Task.sleep(for: .milliseconds(20))
       }
     }
@@ -120,6 +127,9 @@ final class SpotlightIndexerTests: XCTestCase {
     await fulfillment(of: [indexed], timeout: 5.0)
     posterTask.cancel()
     listenerTask.cancel()
+    // Wait for both to finish so no post or reindex outlives this test and lands in the next one.
+    await posterTask.value
+    await listenerTask.value
 
     XCTAssertGreaterThanOrEqual(mockSearchableIndex.indexedEntities.count, 1, "Should have indexed")
     XCTAssertEqual(mockSearchableIndex.indexedEntities.first?.first?.slug, "initial-goal")
@@ -134,6 +144,7 @@ final class SpotlightIndexerTests: XCTestCase {
       container: container,
       currentUserManager: currentUserManager,
       searchableIndex: mockSearchableIndex,
+      notificationCenter: notificationCenter,
     )
     let listenerTask = Task { await indexer.listenForNotifications() }
 
@@ -141,9 +152,7 @@ final class SpotlightIndexerTests: XCTestCase {
     // listener is observing and be missed (flaky under load). Keep posting until it reacts.
     let posterTask = Task {
       while !Task.isCancelled {
-        await MainActor.run {
-          NotificationCenter.default.post(name: CurrentUserManager.NotificationName.signedOut, object: nil)
-        }
+        notificationCenter.post(name: CurrentUserManager.NotificationName.signedOut, object: nil)
         try? await Task.sleep(for: .milliseconds(20))
       }
     }
@@ -151,6 +160,9 @@ final class SpotlightIndexerTests: XCTestCase {
     await fulfillment(of: [cleared], timeout: 5.0)
     posterTask.cancel()
     listenerTask.cancel()
+    // Wait for both to finish so no post or clear outlives this test and lands in the next one.
+    await posterTask.value
+    await listenerTask.value
 
     XCTAssertTrue(mockSearchableIndex.deleteAllSearchableItemsCalled, "Should clear index on sign out")
   }
