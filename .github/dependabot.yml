@@ -31,6 +31,4 @@ updates:
     schedule:
       interval: "weekly"
     ignore:
-      # swift-syntax is a transitive dependency (pulled in via macro packages);
-      # its version should follow the toolchain rather than dependabot bumps
       - dependency-name: "swift-syntax"
