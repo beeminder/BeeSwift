@@ -14,9 +14,18 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # Batch all ruby gem updates into a single combined PR
+    groups:
+      ruby-dependencies:
+        patterns:
+          - "*"
 
   # Maintain dependencies for Swift Package Manager
   - package-ecosystem: "swift"
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # swift-syntax is a transitive dependency (pulled in via macro packages);
+      # its version should follow the toolchain rather than dependabot bumps
+      - dependency-name: "swift-syntax"
