@@ -8,6 +8,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # Batch all GitHub Actions updates into a single combined PR
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   # Maintain dependencies for bundler
   - package-ecosystem: "bundler"
