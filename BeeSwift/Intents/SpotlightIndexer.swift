@@ -21,26 +21,28 @@ actor SpotlightIndexer {
   private let container: BeeminderPersistentContainer
   private let currentUserManager: CurrentUserManager
   private let searchableIndex: SearchableIndexing
+  private let notificationCenter: NotificationCenter
   private var indexedIds: Set<String> = []
 
   init(
     container: BeeminderPersistentContainer,
     currentUserManager: CurrentUserManager,
     searchableIndex: SearchableIndexing = CSSearchableIndex.default(),
+    notificationCenter: NotificationCenter = .default,
   ) {
     self.container = container
     self.currentUserManager = currentUserManager
     self.searchableIndex = searchableIndex
+    self.notificationCenter = notificationCenter
   }
 
   func listenForNotifications() async {
-    let objectsDidChange = NotificationCenter.default.notifications(
+    let objectsDidChange = notificationCenter.notifications(
       named: .NSManagedObjectContextObjectsDidChange,
       object: container.viewContext,
     ).map { _ in IndexAction.reindex }
-    let signedOut = NotificationCenter.default.notifications(named: CurrentUserManager.NotificationName.signedOut).map {
-      _ in IndexAction.clear
-    }
+    let signedOutName = CurrentUserManager.NotificationName.signedOut
+    let signedOut = notificationCenter.notifications(named: signedOutName).map { _ in IndexAction.clear }
 
     for await action in merge(objectsDidChange, signedOut) {
       switch action {
