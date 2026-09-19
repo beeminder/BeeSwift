@@ -41,9 +41,8 @@ actor SpotlightIndexer {
       named: .NSManagedObjectContextObjectsDidChange,
       object: container.viewContext,
     ).map { _ in IndexAction.reindex }
-    let signedOut = notificationCenter.notifications(named: CurrentUserManager.NotificationName.signedOut).map {
-      _ in IndexAction.clear
-    }
+    let signedOutName = CurrentUserManager.NotificationName.signedOut
+    let signedOut = notificationCenter.notifications(named: signedOutName).map { _ in IndexAction.clear }
 
     for await action in merge(objectsDidChange, signedOut) {
       switch action {
