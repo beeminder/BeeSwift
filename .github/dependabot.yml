@@ -8,15 +8,27 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # Batch all GitHub Actions updates into a single combined PR
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   # Maintain dependencies for bundler
   - package-ecosystem: "bundler"
     directory: "/"
     schedule:
       interval: "weekly"
+    # Batch all ruby gem updates into a single combined PR
+    groups:
+      ruby-dependencies:
+        patterns:
+          - "*"
 
   # Maintain dependencies for Swift Package Manager
   - package-ecosystem: "swift"
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "swift-syntax"
