@@ -120,9 +120,7 @@ import SwiftyJSON
     newDataPoints: [BeeDataPoint],
     existingDatapoints: [DataPoint],
   ) async throws {
-    let existingDatapointsByRequestID = Dictionary(existingDatapoints.map { ($0.requestid, $0) }) {
-      first, _ in first
-    }
+    let existingDatapointsByRequestID = Dictionary(existingDatapoints.map { ($0.requestid, $0) }) { first, _ in first }
 
     try await withThrowingTaskGroup(of: Void.self) { group in
       var processedDatapoints: Set<String> = []
