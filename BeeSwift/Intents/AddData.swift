@@ -45,7 +45,7 @@ struct AddData: DeprecatedAppIntent, CustomIntentMigratedAppIntent, PredictableI
   }
 }
 
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *) extension IntentDialog {
+extension IntentDialog {
   fileprivate static var valueParameterPrompt: Self { "What's the value of the datapoint?" }
   fileprivate static func goalParameterConfiguration(goal: String) -> Self { "\(goal)" }
   fileprivate static var goalParameterPrompt: Self { "Which goal?" }
