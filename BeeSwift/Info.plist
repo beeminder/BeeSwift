@@ -137,6 +137,7 @@
 	<string>Requests to add data can be made through Siri</string>
 	<key>NSUserActivityTypes</key>
 	<array>
+		<string>com.beeminder.beeminder.viewGoal</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

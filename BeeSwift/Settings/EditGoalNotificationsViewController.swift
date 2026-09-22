@@ -44,6 +44,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
   required init?(coder aDecoder: NSCoder) { return nil }
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.userActivity = .viewingGoal(self.goal)
     self.title = self.goal.slug
     let useDefaultsLabel = BSLabel()
     useDefaultsLabel.text = "Use defaults"

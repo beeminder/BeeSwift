@@ -43,6 +43,7 @@ class GoalSettingsViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.userActivity = .viewingGoal(self.goal)
     self.title = "Goal Settings"
     self.view.backgroundColor = .systemBackground
 

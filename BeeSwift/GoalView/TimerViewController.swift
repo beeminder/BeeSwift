@@ -87,6 +87,7 @@ class TimerViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.userActivity = .viewingGoal(self.goal)
     self.view.backgroundColor = .darkGray
 
     self.view.addSubview(exitButton)

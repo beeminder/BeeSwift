@@ -36,6 +36,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.userActivity = .viewingGoal(self.goal)
 
     self.title = "Edit Datapoint"
 
