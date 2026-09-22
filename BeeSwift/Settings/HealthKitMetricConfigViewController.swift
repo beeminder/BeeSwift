@@ -74,36 +74,32 @@ extension HealthKitMetricConfigViewController: UITableViewDelegate, UITableViewD
   func numberOfSections(in tableView: UITableView) -> Int { return configurationProvider != nil ? 2 : 1 }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    if section == 0 {
-      return 3  // Goal, Metric, Unit
-    } else {
-      return configurationProvider?.numberOfRows ?? 0
-    }
+    guard section == 0 else { return configurationProvider?.numberOfRows ?? 0 }
+    return 3  // Goal, Metric, Unit
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    if indexPath.section == 0 {
-      // Info section (read-only)
-      let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-      cell.selectionStyle = .none
-      cell.backgroundColor = .secondarySystemGroupedBackground
-
-      switch indexPath.row {
-      case 0:
-        cell.textLabel?.text = "Goal"
-        cell.detailTextLabel?.text = goalName
-      case 1:
-        cell.textLabel?.text = "Metric"
-        cell.detailTextLabel?.text = metricName
-      case 2:
-        cell.textLabel?.text = "Unit"
-        cell.detailTextLabel?.text = unitName ?? "Loading..."
-      default: break
-      }
-      return cell
-    } else {
+    guard indexPath.section == 0 else {
       return configurationProvider?.cell(for: tableView, at: indexPath.row) ?? UITableViewCell()
     }
+    // Info section (read-only)
+    let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+    cell.selectionStyle = .none
+    cell.backgroundColor = .secondarySystemGroupedBackground
+
+    switch indexPath.row {
+    case 0:
+      cell.textLabel?.text = "Goal"
+      cell.detailTextLabel?.text = goalName
+    case 1:
+      cell.textLabel?.text = "Metric"
+      cell.detailTextLabel?.text = metricName
+    case 2:
+      cell.textLabel?.text = "Unit"
+      cell.detailTextLabel?.text = unitName ?? "Loading..."
+    default: break
+    }
+    return cell
   }
 
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

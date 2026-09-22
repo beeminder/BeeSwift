@@ -27,19 +27,7 @@ class WorkoutConfigurationProvider: MetricConfigurationProvider {
   var numberOfRows: Int { return 2 }
 
   func cell(for tableView: UITableView, at row: Int) -> UITableViewCell {
-    if row == 0 {
-      // Sync Mode cell with segmented control
-      let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-      cell.selectionStyle = .none
-      cell.backgroundColor = .secondarySystemGroupedBackground
-
-      syncModeSegmentedControl.removeFromSuperview()
-      cell.contentView.addSubview(syncModeSegmentedControl)
-      syncModeSegmentedControl.snp.makeConstraints { make in
-        make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16))
-      }
-      return cell
-    } else {
+    guard row == 0 else {
       // Workout Types cell with disclosure
       let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
       cell.textLabel?.text = "Workout Types"
@@ -48,6 +36,17 @@ class WorkoutConfigurationProvider: MetricConfigurationProvider {
       cell.backgroundColor = .secondarySystemGroupedBackground
       return cell
     }
+    // Sync Mode cell with segmented control
+    let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+    cell.selectionStyle = .none
+    cell.backgroundColor = .secondarySystemGroupedBackground
+
+    syncModeSegmentedControl.removeFromSuperview()
+    cell.contentView.addSubview(syncModeSegmentedControl)
+    syncModeSegmentedControl.snp.makeConstraints { make in
+      make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16))
+    }
+    return cell
   }
 
   func didSelectRow(at row: Int) { if row == 1 { showWorkoutTypeSelection() } }

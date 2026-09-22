@@ -175,11 +175,10 @@ extension EditNotificationsViewController: UIPickerViewDataSource, UIPickerViewD
     let hour24 = hour24FromPicker
     let selectedMinute = self.timePickerView.selectedRow(inComponent: 1)
     let totalSeconds = 3600 * hour24 + 60 * selectedMinute
-    if hour24 <= 6 {
-      return totalSeconds  // Keep positive for early morning hours
-    } else {
+    guard hour24 <= 6 else {
       return totalSeconds - (24 * 3600)  // Convert to negative offset from next midnight
     }
+    return totalSeconds  // Keep positive for early morning hours
   }
   var hour24FromPicker: Int {
     let selectedHour = self.timePickerView.selectedRow(inComponent: 0)

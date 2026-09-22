@@ -60,7 +60,8 @@ class FreshnessIndicatorView: UIView {
       return "Less than \(hours) hours ago"
     default:
       let days = Int(elapsed / day)
-      if days == 1 { return "1 day ago" } else { return "\(days) days ago" }
+      guard days == 1 else { return "\(days) days ago" }
+      return "1 day ago"
     }
   }
   @objc private func timerFired() { if let date = lastUpdateDate { updateDisplay(for: date) } }

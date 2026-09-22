@@ -57,7 +57,8 @@ func wouldFirstMinuteBeAsleep<S: Sequence<HKCategorySample>>(samples: S) -> Bool
   let samplesStartingInFirstMinute = samples.filter { sample in minute(sample.startDate) == firstMinute }
 
   let resolutionForFirstMinute = sleepResolution(minute: firstMinute, samples: samplesStartingInFirstMinute)
-  if resolutionForFirstMinute == .asleep || resolutionForFirstMinute == .ambiguous { return true } else { return false }
+  guard resolutionForFirstMinute == .asleep || resolutionForFirstMinute == .ambiguous else { return false }
+  return true
 }
 
 public func totalSleepMinutes(samples: [HKCategorySample]) -> Int {

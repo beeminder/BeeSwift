@@ -85,7 +85,8 @@ class GoalSettingsViewController: UIViewController {
       let days = goal.leadTime
       if days == 0 {
         let hours = hoursUntilDeadline
-        if hours == 1 { return "1 hour before" } else { return "\(hours) hours before" }
+        guard hours == 1 else { return "\(hours) hours before" }
+        return "1 hour before"
       } else if days == 1 {
         return "1 day before"
       } else {
