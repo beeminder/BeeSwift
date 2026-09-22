@@ -19,10 +19,7 @@ struct AddDataPointIntent: AppIntent {
         slug: goal.slug,
       )
       // Use displayTitle to show title with slug fallback
-      let formatter = NumberFormatter()
-      formatter.minimumFractionDigits = 0
-      formatter.maximumFractionDigits = 5
-      let formattedValue = formatter.string(from: NSNumber(value: value)) ?? String(value)
+      let formattedValue = NumberFormatter.beeminderDisplayFormatter.string(from: NSNumber(value: value)) ?? String(value)
       return .result(dialog: "Added \(formattedValue) to \(goal.displayTitle)")
     } catch ServerError.notFound { throw AddDataError.apiError("Goal '\(goal.slug)' not found") } catch {
       throw AddDataError.apiError(error.localizedDescription)
