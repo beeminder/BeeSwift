@@ -1,5 +1,25 @@
 // Part of BeeSwift. Copyright Beeminder
 
+import Foundation
+
+extension NumberFormatter {
+  public static let beeminderInputFormatter: NumberFormatter = {
+    let formatter = NumberFormatter()
+    formatter.locale = Locale(identifier: "en_US")
+    formatter.groupingSeparator = ""
+    formatter.numberStyle = .decimal
+    return formatter
+  }()
+
+  public static let beeminderDisplayFormatter: NumberFormatter = {
+    let formatter = NumberFormatter()
+    formatter.locale = Locale(identifier: "en_US")
+    formatter.minimumFractionDigits = 0
+    formatter.maximumFractionDigits = 5
+    return formatter
+  }()
+}
+
 extension StringProtocol {
   /// capitalize only the first character of a string
   var capitalizingFirstCharacter: String {

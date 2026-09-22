@@ -1,6 +1,17 @@
 import Foundation
 
 extension Goal {
+  private static let initDaystampFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyyMMdd"
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+
+    // initDate is constructed such that if we resolve it to a datetime in US Eastern Time, the date part
+    // of that is guaranteed to be the user's local date on the day the goal was created.
+    formatter.timeZone = TimeZone(identifier: "America/New_York")
+    return formatter
+  }()
+
   public var humanizedAutodata: String? {
     guard let autodata, !autodata.isEmpty else { return nil }
     switch autodata {
@@ -18,15 +29,7 @@ extension Goal {
   /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
   var initDaystamp: Daystamp {
     let initDate = Date(timeIntervalSince1970: Double(self.initDay))
-
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyyMMdd"
-
-    // initDate is constructed such that if we resolve it to a datetime in US Eastern Time, the date part
-    // of that is guaranteed to be the user's local date on the day the goal was created.
-    formatter.timeZone = TimeZone(identifier: "America/New_York")
-    let dateString = formatter.string(from: initDate)
-
+    let dateString = Goal.initDaystampFormatter.string(from: initDate)
     return try! Daystamp(fromString: dateString)
   }
 
