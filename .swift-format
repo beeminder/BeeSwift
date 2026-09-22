@@ -5,6 +5,7 @@
   "multilineTrailingCommaBehavior": "alwaysUsed",
   "reflowMultilineStringLiterals" : { "onlyLinesOverLength": {} },
   "rules" : {
-    "OmitExplicitReturns" : true
+    "OmitExplicitReturns" : true,
+    "UseEarlyExits": true
   }
 }
