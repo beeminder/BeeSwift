@@ -2,8 +2,8 @@
 
 import Foundation
 
-public extension NumberFormatter {
-  static let beeminderInputFormatter: NumberFormatter = {
+extension NumberFormatter {
+  public static let beeminderInputFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
     formatter.locale = Locale(identifier: "en_US")
     formatter.groupingSeparator = ""
@@ -11,7 +11,7 @@ public extension NumberFormatter {
     return formatter
   }()
 
-  static let beeminderDisplayFormatter: NumberFormatter = {
+  public static let beeminderDisplayFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
     formatter.locale = Locale(identifier: "en_US")
     formatter.minimumFractionDigits = 0
