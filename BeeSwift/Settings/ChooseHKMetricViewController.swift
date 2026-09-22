@@ -25,6 +25,7 @@ class ChooseHKMetricViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.userActivity = .viewingGoal(self.goal)
 
     self.view.backgroundColor = .systemBackground
     self.title = "Choose HK Metric"

@@ -6,6 +6,7 @@
 //  Copyright 2015 APB. All rights reserved.
 //
 
+import AppIntents
 import BeeKit
 import CoreData
 import HealthKit
@@ -401,6 +402,18 @@ class GalleryViewController: UIViewController {
       collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
     }
     self.collectionView.dataSource = dataSource
+    self.collectionView.appIntentsDataSource = self
+  }
+}
+
+extension GalleryViewController: UICollectionViewAppIntentsDataSource {
+  func collectionView(_ collectionView: UICollectionView, appEntityIdentifierForItemAt indexPath: IndexPath)
+    -> EntityIdentifier?
+  {
+    guard let goals = fetchedResultsController.fetchedObjects, goals.indices.contains(indexPath.item) else {
+      return nil
+    }
+    return GoalEntity.identifier(for: goals[indexPath.item])
   }
 }
 

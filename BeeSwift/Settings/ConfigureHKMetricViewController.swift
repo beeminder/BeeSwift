@@ -64,6 +64,7 @@ class ConfigureHKMetricViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.userActivity = .viewingGoal(self.goal)
 
     self.title = self.metric.humanText
     self.view.backgroundColor = UIColor.systemBackground

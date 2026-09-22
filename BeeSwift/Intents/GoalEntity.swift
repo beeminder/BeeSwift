@@ -57,6 +57,11 @@ struct GoalEntity: AppEntity, IndexedEntity, Equatable {
   var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(slug)", subtitle: "\(title)") }
   var displayTitle: String { return slug }
 
+  /// Cheaper than `EntityIdentifier(for: GoalEntity(from: goal))` when only the identity is needed.
+  static func identifier(for goal: Goal) -> EntityIdentifier {
+    EntityIdentifier(for: GoalEntity.self, identifier: goal.id)
+  }
+
   var webURL: URL { DeeplinkGenerator.generateDeepLinkToGoal(username: username, goalName: slug) }
 
   var plainTextSummary: String {
