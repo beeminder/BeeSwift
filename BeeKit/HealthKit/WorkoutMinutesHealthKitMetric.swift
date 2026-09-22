@@ -350,14 +350,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
     autodataConfig: [String: Any],
   ) async throws -> [BeeDataPoint] {
     let dailyAggregate = autodataConfig["daily_aggregate"] as? Bool ?? true
-    if !dailyAggregate {
-      return try await individualWorkoutDataPoints(
-        days: days,
-        deadline: deadline,
-        healthStore: healthStore,
-        autodataConfig: autodataConfig,
-      )
-    } else {
+    guard !dailyAggregate else {
       return try await super.recentDataPoints(
         days: days,
         deadline: deadline,
@@ -366,6 +359,12 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
         samplePredicate: { self.workoutMatchesFilter($0, config: autodataConfig) },
       )
     }
+    return try await individualWorkoutDataPoints(
+      days: days,
+      deadline: deadline,
+      healthStore: healthStore,
+      autodataConfig: autodataConfig,
+    )
   }
 
   private func individualWorkoutDataPoints(
