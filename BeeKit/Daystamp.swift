@@ -75,30 +75,30 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
     self.init(year: components.year!, month: components.month!, day: components.day!)
   }
 
-  static func now(deadline: Int) -> Daystamp { return Daystamp(fromDate: Date(), deadline: deadline) }
+  static func now(deadline: Int) -> Daystamp { Daystamp(fromDate: Date(), deadline: deadline) }
 
   /// The Date corresponding to the start of this Daystamp (inclusive)
   /// Note this uses the system timezone to determine when days start and end, which may not match the user's timezone
   func start(deadline: Int) -> Date {
-    return Daystamp.calendar.date(
+    Daystamp.calendar.date(
       from: DateComponents(calendar: Daystamp.calendar, year: year, month: month, day: day, second: Int(deadline))
     )!
   }
 
   /// The Date corresponding to the end of this Daystamp (exclusive)
   /// Note this uses the system timezone to determine when days start and end, which may not match the user's timezone
-  func end(deadline: Int) -> Date { return self.advanced(by: 1).start(deadline: deadline) }
+  func end(deadline: Int) -> Date { self.advanced(by: 1).start(deadline: deadline) }
 
-  public static func + (lhs: Daystamp, rhs: Int) -> Daystamp { return lhs.advanced(by: rhs) }
+  public static func + (lhs: Daystamp, rhs: Int) -> Daystamp { lhs.advanced(by: rhs) }
 
-  public static func - (lhs: Daystamp, rhs: Int) -> Daystamp { return lhs.advanced(by: -rhs) }
+  public static func - (lhs: Daystamp, rhs: Int) -> Daystamp { lhs.advanced(by: -rhs) }
 
-  public static func - (lhs: Daystamp, rhs: Daystamp) -> Int { return rhs.distance(to: lhs) }
+  public static func - (lhs: Daystamp, rhs: Daystamp) -> Int { rhs.distance(to: lhs) }
 
   // Trait: CustomStringConvertible
 
   /// Daystamp formatted as a YYYYMMdd string
-  public var description: String { return String(format: "%04d%02d%02d", year, month, day) }
+  public var description: String { String(format: "%04d%02d%02d", year, month, day) }
 
   // Trait: Strideable
 

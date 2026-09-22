@@ -23,7 +23,7 @@ import SwiftyJSON
   }
 
   private func datapointsMatchingDaystamp(datapoints: [DataPoint], daystamp: Daystamp) -> [DataPoint] {
-    datapoints.filter { (datapoint) -> Bool in return daystamp == datapoint.daystamp }
+    datapoints.filter { (datapoint) -> Bool in daystamp == datapoint.daystamp }
   }
 
   private func updateDatapoint(goal: Goal, datapoint: DataPoint, datapointValue: NSNumber, comment: String) async throws

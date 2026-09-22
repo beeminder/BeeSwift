@@ -28,7 +28,7 @@ final class TotalSleepMinutesTests: XCTestCase {
   }
 
   func sample(value: HKCategoryValueSleepAnalysis, start: String, end: String) -> HKCategorySample {
-    return HKCategorySample(
+    HKCategorySample(
       type: sleepAnalysisCategoryType,
       value: value.rawValue,
       start: dateToday(start),

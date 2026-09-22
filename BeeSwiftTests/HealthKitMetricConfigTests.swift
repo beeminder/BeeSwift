@@ -59,7 +59,7 @@ final class HealthKitMetricConfigViewControllerTests: XCTestCase {
 final class WorkoutConfigurationProviderTests: XCTestCase {
 
   func createProvider(existingConfig: [String: Any] = [:]) -> WorkoutConfigurationProvider {
-    return WorkoutConfigurationProvider(existingConfig: existingConfig)
+    WorkoutConfigurationProvider(existingConfig: existingConfig)
   }
 
   // MARK: - getConfigParameters() tests

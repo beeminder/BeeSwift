@@ -488,7 +488,7 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
     _ collectionView: UICollectionView,
     layout collectionViewLayout: UICollectionViewLayout,
     referenceSizeForFooterInSection section: Int,
-  ) -> CGSize { return CGSize(width: 320, height: section == 0 && self.filteredGoals.count > 0 ? 5 : 0) }
+  ) -> CGSize { CGSize(width: 320, height: section == 0 && self.filteredGoals.count > 0 ? 5 : 0) }
 }
 
 extension GalleryViewController: UICollectionViewDelegate {

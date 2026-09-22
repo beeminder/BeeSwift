@@ -55,7 +55,7 @@ import XCTest
   // MARK: - Helpers
 
   private func createTestUser(deadbeat: Bool) -> User {
-    return User(
+    User(
       context: container.viewContext,
       username: "test-user",
       deadbeat: deadbeat,

@@ -466,8 +466,7 @@ class GoalViewController: UIViewController, DatapointTableViewControllerDelegate
     return true
   }
   private var urtext: String {
-    return
-      "\(DateFormatter.urtextDateString(from: self.date)) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
+    "\(DateFormatter.urtextDateString(from: self.date)) \(self.valueTextField.text!) \"\(self.commentTextField.text!)\""
   }
 
   @objc func submitDatapoint() {

@@ -238,7 +238,7 @@ final class MockSearchableIndex: SearchableIndexing, @unchecked Sendable {
   // MARK: - Helpers
 
   func createTestUser() -> User {
-    return User(
+    User(
       context: container.viewContext,
       username: "test-user",
       deadbeat: false,

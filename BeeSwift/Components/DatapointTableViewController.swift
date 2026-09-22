@@ -57,9 +57,9 @@ class DatapointTableViewController: UIViewController, UITableViewDelegate, UITab
     self.datapointsTableView.snp.makeConstraints { (make) -> Void in make.edges.equalToSuperview() }
   }
 
-  func numberOfSections(in tableView: UITableView) -> Int { return 1 }
+  func numberOfSections(in tableView: UITableView) -> Int { 1 }
 
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return datapoints.count }
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { datapoints.count }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier) as! DatapointTableViewCell

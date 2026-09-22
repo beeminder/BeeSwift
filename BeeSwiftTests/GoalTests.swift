@@ -174,7 +174,7 @@ final class GoalTests: XCTestCase {
   }
 
   func createTestUser(context: NSManagedObjectContext) -> User {
-    return User(
+    User(
       context: context,
       username: "test-user",
       deadbeat: false,
@@ -188,7 +188,7 @@ final class GoalTests: XCTestCase {
 
   /// Return the minimum set of required attributes for creating a goal
   func requiredGoalJson() -> JSON {
-    return JSON(
+    JSON(
       parseJSON: """
         {
             "id": "737aaa34f0118a330852e4bd",

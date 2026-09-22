@@ -98,7 +98,7 @@ import SwiftyJSON
   }
 
   public var daystamp: Daystamp {
-    get { return try! Daystamp(fromString: daystampRaw) }
+    get { try! Daystamp(fromString: daystampRaw) }
     set { daystampRaw = newValue.description }
   }
 }
