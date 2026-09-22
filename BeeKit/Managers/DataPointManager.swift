@@ -22,10 +22,6 @@ import SwiftyJSON
     modelExecutor = .init(context: context)
   }
 
-  private func datapointsMatchingDaystamp(datapoints: [DataPoint], daystamp: Daystamp) -> [DataPoint] {
-    datapoints.filter { (datapoint) -> Bool in return daystamp == datapoint.daystamp }
-  }
-
   private func updateDatapoint(goal: Goal, datapoint: DataPoint, datapointValue: NSNumber, comment: String) async throws
   {
     let val = datapoint.value
@@ -101,15 +97,13 @@ import SwiftyJSON
       daystamp: try! Daystamp(fromString: firstDaystamp.description),
     )
     let realDatapoints = datapoints.filter { !$0.isDummy && !$0.isInitial }
+    let existingDatapointsByDay = Dictionary(grouping: realDatapoints) { $0.daystamp }
 
     let healthKitDataPointsByDay = Dictionary(grouping: healthKitDataPoints) { $0.daystamp }
     try await withThrowingTaskGroup(of: Void.self) { group in
       for (daystamp, dayDataPoints) in healthKitDataPointsByDay {
         group.addTask {
-          let existingDatapointsForDay = await self.datapointsMatchingDaystamp(
-            datapoints: realDatapoints,
-            daystamp: daystamp,
-          )
+          let existingDatapointsForDay = existingDatapointsByDay[daystamp] ?? []
           try await self.updateToMatchDataPointsForDay(
             goal: goal,
             newDataPoints: dayDataPoints,
@@ -126,10 +120,12 @@ import SwiftyJSON
     newDataPoints: [BeeDataPoint],
     existingDatapoints: [DataPoint],
   ) async throws {
+    let existingDatapointsByRequestID = Dictionary(existingDatapoints.map { ($0.requestid, $0) }) { first, _ in first }
+
     try await withThrowingTaskGroup(of: Void.self) { group in
       var processedDatapoints: Set<String> = []
       for newDataPoint in newDataPoints {
-        let matchingDatapoint = existingDatapoints.first { $0.requestid == newDataPoint.requestid }
+        let matchingDatapoint = existingDatapointsByRequestID[newDataPoint.requestid]
         if let existingDatapoint = matchingDatapoint {
           if !isApproximatelyEqual(existingDatapoint.value.doubleValue, newDataPoint.value.doubleValue)
             || existingDatapoint.comment != newDataPoint.comment
