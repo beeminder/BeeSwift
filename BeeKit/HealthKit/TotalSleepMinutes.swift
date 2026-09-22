@@ -26,12 +26,7 @@ func isRelevantToSleep(_ sample: HKCategorySample) -> Bool {
 }
 
 func isAsleep(_ sample: HKCategorySample) -> Bool {
-  if #available(iOS 16.0, *) {
-    return HKCategoryValueSleepAnalysis.allAsleepValues.contains(HKCategoryValueSleepAnalysis(rawValue: sample.value)!)
-  } else {
-    // Fallback on earlier versions
-    return sample.value == HKCategoryValueSleepAnalysis.asleep.rawValue
-  }
+  return HKCategoryValueSleepAnalysis.allAsleepValues.contains(HKCategoryValueSleepAnalysis(rawValue: sample.value)!)
 }
 
 func sleepResolution<S: Sequence<HKCategorySample>>(minute: Minute, samples: S) -> SleepResolution {
