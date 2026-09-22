@@ -78,7 +78,7 @@ class DatapointTableViewCell: UITableViewCell {
 
   func configure(datapoint: BeeDataPoint, hhmmformat: Bool, columnWidths: DatapointColumnWidths) {
     dayLabel.text = Self.formatDay(datapoint: datapoint)
-    valueLabel.text = Self.formatValue(datapoint: datapoint, hhmmformat: hhmmformat)
+    valueLabel.text = datapoint.formattedValue(hhmmFormat: hhmmformat)
     commentLabel.text = datapoint.comment
 
     dayWidthConstraint?.update(offset: columnWidths.dayWidth)
@@ -102,17 +102,6 @@ class DatapointTableViewCell: UITableViewCell {
     }
   }
 
-  public static func formatValue(datapoint: BeeDataPoint, hhmmformat: Bool) -> String {
-    if hhmmformat {
-      let value = datapoint.value.doubleValue
-      let hours = Int(value)
-      let minutes = Int((value.truncatingRemainder(dividingBy: 1) * 60).rounded()) % 60
-      return String(hours) + ":" + String(format: "%02d", minutes)
-    } else {
-      return datapoint.value.stringValue
-    }
-  }
-
   public static func calculateColumnWidths(for datapoints: [BeeDataPoint], hhmmformat: Bool) -> DatapointColumnWidths {
     let attributes: [NSAttributedString.Key: Any] = [.font: font]
     let minWidth = ("0" as NSString).size(withAttributes: attributes).width
@@ -124,7 +113,7 @@ class DatapointTableViewCell: UITableViewCell {
       let dayText = formatDay(datapoint: datapoint)
       dayWidths.append((dayText as NSString).size(withAttributes: attributes).width)
 
-      let valueText = formatValue(datapoint: datapoint, hhmmformat: hhmmformat)
+      let valueText = datapoint.formattedValue(hhmmFormat: hhmmformat)
       valueWidths.append((valueText as NSString).size(withAttributes: attributes).width)
     }
 
