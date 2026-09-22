@@ -28,7 +28,7 @@ public struct Daystamp: CustomStringConvertible, Strideable, Comparable, Equatab
     self.day = day
   }
 
-  init(fromString daystamp: String) throws {
+  public init(fromString daystamp: String) throws {
     let range = NSRange(location: 0, length: daystamp.utf16.count)
     guard let matchResult = Daystamp.daystampPattern.firstMatch(in: daystamp, range: range) else {
       // TODO: This should throw an error instead
