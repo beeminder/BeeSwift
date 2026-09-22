@@ -27,7 +27,7 @@ private class SelfSizingTableView: UITableView {
 
 class HealthKitMetricConfigViewController: UIViewController {
   fileprivate let internalTableView = SelfSizingTableView(frame: .zero, style: .insetGrouped)
-  var tableView: UITableView { return internalTableView }
+  var tableView: UITableView { internalTableView }
 
   private let goalName: String
   private let metricName: String
@@ -65,13 +65,13 @@ class HealthKitMetricConfigViewController: UIViewController {
 
   func reloadData() { tableView.reloadData() }
 
-  func getConfigParameters() -> [String: Any] { return configurationProvider?.getConfigParameters() ?? [:] }
+  func getConfigParameters() -> [String: Any] { configurationProvider?.getConfigParameters() ?? [:] }
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension HealthKitMetricConfigViewController: UITableViewDelegate, UITableViewDataSource {
-  func numberOfSections(in tableView: UITableView) -> Int { return configurationProvider != nil ? 2 : 1 }
+  func numberOfSections(in tableView: UITableView) -> Int { configurationProvider != nil ? 2 : 1 }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     if section == 0 {
@@ -112,6 +112,6 @@ extension HealthKitMetricConfigViewController: UITableViewDelegate, UITableViewD
   }
 
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return section == 0 ? CGFloat.leastNonzeroMagnitude : UITableView.automaticDimension
+    section == 0 ? CGFloat.leastNonzeroMagnitude : UITableView.automaticDimension
   }
 }

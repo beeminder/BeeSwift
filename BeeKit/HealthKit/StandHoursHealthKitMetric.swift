@@ -25,5 +25,5 @@ class StandHoursHealthKitMetric: CategoryHealthKitMetric {
     return Double(standingSamples.count)
   }
 
-  override func units(healthStore: HKHealthStore) async throws -> HKUnit { return HKUnit.count() }
+  override func units(healthStore: HKHealthStore) async throws -> HKUnit { HKUnit.count() }
 }

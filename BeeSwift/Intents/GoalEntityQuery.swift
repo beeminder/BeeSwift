@@ -6,21 +6,21 @@ import CoreData
 import Foundation
 
 struct GoalEntityQuery: EnumerableEntityQuery, EntityStringQuery {
-  func allEntities() async throws -> [GoalEntity] { return try await fetchGoals { _ in } }
+  func allEntities() async throws -> [GoalEntity] { try await fetchGoals { _ in } }
 
   func entities(for identifiers: [String]) async throws -> [GoalEntity] {
-    return try await fetchGoals { request in request.predicate = NSPredicate(format: "id IN %@", identifiers) }
+    try await fetchGoals { request in request.predicate = NSPredicate(format: "id IN %@", identifiers) }
   }
 
   func suggestedEntities() async throws -> [GoalEntity] {
-    return try await fetchGoals { request in
+    try await fetchGoals { request in
       request.sortDescriptors = [NSSortDescriptor(key: "urgencyKey", ascending: true)]
       request.fetchLimit = 20
     }
   }
 
   func entities(matching string: String) async throws -> [GoalEntity] {
-    return try await fetchGoals { request in
+    try await fetchGoals { request in
       request.predicate = NSPredicate(format: "slug CONTAINS[cd] %@ OR title CONTAINS[cd] %@", string, string)
       request.sortDescriptors = [NSSortDescriptor(key: "slug", ascending: true)]
     }

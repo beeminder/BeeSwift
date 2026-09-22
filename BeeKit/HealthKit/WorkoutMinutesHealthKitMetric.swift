@@ -289,15 +289,15 @@ public struct WorkoutActivityTypeInfo {
   // MARK: - Lookup Methods
 
   public static func types(forCategory category: WorkoutActivityCategory) -> [WorkoutActivityTypeInfo] {
-    return all.filter { $0.category == category }
+    all.filter { $0.category == category }
   }
 
   public static func find(byActivityType activityType: HKWorkoutActivityType) -> WorkoutActivityTypeInfo? {
-    return all.first { $0.activityType == activityType }
+    all.first { $0.activityType == activityType }
   }
 
   public static func find(byIdentifier identifier: String) -> WorkoutActivityTypeInfo? {
-    return all.first { $0.identifier == identifier }
+    all.first { $0.identifier == identifier }
   }
 }
 
@@ -305,7 +305,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "WorkoutMinutesHealthKitMetric")
   let minuteInSeconds = 60.0
 
-  public override var precision: [HKUnit: Int] { return [HKUnit.minute(): 1] }
+  public override var precision: [HKUnit: Int] { [HKUnit.minute(): 1] }
 
   init(humanText: String, databaseString: String, category: HealthKitCategory) {
     super.init(humanText: humanText, databaseString: databaseString, category: category, hkSampleType: .workoutType())
@@ -399,7 +399,7 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
   }
 
   private func getWorkoutSamples(date: Daystamp, deadline: Int, healthStore: HKHealthStore) async throws -> [HKSample] {
-    return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[HKSample], Error>) in
+    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[HKSample], Error>) in
       let query = HKSampleQuery(
         sampleType: sampleType(),
         predicate: HKQuery.predicateForSamples(
@@ -431,5 +431,5 @@ public class WorkoutMinutesHealthKitMetric: CategoryHealthKitMetric {
     return "\(activityName) at \(timeString)"
   }
 
-  public override func units(healthStore: HKHealthStore) async throws -> HKUnit { return HKUnit.minute() }
+  public override func units(healthStore: HKHealthStore) async throws -> HKUnit { HKUnit.minute() }
 }

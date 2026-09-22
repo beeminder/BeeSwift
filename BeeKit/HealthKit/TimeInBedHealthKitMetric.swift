@@ -15,10 +15,10 @@ class TimeInBedHealthKitMetric: CategoryHealthKitMetric {
   }
 
   override func includeForMetric(sample: HKCategorySample) -> Bool {
-    return sample.value == HKCategoryValueSleepAnalysis.inBed.rawValue
+    sample.value == HKCategoryValueSleepAnalysis.inBed.rawValue
   }
 
-  override func valueInAppropriateUnits(rawValue: Double) -> Double { return rawValue / hourInSeconds }
+  override func valueInAppropriateUnits(rawValue: Double) -> Double { rawValue / hourInSeconds }
 
-  override func units(healthStore: HKHealthStore) async throws -> HKUnit { return HKUnit.hour() }
+  override func units(healthStore: HKHealthStore) async throws -> HKUnit { HKUnit.hour() }
 }

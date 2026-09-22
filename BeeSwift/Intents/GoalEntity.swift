@@ -55,7 +55,7 @@ struct GoalEntity: AppEntity, IndexedEntity, Equatable {
     var summaryLine: String { comment.isEmpty ? "- \(date): \(value)" : "- \(date): \(value), comment: \(comment)" }
   }
   var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(slug)", subtitle: "\(title)") }
-  var displayTitle: String { return slug }
+  var displayTitle: String { slug }
 
   /// Cheaper than `EntityIdentifier(for: GoalEntity(from: goal))` when only the identity is needed.
   static func identifier(for goal: Goal) -> EntityIdentifier {
@@ -187,7 +187,7 @@ struct GoalEntity: AppEntity, IndexedEntity, Equatable {
   }
 
   static func == (lhs: GoalEntity, rhs: GoalEntity) -> Bool {
-    return lhs.id == rhs.id && lhs.slug == rhs.slug && lhs.title == rhs.title && lhs.safeBuf == rhs.safeBuf
+    lhs.id == rhs.id && lhs.slug == rhs.slug && lhs.title == rhs.title && lhs.safeBuf == rhs.safeBuf
       && lhs.todayta == rhs.todayta && lhs.pledge == rhs.pledge && lhs.limSum == rhs.limSum && lhs.won == rhs.won
       && lhs.autodata == rhs.autodata && lhs.thumbUrl == rhs.thumbUrl && lhs.username == rhs.username
       && lhs.safeSum == rhs.safeSum && lhs.dueBy == rhs.dueBy && lhs.recentDatapoints == rhs.recentDatapoints

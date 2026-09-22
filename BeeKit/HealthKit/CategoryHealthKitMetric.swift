@@ -26,14 +26,14 @@ public class CategoryHealthKitMetric: HealthKitMetric {
     self.hkSampleType = hkSampleType
   }
 
-  public func sampleType() -> HKSampleType { return hkSampleType }
+  public func sampleType() -> HKSampleType { hkSampleType }
 
-  public func permissionType() -> HKObjectType { return hkSampleType }
+  public func permissionType() -> HKObjectType { hkSampleType }
 
   public func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore, autodataConfig: [String: Any])
     async throws -> [BeeDataPoint]
   {
-    return try await recentDataPoints(
+    try await recentDataPoints(
       days: days,
       deadline: deadline,
       healthStore: healthStore,
@@ -66,7 +66,7 @@ public class CategoryHealthKitMetric: HealthKitMetric {
     return results
   }
 
-  public func units(healthStore: HKHealthStore) async throws -> HKUnit { return HKUnit.count() }
+  public func units(healthStore: HKHealthStore) async throws -> HKUnit { HKUnit.count() }
 
   private func getDataPoint(
     date: Daystamp,
@@ -109,10 +109,10 @@ public class CategoryHealthKitMetric: HealthKitMetric {
   }
 
   /// Predict to filter samples to those relevant to this metric, for cases where with cannot be encoded in the healthkit query
-  internal func includeForMetric(sample: HKCategorySample) -> Bool { return true }
+  internal func includeForMetric(sample: HKCategorySample) -> Bool { true }
 
   /// Converts the raw aggregate value to appropiate units. e.g. to report in hours rather than seconds
-  internal func valueInAppropriateUnits(rawValue: Double) -> Double { return rawValue }
+  internal func valueInAppropriateUnits(rawValue: Double) -> Double { rawValue }
 
   func hkDatapointValueForSamples(samples: [HKSample], startOfDate: Date) -> Double {
     let relevantSamples = samples.compactMap { $0 as? HKCategorySample }.sorted { $0.startDate < $1.startDate }
