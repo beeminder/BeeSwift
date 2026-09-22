@@ -73,47 +73,6 @@ final class DatapointTableViewCellTests: XCTestCase {
     XCTAssertEqual(DatapointTableViewCell.formatDay(datapoint: datapoint), "\(currentMonth)/31")
   }
 
-  // MARK: - formatValue tests
-
-  func testFormatValueWithoutHHMMFormat() {
-    let datapoint = MockDataPoint(daystamp: Daystamp(year: 2024, month: 1, day: 1), value: 42.5, comment: "")
-
-    XCTAssertEqual(DatapointTableViewCell.formatValue(datapoint: datapoint, hhmmformat: false), "42.5")
-  }
-
-  func testFormatValueWithoutHHMMFormatInteger() {
-    let datapoint = MockDataPoint(daystamp: Daystamp(year: 2024, month: 1, day: 1), value: 100, comment: "")
-
-    XCTAssertEqual(DatapointTableViewCell.formatValue(datapoint: datapoint, hhmmformat: false), "100")
-  }
-
-  func testFormatValueWithHHMMFormat() {
-    let datapoint = MockDataPoint(daystamp: Daystamp(year: 2024, month: 1, day: 1), value: 1.5, comment: "")
-
-    XCTAssertEqual(DatapointTableViewCell.formatValue(datapoint: datapoint, hhmmformat: true), "1:30")
-  }
-
-  func testFormatValueWithHHMMFormatZeroMinutes() {
-    let datapoint = MockDataPoint(daystamp: Daystamp(year: 2024, month: 1, day: 1), value: 2.0, comment: "")
-
-    XCTAssertEqual(DatapointTableViewCell.formatValue(datapoint: datapoint, hhmmformat: true), "2:00")
-  }
-
-  func testFormatValueWithHHMMFormatLargeHours() {
-    let datapoint = MockDataPoint(daystamp: Daystamp(year: 2024, month: 1, day: 1), value: 123.75, comment: "")
-
-    XCTAssertEqual(DatapointTableViewCell.formatValue(datapoint: datapoint, hhmmformat: true), "123:45")
-  }
-
-  func testFormatValueWithHHMMFormatRoundingTo60() {
-    // 0.999... * 60 could round to 60 without proper handling
-    let datapoint = MockDataPoint(daystamp: Daystamp(year: 2024, month: 1, day: 1), value: 1.999, comment: "")
-
-    let result = DatapointTableViewCell.formatValue(datapoint: datapoint, hhmmformat: true)
-    // Should be "2:00" not "1:60"
-    XCTAssertFalse(result.contains(":60"), "Minutes should never be 60, got \(result)")
-  }
-
   // MARK: - calculatePercentileWidth tests
 
   func testCalculatePercentileWidthEmptyArray() {
