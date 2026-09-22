@@ -59,7 +59,7 @@ actor SpotlightIndexer {
         self.logger.info("No user, skipping spotlight indexing")
         return [GoalEntity]()
       }
-      return user.goals.map { GoalEntity(from: $0) }
+      return user.goals.map { GoalEntity(from: $0, includeRecentData: false) }
     }
 
     let currentIds = Set(entities.map { $0.id })

@@ -6,6 +6,9 @@
 //
 
 struct DeeplinkGenerator {
+  public static func generateDeepLinkToGoal(username: String, goalName: String) -> URL {
+    URL(string: "https://www.beeminder.com/\(username)/\(goalName)")!
+  }
   public static func generateDeepLinkToGoalCommitment(username: String, goalName: String) -> URL {
     URL(string: "https://www.beeminder.com/\(username)/\(goalName)#commitment")!
   }
