@@ -95,11 +95,8 @@ class DatapointTableViewCell: UITableViewCell {
     let currentYear = calendar.component(.year, from: now)
 
     let stamp = datapoint.daystamp
-    if stamp.month != currentMonth || stamp.year != currentYear {
-      return "\(stamp.month)/\(stamp.day)"
-    } else {
-      return String(stamp.day)
-    }
+    guard stamp.month != currentMonth || stamp.year != currentYear else { return String(stamp.day) }
+    return "\(stamp.month)/\(stamp.day)"
   }
 
   public static func calculateColumnWidths(for datapoints: [BeeDataPoint], hhmmformat: Bool) -> DatapointColumnWidths {
@@ -134,10 +131,7 @@ class DatapointTableViewCell: UITableViewCell {
     let p75Width = sorted[max(0, p75Index)]
     let maxWidth = sorted.last!
 
-    if maxWidth <= 60 || maxWidth <= p75Width * DatapointColumnWidths.overflowThreshold {
-      return maxWidth
-    } else {
-      return p75Width
-    }
+    guard maxWidth <= 60 || maxWidth <= p75Width * DatapointColumnWidths.overflowThreshold else { return p75Width }
+    return maxWidth
   }
 }

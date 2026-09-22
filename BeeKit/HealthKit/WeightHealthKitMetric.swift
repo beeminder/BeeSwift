@@ -24,16 +24,15 @@ public class WeightHealthKitMetric: QuantityHealthKitMetric {
     autodataConfig: [String: Any],
   ) async throws -> [BeeDataPoint] {
     let dailyAggregate = autodataConfig["daily_aggregate"] as? Bool ?? true
-    if dailyAggregate {
-      return try await super.recentDataPoints(
-        days: days,
-        deadline: deadline,
-        healthStore: healthStore,
-        autodataConfig: autodataConfig,
-      )
-    } else {
+    guard dailyAggregate else {
       return try await individualWeightDataPoints(days: days, deadline: deadline, healthStore: healthStore)
     }
+    return try await super.recentDataPoints(
+      days: days,
+      deadline: deadline,
+      healthStore: healthStore,
+      autodataConfig: autodataConfig,
+    )
   }
 
   private func individualWeightDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore) async throws
