@@ -154,16 +154,20 @@ import SwiftyJSON
     // The user may have logged out while waiting for the data, so ignore if so
     guard let user = self.currentUserManager.user(context: modelContext) else { return }
 
+    let request = NSFetchRequest<Goal>(entityName: "Goal")
+    request.predicate = NSPredicate(format: "owner == %@", user)
+    // TODO: Better error handling of failure here?
+    let existingGoals = try! modelContext.fetch(request)
+    var goalsByID = Dictionary(uniqueKeysWithValues: existingGoals.map { ($0.id, $0) })
+
     // Create and update existing goals
     for goalJSON in responseGoals {
       let goalId = goalJSON["id"].stringValue
-      let request = NSFetchRequest<Goal>(entityName: "Goal")
-      request.predicate = NSPredicate(format: "id == %@", goalId)
-      // TODO: Better error handling of failure here?
-      if let existingGoal = try! modelContext.fetch(request).first {
+      if let existingGoal = goalsByID[goalId] {
         existingGoal.updateToMatch(json: goalJSON)
       } else {
-        let _ = Goal(context: modelContext, owner: user, json: goalJSON)
+        let newGoal = Goal(context: modelContext, owner: user, json: goalJSON)
+        goalsByID[goalId] = newGoal
       }
     }
 
