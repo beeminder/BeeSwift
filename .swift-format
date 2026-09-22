@@ -3,6 +3,6 @@
   "respectsExistingLineBreaks": false,
   "lineBreakBeforeEachArgument": true,
   "multilineTrailingCommaBehavior": "alwaysUsed",
-  "reflowMultilineStringLiterals": { "onlyLinesOverLength": {} }
-  "omitexplicitreturns": true
+  "reflowMultilineStringLiterals": { "onlyLinesOverLength": {} },
+  "omitExplicitReturns": true
 }
