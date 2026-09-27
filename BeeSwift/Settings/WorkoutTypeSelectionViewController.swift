@@ -28,14 +28,14 @@ class WorkoutTypeSelectionViewController: UIViewController {
     tableView.snp.makeConstraints { make in make.edges.equalTo(view.safeAreaLayoutGuide) }
   }
 
-  private var isAllTypesSelected: Bool { return selectedTypes.isEmpty }
+  private var isAllTypesSelected: Bool { selectedTypes.isEmpty }
 }
 
 extension WorkoutTypeSelectionViewController: UITableViewDelegate, UITableViewDataSource {
   // Section 0: "All Types" option
   // Sections 1-N: One section per WorkoutCategory
 
-  func numberOfSections(in tableView: UITableView) -> Int { return 1 + WorkoutActivityCategory.allCases.count }
+  func numberOfSections(in tableView: UITableView) -> Int { 1 + WorkoutActivityCategory.allCases.count }
 
   func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     if section == 0 { return nil }

@@ -6,12 +6,10 @@ typealias Minute = Int
 
 func minute(_ date: Date) -> Minute {
   // FIXME: Does this truncate?
-  return Int(date.timeIntervalSince1970 - date.timeIntervalSince1970.truncatingRemainder(dividingBy: 60))
+  Int(date.timeIntervalSince1970 - date.timeIntervalSince1970.truncatingRemainder(dividingBy: 60))
 }
 
-func isExactMinute(_ date: Date) -> Bool {
-  return date.timeIntervalSince1970.truncatingRemainder(dividingBy: 60) == 0.0
-}
+func isExactMinute(_ date: Date) -> Bool { date.timeIntervalSince1970.truncatingRemainder(dividingBy: 60) == 0.0 }
 
 enum SleepResolution { case asleep, awake, ambiguous }
 
@@ -26,7 +24,7 @@ func isRelevantToSleep(_ sample: HKCategorySample) -> Bool {
 }
 
 func isAsleep(_ sample: HKCategorySample) -> Bool {
-  return HKCategoryValueSleepAnalysis.allAsleepValues.contains(HKCategoryValueSleepAnalysis(rawValue: sample.value)!)
+  HKCategoryValueSleepAnalysis.allAsleepValues.contains(HKCategoryValueSleepAnalysis(rawValue: sample.value)!)
 }
 
 func sleepResolution<S: Sequence<HKCategorySample>>(minute: Minute, samples: S) -> SleepResolution {

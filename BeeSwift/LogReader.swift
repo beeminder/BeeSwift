@@ -20,10 +20,9 @@ class LogReader {
   }
 
   func getLogMessages(showSystemMessages: Bool, errorLevel: OSLogEntryLog.Level) async -> String {
-    return await allMessagesTask.value.filter { showSystemMessages || $0.subsystem == Bundle.main.bundleIdentifier! }
-      .filter { $0.level.rawValue >= errorLevel.rawValue }.map {
-        "[\($0.date.formatted())] [\($0.category)] \($0.composedMessage)"
-      }.joined(separator: "\n")
+    await allMessagesTask.value.filter { showSystemMessages || $0.subsystem == Bundle.main.bundleIdentifier! }.filter {
+      $0.level.rawValue >= errorLevel.rawValue
+    }.map { "[\($0.date.formatted())] [\($0.category)] \($0.composedMessage)" }.joined(separator: "\n")
   }
 
   func saveLogsToFile(showSystemMessages: Bool, errorLevel: OSLogEntryLog.Level) async -> URL {

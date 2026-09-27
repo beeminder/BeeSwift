@@ -215,7 +215,7 @@ class DataPointManagerTests: XCTestCase {
     XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.requestId == "uuid_4" })
   }
   private func createTestGoalJSON() -> JSON {
-    return JSON(
+    JSON(
       parseJSON: """
         {
             "id": "test-goal-id",

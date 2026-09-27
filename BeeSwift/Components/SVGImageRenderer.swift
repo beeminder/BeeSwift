@@ -355,43 +355,43 @@ import WebKit
   /// in viewBox coordinates (mapped through its CTM to account for ancestor transforms), or an empty
   /// object if there is none. Always returns an object so the bridged result is well-defined.
   private static func themeAndMeasureJS(css: String) -> String {
-    return """
-      (function() {
-        var style = document.getElementById('bm-theme');
-        if (!style) { style = document.createElement('style'); style.id = 'bm-theme'; \
-      document.head.appendChild(style); }
-        style.textContent = \(jsStringLiteral(css));
+    """
+    (function() {
+      var style = document.getElementById('bm-theme');
+      if (!style) { style = document.createElement('style'); style.id = 'bm-theme'; \
+    document.head.appendChild(style); }
+      style.textContent = \(jsStringLiteral(css));
 
-        var z = document.querySelector('.zoomarea');
-        if (!z || !z.getBBox) { return {}; }
-        var b = z.getBBox();
-        var m = z.getCTM();
-        if (!m) { return { x: b.x, y: b.y, width: b.width, height: b.height }; }
-        var xs = [b.x, b.x + b.width], ys = [b.y, b.y + b.height], px = [], py = [];
-        for (var i = 0; i < 2; i++) {
-          for (var j = 0; j < 2; j++) {
-            px.push(m.a * xs[i] + m.c * ys[j] + m.e);
-            py.push(m.b * xs[i] + m.d * ys[j] + m.f);
-          }
+      var z = document.querySelector('.zoomarea');
+      if (!z || !z.getBBox) { return {}; }
+      var b = z.getBBox();
+      var m = z.getCTM();
+      if (!m) { return { x: b.x, y: b.y, width: b.width, height: b.height }; }
+      var xs = [b.x, b.x + b.width], ys = [b.y, b.y + b.height], px = [], py = [];
+      for (var i = 0; i < 2; i++) {
+        for (var j = 0; j < 2; j++) {
+          px.push(m.a * xs[i] + m.c * ys[j] + m.e);
+          py.push(m.b * xs[i] + m.d * ys[j] + m.f);
         }
-        var minx = Math.min.apply(null, px), maxx = Math.max.apply(null, px);
-        var miny = Math.min.apply(null, py), maxy = Math.max.apply(null, py);
-        return { x: minx, y: miny, width: maxx - minx, height: maxy - miny };
-      })();
-      """
+      }
+      var minx = Math.min.apply(null, px), maxx = Math.max.apply(null, px);
+      var miny = Math.min.apply(null, py), maxy = Math.max.apply(null, py);
+      return { x: minx, y: miny, width: maxx - minx, height: maxy - miny };
+    })();
+    """
   }
 
   /// JavaScript that replaces the `#bm-theme` stylesheet's contents.
   private static func setThemeJS(css: String) -> String {
-    return """
-      (function() {
-        var style = document.getElementById('bm-theme');
-        if (!style) { style = document.createElement('style'); style.id = 'bm-theme'; \
-      document.head.appendChild(style); }
-        style.textContent = \(jsStringLiteral(css));
-        return {};
-      })();
-      """
+    """
+    (function() {
+      var style = document.getElementById('bm-theme');
+      if (!style) { style = document.createElement('style'); style.id = 'bm-theme'; \
+    document.head.appendChild(style); }
+      style.textContent = \(jsStringLiteral(css));
+      return {};
+    })();
+    """
   }
 
   /// Encodes a Swift string as a JS string literal (a JSON string is also a valid JS string).

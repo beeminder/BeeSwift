@@ -115,7 +115,7 @@ class HealthKitConfigViewController: UIViewController {
 
 extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSource {
   func numberOfSections(in tableView: UITableView) -> Int {
-    return 3  // manual, auto but apple (editable), auto
+    3  // manual, auto but apple (editable), auto
   }
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     if section == 0 {  // first section, modifiable
@@ -172,16 +172,16 @@ extension HealthKitConfigViewController: UITableViewDelegate, UITableViewDataSou
 }
 
 extension HealthKitConfigViewController {
-  var autoSourced: [Goal] { return self.goals.filter { $0.isDataProvidedAutomatically } }
-  var manualSourced: [Goal] { return self.goals.filter { !$0.isDataProvidedAutomatically } }
+  var autoSourced: [Goal] { self.goals.filter { $0.isDataProvidedAutomatically } }
+  var manualSourced: [Goal] { self.goals.filter { !$0.isDataProvidedAutomatically } }
   var autoSourcedModifiable: [Goal] {
-    return self.autoSourced.filter { goal -> Bool in
-      return "Apple".localizedCaseInsensitiveCompare(goal.autodata ?? "") == ComparisonResult.orderedSame
+    self.autoSourced.filter { goal -> Bool in
+      "Apple".localizedCaseInsensitiveCompare(goal.autodata ?? "") == ComparisonResult.orderedSame
     }
   }
   var autoSourcedUnmodifiable: [Goal] {
-    return self.autoSourced.filter { goal -> Bool in
-      return "Apple".localizedCaseInsensitiveCompare(goal.autodata ?? "") != ComparisonResult.orderedSame
+    self.autoSourced.filter { goal -> Bool in
+      "Apple".localizedCaseInsensitiveCompare(goal.autodata ?? "") != ComparisonResult.orderedSame
     }
   }
 }

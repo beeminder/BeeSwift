@@ -96,7 +96,7 @@ import SwiftyJSON
     }
   }
 
-  public var username: String? { return user(context: modelContext)?.username }
+  public var username: String? { user(context: modelContext)?.username }
 
   private func deleteUser() throws {
     // Delete any existing users. We expect at most one, but delete all to be safe.
@@ -119,7 +119,7 @@ import SwiftyJSON
   // MARK: - Authentication
 
   public nonisolated func signedIn(context: NSManagedObjectContext) -> Bool {
-    return self.accessToken != nil && self.user(context: context)?.username != nil
+    self.accessToken != nil && self.user(context: context)?.username != nil
   }
   public func signInWithEmail(_ email: String, password: String) async {
     do {

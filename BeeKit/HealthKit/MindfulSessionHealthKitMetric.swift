@@ -51,5 +51,5 @@ class MindfulSessionHealthKitMetric: CategoryHealthKitMetric {
     return totalMinutes.rounded()
   }
 
-  override func units(healthStore: HKHealthStore) async throws -> HKUnit { return HKUnit.minute() }
+  override func units(healthStore: HKHealthStore) async throws -> HKUnit { HKUnit.minute() }
 }

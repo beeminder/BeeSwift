@@ -97,10 +97,10 @@ extension ChooseHKMetricViewController: UITableViewDelegate, UITableViewDataSour
     return result
   }
 
-  func numberOfSections(in tableView: UITableView) -> Int { return HealthKitCategory.allCases.count }
+  func numberOfSections(in tableView: UITableView) -> Int { HealthKitCategory.allCases.count }
 
   func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    return HealthKitCategory.allCases[section].rawValue
+    HealthKitCategory.allCases[section].rawValue
   }
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     let category = HealthKitCategory.allCases[section]

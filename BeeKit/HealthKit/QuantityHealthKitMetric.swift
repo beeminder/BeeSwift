@@ -32,12 +32,10 @@ public class QuantityHealthKitMetric: HealthKitMetric {
     self.precision = precision
   }
 
-  public func sampleType() -> HKSampleType {
-    return HKObjectType.quantityType(forIdentifier: hkQuantityTypeIdentifier)!
-  }
+  public func sampleType() -> HKSampleType { HKObjectType.quantityType(forIdentifier: hkQuantityTypeIdentifier)! }
 
   public func permissionType() -> HKObjectType {
-    return HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)!
+    HKObjectType.quantityType(forIdentifier: self.hkQuantityTypeIdentifier)!
   }
 
   public func recentDataPoints(days: Int, deadline: Int, healthStore: HKHealthStore, autodataConfig: [String: Any])

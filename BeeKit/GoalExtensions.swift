@@ -13,7 +13,7 @@ extension Goal {
     }
   }
 
-  public var isDataProvidedAutomatically: Bool { return !(self.autodata ?? "").isEmpty }
+  public var isDataProvidedAutomatically: Bool { !(self.autodata ?? "").isEmpty }
 
   /// The daystamp corresponding to the day of the goal's creation, thus the first day we should add data points for.
   var initDaystamp: Daystamp {
@@ -43,11 +43,11 @@ extension Goal {
     return cacheBustingUrlStr
   }
 
-  public func capitalSafesum() -> String { return self.safeSum.capitalizingFirstCharacter }
+  public func capitalSafesum() -> String { self.safeSum.capitalizingFirstCharacter }
 
-  public var hideDataEntry: Bool { return self.isDataProvidedAutomatically || self.won }
+  public var hideDataEntry: Bool { self.isDataProvidedAutomatically || self.won }
 
-  public var isLinkedToHealthKit: Bool { return self.autodata == "apple" }
+  public var isLinkedToHealthKit: Bool { self.autodata == "apple" }
 
   /// A hint for the value the user is likely to enter, based on past data points
   public var suggestedNextValue: NSNumber? {

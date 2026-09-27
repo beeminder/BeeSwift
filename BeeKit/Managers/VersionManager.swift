@@ -27,7 +27,7 @@ public class VersionManager {
 
   init(requestManager: RequestManager) { self.requestManager = requestManager }
 
-  public func lastChckedUpdateState() -> UpdateState { return updateState }
+  public func lastChckedUpdateState() -> UpdateState { updateState }
 
   public func updateState() async throws -> UpdateState {
     let currentVersion = currentVersion()
@@ -53,7 +53,7 @@ public class VersionManager {
   }
 
   private func currentVersion() -> String {
-    return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
+    Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
   }
   private func checkIfUpdateRequired() async throws -> Bool {
     let responseJSON = try await requestManager.get(url: "api/private/app_versions.json")

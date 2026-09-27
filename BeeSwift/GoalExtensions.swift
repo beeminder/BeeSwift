@@ -2,6 +2,4 @@
 
 import BeeKit
 
-extension Goal {
-  public var countdownColor: UIColor { return UIColor.Beeminder.SafetyBuffer.color(for: self.colorkey) }
-}
+extension Goal { public var countdownColor: UIColor { UIColor.Beeminder.SafetyBuffer.color(for: self.colorkey) } }

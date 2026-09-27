@@ -24,7 +24,7 @@ class WorkoutConfigurationProvider: MetricConfigurationProvider {
 
   // MARK: - MetricConfigurationProvider
 
-  var numberOfRows: Int { return 2 }
+  var numberOfRows: Int { 2 }
 
   func cell(for tableView: UITableView, at row: Int) -> UITableViewCell {
     if row == 0 {

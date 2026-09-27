@@ -18,7 +18,7 @@ class WeightConfigurationProvider: MetricConfigurationProvider {
 
   // MARK: - MetricConfigurationProvider
 
-  var numberOfRows: Int { return 1 }
+  var numberOfRows: Int { 1 }
 
   func cell(for tableView: UITableView, at row: Int) -> UITableViewCell {
     let cell = UITableViewCell(style: .default, reuseIdentifier: nil)

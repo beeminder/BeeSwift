@@ -98,16 +98,16 @@ public class RequestManager {
     }
   }
   public func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .get, parameters: parameters, headers: authenticationHeaders())
+    try await rawRequest(url: url, method: .get, parameters: parameters, headers: authenticationHeaders())
   }
   public func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .patch, parameters: parameters, headers: authenticationHeaders())
+    try await rawRequest(url: url, method: .patch, parameters: parameters, headers: authenticationHeaders())
   }
   public func post(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .post, parameters: parameters, headers: authenticationHeaders())
+    try await rawRequest(url: url, method: .post, parameters: parameters, headers: authenticationHeaders())
   }
   public func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    return try await rawRequest(url: url, method: .delete, parameters: parameters, headers: authenticationHeaders())
+    try await rawRequest(url: url, method: .delete, parameters: parameters, headers: authenticationHeaders())
   }
   func authenticationHeaders() -> HTTPHeaders {
     guard let accessToken = ServiceLocator.currentUserManager.accessToken else { return HTTPHeaders() }

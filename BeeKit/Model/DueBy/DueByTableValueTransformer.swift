@@ -3,7 +3,7 @@
 import Foundation
 
 @objc(DueByTableValueTransformer) public class DueByTableValueTransformer: ValueTransformer {
-  public override class func transformedValueClass() -> AnyClass { return NSData.self }
+  public override class func transformedValueClass() -> AnyClass { NSData.self }
   public override func transformedValue(_ value: Any?) -> Any? {
     guard let dueByTable = value as? DueByDictionary else { return nil }
     do { return try JSONEncoder().encode(dueByTable) } catch { print("Error encoding due by table: \(error)") }
