@@ -415,10 +415,7 @@ class GoalViewController: UIViewController, DatapointTableViewControllerDelegate
 
   @objc func valueStepperValueChanged() {
     var valueString = ""
-    let formatter = NumberFormatter()
-    formatter.locale = Locale(identifier: "en_US")
-    formatter.groupingSeparator = ""
-    formatter.numberStyle = .decimal
+    let formatter = NumberFormatter.beeminderInputFormatter
 
     if self.valueStepper.value < 0 {
       var value = self.valueStepper.value

@@ -50,10 +50,7 @@ extension IntentDialog {
   fileprivate static func goalParameterConfiguration(goal: String) -> Self { "\(goal)" }
   fileprivate static var goalParameterPrompt: Self { "Which goal?" }
   fileprivate static func responseSuccess(goal: String, value: Double) -> Self {
-    let formatter = NumberFormatter()
-    formatter.minimumFractionDigits = 0
-    formatter.maximumFractionDigits = 5
-    let formattedValue = formatter.string(from: NSNumber(value: value)) ?? String(value)
+    let formattedValue = NumberFormatter.beeminderDisplayFormatter.string(from: NSNumber(value: value)) ?? String(value)
     return "Added \(formattedValue) to \(goal)"
   }
 }
