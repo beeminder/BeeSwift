@@ -88,6 +88,7 @@ import SwiftyJSON
   public nonisolated func user(context: NSManagedObjectContext) -> User? {
     do {
       let request = NSFetchRequest<User>(entityName: "User")
+      request.fetchLimit = 1
       let users = try context.fetch(request)
       return users.first
     } catch {
