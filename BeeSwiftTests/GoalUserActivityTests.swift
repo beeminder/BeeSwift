@@ -84,7 +84,11 @@ final class GoalUserActivityTests: XCTestCase {
       viewContext: container.viewContext,
       versionManager: versionManager,
       goalManager: goalManager,
-      healthStoreManager: HealthStoreManager(goalManager: goalManager, container: container),
+      healthStoreManager: HealthStoreManager(
+        goalManager: goalManager,
+        dataPointManager: DataPointManager(requestManager: requestManager, container: container),
+        container: container,
+      ),
       requestManager: requestManager,
     )
     let gallery = GalleryViewController(
