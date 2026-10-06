@@ -19,18 +19,18 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
   let goal: Goal
   fileprivate var useDefaultsSwitch = UISwitch()
   private let currentUserManager: CurrentUserManager
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
   private let goalManager: GoalManager
   private let viewContext: NSManagedObjectContext
   init(
     goal: Goal,
     currentUserManager: CurrentUserManager,
-    requestManager: RequestManager,
+    apiClient: APIClient,
     goalManager: GoalManager,
     viewContext: NSManagedObjectContext,
   ) {
     self.currentUserManager = currentUserManager
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.goalManager = goalManager
     self.viewContext = viewContext
     self.goal = goal
@@ -73,12 +73,12 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
     // We must not use `timer` in the Task as it may change once this method returns
     let userInfo = timer.userInfo! as! [String: NSNumber]
     Task { @MainActor in
-      let leadtime = userInfo["leadtime"]
-      let params = ["leadtime": leadtime, "use_defaults": false]
+      guard let leadtime = userInfo["leadtime"] else { return }
       do {
-        let _ = try await self.requestManager.put(
-          url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-          parameters: params as [String: Any],
+        let _ = try await self.apiClient.updateGoal(
+          slug: self.goal.slug,
+          leadtime: leadtime.intValue,
+          usesDefaultNotifications: false,
         )
 
         try await self.goalManager.refreshGoal(self.goal.objectID)
@@ -95,10 +95,10 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
       if self.timePickerEditingMode == .alertstart {
         self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
         do {
-          let params = ["alertstart": self.midnightOffsetFromTimePickerView(), "use_defaults": false]
-          let _ = try await self.requestManager.put(
-            url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-            parameters: params,
+          let _ = try await self.apiClient.updateGoal(
+            slug: self.goal.slug,
+            alertstart: self.midnightOffsetFromTimePickerView(),
+            usesDefaultNotifications: false,
           )
           try await self.goalManager.refreshGoal(self.goal.objectID)
 
@@ -114,10 +114,10 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
         let deadline = self.deadlineFromTimePickerView
         self.updateDeadlineLabel(deadline)
         do {
-          let params = ["deadline": deadline, "use_defaults": false]
-          let _ = try await self.requestManager.put(
-            url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-            parameters: params,
+          let _ = try await self.apiClient.updateGoal(
+            slug: self.goal.slug,
+            deadline: deadline,
+            usesDefaultNotifications: false,
           )
           try await self.goalManager.refreshGoal(self.goal.objectID)
 
@@ -154,11 +154,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
               let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
               hud.mode = .indeterminate
               do {
-                let params = ["use_defaults": true]
-                let _ = try await self.requestManager.put(
-                  url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-                  parameters: params,
-                )
+                let _ = try await self.apiClient.updateGoal(slug: self.goal.slug, usesDefaultNotifications: true)
                 try await self.goalManager.refreshGoal(self.goal.objectID)
                 hud.hide(animated: true, afterDelay: 0.5)
               } catch {
@@ -182,7 +178,8 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
               self.updateLeadTimeLabel()
               self.alertstart = self.user.defaultAlertStart
               self.deadline = self.user.defaultDeadline
-              self.timePickerEditingMode = self.timePickerEditingMode  // trigger the setter which updates the timePicker components
+              // Trigger the setter which updates the time picker components.
+              self.timePickerEditingMode = self.timePickerEditingMode
             }
           },
         )
@@ -200,11 +197,7 @@ class EditGoalNotificationsViewController: EditNotificationsViewController {
         let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
         hud.mode = .indeterminate
         do {
-          let params = ["use_defaults": false]
-          let _ = try await self.requestManager.put(
-            url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-            parameters: params,
-          )
+          let _ = try await self.apiClient.updateGoal(slug: self.goal.slug, usesDefaultNotifications: false)
           try await self.goalManager.refreshGoal(self.goal.objectID)
           hud.hide(animated: true, afterDelay: 0.5)
         } catch {

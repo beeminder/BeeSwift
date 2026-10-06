@@ -14,9 +14,9 @@ struct AddDataPointIntent: AppIntent {
   func perform() async throws -> some IntentResult & ProvidesDialog {
     let dataComment = comment ?? ""
     do {
-      let _ = try await ServiceLocator.requestManager.addDatapoint(
+      let _ = try await ServiceLocator.apiClient.createDatapoint(
+        goalSlug: goal.slug,
         urtext: "^ \(value) \"\(dataComment)\"",
-        slug: goal.slug,
       )
       // Use displayTitle to show title with slug fallback
       let formattedValue =

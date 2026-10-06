@@ -26,7 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       versionManager: ServiceLocator.versionManager,
       goalManager: ServiceLocator.goalManager,
       healthStoreManager: ServiceLocator.healthStoreManager,
-      requestManager: ServiceLocator.requestManager,
+      apiClient: ServiceLocator.apiClient,
     )
     window = UIWindow(windowScene: windowScene)
     window?.rootViewController = navigationController

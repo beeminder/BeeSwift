@@ -9,7 +9,7 @@ class MainCoordinator {
   private let versionManager: VersionManager
   private let goalManager: GoalManager
   private let healthStoreManager: HealthStoreManager
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
   private let sessionStartup: SessionStartup
   init(
     navigationController: UINavigationController,
@@ -18,7 +18,7 @@ class MainCoordinator {
     versionManager: VersionManager,
     goalManager: GoalManager,
     healthStoreManager: HealthStoreManager,
-    requestManager: RequestManager,
+    apiClient: APIClient,
   ) {
     self.navigationController = navigationController
     self.currentUserManager = currentUserManager
@@ -26,7 +26,7 @@ class MainCoordinator {
     self.versionManager = versionManager
     self.goalManager = goalManager
     self.healthStoreManager = healthStoreManager
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.sessionStartup = SessionStartup(healthStoreManager: healthStoreManager)
     setUpNotifications()
   }
@@ -56,7 +56,7 @@ class MainCoordinator {
       viewContext: viewContext,
       versionManager: versionManager,
       goalManager: goalManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
       coordinator: self,
     )
     navigationController.setNavigationBarHidden(false, animated: false)
@@ -68,7 +68,7 @@ class MainCoordinator {
       goal: goal,
       healthStoreManager: healthStoreManager,
       goalManager: goalManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
       currentUserManager: currentUserManager,
       viewContext: viewContext,
       coordinator: self,
@@ -80,7 +80,7 @@ class MainCoordinator {
       currentUserManager: currentUserManager,
       viewContext: viewContext,
       goalManager: goalManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
       coordinator: self,
     )
     navigationController.pushViewController(settingsVC, animated: true)
@@ -109,7 +109,7 @@ class MainCoordinator {
     )
   }
   func showTimerForGoal(_ goal: Goal) {
-    let controller = TimerViewController(goal: goal, requestManager: requestManager)
+    let controller = TimerViewController(goal: goal, apiClient: apiClient)
     controller.modalPresentationStyle = .fullScreen
     navigationController.present(controller, animated: true, completion: nil)
   }
@@ -118,7 +118,7 @@ class MainCoordinator {
       goalManager: goalManager,
       viewContext: viewContext,
       currentUserManager: currentUserManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
       coordinator: self,
     )
     navigationController.pushViewController(controller, animated: true)
@@ -128,7 +128,7 @@ class MainCoordinator {
       goalManager: goalManager,
       viewContext: viewContext,
       healthStoreManager: ServiceLocator.healthStoreManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
       coordinator: self,
     )
     navigationController.pushViewController(controller, animated: true)
@@ -148,7 +148,7 @@ class MainCoordinator {
       goal: goal,
       metric: metric,
       healthStoreManager: healthStoreManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
       goalManager: goalManager,
     )
     navigationController.pushViewController(controller, animated: true)
@@ -161,7 +161,7 @@ class MainCoordinator {
     let controller = EditGoalNotificationsViewController(
       goal: goal,
       currentUserManager: currentUserManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
       goalManager: goalManager,
       viewContext: viewContext,
     )
@@ -171,7 +171,7 @@ class MainCoordinator {
     let controller = GoalSettingsViewController(
       goal: goal,
       currentUserManager: currentUserManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
       goalManager: goalManager,
       coordinator: self,
     )
@@ -180,7 +180,7 @@ class MainCoordinator {
   func showConfigureDefaultNotifications() {
     let controller = EditDefaultNotificationsViewController(
       currentUserManager: currentUserManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
       goalManager: goalManager,
       viewContext: viewContext,
     )
@@ -191,7 +191,7 @@ class MainCoordinator {
       goal: goal,
       metric: metric,
       healthStoreManager: healthStoreManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
     )
     navigationController.pushViewController(controller, animated: true)
   }
@@ -199,7 +199,7 @@ class MainCoordinator {
     let editDatapointViewController = EditDatapointViewController(
       goal: goal,
       datapoint: datapoint,
-      requestManager: self.requestManager,
+      apiClient: self.apiClient,
       goalManager: self.goalManager,
     )
 

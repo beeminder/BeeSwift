@@ -20,7 +20,7 @@ class ConfigureNotificationsViewController: UIViewController {
   private let goalManager: GoalManager
   private let viewContext: NSManagedObjectContext
   private let currentUserManager: CurrentUserManager
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
   private weak var coordinator: MainCoordinator?
   private lazy var dataSource: NotificationsTableViewDiffibleDataSource = {
     NotificationsTableViewDiffibleDataSource(goals: [], tableView: tableView)
@@ -29,13 +29,13 @@ class ConfigureNotificationsViewController: UIViewController {
     goalManager: GoalManager,
     viewContext: NSManagedObjectContext,
     currentUserManager: CurrentUserManager,
-    requestManager: RequestManager,
+    apiClient: APIClient,
     coordinator: MainCoordinator,
   ) {
     self.goalManager = goalManager
     self.viewContext = viewContext
     self.currentUserManager = currentUserManager
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.coordinator = coordinator
     super.init(nibName: nil, bundle: nil)
   }

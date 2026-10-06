@@ -25,7 +25,7 @@ class ConfigureHKMetricViewController: UIViewController {
   private let goal: Goal
   private let metric: HealthKitMetric
   private let healthStoreManager: HealthStoreManager
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
   private let goalManager: GoalManager?
 
   private var isRequestInFlight = false
@@ -47,13 +47,13 @@ class ConfigureHKMetricViewController: UIViewController {
     goal: Goal,
     metric: HealthKitMetric,
     healthStoreManager: HealthStoreManager,
-    requestManager: RequestManager,
+    apiClient: APIClient,
     goalManager: GoalManager? = nil,
   ) {
     self.goal = goal
     self.metric = metric
     self.healthStoreManager = healthStoreManager
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.goalManager = goalManager
     super.init(nibName: nil, bundle: nil)
   }
@@ -326,13 +326,8 @@ class ConfigureHKMetricViewController: UIViewController {
         let configParams = metricConfig.getConfigParameters()
         for (key, value) in configParams { iiParams[key] = value }
       }
-      let params: [String: Any] = ["ii_params": iiParams]
-
       do {
-        let _ = try await self.requestManager.put(
-          url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-          parameters: params,
-        )
+        let _ = try await self.apiClient.updateGoal(slug: self.goal.slug, iiParams: iiParams)
         hud.mode = .customView
         hud.customView = UIImageView(image: UIImage(systemName: "checkmark"))
         hud.hide(animated: true, afterDelay: 2)
@@ -364,16 +359,12 @@ class ConfigureHKMetricViewController: UIViewController {
     isRequestInFlight = true
     disconnectButton.isUserInteractionEnabled = false
 
-    let params: [String: [String: String?]] = ["ii_params": ["name": nil, "metric": ""]]
     let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
     hud.mode = .indeterminate
 
     Task { @MainActor in
       do {
-        let _ = try await self.requestManager.put(
-          url: "api/v1/users/{username}/goals/\(self.goal.slug).json",
-          parameters: params,
-        )
+        let _ = try await self.apiClient.updateGoal(slug: self.goal.slug, iiParams: ["name": NSNull(), "metric": ""])
 
         if let goalManager = self.goalManager { try await goalManager.refreshGoal(self.goal.objectID) }
 

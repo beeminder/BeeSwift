@@ -14,20 +14,17 @@ public class ServiceLocator {
 
   public static let persistentContainer = BeeminderPersistentContainer.create()
 
-  public static let requestManager = RequestManager()
-  public static let signedRequestManager = SignedRequestManager(requestManager: requestManager)
-  public static let currentUserManager = CurrentUserManager(
-    requestManager: requestManager,
-    container: persistentContainer,
-  )
+  private static let requestManager = RequestManager()
+  public static let apiClient = APIClient(requestManager: requestManager)
+  public static let currentUserManager = CurrentUserManager(apiClient: apiClient, container: persistentContainer)
   public static let goalManager = GoalManager(
-    requestManager: requestManager,
+    apiClient: apiClient,
     currentUserManager: currentUserManager,
     container: persistentContainer,
   )
-  public static let dataPointManager = DataPointManager(requestManager: requestManager, container: persistentContainer)
+  public static let dataPointManager = DataPointManager(apiClient: apiClient, container: persistentContainer)
   public static let healthStoreManager = HealthStoreManager(goalManager: goalManager, container: persistentContainer)
-  public static let versionManager = VersionManager(requestManager: requestManager)
+  public static let versionManager = VersionManager(apiClient: apiClient)
   public static let refreshManager = RefreshManager(
     healthStoreManager: healthStoreManager,
     goalManager: goalManager,
