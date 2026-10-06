@@ -115,32 +115,6 @@ public class RequestManager {
     return HTTPHeaders([HTTPHeader(name: "Authorization", value: "Bearer " + accessToken)])
   }
 
-  func signedPost(url: String, parameters: [String: Any]?) async throws -> Any? {
-    try await rawRequest(
-      url: url,
-      method: .post,
-      parameters: signedParameters(parameters),
-      headers: authenticationHeaders(),
-    )
-  }
-
-  private func signedParameters(_ parameters: [String: Any]?) -> [String: Any]? {
-    guard let parameters else { return nil }
-    var signed = parameters
-    var base = ""
-    let keys = parameters.keys.sorted()
-    for key in keys {
-      guard let value = parameters[key] as? String else { return parameters }
-      let allowedCharacterSet = CharacterSet(charactersIn: "@/").inverted
-      guard let escapedKey = key.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet),
-        let escapedValue = value.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet)
-      else { return parameters }
-      if !base.isEmpty { base += "&" }
-      base += "\(escapedKey)=\(escapedValue)"
-    }
-    signed["beemios_token"] = base.hmac(algorithm: HMACAlgorithm.SHA1, key: Config().requestSigningKey)
-    return signed
-  }
 }
 
 extension HTTPHeaders {

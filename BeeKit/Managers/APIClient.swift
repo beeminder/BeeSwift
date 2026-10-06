@@ -114,6 +114,22 @@ open class APIClient {
   open func registerDeviceToken(token: String, environment: String? = nil) async throws -> Any? {
     var parameters = ["device_token": token]
     if let environment { parameters["server"] = environment }
-    return try await requestManager.signedPost(url: "/api/private/device_tokens", parameters: parameters)
+    return try await requestManager.post(url: "/api/private/device_tokens", parameters: signedParameters(parameters))
+  }
+
+  private func signedParameters(_ parameters: [String: Any]) -> [String: Any] {
+    var base = ""
+    for key in parameters.keys.sorted() {
+      guard let value = parameters[key] as? String else { return parameters }
+      let allowedCharacterSet = CharacterSet(charactersIn: "@/").inverted
+      guard let escapedKey = key.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet),
+        let escapedValue = value.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet)
+      else { return parameters }
+      if !base.isEmpty { base += "&" }
+      base += "\(escapedKey)=\(escapedValue)"
+    }
+    var signed = parameters
+    signed["beemios_token"] = base.hmac(algorithm: HMACAlgorithm.SHA1, key: Config().requestSigningKey)
+    return signed
   }
 }
