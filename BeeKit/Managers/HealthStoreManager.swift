@@ -236,9 +236,6 @@ import OSLog
     logger.notice(
       "Updating \(metric.databaseString, privacy: .public) goal with \(nonZeroDataPoints.count, privacy: .public) datapoints. Skipped \(newDataPoints.count - nonZeroDataPoints.count, privacy: .public) empty points."
     )
-    try await dataPointManager.updateToMatchDataPoints(
-      goalID: goal.objectID,
-      healthKitDataPoints: nonZeroDataPoints,
-    )
+    try await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: nonZeroDataPoints )
   }
 }
