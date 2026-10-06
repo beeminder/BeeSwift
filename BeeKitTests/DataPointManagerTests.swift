@@ -17,12 +17,14 @@ class MockHealthKitDataPoint: BeeDataPoint {
   }
 }
 
-class MockRequestManagerForDataPoint: RequestManager {
-  private let queue = DispatchQueue(label: "com.beeminder.MockRequestManagerForDataPoint")
+class MockAPIClientForDataPoint: APIClient {
+  private let queue = DispatchQueue(label: "com.beeminder.MockAPIClientForDataPoint")
   private var _responses: [String: Any] = [:]
   private var _putCalls: [(url: String, parameters: [String: Any])] = []
   private var _deleteCalls: [String] = []
   private var _addDatapointCalls: [(urtext: String, slug: String, requestId: String)] = []
+
+  init() { super.init(requestManager: RequestManager()) }
 
   var responses: [String: Any] {
     get { queue.sync { _responses } }
@@ -32,7 +34,8 @@ class MockRequestManagerForDataPoint: RequestManager {
   var deleteCalls: [String] { queue.sync { _deleteCalls } }
   var addDatapointCalls: [(urtext: String, slug: String, requestId: String)] { queue.sync { _addDatapointCalls } }
 
-  override func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  override func fetchDatapoints(goalSlug: String, sort: String, per: Int, page: Int) async throws -> Any? {
+    let url = "api/v1/users/{username}/goals/\(goalSlug)/datapoints.json"
     let response = queue.sync { () -> Any? in
       if let response = _responses[url] {
         _responses.removeValue(forKey: url)
@@ -42,30 +45,42 @@ class MockRequestManagerForDataPoint: RequestManager {
     }
     return response ?? []
   }
-  override func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
-    queue.sync { _putCalls.append((url: url, parameters: parameters ?? [:])) }
+  override func updateDatapoint(
+    goalSlug: String,
+    datapointID: String,
+    value: String? = nil,
+    comment: String? = nil,
+    urtext: String? = nil,
+  ) async throws -> Any? {
+    var parameters: [String: Any] = [:]
+    if let value { parameters["value"] = value }
+    if let comment { parameters["comment"] = comment }
+    if let urtext { parameters["urtext"] = urtext }
+    let url = "api/v1/users/{username}/goals/\(goalSlug)/datapoints/\(datapointID).json"
+    queue.sync { _putCalls.append((url: url, parameters: parameters)) }
     return [:]
   }
-  override func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  override func deleteDatapoint(goalSlug: String, datapointID: String) async throws -> Any? {
+    let url = "api/v1/users/{username}/goals/\(goalSlug)/datapoints/\(datapointID).json"
     queue.sync { _deleteCalls.append(url) }
     return [:]
   }
-  override func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
-    queue.sync { _addDatapointCalls.append((urtext: urtext, slug: slug, requestId: requestId ?? "")) }
+  override func createDatapoint(goalSlug: String, urtext: String, requestID: String? = nil) async throws -> Any? {
+    queue.sync { _addDatapointCalls.append((urtext: urtext, slug: goalSlug, requestId: requestID ?? "")) }
     return [:]
   }
 }
 
 class DataPointManagerTests: XCTestCase {
   var container: BeeminderPersistentContainer!
-  var mockRequestManager: MockRequestManagerForDataPoint!
+  var mockAPIClient: MockAPIClientForDataPoint!
   var dataPointManager: DataPointManager!
   var goal: Goal!
   var user: User!
   override func setUpWithError() throws {
     container = BeeminderPersistentContainer.createMemoryBackedForTests()
-    mockRequestManager = MockRequestManagerForDataPoint()
-    dataPointManager = DataPointManager(requestManager: mockRequestManager, container: container)
+    mockAPIClient = MockAPIClientForDataPoint()
+    dataPointManager = DataPointManager(apiClient: mockAPIClient, container: container)
     let context = container.viewContext
     user = User(
       context: context,
@@ -82,7 +97,7 @@ class DataPointManagerTests: XCTestCase {
   }
   override func tearDownWithError() throws {
     container = nil
-    mockRequestManager = nil
+    mockAPIClient = nil
     dataPointManager = nil
     goal = nil
     user = nil
@@ -106,7 +121,7 @@ class DataPointManagerTests: XCTestCase {
         "is_dummy": true, "is_initial": false,
       ],
     ]
-    mockRequestManager.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
+    mockAPIClient.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
     let updatedHealthKitDatapoint = MockHealthKitDataPoint(
       daystamp: try Daystamp(fromString: "20221201"),
       value: NSNumber(value: 15),
@@ -125,18 +140,18 @@ class DataPointManagerTests: XCTestCase {
     )
 
     // Should update the existing datapoint by requestId
-    XCTAssertEqual(mockRequestManager.putCalls.count, 1)
-    XCTAssertTrue(mockRequestManager.putCalls[0].url.contains("existing1"))
-    XCTAssertEqual(mockRequestManager.putCalls[0].parameters["value"] as? String, "15")
-    XCTAssertEqual(mockRequestManager.putCalls[0].parameters["comment"] as? String, "Updated workout comment")
+    XCTAssertEqual(mockAPIClient.putCalls.count, 1)
+    XCTAssertTrue(mockAPIClient.putCalls[0].url.contains("existing1"))
+    XCTAssertEqual(mockAPIClient.putCalls[0].parameters["value"] as? String, "15")
+    XCTAssertEqual(mockAPIClient.putCalls[0].parameters["comment"] as? String, "Updated workout comment")
     // Should delete the obsolete datapoint
-    XCTAssertEqual(mockRequestManager.deleteCalls.count, 1)
-    XCTAssertTrue(mockRequestManager.deleteCalls[0].contains("obsolete1"))
+    XCTAssertEqual(mockAPIClient.deleteCalls.count, 1)
+    XCTAssertTrue(mockAPIClient.deleteCalls[0].contains("obsolete1"))
     // Should create a new datapoint
-    XCTAssertEqual(mockRequestManager.addDatapointCalls.count, 1)
-    XCTAssertEqual(mockRequestManager.addDatapointCalls[0].urtext, "1 25 \"New workout\"")
-    XCTAssertEqual(mockRequestManager.addDatapointCalls[0].slug, "test-goal")
-    XCTAssertEqual(mockRequestManager.addDatapointCalls[0].requestId, "hk_workout_2")
+    XCTAssertEqual(mockAPIClient.addDatapointCalls.count, 1)
+    XCTAssertEqual(mockAPIClient.addDatapointCalls[0].urtext, "1 25 \"New workout\"")
+    XCTAssertEqual(mockAPIClient.addDatapointCalls[0].slug, "test-goal")
+    XCTAssertEqual(mockAPIClient.addDatapointCalls[0].requestId, "hk_workout_2")
   }
   func testDeletesRemovedWorkouts() async throws {
     let apiResponse = [
@@ -149,7 +164,7 @@ class DataPointManagerTests: XCTestCase {
         "is_dummy": false, "is_initial": false, "requestid": "hk_workout_uuid_2",
       ],
     ]
-    mockRequestManager.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
+    mockAPIClient.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
     // Only one workout remains in HealthKit
     let remainingWorkout = MockHealthKitDataPoint(
       daystamp: try Daystamp(fromString: "20221201"),
@@ -160,12 +175,12 @@ class DataPointManagerTests: XCTestCase {
     try! await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: [remainingWorkout])
 
     // Should not update the matching workout (same value/comment)
-    XCTAssertEqual(mockRequestManager.putCalls.count, 0)
+    XCTAssertEqual(mockAPIClient.putCalls.count, 0)
     // Should delete the removed workout
-    XCTAssertEqual(mockRequestManager.deleteCalls.count, 1)
-    XCTAssertTrue(mockRequestManager.deleteCalls[0].contains("workout2"))
+    XCTAssertEqual(mockAPIClient.deleteCalls.count, 1)
+    XCTAssertTrue(mockAPIClient.deleteCalls[0].contains("workout2"))
     // Should not create any new datapoints
-    XCTAssertEqual(mockRequestManager.addDatapointCalls.count, 0)
+    XCTAssertEqual(mockAPIClient.addDatapointCalls.count, 0)
   }
   func testMultipleDaysWithMultipleWorkouts() async throws {
     let apiResponse = [
@@ -178,7 +193,7 @@ class DataPointManagerTests: XCTestCase {
         "is_dummy": false, "is_initial": false, "requestid": "uuid_2",
       ],
     ]
-    mockRequestManager.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
+    mockAPIClient.responses["api/v1/users/{username}/goals/test-goal/datapoints.json"] = apiResponse
     let day1Workouts = [
       MockHealthKitDataPoint(
         daystamp: try Daystamp(fromString: "20221201"),
@@ -207,12 +222,12 @@ class DataPointManagerTests: XCTestCase {
     )
 
     // Should delete day2 old workout, but not update day1 unchanged workout
-    XCTAssertEqual(mockRequestManager.deleteCalls.count, 1)
-    XCTAssertTrue(mockRequestManager.deleteCalls[0].contains("day2_workout1"))
+    XCTAssertEqual(mockAPIClient.deleteCalls.count, 1)
+    XCTAssertTrue(mockAPIClient.deleteCalls[0].contains("day2_workout1"))
     // Should create 2 new workouts (day1 yoga, day2 bike)
-    XCTAssertEqual(mockRequestManager.addDatapointCalls.count, 2)
-    XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.requestId == "uuid_3" })
-    XCTAssertTrue(mockRequestManager.addDatapointCalls.contains { $0.requestId == "uuid_4" })
+    XCTAssertEqual(mockAPIClient.addDatapointCalls.count, 2)
+    XCTAssertTrue(mockAPIClient.addDatapointCalls.contains { $0.requestId == "uuid_3" })
+    XCTAssertTrue(mockAPIClient.addDatapointCalls.contains { $0.requestId == "uuid_4" })
   }
   private func createTestGoalJSON() -> JSON {
     JSON(

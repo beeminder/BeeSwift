@@ -70,14 +70,10 @@ final class GoalUserActivityTests: XCTestCase {
   @MainActor func testGalleryCellsAreAnnotatedWithGoalEntities() throws {
     let goalA = makeGoal(["id": "goal-a", "slug": "alpha"])
     let goalB = makeGoal(["id": "goal-b", "slug": "bravo"])
-    let requestManager = RequestManager()
-    let currentUserManager = CurrentUserManager(requestManager: requestManager, container: container)
-    let goalManager = GoalManager(
-      requestManager: requestManager,
-      currentUserManager: currentUserManager,
-      container: container,
-    )
-    let versionManager = VersionManager(requestManager: requestManager)
+    let apiClient = APIClient(requestManager: RequestManager())
+    let currentUserManager = CurrentUserManager(apiClient: apiClient, container: container)
+    let goalManager = GoalManager(apiClient: apiClient, currentUserManager: currentUserManager, container: container)
+    let versionManager = VersionManager(apiClient: apiClient)
     let coordinator = MainCoordinator(
       navigationController: UINavigationController(),
       currentUserManager: currentUserManager,
@@ -85,14 +81,14 @@ final class GoalUserActivityTests: XCTestCase {
       versionManager: versionManager,
       goalManager: goalManager,
       healthStoreManager: HealthStoreManager(goalManager: goalManager, container: container),
-      requestManager: requestManager,
+      apiClient: apiClient,
     )
     let gallery = GalleryViewController(
       currentUserManager: currentUserManager,
       viewContext: container.viewContext,
       versionManager: versionManager,
       goalManager: goalManager,
-      requestManager: requestManager,
+      apiClient: apiClient,
       coordinator: coordinator,
     )
     gallery.loadViewIfNeeded()

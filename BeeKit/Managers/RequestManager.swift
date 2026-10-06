@@ -37,6 +37,7 @@ public enum ServerError: LocalizedError {
 public class RequestManager {
   public let baseURLString = Config().baseURLString
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "RequestManager")
+
   func rawRequest(url: String, method: HTTPMethod, parameters: [String: Any]? = nil, headers: HTTPHeaders) async throws
     -> Any?
   {
@@ -97,16 +98,16 @@ public class RequestManager {
       throw error
     }
   }
-  public func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
     try await rawRequest(url: url, method: .get, parameters: parameters, headers: authenticationHeaders())
   }
-  public func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  func put(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
     try await rawRequest(url: url, method: .patch, parameters: parameters, headers: authenticationHeaders())
   }
-  public func post(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  func post(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
     try await rawRequest(url: url, method: .post, parameters: parameters, headers: authenticationHeaders())
   }
-  public func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  func delete(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
     try await rawRequest(url: url, method: .delete, parameters: parameters, headers: authenticationHeaders())
   }
   func authenticationHeaders() -> HTTPHeaders {
@@ -114,9 +115,31 @@ public class RequestManager {
     return HTTPHeaders([HTTPHeader(name: "Authorization", value: "Bearer " + accessToken)])
   }
 
-  public func addDatapoint(urtext: String, slug: String, requestId: String? = nil) async throws -> Any? {
-    let params = ["urtext": urtext, "requestid": requestId].compactMapValues { $0 }
-    return try await post(url: "api/v1/users/{username}/goals/\(slug)/datapoints.json", parameters: params)
+  func signedPost(url: String, parameters: [String: Any]?) async throws -> Any? {
+    try await rawRequest(
+      url: url,
+      method: .post,
+      parameters: signedParameters(parameters),
+      headers: authenticationHeaders(),
+    )
+  }
+
+  private func signedParameters(_ parameters: [String: Any]?) -> [String: Any]? {
+    guard let parameters else { return nil }
+    var signed = parameters
+    var base = ""
+    let keys = parameters.keys.sorted()
+    for key in keys {
+      guard let value = parameters[key] as? String else { return parameters }
+      let allowedCharacterSet = CharacterSet(charactersIn: "@/").inverted
+      guard let escapedKey = key.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet),
+        let escapedValue = value.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet)
+      else { return parameters }
+      if !base.isEmpty { base += "&" }
+      base += "\(escapedKey)=\(escapedValue)"
+    }
+    signed["beemios_token"] = base.hmac(algorithm: HMACAlgorithm.SHA1, key: Config().requestSigningKey)
+    return signed
   }
 }
 
