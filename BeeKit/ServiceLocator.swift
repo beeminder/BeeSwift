@@ -26,7 +26,11 @@ public class ServiceLocator {
     container: persistentContainer,
   )
   public static let dataPointManager = DataPointManager(requestManager: requestManager, container: persistentContainer)
-  public static let healthStoreManager = HealthStoreManager(goalManager: goalManager, container: persistentContainer)
+  public static let healthStoreManager = HealthStoreManager(
+    goalManager: goalManager,
+    dataPointManager: dataPointManager,
+    container: persistentContainer,
+  )
   public static let versionManager = VersionManager(requestManager: requestManager)
   public static let refreshManager = RefreshManager(
     healthStoreManager: healthStoreManager,
