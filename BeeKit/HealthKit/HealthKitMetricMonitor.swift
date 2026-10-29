@@ -43,6 +43,9 @@ class HealthKitMetricMonitor {
           self.logger.error(
             "ObserverQuery for \(self.metric.databaseString, privacy: .public) was error: \(error, privacy: .public)"
           )
+          // HealthKit requires the completion handler to be called on every update, including failures.
+          // If it is not called three times in a row HealthKit stops background delivery entirely.
+          completionHandler()
           return
         }
 
