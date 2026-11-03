@@ -21,13 +21,13 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
   fileprivate var datePicker = InlineDatePicker()
   fileprivate var valueField = UITextField()
   fileprivate var commentField = UITextField()
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
   private let goalManager: GoalManager
 
-  init(goal: Goal, datapoint: DataPoint, requestManager: RequestManager, goalManager: GoalManager) {
+  init(goal: Goal, datapoint: DataPoint, apiClient: APIClient, goalManager: GoalManager) {
     self.goal = goal
     self.datapoint = datapoint
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.goalManager = goalManager
     super.init(nibName: nil, bundle: nil)
   }
@@ -200,10 +200,10 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
       hud.mode = .indeterminate
 
       do {
-        let params = ["urtext": self.urtext()]
-        let _ = try await self.requestManager.put(
-          url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json",
-          parameters: params,
+        let _ = try await self.apiClient.updateDatapoint(
+          goalSlug: self.goal.slug,
+          datapointID: self.datapoint.id,
+          urtext: self.urtext(),
         )
         try await self.goalManager.refreshGoal(self.goal.objectID)
 
@@ -223,9 +223,7 @@ class EditDatapointViewController: UIViewController, UITextFieldDelegate {
       hud.mode = .indeterminate
 
       do {
-        let _ = try await self.requestManager.delete(
-          url: "api/v1/users/{username}/goals/\(self.goal.slug)/datapoints/\(self.datapoint.id).json"
-        )
+        let _ = try await self.apiClient.deleteDatapoint(goalSlug: self.goal.slug, datapointID: self.datapoint.id)
         try await self.goalManager.refreshGoal(self.goal.objectID)
 
         hud.mode = .customView

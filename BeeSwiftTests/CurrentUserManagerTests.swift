@@ -12,7 +12,7 @@ final class CurrentUserManagerTests: XCTestCase {
 
   func testCanSetAndRetrieveAccessToken() throws {
     let currentUserManager = CurrentUserManager(
-      requestManager: ServiceLocator.requestManager,
+      apiClient: ServiceLocator.apiClient,
       container: ServiceLocator.persistentContainer,
     )
     currentUserManager.setAccessToken("test_access_token")

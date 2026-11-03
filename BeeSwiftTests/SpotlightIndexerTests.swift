@@ -46,7 +46,10 @@ final class MockSearchableIndex: SearchableIndexing, @unchecked Sendable {
   override func setUp() {
     super.setUp()
     container = BeeminderPersistentContainer.createMemoryBackedForTests()
-    currentUserManager = CurrentUserManager(requestManager: RequestManager(), container: container)
+    currentUserManager = CurrentUserManager(
+      apiClient: APIClient(requestManager: RequestManager()),
+      container: container,
+    )
     mockSearchableIndex = MockSearchableIndex()
     notificationCenter = NotificationCenter()
   }

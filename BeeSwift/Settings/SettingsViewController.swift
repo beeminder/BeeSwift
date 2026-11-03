@@ -18,19 +18,19 @@ class SettingsViewController: UIViewController {
   private let currentUserManager: CurrentUserManager
   private let viewContext: NSManagedObjectContext
   private let goalManager: GoalManager
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
   private weak var coordinator: MainCoordinator?
   init(
     currentUserManager: CurrentUserManager,
     viewContext: NSManagedObjectContext,
     goalManager: GoalManager,
-    requestManager: RequestManager,
+    apiClient: APIClient,
     coordinator: MainCoordinator,
   ) {
     self.currentUserManager = currentUserManager
     self.viewContext = viewContext
     self.goalManager = goalManager
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.coordinator = coordinator
     super.init(nibName: nil, bundle: nil)
   }

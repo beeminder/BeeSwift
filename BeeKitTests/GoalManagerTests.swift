@@ -5,29 +5,34 @@ import XCTest
 
 @testable import BeeKit
 
-class MockRequestManager: RequestManager {
+class MockAPIClient: APIClient {
   var responses: [String: Any] = [:]
-  override func get(url: String, parameters: [String: Any]? = nil) async throws -> Any? {
+  init() { super.init(requestManager: RequestManager()) }
+
+  override func fetchUser(diffSince: TimeInterval? = nil, emaciated: Bool? = nil) async throws -> Any? {
+    let url = "api/v1/users/{username}.json"
     if let response = responses[url] { return response }
-    XCTFail("Unexpected URL requested: \(url)")
+    XCTFail("Unexpected endpoint requested: \(url)")
+    return nil
+  }
+  override func fetchGoals(emaciated: Bool? = nil) async throws -> Any? {
+    let url = "api/v1/users/{username}/goals.json"
+    if let response = responses[url] { return response }
+    XCTFail("Unexpected endpoint requested: \(url)")
     return nil
   }
 }
 
 class GoalManagerTests: XCTestCase {
   var container: BeeminderPersistentContainer!
-  var mockRequestManager: MockRequestManager!
+  var mockAPIClient: MockAPIClient!
   var currentUserManager: CurrentUserManager!
   var goalManager: GoalManager!
   override func setUpWithError() throws {
     container = BeeminderPersistentContainer.createMemoryBackedForTests()
-    mockRequestManager = MockRequestManager()
-    currentUserManager = CurrentUserManager(requestManager: mockRequestManager, container: container)
-    goalManager = GoalManager(
-      requestManager: mockRequestManager,
-      currentUserManager: currentUserManager,
-      container: container,
-    )
+    mockAPIClient = MockAPIClient()
+    currentUserManager = CurrentUserManager(apiClient: mockAPIClient, container: container)
+    goalManager = GoalManager(apiClient: mockAPIClient, currentUserManager: currentUserManager, container: container)
     let context = container.viewContext
     let _ = User(
       context: context,
@@ -43,7 +48,7 @@ class GoalManagerTests: XCTestCase {
   }
   override func tearDownWithError() throws {
     container = nil
-    mockRequestManager = nil
+    mockAPIClient = nil
     currentUserManager = nil
     goalManager = nil
   }
@@ -84,7 +89,7 @@ class GoalManagerTests: XCTestCase {
           }
       ]
       """
-    mockRequestManager.responses = [
+    mockAPIClient.responses = [
       "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
         with: userResponse.data(using: .utf8)!,
         options: [],
@@ -122,7 +127,7 @@ class GoalManagerTests: XCTestCase {
           ]
       }
       """
-    mockRequestManager.responses = [
+    mockAPIClient.responses = [
       "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
         with: deletionResponse.data(using: .utf8)!,
         options: [],
@@ -193,7 +198,7 @@ class GoalManagerTests: XCTestCase {
           }
       ]
       """
-    mockRequestManager.responses = [
+    mockAPIClient.responses = [
       "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
         with: userResponse.data(using: .utf8)!,
         options: [],
@@ -252,7 +257,7 @@ class GoalManagerTests: XCTestCase {
           "deleted_goals": []
       }
       """
-    mockRequestManager.responses = [
+    mockAPIClient.responses = [
       "api/v1/users/{username}.json": try JSONSerialization.jsonObject(
         with: incrementalResponse.data(using: .utf8)!,
         options: [],

@@ -15,17 +15,17 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "EditDefaultNotificationsViewController")
   private let user: User
   private let currentUserManager: CurrentUserManager
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
   private let goalManager: GoalManager
   private let viewContext: NSManagedObjectContext
   init(
     currentUserManager: CurrentUserManager,
-    requestManager: RequestManager,
+    apiClient: APIClient,
     goalManager: GoalManager,
     viewContext: NSManagedObjectContext,
   ) {
     self.currentUserManager = currentUserManager
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.goalManager = goalManager
     self.viewContext = viewContext
     self.user = currentUserManager.user(context: viewContext)!
@@ -40,9 +40,8 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
     let userInfo = timer.userInfo! as! [String: NSNumber]
     Task { @MainActor in
       guard let leadtime = userInfo["leadtime"] else { return }
-      let params = ["default_leadtime": leadtime]
       do {
-        let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
+        let _ = try await apiClient.updateUser(defaultLeadtime: leadtime.intValue)
         try await goalManager.refreshGoals()
       } catch {
         logger.error("Error setting default leadtime: \(error)")  // show alert
@@ -60,9 +59,8 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
       switch self.timePickerEditingMode {
       case .alertstart:
         self.updateAlertstartLabel(self.midnightOffsetFromTimePickerView())
-        let params = ["default_alertstart": self.midnightOffsetFromTimePickerView()]
         do {
-          let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
+          let _ = try await apiClient.updateUser(defaultAlertstart: self.midnightOffsetFromTimePickerView())
           try await goalManager.refreshGoals()
           hud.hide(animated: true, afterDelay: 0.5)
         } catch {
@@ -72,9 +70,8 @@ class EditDefaultNotificationsViewController: EditNotificationsViewController {
       case .deadline:
         let deadline = self.deadlineFromTimePickerView
         self.updateDeadlineLabel(deadline)
-        let params = ["default_deadline": deadline]
         do {
-          let _ = try await requestManager.put(url: "api/v1/users/{username}.json", parameters: params)
+          let _ = try await apiClient.updateUser(defaultDeadline: deadline)
           try await goalManager.refreshGoals()
           hud.hide(animated: true, afterDelay: 0.5)
         } catch {
