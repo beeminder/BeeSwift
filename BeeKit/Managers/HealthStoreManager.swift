@@ -23,6 +23,7 @@ import OSLog
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "HealthStoreManager")
 
   private let goalManager: GoalManager
+  private let dataPointManager: DataPointManager
 
   // TODO: Public for now to use from config
   public let healthStore = HKHealthStore()
@@ -36,8 +37,9 @@ import OSLog
 
   private var lastSyncedMetricNames: Set<String>? = nil
 
-  init(goalManager: GoalManager, container: NSPersistentContainer) {
+  init(goalManager: GoalManager, dataPointManager: DataPointManager, container: NSPersistentContainer) {
     self.goalManager = goalManager
+    self.dataPointManager = dataPointManager
     self.modelContainer = container
     let context = container.newBackgroundContext()
     context.name = "HealthStoreManager"
@@ -234,9 +236,6 @@ import OSLog
     logger.notice(
       "Updating \(metric.databaseString, privacy: .public) goal with \(nonZeroDataPoints.count, privacy: .public) datapoints. Skipped \(newDataPoints.count - nonZeroDataPoints.count, privacy: .public) empty points."
     )
-    try await ServiceLocator.dataPointManager.updateToMatchDataPoints(
-      goalID: goal.objectID,
-      healthKitDataPoints: nonZeroDataPoints,
-    )
+    try await dataPointManager.updateToMatchDataPoints(goalID: goal.objectID, healthKitDataPoints: nonZeroDataPoints )
   }
 }
