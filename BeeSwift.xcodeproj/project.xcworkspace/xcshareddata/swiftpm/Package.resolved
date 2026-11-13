@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fatbobman/CoreDataEvolution",
       "state" : {
-        "revision" : "96493df0978f1f3097256c9f93ff9fa0efb4b2c3",
-        "version" : "0.9.4"
+        "revision" : "8dea11f744688b64f784f380c33fd32d4a3df45c",
+        "version" : "0.9.6"
       }
     },
     {
