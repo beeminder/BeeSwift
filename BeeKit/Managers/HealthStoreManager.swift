@@ -213,9 +213,18 @@ import OSLog
         return
       }
 
-      for goal in goalsForMetric {
-        try await self.updateWithRecentData(goal: goal, days: HealthStoreManager.daysToUpdateOnChangeNotification)
+      try await withThrowingTaskGroup(of: Void.self) { group in
+        for goal in goalsForMetric {
+          group.addTask {
+            try await self.updateWithRecentData(
+              goal: goal,
+              days: HealthStoreManager.daysToUpdateOnChangeNotification,
+            )
+          }
+        }
+        try await group.waitForAll()
       }
+
     } catch { logger.error("Error updating goals for metric change: \(error, privacy: .public)") }
   }
 
