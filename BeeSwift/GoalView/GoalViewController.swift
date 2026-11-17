@@ -27,7 +27,7 @@ class GoalViewController: UIViewController, DatapointTableViewControllerDelegate
   let goal: Goal
   private let healthStoreManager: HealthStoreManager
   private let goalManager: GoalManager
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
   private let currentUserManager: CurrentUserManager
   private let viewContext: NSManagedObjectContext
   private weak var coordinator: MainCoordinator?
@@ -59,7 +59,7 @@ class GoalViewController: UIViewController, DatapointTableViewControllerDelegate
     goal: Goal,
     healthStoreManager: HealthStoreManager,
     goalManager: GoalManager,
-    requestManager: RequestManager,
+    apiClient: APIClient,
     currentUserManager: CurrentUserManager,
     viewContext: NSManagedObjectContext,
     coordinator: MainCoordinator,
@@ -67,7 +67,7 @@ class GoalViewController: UIViewController, DatapointTableViewControllerDelegate
     self.goal = goal
     self.healthStoreManager = healthStoreManager
     self.goalManager = goalManager
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.currentUserManager = currentUserManager
     self.viewContext = viewContext
     self.coordinator = coordinator
@@ -475,7 +475,7 @@ class GoalViewController: UIViewController, DatapointTableViewControllerDelegate
       self.scrollView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 0, height: 0), animated: true)
 
       do {
-        let _ = try await self.requestManager.addDatapoint(urtext: self.urtext, slug: self.goal.slug)
+        let _ = try await self.apiClient.createDatapoint(goalSlug: self.goal.slug, urtext: self.urtext)
         self.commentTextField.text = ""
 
         try await updateGoalAndInterface()

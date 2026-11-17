@@ -16,19 +16,18 @@ import SwiftyJSON
 @NSModelActor(disableGenerateInit: true) public actor GoalManager {
   private let logger = Logger(subsystem: "com.beeminder.beeminder", category: "GoalManager")
 
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
   private nonisolated let currentUserManager: CurrentUserManager
 
   private var queuedGoalsBackgroundTaskRunning: Bool = false
 
-  init(requestManager: RequestManager, currentUserManager: CurrentUserManager, container: BeeminderPersistentContainer)
-  {
+  init(apiClient: APIClient, currentUserManager: CurrentUserManager, container: BeeminderPersistentContainer) {
     modelContainer = container
     let context = container.newBackgroundContext()
     context.name = "GoalManager"
     modelExecutor = .init(context: context)
 
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.currentUserManager = currentUserManager
 
     // Actor setup complete. After this point
@@ -82,10 +81,8 @@ import SwiftyJSON
     logger.notice("Goals unknown, doing full fetch")
     // We must fetch the user object first, and then fetch goals afterwards, to guarantee User.updated_at is
     // a safe timestamp for future fetches without losing data
-    let userResponse = JSON(try await requestManager.get(url: "api/v1/users/{username}.json")!)
-    let goalResponse = JSON(
-      try await requestManager.get(url: "api/v1/users/{username}/goals.json", parameters: ["emaciated": "true"])!
-    )
+    let userResponse = JSON(try await apiClient.fetchUser()!)
+    let goalResponse = JSON(try await apiClient.fetchGoals(emaciated: true)!)
 
     // The user may have logged out during the network operation. If so we have nothing to do
     modelContext.refreshAllObjects()
@@ -103,10 +100,7 @@ import SwiftyJSON
   private func refreshGoalsIncremental(user: User) async throws {
     logger.notice("Doing incremental update since \(user.updatedAt, privacy: .public)")
     let userResponse = JSON(
-      try await requestManager.get(
-        url: "api/v1/users/{username}.json",
-        parameters: ["diff_since": user.updatedAt.timeIntervalSince1970 + 1, "emaciated": "true"],
-      )!
+      try await apiClient.fetchUser(diffSince: user.updatedAt.timeIntervalSince1970 + 1, emaciated: true)!
     )
     let goalResponse = userResponse["goals"]
     let deletedGoals = userResponse["deleted_goals"]
@@ -127,10 +121,7 @@ import SwiftyJSON
   public func refreshGoal(_ goalID: NSManagedObjectID) async throws {
     let goal = try modelContext.existingObject(with: goalID) as! Goal
 
-    let responseObject = try await requestManager.get(
-      url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)",
-      parameters: ["datapoints_count": "5", "emaciated": "true"],
-    )
+    let responseObject = try await apiClient.fetchGoalDetails(slug: goal.slug, datapointsCount: 5, emaciated: true)
     let goalJSON = JSON(responseObject!)
 
     // The goal may have changed during the network operation, reload latest version
@@ -143,9 +134,7 @@ import SwiftyJSON
   }
 
   public func forceAutodataRefresh(_ goal: Goal) async throws {
-    let _ = try await requestManager.get(
-      url: "/api/v1/users/\(currentUserManager.username!)/goals/\(goal.slug)/refresh_graph.json"
-    )
+    let _ = try await apiClient.requestAutodataRefresh(goalSlug: goal.slug)
   }
 
   private func updateGoalsFromJson(_ responseJSON: JSON) {

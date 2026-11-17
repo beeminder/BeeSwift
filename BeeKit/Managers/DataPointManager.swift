@@ -12,10 +12,10 @@ import SwiftyJSON
   // prevents effectively no-op updates due to float rounding
   private let datapointValueEpsilon = 0.00000001
 
-  let requestManager: RequestManager
+  let apiClient: APIClient
 
-  init(requestManager: RequestManager, container: BeeminderPersistentContainer) {
-    self.requestManager = requestManager
+  init(apiClient: APIClient, container: BeeminderPersistentContainer) {
+    self.apiClient = apiClient
     self.modelContainer = container
     let context = container.newBackgroundContext()
     context.name = "DataPointManager"
@@ -26,29 +26,24 @@ import SwiftyJSON
   {
     let val = datapoint.value
     if datapointValue == val && comment == datapoint.comment { return }
-    let params = ["value": "\(datapointValue)", "comment": comment]
-    let _ = try await requestManager.put(
-      url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id).json",
-      parameters: params,
+    let _ = try await apiClient.updateDatapoint(
+      goalSlug: goal.slug,
+      datapointID: datapoint.id,
+      value: "\(datapointValue)",
+      comment: comment,
     )
   }
 
   private func deleteDatapoint(goal: Goal, datapoint: DataPoint) async throws {
-    let _ = try await requestManager.delete(
-      url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints/\(datapoint.id)"
-    )
+    let _ = try await apiClient.deleteDatapoint(goalSlug: goal.slug, datapointID: datapoint.id)
   }
 
   private func postDatapoint(goal: Goal, urText: String, requestId: String) async throws {
-    let _ = try await requestManager.addDatapoint(urtext: urText, slug: goal.slug, requestId: requestId)
+    let _ = try await apiClient.createDatapoint(goalSlug: goal.slug, urtext: urText, requestID: requestId)
   }
 
   private func fetchDatapoints(goal: Goal, sort: String, per: Int, page: Int) async throws -> [DataPoint] {
-    let params = ["sort": sort, "per": per, "page": page] as [String: Any]
-    let response = try await requestManager.get(
-      url: "api/v1/users/{username}/goals/\(goal.slug)/datapoints.json",
-      parameters: params,
-    )
+    let response = try await apiClient.fetchDatapoints(goalSlug: goal.slug, sort: sort, per: per, page: page)
     let responseJSON = JSON(response!)
 
     return responseJSON.arrayValue.map({ DataPoint.fromJSON(context: modelContext, goal: goal, json: $0) })

@@ -73,12 +73,12 @@ class TimerViewController: UIViewController {
   var timingSince: Date?
   var timer: Timer?
   private let units: TimerUnit
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
 
   var accumulatedSeconds = 0
-  init(goal: Goal, requestManager: RequestManager) {
+  init(goal: Goal, apiClient: APIClient) {
     self.goal = goal
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.units = Self.timerUnit(goal: goal) ?? .hours
     super.init(nibName: nil, bundle: nil)
   }
@@ -217,7 +217,7 @@ class TimerViewController: UIViewController {
 
     Task { @MainActor in
       do {
-        let _ = try await requestManager.addDatapoint(urtext: self.urtext(), slug: self.goal.slug)
+        let _ = try await apiClient.createDatapoint(goalSlug: self.goal.slug, urtext: self.urtext())
         hud.mode = .text
         hud.label.text = "Added!"
         DispatchQueue.main.asyncAfter(

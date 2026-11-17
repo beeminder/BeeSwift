@@ -23,9 +23,9 @@ private let ageOfReleaseToWarn: TimeInterval = 10.0 * dayInSeconds
 public class VersionManager {
   private var minRequiredVersion: String = "1.0"
   private var updateState = UpdateState.UpToDate
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
 
-  init(requestManager: RequestManager) { self.requestManager = requestManager }
+  init(apiClient: APIClient) { self.apiClient = apiClient }
 
   public func lastChckedUpdateState() -> UpdateState { updateState }
 
@@ -56,7 +56,7 @@ public class VersionManager {
     Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
   }
   private func checkIfUpdateRequired() async throws -> Bool {
-    let responseJSON = try await requestManager.get(url: "api/private/app_versions.json")
+    let responseJSON = try await apiClient.fetchAppVersions()
 
     guard let response = JSON(responseJSON!).dictionary else { throw VersionError.invalidServerResponse }
     guard let minVersion = response["min_ios"]?.number?.decimalValue else { throw VersionError.noMinimumVersion }

@@ -29,7 +29,7 @@ class GalleryViewController: UIViewController {
   private let viewContext: NSManagedObjectContext
   private let versionManager: VersionManager
   private let goalManager: GoalManager
-  private let requestManager: RequestManager
+  private let apiClient: APIClient
   private lazy var stackView: UIStackView = {
     let stackView = UIStackView()
     stackView.axis = .vertical
@@ -106,14 +106,14 @@ class GalleryViewController: UIViewController {
     viewContext: NSManagedObjectContext,
     versionManager: VersionManager,
     goalManager: GoalManager,
-    requestManager: RequestManager,
+    apiClient: APIClient,
     coordinator: MainCoordinator,
   ) {
     self.currentUserManager = currentUserManager
     self.viewContext = viewContext
     self.versionManager = versionManager
     self.goalManager = goalManager
-    self.requestManager = requestManager
+    self.apiClient = apiClient
     self.coordinator = coordinator
     let fetchRequest = Goal.fetchRequest() as! NSFetchRequest<Goal>
     fetchRequest.sortDescriptors = Self.preferredSort
